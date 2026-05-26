@@ -1,0 +1,28 @@
+class AppRoutes {
+  static const String SPLASH             = '/splash';
+  static const String ONBOARDING         = '/onboarding';
+  static const String LOGIN              = '/login';
+  static const String REGISTER           = '/register';
+  static const String FORGOT_PW          = '/forgot-password';
+  static const String DASHBOARD          = '/dashboard';
+  static const String EXHIBITIONS        = '/exhibitions';
+  static const String EXHIBITION_DETAIL  = '/exhibitions/detail';
+  static const String FAVORITES          = '/favorites';
+  static const String PROFILE            = '/profile';
+  static const String BOOTHS             = '/booths';
+  static const String BOOTH_MAP_3D       = '/booths/map3d';
+  static const String BOOTH_DETAIL       = '/booths/detail';
+  static const String BOOKING_REQUEST    = '/booths/book';
+  static const String BOOKING_DETAIL     = '/booths/booking-detail';
+  static const String CAMPAIGNS          = '/campaigns';
+  static const String CREATE_CAMPAIGN    = '/campaigns/create';
+  static const String EVENTS             = '/events';
+  static const String CREATE_EVENT       = '/events/create';
+  static const String EVENT_PARTICIPANTS = '/events/participants';
+  static const String ANALYTICS          = '/analytics';
+  static const String REPORTS            = '/reports';
+  static const String REPORT_DETAIL      = '/reports/detail';
+  static const String MESSAGES           = '/messages';
+  static const String NOTIFICATIONS      = '/notifications';
+  static const String SETTINGS           = '/settings';
+}
