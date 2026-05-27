@@ -14,55 +14,80 @@ class FavoritesView extends GetView<FavoritesController> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(FavoritesController());
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Row(mainAxisSize: MainAxisSize.min, children: [
-            ShaderMask(
-              shaderCallback: (b) => AppColors.favoriteGradient.createShader(b),
-              child: const Icon(Icons.favorite, color: Colors.white, size: 22),
-            ),
-            const SizedBox(width: 8),
-            const Text('مفضلاتي', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          ]),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkBg : AppColors.lightBg,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 8),
+              const Text(
+                'مفضلاتي',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkBg
+              : AppColors.lightBg,
           elevation: 0,
           automaticallyImplyLeading: false,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(44),
-            child: Obx(() => TabBar(
-              onTap: (i) => controller.selectedTab.value = i,
-              tabs: [
-                Tab(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.store_outlined, size: 16),
-                  const SizedBox(width: 4),
-                  Text('المعارض (${controller.favoriteExhibitions.length})'),
-                ])),
-                Tab(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.event_outlined, size: 16),
-                  const SizedBox(width: 4),
-                  Text('الفعاليات (${controller.favoriteEvents.length})'),
-                ])),
-                Tab(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.grid_view_outlined, size: 16),
-                  const SizedBox(width: 4),
-                  Text('الأجنحة (${controller.favoriteBooths.length})'),
-                ])),
-              ],
-              labelColor: AppColors.darkPrimary,
-              indicatorColor: AppColors.darkPrimary,
-              unselectedLabelColor: AppColors.grey,
-              labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-            )),
+            child: Obx(
+              () => TabBar(
+                onTap: (i) => controller.selectedTab.value = i,
+                tabs: [
+                  Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.store_outlined, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          'المعارض (${controller.favoriteExhibitions.length})',
+                        ),
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.event_outlined, size: 16),
+                        const SizedBox(width: 4),
+                        Text('الفعاليات (${controller.favoriteEvents.length})'),
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.grid_view_outlined, size: 16),
+                        const SizedBox(width: 4),
+                        Text('الأجنحة (${controller.favoriteBooths.length})'),
+                      ],
+                    ),
+                  ),
+                ],
+                labelColor: AppColors.darkPrimary,
+                indicatorColor: AppColors.darkPrimary,
+                unselectedLabelColor: AppColors.grey,
+                labelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
         ),
         bottomNavigationBar: const BottomNavCustom(),
-        body: TabBarView(children: [
-          _exhibitionsTab(),
-          _eventsTab(),
-          _boothsTab(),
-        ]),
+        body: TabBarView(
+          children: [_exhibitionsTab(), _eventsTab(), _boothsTab()],
+        ),
       ),
     );
   }
@@ -87,8 +112,15 @@ class FavoritesView extends GetView<FavoritesController> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
-            child: const Icon(Icons.delete_outline, color: AppColors.error, size: 28),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.delete_outline,
+              color: AppColors.error,
+              size: 28,
+            ),
           ),
           child: ExhibitionCard(
             exhibition: e,
@@ -120,8 +152,15 @@ class FavoritesView extends GetView<FavoritesController> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
-            child: const Icon(Icons.delete_outline, color: AppColors.error, size: 28),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.delete_outline,
+              color: AppColors.error,
+              size: 28,
+            ),
           ),
           child: EventCard(
             event: e,
@@ -154,8 +193,15 @@ class FavoritesView extends GetView<FavoritesController> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
-            child: const Icon(Icons.delete_outline, color: AppColors.error, size: 28),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.delete_outline,
+              color: AppColors.error,
+              size: 28,
+            ),
           ),
           child: BoothCard(
             booth: b,

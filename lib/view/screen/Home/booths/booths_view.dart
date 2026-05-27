@@ -12,58 +12,97 @@ class BoothsView extends GetView<BoothController> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(BoothController());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('أجنحتي', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        title: const Text(
+          'أجنحتي',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkBg : AppColors.lightBg,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkBg
+            : AppColors.lightBg,
         elevation: 0,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
         backgroundColor: AppColors.darkPrimary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('حجز جناح جديد', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        label: const Text(
+          'حجز جناح جديد',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
       ),
       bottomNavigationBar: const BottomNavCustom(),
-      body: Column(children: [
-        Obx(() => SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-          child: Row(children: controller.filters.map((f) {
-            final active = controller.statusFilter.value == f;
-            return GestureDetector(
-              onTap: () => controller.applyFilter(f),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.only(left: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  gradient: active ? AppColors.darkCTAGradient : null,
-                  color: active ? null : (Theme.of(context).brightness == Brightness.dark ? AppColors.darkCard : AppColors.lightSurface),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(f, style: TextStyle(fontSize: 12, color: active ? Colors.white : AppColors.grey, fontWeight: active ? FontWeight.w600 : FontWeight.w400)),
+      body: Column(
+        children: [
+          Obx(
+            () => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              child: Row(
+                children: controller.filters.map((f) {
+                  final active = controller.statusFilter.value == f;
+                  return GestureDetector(
+                    onTap: () => controller.applyFilter(f),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: active ? AppColors.darkCTAGradient : null,
+                        color: active
+                            ? null
+                            : (Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkCard
+                                  : AppColors.lightSurface),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        f,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: active ? Colors.white : AppColors.grey,
+                          fontWeight: active
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList()),
-        )),
-        Expanded(child: Obx(() {
-          if (controller.filtered.isEmpty) return EmptyWidget(message: 'لا توجد أجنحة', buttonLabel: 'حجز جناح', onAction: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D));
-          return ListView.builder(
-            itemCount: controller.filtered.length,
-            itemBuilder: (_, i) {
-              final b = controller.filtered[i];
-              return BoothCard(
-                booth: b,
-                onTap: () => Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
-                onFavorite: () => controller.toggleFavorite(b),
-                onReport: () => Get.toNamed(AppRoutes.REPORTS),
+            ),
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.filtered.isEmpty)
+                return EmptyWidget(
+                  message: 'لا توجد أجنحة',
+                  buttonLabel: 'حجز جناح',
+                  onAction: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
+                );
+              return ListView.builder(
+                itemCount: controller.filtered.length,
+                itemBuilder: (_, i) {
+                  final b = controller.filtered[i];
+                  return BoothCard(
+                    booth: b,
+                    onTap: () =>
+                        Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
+                    onFavorite: () => controller.toggleFavorite(b),
+                    onReport: () => Get.toNamed(AppRoutes.REPORTS),
+                  );
+                },
               );
-            },
-          );
-        })),
-      ]),
+            }),
+          ),
+        ],
+      ),
     );
   }
 }

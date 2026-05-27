@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constant/appcolors.dart';
+import 'appcolors.dart';
 
 class AppTheme {
   static TextTheme get _cairoTextTheme => GoogleFonts.cairoTextTheme(

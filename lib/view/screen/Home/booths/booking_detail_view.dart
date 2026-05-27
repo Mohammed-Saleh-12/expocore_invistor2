@@ -47,7 +47,7 @@ class BookingDetailView extends StatelessWidget {
                 TextButton(onPressed: () { Get.back(); Get.snackbar('تم', 'تم إلغاء الحجز', snackPosition: SnackPosition.BOTTOM); }, child: const Text('تأكيد الإلغاء', style: TextStyle(color: AppColors.error))),
               ],
             )),
-            gradient: const LinearGradient(colors: [AppColors.error, Color(0xFFFF6A6A)]),
+            gradient: const Color(0xFFFF6A6A),
           ),
           const SizedBox(height: 20),
         ]),

@@ -12,7 +12,7 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Get.put(LoginController());
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -22,14 +22,34 @@ class LoginView extends GetView<LoginController> {
             children: [
               const SizedBox(height: 60),
               Container(
-                width: 72, height: 72,
-                decoration: BoxDecoration(gradient: AppColors.darkCTAGradient, borderRadius: BorderRadius.circular(18)),
-                child: const Center(child: Text('EC', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900))),
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  gradient: AppColors.darkCTAGradient,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Center(
+                  child: Text(
+                    'EC',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              const Text('مرحباً بعودتك', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+              const Text(
+                'مرحباً بعودتك',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              ),
               const SizedBox(height: 6),
-              const Text('سجّل الدخول لإدارة معارضك وأجنحتك', style: TextStyle(fontSize: 13, color: AppColors.grey), textAlign: TextAlign.center),
+              const Text(
+                'سجّل الدخول لإدارة معارضك وأجنحتك',
+                style: TextStyle(fontSize: 13, color: AppColors.grey),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 36),
               CustomTextField(
                 controller: controller.emailCtrl,
@@ -39,60 +59,106 @@ class LoginView extends GetView<LoginController> {
                 validator: (v) => v!.isEmpty ? 'أدخل البريد الإلكتروني' : null,
               ),
               const SizedBox(height: 14),
-              Obx(() => CustomTextField(
-                controller: controller.passwordCtrl,
-                hint: 'كلمة المرور',
-                prefixIcon: Icons.lock_outline,
-                obscure: controller.obscure.value,
-                validator: (v) => v!.isEmpty ? 'أدخل كلمة المرور' : null,
-                suffixWidget: GestureDetector(
-                  onTap: controller.toggleObscure,
-                  child: Icon(controller.obscure.value ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20, color: AppColors.grey),
+              Obx(
+                () => CustomTextField(
+                  controller: controller.passwordCtrl,
+                  hint: 'كلمة المرور',
+                  prefixIcon: Icons.lock_outline,
+                  obscure: controller.obscure.value,
+                  validator: (v) => v!.isEmpty ? 'أدخل كلمة المرور' : null,
+                  suffixWidget: GestureDetector(
+                    onTap: controller.toggleObscure,
+                    child: Icon(
+                      controller.obscure.value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                      color: AppColors.grey,
+                    ),
+                  ),
                 ),
-              )),
+              ),
               const SizedBox(height: 12),
-              Row(children: [
-                Obx(() => Checkbox(
-                  value: controller.rememberMe.value,
-                  onChanged: (_) => controller.toggleRemember(),
-                  activeColor: AppColors.darkPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                )),
-                const Text('تذكرني', style: TextStyle(fontSize: 13)),
-                const Spacer(),
-                TextButton(
-                  onPressed: () => Get.toNamed(AppRoutes.FORGOT_PW),
-                  child: const Text('نسيت كلمة المرور؟', style: TextStyle(color: AppColors.darkPrimary, fontSize: 13)),
-                ),
-              ]),
+              Row(
+                children: [
+                  Obx(
+                    () => Checkbox(
+                      value: controller.rememberMe.value,
+                      onChanged: (_) => controller.toggleRemember(),
+                      activeColor: AppColors.darkPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  const Text('تذكرني', style: TextStyle(fontSize: 13)),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () => Get.toNamed(AppRoutes.FORGOT_PW),
+                    child: const Text(
+                      'نسيت كلمة المرور؟',
+                      style: TextStyle(
+                        color: AppColors.darkPrimary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
-              Obx(() => CustomButton(
-                label: 'تسجيل الدخول',
-                onTap: controller.login,
-                isLoading: controller.status.value == StatusRequest.loading,
-              )),
-              const SizedBox(height: 24),
-              Row(children: [
-                const Expanded(child: Divider()),
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('أو', style: TextStyle(color: AppColors.grey.withOpacity(0.7)))),
-                const Expanded(child: Divider()),
-              ]),
-              const SizedBox(height: 16),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _SocialBtn(icon: Icons.g_mobiledata, label: 'Google'),
-                const SizedBox(width: 12),
-                _SocialBtn(icon: Icons.apple, label: 'Apple'),
-                const SizedBox(width: 12),
-                _SocialBtn(icon: Icons.facebook, label: 'Facebook'),
-              ]),
-              const SizedBox(height: 30),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Text('ليس لديك حساب؟ ', style: TextStyle(fontSize: 13, color: AppColors.grey)),
-                GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.REGISTER),
-                  child: const Text('إنشاء حساب', style: TextStyle(fontSize: 13, color: AppColors.darkPrimary, fontWeight: FontWeight.w600)),
+              Obx(
+                () => CustomButton(
+                  label: 'تسجيل الدخول',
+                  onTap: controller.login,
+                  isLoading: controller.status.value == StatusRequest.loading,
                 ),
-              ]),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'أو',
+                      style: TextStyle(color: AppColors.grey.withOpacity(0.7)),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _SocialBtn(icon: Icons.g_mobiledata, label: 'Google'),
+                  const SizedBox(width: 12),
+                  _SocialBtn(icon: Icons.apple, label: 'Apple'),
+                  const SizedBox(width: 12),
+                  _SocialBtn(icon: Icons.facebook, label: 'Facebook'),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'ليس لديك حساب؟ ',
+                    style: TextStyle(fontSize: 13, color: AppColors.grey),
+                  ),
+                  GestureDetector(
+                    onTap: () => Get.toNamed(AppRoutes.REGISTER),
+                    child: const Text(
+                      'إنشاء حساب',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.darkPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 30),
             ],
           ),

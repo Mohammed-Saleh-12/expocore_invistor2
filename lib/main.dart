@@ -1,11 +1,11 @@
+import 'package:expocore_invistor2/core/constant/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'bindings/initialbindings.dart';
 import 'core/constant/routes.dart';
 import 'core/localization/translation.dart';
-import 'core/routes/app_pages.dart';
+import 'routes.dart';
 import 'core/services/services.dart';
-import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ class ExpoCore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title:          'ExpoCore — منصة المستثمر',
+      title:          'ExpoCore — تطبيق المستثمر',
       debugShowCheckedModeBanner: false,
       theme:          AppTheme.lightTheme,
       darkTheme:      AppTheme.darkTheme,

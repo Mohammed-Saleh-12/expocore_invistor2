@@ -8,7 +8,7 @@ class CustomButton extends StatelessWidget {
   final bool isOutlined;
   final double? width;
   final double height;
-  final LinearGradient? gradient;
+  final Color? gradient;
 
   const CustomButton({
     super.key,
@@ -24,7 +24,8 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final grad = gradient ?? (isDark ? AppColors.darkCTAGradient : AppColors.lightCTAGradient);
+    final grad =
+        gradient ?? (isDark ? AppColors.darkAccent : AppColors.darkAccent);
 
     if (isOutlined) {
       return SizedBox(
@@ -33,12 +34,27 @@ class CustomButton extends StatelessWidget {
         child: OutlinedButton(
           onPressed: isLoading ? null : onTap,
           style: OutlinedButton.styleFrom(
-            side: BorderSide(color: isDark ? AppColors.darkPrimary : AppColors.lightPrimary, width: 1.5),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            side: BorderSide(
+              color: isDark ? AppColors.darkPrimary : AppColors.lightPrimary,
+              width: 1.5,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: isLoading
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
         ),
       );
     }
@@ -51,13 +67,27 @@ class CustomButton extends StatelessWidget {
           width: width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
-            gradient: grad,
+            color: grad,
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
           child: isLoading
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
         ),
       ),
     );

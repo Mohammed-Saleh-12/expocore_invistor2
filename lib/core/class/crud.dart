@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
 import '../../core/services/services.dart';
-import '../../linkapi.dart';
 
 class Crud {
   final Dio dio = Dio();

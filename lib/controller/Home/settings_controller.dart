@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
-import '../../core/theme/app_theme.dart';
 
 class SettingsController extends GetxController {
   final isDark                  = true.obs;

@@ -19,7 +19,6 @@ class EventParticipantsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirmed = _participants.where((p) => p['status'] == 'confirmed').length;
     final pending   = _participants.where((p) => p['status'] == 'pending').length;
 
