@@ -7,6 +7,49 @@ import '../../model/message/message_model.dart';
 import '../../model/notification/notification_model.dart';
 
 class DummyData {
+  static Map<String, dynamic> exhibitionMap = {
+    'exhibition_id': 1,
+    'exhibition_name': 'معرض التقنية 2026',
+    'grid_width': 13,
+    'grid_depth': 10,
+    'halls': [
+      {
+        'id': 'A',
+        'name': 'القاعة أ',
+        'color': '7A1FFF',
+        'booths': [
+          {'id': 1,  'number': 'A01', 'col': 0, 'row': 0, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'available', 'price': 18000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء', 'إضاءة']},
+          {'id': 2,  'number': 'A02', 'col': 3, 'row': 0, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'booked',    'price': 18000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء']},
+          {'id': 3,  'number': 'A03', 'col': 0, 'row': 3, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'available', 'price': 15000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء', 'موقف']},
+          {'id': 4,  'number': 'A04', 'col': 3, 'row': 3, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'available', 'price': 15000, 'area': 400, 'amenities': ['واي فاي']},
+        ],
+      },
+      {
+        'id': 'B',
+        'name': 'القاعة ب',
+        'color': '1565C0',
+        'booths': [
+          {'id': 5,  'number': 'B01', 'col': 7, 'row': 0, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'available', 'price': 16000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء']},
+          {'id': 6,  'number': 'B02', 'col': 10,'row': 0, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'booked',    'price': 16000, 'area': 400, 'amenities': ['واي فاي']},
+          {'id': 7,  'number': 'B03', 'col': 7, 'row': 3, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'booked',    'price': 14000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء', 'مياه']},
+          {'id': 8,  'number': 'B04', 'col': 10,'row': 3, 'width': 2, 'depth': 2, 'height': 1.6, 'status': 'available', 'price': 14000, 'area': 400, 'amenities': ['واي فاي', 'كهرباء']},
+        ],
+      },
+      {
+        'id': 'C',
+        'name': 'القاعة ج',
+        'color': 'E65100',
+        'booths': [
+          {'id': 9,  'number': 'C01', 'col': 0, 'row': 7, 'width': 2, 'depth': 2, 'height': 1.2, 'status': 'available', 'price': 9000,  'area': 200, 'amenities': ['واي فاي']},
+          {'id': 10, 'number': 'C02', 'col': 3, 'row': 7, 'width': 2, 'depth': 2, 'height': 1.2, 'status': 'booked',    'price': 9000,  'area': 200, 'amenities': ['واي فاي', 'كهرباء']},
+          {'id': 11, 'number': 'C03', 'col': 6, 'row': 7, 'width': 2, 'depth': 2, 'height': 1.2, 'status': 'available', 'price': 9000,  'area': 200, 'amenities': ['واي فاي']},
+          {'id': 12, 'number': 'C04', 'col': 9, 'row': 7, 'width': 2, 'depth': 2, 'height': 1.2, 'status': 'available', 'price': 8000,  'area': 200, 'amenities': ['واي فاي', 'مياه']},
+          {'id': 13, 'number': 'C05', 'col': 12,'row': 7, 'width': 1, 'depth': 2, 'height': 1.2, 'status': 'booked',    'price': 7000,  'area': 150, 'amenities': ['واي فاي']},
+        ],
+      },
+    ],
+  };
+
   static List<ExhibitionModel> exhibitions = [
     ExhibitionModel(
       id: 1, name: 'معرض التقنية 2026',

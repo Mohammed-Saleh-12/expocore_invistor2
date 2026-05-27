@@ -14,6 +14,7 @@ import '../controller/Home/notifications_controller.dart';
 import '../controller/Home/settings_controller.dart';
 import '../controller/Home/profile_company_controller.dart';
 import '../controller/Home/booking_controller.dart';
+import '../controller/Home/booth_map_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -33,5 +34,6 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => SettingsController());
     Get.lazyPut(() => ProfileCompanyController());
     Get.lazyPut(() => BookingController());
+    Get.lazyPut(() => BoothMapController());
   }
 }
