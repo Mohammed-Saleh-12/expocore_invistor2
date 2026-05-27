@@ -11,7 +11,6 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileCompanyController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: CustomAppBar(

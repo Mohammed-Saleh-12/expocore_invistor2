@@ -11,7 +11,6 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    Get.put(SettingsController());
     return Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: SafeArea(

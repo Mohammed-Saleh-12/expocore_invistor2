@@ -14,7 +14,6 @@ class FavoritesView extends GetView<FavoritesController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FavoritesController());
     return DefaultTabController(
       length: 3,
       child: Scaffold(

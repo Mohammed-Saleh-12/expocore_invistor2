@@ -12,7 +12,6 @@ class EventsView extends GetView<EventsController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(EventsController());
     return DefaultTabController(
       length: 2,
       child: Scaffold(

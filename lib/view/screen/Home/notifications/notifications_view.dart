@@ -51,7 +51,6 @@ class NotificationsView extends GetView<NotificationsController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(NotificationsController());
     return Scaffold(
       appBar: CustomAppBar(
         title: 'الإشعارات',

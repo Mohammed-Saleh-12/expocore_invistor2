@@ -19,21 +19,21 @@ import '../controller/Home/booth_map_controller.dart';
 class InitialBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => LoginController());
-    Get.lazyPut(() => RegisterController());
-    Get.lazyPut(() => DashboardController());
-    Get.lazyPut(() => ExhibitionsController());
-    Get.lazyPut(() => BoothController());
-    Get.lazyPut(() => FavoritesController());
-    Get.lazyPut(() => ReportsController());
-    Get.lazyPut(() => EventsController());
-    Get.lazyPut(() => CampaignsController());
-    Get.lazyPut(() => AnalyticsController());
-    Get.lazyPut(() => MessagesController());
-    Get.lazyPut(() => NotificationsController());
-    Get.lazyPut(() => SettingsController());
-    Get.lazyPut(() => ProfileCompanyController());
-    Get.lazyPut(() => BookingController());
-    Get.lazyPut(() => BoothMapController());
+    Get.lazyPut(() => LoginController(), fenix: true);
+    Get.lazyPut(() => RegisterController(), fenix: true);
+    Get.lazyPut(() => DashboardController(), fenix: true);
+    Get.lazyPut(() => ExhibitionsController(), fenix: true);
+    Get.lazyPut(() => BoothController(), fenix: true);
+    Get.lazyPut(() => FavoritesController(), fenix: true);
+    Get.lazyPut(() => ReportsController(), fenix: true);
+    Get.lazyPut(() => EventsController(), fenix: true);
+    Get.lazyPut(() => CampaignsController(), fenix: true);
+    Get.lazyPut(() => AnalyticsController(), fenix: true);
+    Get.lazyPut(() => MessagesController(), fenix: true);
+    Get.lazyPut(() => NotificationsController(), fenix: true);
+    Get.lazyPut(() => SettingsController(), fenix: true);
+    Get.lazyPut(() => ProfileCompanyController(), fenix: true);
+    Get.lazyPut(() => BookingController(), fenix: true);
+    Get.lazyPut(() => BoothMapController(), fenix: true);
   }
 }

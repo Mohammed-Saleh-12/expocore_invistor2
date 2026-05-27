@@ -14,8 +14,7 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final notifCtrl = Get.put(NotificationsController());
-    Get.put(DashboardController());
+    final notifCtrl = Get.find<NotificationsController>();
     return Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: SafeArea(

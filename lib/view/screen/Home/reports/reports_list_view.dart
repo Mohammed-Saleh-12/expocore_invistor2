@@ -12,7 +12,6 @@ class ReportsListView extends GetView<ReportsController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ReportsController());
     return Scaffold(
       appBar: CustomAppBar(
         title: 'التقارير والتحليلات',

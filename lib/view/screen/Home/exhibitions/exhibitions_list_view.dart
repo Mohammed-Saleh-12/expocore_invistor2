@@ -13,7 +13,6 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ExhibitionsController());
     return Scaffold(
       appBar: AppBar(
         title: const Text(

@@ -12,7 +12,6 @@ class BoothsView extends GetView<BoothController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(BoothController());
     return Scaffold(
       appBar: AppBar(
         title: const Text(
