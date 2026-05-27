@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
-import '../../../controller/Home/dashboard_controller.dart';
 import '../../../core/constant/routes.dart';
 
 class BottomNavCustom extends StatelessWidget {
@@ -43,72 +42,75 @@ class BottomNavCustom extends StatelessWidget {
     AppRoutes.SETTINGS,
   ];
 
+  int _activeIndex() {
+    final route = Get.currentRoute;
+    for (int i = 0; i < _routes.length; i++) {
+      if (route == _routes[i]) return i;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final DashboardController ctrl = Get.put(DashboardController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Obx(
-      () => Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCard : AppColors.lightCard,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 12,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: SizedBox(
-            height: 60,
-            child: Row(
-              children: List.generate(_items.length, (i) {
-                final isActive = ctrl.currentIndex.value == i;
-                return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      ctrl.currentIndex.value = i;
-                      Get.offAllNamed(_routes[i]);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        isActive
-                            ? ShaderMask(
-                                shaderCallback: (b) =>
-                                    AppColors.darkCTAGradient.createShader(b),
-                                child: Icon(
-                                  _items[i]['activeIcon'] as IconData,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                              )
-                            : Icon(
-                                _items[i]['icon'] as IconData,
-                                color: AppColors.grey,
+    final activeIdx = _activeIndex();
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCard : AppColors.lightCard,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            children: List.generate(_items.length, (i) {
+              final isActive = activeIdx == i;
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Get.offAllNamed(_routes[i]),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      isActive
+                          ? ShaderMask(
+                              shaderCallback: (b) =>
+                                  AppColors.darkCTAGradient.createShader(b),
+                              child: Icon(
+                                _items[i]['activeIcon'] as IconData,
+                                color: Colors.white,
                                 size: 24,
                               ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _items[i]['label'] as String,
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: isActive
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                            color: isActive
-                                ? AppColors.darkPrimary
-                                : AppColors.grey,
-                          ),
+                            )
+                          : Icon(
+                              _items[i]['icon'] as IconData,
+                              color: AppColors.grey,
+                              size: 24,
+                            ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _items[i]['label'] as String,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: isActive
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: isActive
+                              ? AppColors.darkPrimary
+                              : AppColors.grey,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              }),
-            ),
+                ),
+              );
+            }),
           ),
         ),
       ),
