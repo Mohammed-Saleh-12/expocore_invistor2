@@ -8,6 +8,7 @@ import '../../widget/Home/bottom_nav_custom.dart';
 import '../../widget/Home/stats_card.dart';
 import '../../widget/Home/exhibition_card.dart';
 import '../../widget/Home/event_card.dart';
+import '../../widget/Home/exhibition_billboard.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -106,6 +107,15 @@ class DashboardView extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 12),
+                    ExhibitionBillboard(
+                      exhibitions: controller.featuredExhibitions,
+                      onTap: (e) => Get.toNamed(
+                        AppRoutes.EXHIBITION_DETAIL,
+                        arguments: e,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     _performanceCard(context),
                     const SizedBox(height: 20),
                     _quickActions(context),

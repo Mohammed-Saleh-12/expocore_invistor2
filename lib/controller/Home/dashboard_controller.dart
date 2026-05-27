@@ -15,6 +15,7 @@ class DashboardController extends GetxController {
   final publishedEvents  = 8.obs;
   final totalEngagement  = 24850.obs;
   
+  List<ExhibitionModel> get featuredExhibitions => DummyData.exhibitions.toList();
   List<ExhibitionModel> get latestExhibitions => DummyData.exhibitions.take(3).toList();
   List<EventModel>      get upcomingEvents    => DummyData.events.where((e) => e.status == 'upcoming').take(3).toList();
 
