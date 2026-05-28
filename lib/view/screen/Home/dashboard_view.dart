@@ -5,19 +5,21 @@ import '../../../controller/Home/notifications_controller.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../core/constant/routes.dart';
+import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../widget/Home/bottom_nav_custom.dart';
 import '../../widget/Home/stats_card.dart';
 import '../../widget/Home/exhibition_card.dart';
-import '../../widget/Home/event_card.dart';
+import '../../widget/Home/sponsor_event_card.dart';
 import '../../widget/Home/exhibition_billboard.dart';
 import '../../widget/Home/event_billboard.dart';
+import '../../widget/Home/sponsorship_bottom_sheet.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final notifCtrl = Get.find<NotificationsController>();
+    final notifCtrl  = Get.find<NotificationsController>();
     final eventsCtrl = Get.find<EventsController>();
     return Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
@@ -29,10 +31,10 @@ class DashboardView extends GetView<DashboardController> {
             slivers: [
               SliverAppBar(
                 pinned: true,
-                backgroundColor: Theme.of(context).brightness ==
-                        Brightness.dark
-                    ? AppColors.darkBg
-                    : AppColors.lightBg,
+                backgroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkBg
+                        : AppColors.lightBg,
                 elevation: 0,
                 automaticallyImplyLeading: false,
                 title: Row(
@@ -77,8 +79,8 @@ class DashboardView extends GetView<DashboardController> {
                           IconButton(
                             icon: const Icon(
                                 Icons.notifications_outlined),
-                            onPressed: () => Get.toNamed(
-                                AppRoutes.NOTIFICATIONS),
+                            onPressed: () =>
+                                Get.toNamed(AppRoutes.NOTIFICATIONS),
                           ),
                           if (notifCtrl.unreadCount > 0)
                             Positioned(
@@ -122,14 +124,6 @@ class DashboardView extends GetView<DashboardController> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Events billboard (sponsorship events)
-                    EventBillboard(
-                      events: eventsCtrl.exhibitionSponsorEvents,
-                      onTap: (ev) => Get.toNamed(
-                        AppRoutes.EXHIBITION_EVENTS,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                     _performanceCard(context),
                     const SizedBox(height: 20),
                     _quickActions(context),
@@ -146,18 +140,41 @@ class DashboardView extends GetView<DashboardController> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Upcoming events from participating exhibitions
-                    _sectionHeader(
-                        'فعاليات المعارض القادمة',
-                        AppRoutes.EXHIBITION_EVENTS),
-                    ...controller.upcomingEvents.map(
-                      (e) => EventCard(
-                        event: e,
-                        onTap: () => Get.toNamed(AppRoutes.EVENTS),
-                        showFavorite: true,
-                        onFavorite: () {},
-                      ),
+                    // Events billboard placed right above upcoming events
+                    EventBillboard(
+                      events: eventsCtrl.exhibitionSponsorEvents,
+                      onTap: (ev) => _showSponsorSheet(context, ev, eventsCtrl),
                     ),
+                    const SizedBox(height: 8),
+                    // Upcoming sponsor events from exhibitions investor participates in
+                    _sectionHeader(
+                        'فعاليات المعارض القادمة', AppRoutes.EXHIBITION_EVENTS),
+                    Obx(() {
+                      final list = eventsCtrl.myExhibitionSponsorEvents;
+                      if (list.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Text(
+                            'لا توجد فعاليات في معارضك المشترك بها',
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.grey),
+                          ),
+                        );
+                      }
+                      return Column(
+                        children: list
+                            .take(3)
+                            .map((ev) => SponsorEventCard(
+                                  event: ev,
+                                  onTap: () => _showSponsorSheet(
+                                      context, ev, eventsCtrl),
+                                  onFavorite: () =>
+                                      eventsCtrl.toggleSponsorFavorite(ev),
+                                ))
+                            .toList(),
+                      );
+                    }),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -166,6 +183,17 @@ class DashboardView extends GetView<DashboardController> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showSponsorSheet(BuildContext context, ExhibitionSponsorEvent ev,
+      EventsController ctrl) {
+    ctrl.selectedSponsorDuration.value = null;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SponsorshipBottomSheet(event: ev),
     );
   }
 
@@ -265,14 +293,14 @@ class DashboardView extends GetView<DashboardController> {
         'color': AppColors.darkSecondary,
       },
       {
-        'icon': Icons.favorite,
-        'label': 'مفضلاتي',
-        'route': AppRoutes.FAVORITES,
-        'color': AppColors.darkAccent,
+        'icon': Icons.event_note,
+        'label': 'فعالياتي',
+        'route': AppRoutes.EVENTS,
+        'color': AppColors.info,
       },
       {
-        'icon': Icons.event,
-        'label': 'إنشاء فعالية',
+        'icon': Icons.add_circle_outline,
+        'label': 'نشر فعالية',
         'route': AppRoutes.CREATE_EVENT,
         'color': AppColors.success,
       },
@@ -280,19 +308,25 @@ class DashboardView extends GetView<DashboardController> {
         'icon': Icons.campaign_outlined,
         'label': 'فعالياتي الإعلانية',
         'route': AppRoutes.MY_SPONSORSHIPS,
-        'color': AppColors.info,
+        'color': AppColors.orange,
+      },
+      {
+        'icon': Icons.favorite,
+        'label': 'مفضلاتي',
+        'route': AppRoutes.FAVORITES,
+        'color': AppColors.darkAccent,
       },
       {
         'icon': Icons.bar_chart,
         'label': 'التقارير',
         'route': AppRoutes.REPORTS,
-        'color': AppColors.orange,
+        'color': AppColors.darkPrimary,
       },
       {
         'icon': Icons.message,
         'label': 'التواصل',
         'route': AppRoutes.MESSAGES,
-        'color': AppColors.darkPrimary,
+        'color': AppColors.darkSecondary,
       },
     ];
     return Column(
@@ -302,8 +336,8 @@ class DashboardView extends GetView<DashboardController> {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'الإجراءات السريعة',
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w700),
+            style:
+                TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ),
         const SizedBox(height: 12),

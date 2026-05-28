@@ -9,6 +9,7 @@ import '../../../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../../widget/Home/favorite_button.dart';
 import '../../../widget/Home/custom_button.dart';
 import '../../../widget/Home/sponsor_event_card.dart';
+import '../../../widget/Home/sponsorship_bottom_sheet.dart';
 
 class ExhibitionDetailView extends StatefulWidget {
   const ExhibitionDetailView({super.key});
@@ -95,9 +96,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                       child: FavoriteButton(
                         isFavorite: exhibition.isFavorite,
                         onTap: () => setState(
-                          () =>
-                              exhibition.isFavorite =
-                                  !exhibition.isFavorite,
+                          () => exhibition.isFavorite =
+                              !exhibition.isFavorite,
                         ),
                       ),
                     ),
@@ -142,7 +142,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                               .withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                              color: _statusColor(exhibition.status)),
+                              color:
+                                  _statusColor(exhibition.status)),
                         ),
                         child: Text(
                           _statusLabel(exhibition.status),
@@ -201,7 +202,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                       color: AppColors.success.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: AppColors.success.withOpacity(0.3)),
+                          color:
+                              AppColors.success.withOpacity(0.3)),
                     ),
                     child: Row(
                       children: [
@@ -269,7 +271,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
         children: [
           _serviceItem(Icons.wifi, 'واي فاي مجاني'),
           _serviceItem(Icons.local_parking, 'موقف سيارات مجاني'),
-          _serviceItem(Icons.security, 'أمن وحراسة على مدار الساعة'),
+          _serviceItem(
+              Icons.security, 'أمن وحراسة على مدار الساعة'),
           _serviceItem(Icons.restaurant, 'منطقة طعام ومقاهي'),
           _serviceItem(Icons.settings_input_component,
               'دعم تقني وكهربائي'),
@@ -309,195 +312,20 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
         final ev = events[i];
         return SponsorEventCard(
           event: ev,
-          onTap: () =>
-              _showSponsorshipBottomSheet(context, ev),
-          onFavorite: () =>
-              _eventsCtrl.toggleSponsorFavorite(ev),
+          onTap: () => _showSheet(context, ev),
+          onFavorite: () => _eventsCtrl.toggleSponsorFavorite(ev),
         );
       },
     );
   }
 
-  void _showSponsorshipBottomSheet(
-      BuildContext context, ExhibitionSponsorEvent event) {
+  void _showSheet(BuildContext context, ExhibitionSponsorEvent event) {
     _eventsCtrl.selectedSponsorDuration.value = null;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SponsorSheetFromDetail(event: event),
-    );
-  }
-}
-
-// Lightweight bottom sheet used from exhibition detail
-class _SponsorSheetFromDetail extends StatefulWidget {
-  final ExhibitionSponsorEvent event;
-  const _SponsorSheetFromDetail({required this.event});
-
-  @override
-  State<_SponsorSheetFromDetail> createState() =>
-      _SponsorSheetFromDetailState();
-}
-
-class _SponsorSheetFromDetailState
-    extends State<_SponsorSheetFromDetail> {
-  final EventsController ctrl = Get.find();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      maxChildSize: 0.95,
-      builder: (_, scrollCtrl) => Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCard : Colors.white,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.grey.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(widget.event.name,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w800)),
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                  '${widget.event.type} • ${widget.event.date} • ${widget.event.place}',
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.grey)),
-            ),
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text('اختر مدة المشاركة',
-                    style: TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w700)),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView(
-                controller: scrollCtrl,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  ...widget.event.durationOptions.map((opt) {
-                    return Obx(() {
-                      final selected =
-                          ctrl.selectedSponsorDuration.value == opt;
-                      return GestureDetector(
-                        onTap: () =>
-                            ctrl.selectedSponsorDuration.value = opt,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            gradient: selected
-                                ? const LinearGradient(colors: [
-                                    AppColors.darkPrimary,
-                                    AppColors.darkSecondary
-                                  ])
-                                : null,
-                            color: selected
-                                ? null
-                                : (isDark
-                                    ? AppColors.darkSurface
-                                    : AppColors.lightSurface),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                  selected
-                                      ? Icons.check_circle
-                                      : Icons.radio_button_unchecked,
-                                  color: selected
-                                      ? Colors.white
-                                      : AppColors.grey),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(opt.label,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        color: selected
-                                            ? Colors.white
-                                            : null)),
-                              ),
-                              Text('${opt.price.toStringAsFixed(0)} ﷼',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
-                                      color: selected
-                                          ? Colors.white
-                                          : AppColors.success)),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-                  }),
-                  const SizedBox(height: 16),
-                  Obx(() => ElevatedButton(
-                        onPressed: () {
-                          if (ctrl.selectedSponsorDuration.value ==
-                              null) {
-                            Get.snackbar('تنبيه',
-                                'يرجى اختيار مدة المشاركة',
-                                snackPosition: SnackPosition.BOTTOM);
-                            return;
-                          }
-                          Get.back();
-                          Get.toNamed(AppRoutes.EXHIBITION_EVENTS);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 14),
-                          backgroundColor: AppColors.darkPrimary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12)),
-                        ),
-                        child: ctrl.isBooking.value
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2))
-                            : const Text('متابعة الحجز',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15)),
-                      )),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      builder: (_) => SponsorshipBottomSheet(event: event),
     );
   }
 }

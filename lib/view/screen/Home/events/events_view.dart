@@ -7,7 +7,8 @@ import '../../../widget/Home/event_card.dart';
 import '../../../widget/Home/empty_widget.dart';
 import '../../../widget/Home/custom_app_bar.dart';
 import '../../../widget/Home/sponsor_event_card.dart';
-import 'exhibition_events_view.dart';
+import '../../../widget/Home/sponsorship_bottom_sheet.dart';
+import '../../../../data/model/event/exhibition_sponsor_event_model.dart';
 
 class EventsView extends GetView<EventsController> {
   const EventsView({super.key});
@@ -49,7 +50,7 @@ class EventsView extends GetView<EventsController> {
             ),
             Expanded(
               child: TabBarView(
-                children: [_myEventsTab(), _exhibitionEventsTab()],
+                children: [_myEventsTab(), _exhibitionEventsTab(context)],
               ),
             ),
           ],
@@ -83,7 +84,7 @@ class EventsView extends GetView<EventsController> {
         );
       });
 
-  Widget _exhibitionEventsTab() => Obx(() {
+  Widget _exhibitionEventsTab(BuildContext context) => Obx(() {
         if (controller.exhibitionSponsorEvents.isEmpty) {
           return EmptyWidget(
             message: 'لا توجد فعاليات إعلانية متاحة',
@@ -98,14 +99,20 @@ class EventsView extends GetView<EventsController> {
             final ev = controller.exhibitionSponsorEvents[i];
             return SponsorEventCard(
               event: ev,
-              onTap: () => _showSponsorshipSheet(ev),
+              onTap: () => _showSheet(context, ev),
               onFavorite: () => controller.toggleSponsorFavorite(ev),
             );
           },
         );
       });
 
-  void _showSponsorshipSheet(dynamic event) {
-    Get.toNamed(AppRoutes.EXHIBITION_EVENTS);
+  void _showSheet(BuildContext context, ExhibitionSponsorEvent event) {
+    controller.selectedSponsorDuration.value = null;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SponsorshipBottomSheet(event: event),
+    );
   }
 }

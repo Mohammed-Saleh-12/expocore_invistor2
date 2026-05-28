@@ -4,6 +4,7 @@ import '../../data/model/event/event_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../data/model/event/sponsorship_booking_model.dart';
 import '../../data/model/event/ticket_request_model.dart';
+import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 
 class EventsController extends GetxController {
@@ -18,6 +19,9 @@ class EventsController extends GetxController {
 
   // ── Ticket requests (event id → list) ───────────────────────────────
   final ticketRequests = <int, List<TicketRequestModel>>{}.obs;
+
+  // ── Investor's booths ────────────────────────────────────────────────
+  final myBooths = <BoothModel>[].obs;
 
   // ── UI state ─────────────────────────────────────────────────────────
   final selectedTab      = 0.obs;
@@ -38,6 +42,24 @@ class EventsController extends GetxController {
   final selectedDuration = 1.obs;
   final hasBookableSeats = false.obs;
   final isGeneralInvite  = true.obs;
+
+  // ── Exhibition / booth selection for create event ────────────────────
+  final selectedExhibitionName = ''.obs;
+  final selectedBooth          = Rxn<BoothModel>();
+
+  List<String> get myExhibitionNames =>
+      myBooths.map((b) => b.exhibitionName).toSet().toList();
+
+  List<BoothModel> get boothsForSelectedExhibition => myBooths
+      .where((b) => b.exhibitionName == selectedExhibitionName.value)
+      .toList();
+
+  // Sponsor events that belong to exhibitions where investor has a booth
+  List<ExhibitionSponsorEvent> get myExhibitionSponsorEvents =>
+      exhibitionSponsorEvents
+          .where((e) =>
+              myBooths.any((b) => b.exhibitionName == e.exhibitionName))
+          .toList();
 
   final eventTypes = [
     'ورشة عمل', 'عرض مباشر', 'مسابقة', 'ندوة',
@@ -60,6 +82,7 @@ class EventsController extends GetxController {
     exhibitionSponsorEvents.value = List.from(DummyData.exhibitionSponsorEvents);
     mySponsorshipBookings.value   = List.from(DummyData.sponsorshipBookings);
     ticketRequests.value          = Map.from(DummyData.ticketRequests);
+    myBooths.value                = List.from(DummyData.myBooths);
 
     // Pre-fill company info
     companyNameCtrl.text  = 'شركة التقنية المتقدمة';
@@ -78,15 +101,31 @@ class EventsController extends GetxController {
           colorText: const Color(0xFFFFFFFF));
       return;
     }
+    if (selectedExhibitionName.value.isEmpty) {
+      Get.snackbar('تنبيه', 'يرجى اختيار المعرض',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFF7941D),
+          colorText: const Color(0xFFFFFFFF));
+      return;
+    }
+    if (selectedBooth.value == null) {
+      Get.snackbar('تنبيه', 'يرجى اختيار الجناح',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFF7941D),
+          colorText: const Color(0xFFFFFFFF));
+      return;
+    }
+
     isCreating.value = true;
     await Future.delayed(const Duration(seconds: 1));
 
+    final booth = selectedBooth.value!;
     final newEvent = EventModel(
       id: myEvents.length + 100,
       name: nameCtrl.text.trim(),
       type: selectedType.value,
-      boothNumber: 'B12',
-      exhibitionName: 'معرض التقنية 2026',
+      boothNumber: booth.number,
+      exhibitionName: selectedExhibitionName.value,
       date: selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
       time: selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
       maxParticipants: int.tryParse(maxCtrl.text) ?? 100,
@@ -94,7 +133,7 @@ class EventsController extends GetxController {
       status: 'upcoming',
       description: descCtrl.text.trim(),
       requiresBooking: hasBookableSeats.value,
-      place: 'جناح B12',
+      place: 'جناح ${booth.number} — ${booth.location}',
       durationDays: selectedDuration.value,
       hasBookableSeats: hasBookableSeats.value,
       totalSeats: int.tryParse(seatsCtrl.text) ?? 0,
@@ -133,6 +172,8 @@ class EventsController extends GetxController {
     selectedDuration.value = 1;
     hasBookableSeats.value = false;
     isGeneralInvite.value = true;
+    selectedExhibitionName.value = '';
+    selectedBooth.value = null;
   }
 
   // ── Book a sponsorship slot ──────────────────────────────────────────

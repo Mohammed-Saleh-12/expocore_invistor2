@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controller/Home/events_controller.dart';
 import '../../../../core/constant/appcolors.dart';
+import '../../../../data/model/booth/booth_model.dart';
 import '../../../widget/Home/custom_app_bar.dart';
 import '../../../widget/Home/custom_button.dart';
 import '../../../widget/Home/custom_text_field.dart';
@@ -21,7 +22,7 @@ class CreateEventView extends GetView<EventsController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Basic info section
+              // ── Basic info ─────────────────────────────────────────
               _sectionHeader('المعلومات الأساسية'),
               const SizedBox(height: 12),
               CustomTextField(
@@ -55,44 +56,130 @@ class CreateEventView extends GetView<EventsController> {
                     onChanged: (v) =>
                         controller.selectedType.value = v ?? '',
                   )),
+              const SizedBox(height: 20),
+
+              // ── Exhibition & Booth selection ────────────────────────
+              _sectionHeader('اختيار المعرض والجناح'),
               const SizedBox(height: 12),
-              // Location (auto = their booth)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.darkSurface
-                      : AppColors.lightSurface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                      color: AppColors.success.withOpacity(0.35)),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.location_on_outlined,
-                        color: AppColors.success, size: 18),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('الموقع',
-                              style: TextStyle(
-                                  fontSize: 11, color: AppColors.grey)),
-                          Text('جناحك B12 — معرض التقنية 2026',
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600)),
-                        ],
-                      ),
+              // Step 1: pick exhibition
+              Obx(() => DropdownButtonFormField<String>(
+                    value: controller.selectedExhibitionName.value.isEmpty
+                        ? null
+                        : controller.selectedExhibitionName.value,
+                    hint: const Text('اختر المعرض',
+                        style: TextStyle(color: AppColors.grey)),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: isDark
+                          ? AppColors.darkCard
+                          : AppColors.lightCard,
+                      prefixIcon: const Icon(Icons.store_outlined,
+                          color: AppColors.darkPrimary, size: 20),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                     ),
-                    Icon(Icons.check_circle,
-                        size: 16, color: AppColors.success),
+                    items: controller.myExhibitionNames
+                        .map((name) => DropdownMenuItem(
+                            value: name, child: Text(name)))
+                        .toList(),
+                    onChanged: (v) {
+                      controller.selectedExhibitionName.value = v ?? '';
+                      controller.selectedBooth.value = null;
+                    },
+                  )),
+              // Step 2: pick booth (shown once exhibition is chosen)
+              Obx(() {
+                if (controller.selectedExhibitionName.value.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                final booths = controller.boothsForSelectedExhibition;
+                return Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<BoothModel>(
+                      value: controller.selectedBooth.value,
+                      hint: const Text('اختر الجناح',
+                          style: TextStyle(color: AppColors.grey)),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: isDark
+                            ? AppColors.darkCard
+                            : AppColors.lightCard,
+                        prefixIcon: const Icon(Icons.grid_view,
+                            color: AppColors.darkSecondary, size: 20),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                      ),
+                      items: booths
+                          .map((b) => DropdownMenuItem<BoothModel>(
+                                value: b,
+                                child: Text(
+                                  'جناح ${b.number} — ${b.location}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (v) =>
+                          controller.selectedBooth.value = v,
+                    ),
                   ],
-                ),
-              ),
+                );
+              }),
+              // Confirmation chip when booth is chosen
+              Obx(() {
+                final booth = controller.selectedBooth.value;
+                if (booth == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: AppColors.success.withOpacity(0.35)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined,
+                            color: AppColors.success, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              const Text('الموقع المختار',
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.grey)),
+                              Text(
+                                'جناح ${booth.number} — ${controller.selectedExhibitionName.value}',
+                                style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.check_circle,
+                            size: 16, color: AppColors.success),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 20),
+
+              // ── Date & time ────────────────────────────────────────
+              _sectionHeader('التاريخ والوقت'),
               const SizedBox(height: 12),
-              // Date & time
               Row(children: [
                 Expanded(
                     child: _datePicker(context, isDark, 'التاريخ',
@@ -105,73 +192,70 @@ class CreateEventView extends GetView<EventsController> {
                         isDate: false)),
               ]),
               const SizedBox(height: 12),
-              // Duration
+              // Duration chips
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _fieldLabel('مدة الفعالية (أيام)'),
                       const SizedBox(height: 6),
                       Row(
-                        children: List.generate(
-                          5,
-                          (i) {
-                            final val = i + 1;
-                            final selected =
-                                controller.selectedDuration.value == val;
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () =>
-                                    controller.selectedDuration.value =
-                                        val,
-                                child: AnimatedContainer(
-                                  duration:
-                                      const Duration(milliseconds: 200),
-                                  margin: EdgeInsets.only(
-                                      left: i > 0 ? 6 : 0),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10),
-                                  decoration: BoxDecoration(
-                                    gradient: selected
-                                        ? const LinearGradient(colors: [
-                                            AppColors.darkPrimary,
-                                            AppColors.darkSecondary
-                                          ])
-                                        : null,
-                                    color: selected
-                                        ? null
-                                        : (isDark
-                                            ? AppColors.darkCard
-                                            : AppColors.lightCard),
-                                    borderRadius:
-                                        BorderRadius.circular(10),
-                                    border: Border.all(
+                        children: List.generate(5, (i) {
+                          final val = i + 1;
+                          final selected =
+                              controller.selectedDuration.value == val;
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () =>
+                                  controller.selectedDuration.value =
+                                      val,
+                              child: AnimatedContainer(
+                                duration:
+                                    const Duration(milliseconds: 200),
+                                margin:
+                                    EdgeInsets.only(left: i > 0 ? 6 : 0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10),
+                                decoration: BoxDecoration(
+                                  gradient: selected
+                                      ? const LinearGradient(colors: [
+                                          AppColors.darkPrimary,
+                                          AppColors.darkSecondary,
+                                        ])
+                                      : null,
+                                  color: selected
+                                      ? null
+                                      : (isDark
+                                          ? AppColors.darkCard
+                                          : AppColors.lightCard),
+                                  borderRadius:
+                                      BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: selected
+                                          ? Colors.transparent
+                                          : AppColors.grey
+                                              .withOpacity(0.2)),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$val',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
                                         color: selected
-                                            ? Colors.transparent
-                                            : AppColors.grey
-                                                .withOpacity(0.2)),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '$val',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: selected
-                                              ? Colors.white
-                                              : null),
-                                    ),
+                                            ? Colors.white
+                                            : null),
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   )),
               const SizedBox(height: 20),
 
-              // Description
+              // ── Description ────────────────────────────────────────
               _sectionHeader('نبذة عن الفعالية'),
               const SizedBox(height: 12),
               CustomTextField(
@@ -183,7 +267,7 @@ class CreateEventView extends GetView<EventsController> {
               ),
               const SizedBox(height: 20),
 
-              // Media
+              // ── Media ──────────────────────────────────────────────
               _sectionHeader('الصور والفيديو'),
               const SizedBox(height: 12),
               _uploadBox(isDark, Icons.collections_outlined,
@@ -196,7 +280,7 @@ class CreateEventView extends GetView<EventsController> {
               ),
               const SizedBox(height: 20),
 
-              // Seats / Registration
+              // ── Seats / Registration ────────────────────────────────
               _sectionHeader('التسجيل والتذاكر'),
               const SizedBox(height: 12),
               Obx(() => _registrationToggle(isDark)),
@@ -230,7 +314,7 @@ class CreateEventView extends GetView<EventsController> {
               }),
               const SizedBox(height: 24),
 
-              // Participants limit (general)
+              // Participants limit
               _fieldLabel('الحد الأقصى للمشاركين'),
               const SizedBox(height: 8),
               CustomTextField(
@@ -309,9 +393,8 @@ class CreateEventView extends GetView<EventsController> {
       },
       child: Obx(() {
         final ctrl = Get.find<EventsController>();
-        final value = isDate
-            ? ctrl.selectedDate.value
-            : ctrl.selectedTime.value;
+        final value =
+            isDate ? ctrl.selectedDate.value : ctrl.selectedTime.value;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -327,9 +410,7 @@ class CreateEventView extends GetView<EventsController> {
                   value.isNotEmpty ? value : label,
                   style: TextStyle(
                       fontSize: 13,
-                      color: value.isNotEmpty
-                          ? null
-                          : AppColors.grey),
+                      color: value.isNotEmpty ? null : AppColors.grey),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -340,6 +421,7 @@ class CreateEventView extends GetView<EventsController> {
     );
   }
 
+  // Fixed: Expanded is OUTSIDE Obx so it is a direct child of Row
   Widget _registrationToggle(bool isDark) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -357,12 +439,13 @@ class CreateEventView extends GetView<EventsController> {
         ],
       );
 
+  // Expanded is the outer widget; Obx only wraps the animated container
   Widget _toggleOption(
       bool isDark, bool value, IconData icon, String label) {
-    return Obx(() {
-      final selected = controller.hasBookableSeats.value == value;
-      return Expanded(
-        child: GestureDetector(
+    return Expanded(
+      child: Obx(() {
+        final selected = controller.hasBookableSeats.value == value;
+        return GestureDetector(
           onTap: () => controller.hasBookableSeats.value = value,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -371,7 +454,7 @@ class CreateEventView extends GetView<EventsController> {
               gradient: selected
                   ? const LinearGradient(colors: [
                       AppColors.darkPrimary,
-                      AppColors.darkSecondary
+                      AppColors.darkSecondary,
                     ])
                   : null,
               color: selected
@@ -388,8 +471,7 @@ class CreateEventView extends GetView<EventsController> {
               children: [
                 Icon(icon,
                     size: 16,
-                    color:
-                        selected ? Colors.white : AppColors.grey),
+                    color: selected ? Colors.white : AppColors.grey),
                 const SizedBox(width: 6),
                 Text(label,
                     style: TextStyle(
@@ -401,9 +483,9 @@ class CreateEventView extends GetView<EventsController> {
               ],
             ),
           ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 
   Widget _inviteTypeSelector(bool isDark) => Column(
@@ -411,57 +493,60 @@ class CreateEventView extends GetView<EventsController> {
         children: [
           _fieldLabel('نوع الدعوة'),
           const SizedBox(height: 8),
-          Obx(() => Row(
-                children: [
-                  _inviteOption(isDark, true, Icons.public_outlined,
-                      'دعوة عامة'),
-                  const SizedBox(width: 10),
-                  _inviteOption(isDark, false, Icons.app_registration_outlined,
-                      'تسجيل في الموقع'),
-                ],
-              )),
+          Row(
+            children: [
+              _inviteOption(
+                  isDark, true, Icons.public_outlined, 'دعوة عامة'),
+              const SizedBox(width: 10),
+              _inviteOption(isDark, false,
+                  Icons.app_registration_outlined, 'تسجيل في الموقع'),
+            ],
+          ),
         ],
       );
 
+  // Expanded is the outer widget; reads observable inside Obx via GestureDetector rebuild
   Widget _inviteOption(
       bool isDark, bool value, IconData icon, String label) {
-    final selected = controller.isGeneralInvite.value == value;
     return Expanded(
-      child: GestureDetector(
-        onTap: () => controller.isGeneralInvite.value = value,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.darkPrimary.withOpacity(0.15)
-                : (isDark ? AppColors.darkCard : AppColors.lightCard),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-                color: selected
-                    ? AppColors.darkPrimary
-                    : AppColors.grey.withOpacity(0.25)),
+      child: Obx(() {
+        final selected = controller.isGeneralInvite.value == value;
+        return GestureDetector(
+          onTap: () => controller.isGeneralInvite.value = value,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: selected
+                  ? AppColors.darkPrimary.withOpacity(0.15)
+                  : (isDark ? AppColors.darkCard : AppColors.lightCard),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  color: selected
+                      ? AppColors.darkPrimary
+                      : AppColors.grey.withOpacity(0.25)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon,
+                    size: 16,
+                    color:
+                        selected ? AppColors.darkPrimary : AppColors.grey),
+                const SizedBox(width: 6),
+                Text(label,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: selected
+                            ? AppColors.darkPrimary
+                            : AppColors.grey,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.normal)),
+              ],
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon,
-                  size: 16,
-                  color:
-                      selected ? AppColors.darkPrimary : AppColors.grey),
-              const SizedBox(width: 6),
-              Text(label,
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: selected
-                          ? AppColors.darkPrimary
-                          : AppColors.grey,
-                      fontWeight: selected
-                          ? FontWeight.w600
-                          : FontWeight.normal)),
-            ],
-          ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
