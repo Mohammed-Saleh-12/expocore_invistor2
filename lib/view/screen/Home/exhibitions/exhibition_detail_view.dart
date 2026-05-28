@@ -2,22 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
+import '../../../../controller/Home/events_controller.dart';
 import '../../../../data/model/exhibition/exhibition_model.dart';
+import '../../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../../widget/Home/favorite_button.dart';
 import '../../../widget/Home/custom_button.dart';
-import '../../../widget/Home/event_card.dart';
+import '../../../widget/Home/sponsor_event_card.dart';
 
 class ExhibitionDetailView extends StatefulWidget {
   const ExhibitionDetailView({super.key});
   @override
-  State<ExhibitionDetailView> createState() => _ExhibitionDetailViewState();
+  State<ExhibitionDetailView> createState() =>
+      _ExhibitionDetailViewState();
 }
 
 class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
     with SingleTickerProviderStateMixin {
   late TabController _tabs;
   late ExhibitionModel exhibition;
+  late EventsController _eventsCtrl;
 
   @override
   void initState() {
@@ -25,6 +29,7 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
     exhibition =
         Get.arguments as ExhibitionModel? ?? DummyData.exhibitions.first;
     _tabs = TabController(length: 2, vsync: this);
+    _eventsCtrl = Get.find<EventsController>();
   }
 
   @override
@@ -36,13 +41,19 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
   Color _statusColor(String s) => s == 'active'
       ? AppColors.success
       : s == 'upcoming'
-      ? AppColors.info
-      : AppColors.grey;
+          ? AppColors.info
+          : AppColors.grey;
+
   String _statusLabel(String s) => s == 'active'
       ? 'جارٍ'
       : s == 'upcoming'
-      ? 'قادم'
-      : 'منتهٍ';
+          ? 'قادم'
+          : 'منتهٍ';
+
+  List<ExhibitionSponsorEvent> get _exhibitionEvents =>
+      _eventsCtrl.exhibitionSponsorEvents
+          .where((e) => e.exhibitionId == exhibition.id)
+          .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +72,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       color: AppColors.darkSurface,
-                      child: const Icon(
-                        Icons.image,
-                        size: 64,
-                        color: AppColors.grey,
-                      ),
+                      child: const Icon(Icons.image,
+                          size: 64, color: AppColors.grey),
                     ),
                   ),
                   Container(
@@ -87,7 +95,9 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                       child: FavoriteButton(
                         isFavorite: exhibition.isFavorite,
                         onTap: () => setState(
-                          () => exhibition.isFavorite = !exhibition.isFavorite,
+                          () =>
+                              exhibition.isFavorite =
+                                  !exhibition.isFavorite,
                         ),
                       ),
                     ),
@@ -96,15 +106,14 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
               ),
             ),
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white),
               onPressed: () => Get.back(),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.share_outlined, color: Colors.white),
+                icon: const Icon(Icons.share_outlined,
+                    color: Colors.white),
                 onPressed: () {},
               ),
             ],
@@ -121,24 +130,19 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                         child: Text(
                           exhibition.name,
                           style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700),
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: _statusColor(
-                            exhibition.status,
-                          ).withOpacity(0.15),
+                          color: _statusColor(exhibition.status)
+                              .withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: _statusColor(exhibition.status),
-                          ),
+                              color: _statusColor(exhibition.status)),
                         ),
                         child: Text(
                           _statusLabel(exhibition.status),
@@ -152,49 +156,42 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _infoRow(
-                    Icons.calendar_today_outlined,
-                    '${exhibition.startDate} — ${exhibition.endDate}',
-                  ),
+                  _infoRow(Icons.calendar_today_outlined,
+                      '${exhibition.startDate} — ${exhibition.endDate}'),
                   const SizedBox(height: 6),
-                  _infoRow(
-                    Icons.location_on_outlined,
-                    '${exhibition.location}، ${exhibition.city}',
-                  ),
+                  _infoRow(Icons.location_on_outlined,
+                      '${exhibition.location}، ${exhibition.city}'),
                   const SizedBox(height: 16),
                   Text(
                     exhibition.description,
                     style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey,
-                      height: 1.7,
-                    ),
+                        fontSize: 14,
+                        color: AppColors.grey,
+                        height: 1.7),
                   ),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: exhibition.sectors
-                        .map(
-                          (s) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkPrimary.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              s,
-                              style: const TextStyle(
-                                color: AppColors.darkPrimary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                        .map((s) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.darkPrimary
+                                    .withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(8),
                               ),
-                            ),
-                          ),
-                        )
+                              child: Text(
+                                s,
+                                style: const TextStyle(
+                                  color: AppColors.darkPrimary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ))
                         .toList(),
                   ),
                   const SizedBox(height: 16),
@@ -204,16 +201,12 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                       color: AppColors.success.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.success.withOpacity(0.3),
-                      ),
+                          color: AppColors.success.withOpacity(0.3)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.grid_view,
-                          color: AppColors.success,
-                          size: 22,
-                        ),
+                        const Icon(Icons.grid_view,
+                            color: AppColors.success, size: 22),
                         const SizedBox(width: 10),
                         Text(
                           '${exhibition.availableBooths} جناح متاح للحجز',
@@ -238,10 +231,13 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                     unselectedLabelColor: AppColors.grey,
                   ),
                   SizedBox(
-                    height: 300,
+                    height: 380,
                     child: TabBarView(
                       controller: _tabs,
-                      children: [_servicesTab(), _eventsTab()],
+                      children: [
+                        _servicesTab(),
+                        _eventsTab(context),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -259,46 +255,249 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
   }
 
   Widget _infoRow(IconData icon, String text) => Row(
-    children: [
-      Icon(icon, size: 16, color: AppColors.grey),
-      const SizedBox(width: 6),
-      Text(text, style: const TextStyle(fontSize: 13, color: AppColors.grey)),
-    ],
-  );
+        children: [
+          Icon(icon, size: 16, color: AppColors.grey),
+          const SizedBox(width: 6),
+          Text(text,
+              style: const TextStyle(
+                  fontSize: 13, color: AppColors.grey)),
+        ],
+      );
 
   Widget _servicesTab() => ListView(
-    padding: const EdgeInsets.symmetric(vertical: 12),
-    children: [
-      _serviceItem(Icons.wifi, 'واي فاي مجاني'),
-      _serviceItem(Icons.local_parking, 'موقف سيارات مجاني'),
-      _serviceItem(Icons.security, 'أمن وحراسة على مدار الساعة'),
-      _serviceItem(Icons.restaurant, 'منطقة طعام ومقاهي'),
-      _serviceItem(Icons.settings_input_component, 'دعم تقني وكهربائي'),
-      _serviceItem(Icons.person, 'استقبال وخدمة عملاء'),
-    ],
-  );
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        children: [
+          _serviceItem(Icons.wifi, 'واي فاي مجاني'),
+          _serviceItem(Icons.local_parking, 'موقف سيارات مجاني'),
+          _serviceItem(Icons.security, 'أمن وحراسة على مدار الساعة'),
+          _serviceItem(Icons.restaurant, 'منطقة طعام ومقاهي'),
+          _serviceItem(Icons.settings_input_component,
+              'دعم تقني وكهربائي'),
+          _serviceItem(Icons.person, 'استقبال وخدمة عملاء'),
+        ],
+      );
 
   Widget _serviceItem(IconData icon, String label) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      children: [
-        Icon(icon, size: 18, color: AppColors.darkPrimary),
-        const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 13)),
-      ],
-    ),
-  );
-
-  Widget _eventsTab() => ListView.builder(
-    itemCount: DummyData.events.length,
-    itemBuilder: (_, i) {
-      final e = DummyData.events[i];
-      return EventCard(
-        event: e,
-        onTap: () {},
-        showFavorite: true,
-        onFavorite: () {},
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: AppColors.darkPrimary),
+            const SizedBox(width: 10),
+            Text(label, style: const TextStyle(fontSize: 13)),
+          ],
+        ),
       );
-    },
-  );
+
+  Widget _eventsTab(BuildContext context) {
+    final events = _exhibitionEvents;
+    if (events.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Text(
+            'لا توجد فعاليات إعلانية لهذا المعرض حالياً',
+            style: TextStyle(color: AppColors.grey, fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 8),
+      itemCount: events.length,
+      itemBuilder: (_, i) {
+        final ev = events[i];
+        return SponsorEventCard(
+          event: ev,
+          onTap: () =>
+              _showSponsorshipBottomSheet(context, ev),
+          onFavorite: () =>
+              _eventsCtrl.toggleSponsorFavorite(ev),
+        );
+      },
+    );
+  }
+
+  void _showSponsorshipBottomSheet(
+      BuildContext context, ExhibitionSponsorEvent event) {
+    _eventsCtrl.selectedSponsorDuration.value = null;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SponsorSheetFromDetail(event: event),
+    );
+  }
+}
+
+// Lightweight bottom sheet used from exhibition detail
+class _SponsorSheetFromDetail extends StatefulWidget {
+  final ExhibitionSponsorEvent event;
+  const _SponsorSheetFromDetail({required this.event});
+
+  @override
+  State<_SponsorSheetFromDetail> createState() =>
+      _SponsorSheetFromDetailState();
+}
+
+class _SponsorSheetFromDetailState
+    extends State<_SponsorSheetFromDetail> {
+  final EventsController ctrl = Get.find();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      maxChildSize: 0.95,
+      builder: (_, scrollCtrl) => Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCard : Colors.white,
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.grey.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(widget.event.name,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w800)),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                  '${widget.event.type} • ${widget.event.date} • ${widget.event.place}',
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.grey)),
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text('اختر مدة المشاركة',
+                    style: TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w700)),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView(
+                controller: scrollCtrl,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  ...widget.event.durationOptions.map((opt) {
+                    return Obx(() {
+                      final selected =
+                          ctrl.selectedSponsorDuration.value == opt;
+                      return GestureDetector(
+                        onTap: () =>
+                            ctrl.selectedSponsorDuration.value = opt,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            gradient: selected
+                                ? const LinearGradient(colors: [
+                                    AppColors.darkPrimary,
+                                    AppColors.darkSecondary
+                                  ])
+                                : null,
+                            color: selected
+                                ? null
+                                : (isDark
+                                    ? AppColors.darkSurface
+                                    : AppColors.lightSurface),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                  selected
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  color: selected
+                                      ? Colors.white
+                                      : AppColors.grey),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(opt.label,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: selected
+                                            ? Colors.white
+                                            : null)),
+                              ),
+                              Text('${opt.price.toStringAsFixed(0)} ﷼',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.success)),
+                            ],
+                          ),
+                        ),
+                      );
+                    });
+                  }),
+                  const SizedBox(height: 16),
+                  Obx(() => ElevatedButton(
+                        onPressed: () {
+                          if (ctrl.selectedSponsorDuration.value ==
+                              null) {
+                            Get.snackbar('تنبيه',
+                                'يرجى اختيار مدة المشاركة',
+                                snackPosition: SnackPosition.BOTTOM);
+                            return;
+                          }
+                          Get.back();
+                          Get.toNamed(AppRoutes.EXHIBITION_EVENTS);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: AppColors.darkPrimary,
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(12)),
+                        ),
+                        child: ctrl.isBooking.value
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2))
+                            : const Text('متابعة الحجز',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15)),
+                      )),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
