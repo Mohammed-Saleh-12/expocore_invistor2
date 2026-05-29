@@ -6,10 +6,10 @@ import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../core/constant/routes.dart';
 
 class BoothMapController extends GetxController {
-  final mapData        = Rxn<ExhibitionMapModel>();
-  final selectedBooth  = Rxn<MapBoothModel>();
-  final isLoading      = true.obs;
-  final allBooths      = <MapBoothModel>[].obs;
+  final mapData = Rxn<ExhibitionMapModel>();
+  final selectedBooth = Rxn<MapBoothModel>();
+  final isLoading = true.obs;
+  final allBooths = <MapBoothModel>[].obs;
 
   final transformationController = TransformationController();
 
@@ -29,9 +29,7 @@ class BoothMapController extends GetxController {
     isLoading.value = true;
     await Future.delayed(const Duration(milliseconds: 100));
     mapData.value = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
-    allBooths.value = mapData.value!.halls
-        .expand((h) => h.booths)
-        .toList();
+    allBooths.value = mapData.value!.halls.expand((h) => h.booths).toList();
     isLoading.value = false;
   }
 
@@ -57,7 +55,8 @@ class BoothMapController extends GetxController {
       id: booth.id,
       number: booth.number,
       exhibitionName: booth.hallName,
-      imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
       area: booth.area,
       status: 'pending',
       price: booth.price,
@@ -67,10 +66,10 @@ class BoothMapController extends GetxController {
       isFavorite: false,
     );
     Get.toNamed(AppRoutes.BOOKING_REQUEST, arguments: boothModel);
+    
   }
 
   MapHallModel? hallForBooth(MapBoothModel booth) {
-    return mapData.value?.halls
-        .firstWhereOrNull((h) => h.id == booth.hallId);
+    return mapData.value?.halls.firstWhereOrNull((h) => h.id == booth.hallId);
   }
 }

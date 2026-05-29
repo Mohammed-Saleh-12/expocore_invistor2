@@ -615,8 +615,6 @@ class MyEventDetailView extends StatelessWidget {
 
   Widget _ticketStat(
       BuildContext context, String label, String value, Color color) {
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),

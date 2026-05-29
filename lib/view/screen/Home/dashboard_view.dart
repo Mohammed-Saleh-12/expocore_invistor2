@@ -19,7 +19,7 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final notifCtrl  = Get.find<NotificationsController>();
+    final notifCtrl = Get.find<NotificationsController>();
     final eventsCtrl = Get.find<EventsController>();
     return Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
@@ -31,10 +31,9 @@ class DashboardView extends GetView<DashboardController> {
             slivers: [
               SliverAppBar(
                 pinned: true,
-                backgroundColor:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkBg
-                        : AppColors.lightBg,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkBg
+                    : AppColors.lightBg,
                 elevation: 0,
                 automaticallyImplyLeading: false,
                 title: Row(
@@ -77,8 +76,7 @@ class DashboardView extends GetView<DashboardController> {
                       () => Stack(
                         children: [
                           IconButton(
-                            icon: const Icon(
-                                Icons.notifications_outlined),
+                            icon: const Icon(Icons.notifications_outlined),
                             onPressed: () =>
                                 Get.toNamed(AppRoutes.NOTIFICATIONS),
                           ),
@@ -148,30 +146,38 @@ class DashboardView extends GetView<DashboardController> {
                     const SizedBox(height: 8),
                     // Upcoming sponsor events from exhibitions investor participates in
                     _sectionHeader(
-                        'فعاليات المعارض القادمة', AppRoutes.EXHIBITION_EVENTS),
+                      'فعاليات المعارض القادمة',
+                      AppRoutes.EXHIBITION_EVENTS,
+                    ),
                     Obx(() {
                       final list = eventsCtrl.myExhibitionSponsorEvents;
                       if (list.isEmpty) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           child: Text(
                             'لا توجد فعاليات في معارضك المشترك بها',
                             style: const TextStyle(
-                                fontSize: 13, color: AppColors.grey),
+                              fontSize: 13,
+                              color: AppColors.grey,
+                            ),
                           ),
                         );
                       }
                       return Column(
                         children: list
                             .take(3)
-                            .map((ev) => SponsorEventCard(
-                                  event: ev,
-                                  onTap: () => _showSponsorSheet(
-                                      context, ev, eventsCtrl),
-                                  onFavorite: () =>
-                                      eventsCtrl.toggleSponsorFavorite(ev),
-                                ))
+                            .map(
+                              (ev) => SponsorEventCard(
+                                event: ev,
+                                onTap: () =>
+                                    _showSponsorSheet(context, ev, eventsCtrl),
+                                onFavorite: () =>
+                                    eventsCtrl.toggleSponsorFavorite(ev),
+                              ),
+                            )
                             .toList(),
                       );
                     }),
@@ -186,8 +192,11 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  void _showSponsorSheet(BuildContext context, ExhibitionSponsorEvent ev,
-      EventsController ctrl) {
+  void _showSponsorSheet(
+    BuildContext context,
+    ExhibitionSponsorEvent ev,
+    EventsController ctrl,
+  ) {
     ctrl.selectedSponsorDuration.value = null;
     showModalBottomSheet(
       context: context,
@@ -198,106 +207,85 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _performanceCard(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                const Text(
-                  'ملخص الأداء',
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-                const Spacer(),
-                Obx(
-                  () => DropdownButton<String>(
-                    value: controller.selectedPeriod.value,
-                    underline: const SizedBox(),
-                    icon: const Icon(Icons.keyboard_arrow_down,
-                        size: 18),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.darkPrimary,
-                    ),
-                    items: controller.periods
-                        .map((p) => DropdownMenuItem(
-                            value: p, child: Text(p)))
-                        .toList(),
-                    onChanged: (v) => controller.changePeriod(
-                        v ?? controller.selectedPeriod.value),
-                  ),
-                ),
-              ],
+            const Text(
+              'ملخص الأداء',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
+            const Spacer(),
             Obx(
-              () => GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.4,
-                children: [
-                  StatsCard(
-                    label: 'إجمالي الحجوزات',
-                    value: '${controller.totalBookings}',
-                    icon: Icons.bookmark_outlined,
-                    iconColor: AppColors.darkPrimary,
-                    trend: 8.5,
-                  ),
-                  StatsCard(
-                    label: 'الأجنحة النشطة',
-                    value: '${controller.activeBooths}',
-                    icon: Icons.grid_view,
-                    iconColor: AppColors.success,
-                    trend: 12.0,
-                  ),
-                  StatsCard(
-                    label: 'الفعاليات المنشورة',
-                    value: '${controller.publishedEvents}',
-                    icon: Icons.event,
-                    iconColor: AppColors.darkSecondary,
-                    trend: 22.1,
-                  ),
-                  StatsCard(
-                    label: 'إجمالي التفاعل',
-                    value: _fmt(controller.totalEngagement.value),
-                    icon: Icons.trending_up,
-                    iconColor: AppColors.orange,
-                    trend: 15.7,
-                  ),
-                ],
+              () => DropdownButton<String>(
+                value: controller.selectedPeriod.value,
+                underline: const SizedBox(),
+                icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.darkPrimary,
+                ),
+                items: controller.periods
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .toList(),
+                onChanged: (v) => controller.changePeriod(
+                  v ?? controller.selectedPeriod.value,
+                ),
               ),
             ),
           ],
         ),
-      );
+        const SizedBox(height: 12),
+        Obx(
+          () => GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 1.4,
+            children: [
+              StatsCard(
+                label: 'إجمالي الحجوزات',
+                value: '${controller.totalBookings}',
+                icon: Icons.bookmark_outlined,
+                iconColor: AppColors.darkPrimary,
+                trend: 8.5,
+              ),
+              StatsCard(
+                label: 'الأجنحة النشطة',
+                value: '${controller.activeBooths}',
+                icon: Icons.grid_view,
+                iconColor: AppColors.success,
+                trend: 12.0,
+              ),
+              StatsCard(
+                label: 'الفعاليات المنشورة',
+                value: '${controller.publishedEvents}',
+                icon: Icons.event,
+                iconColor: AppColors.darkSecondary,
+                trend: 22.1,
+              ),
+              StatsCard(
+                label: 'إجمالي التفاعل',
+                value: _fmt(controller.totalEngagement.value),
+                icon: Icons.trending_up,
+                iconColor: AppColors.orange,
+                trend: 15.7,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 
-  String _fmt(int v) =>
-      v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}K' : '$v';
+  String _fmt(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}K' : '$v';
 
   Widget _quickActions(BuildContext context) {
     final actions = [
-      {
-        'icon': Icons.store,
-        'label': 'تصفح معارض',
-        'route': AppRoutes.EXHIBITIONS,
-        'color': AppColors.darkPrimary,
-      },
-      {
-        'icon': Icons.grid_view,
-        'label': 'حجز جناح',
-        'route': AppRoutes.BOOTHS,
-        'color': AppColors.darkSecondary,
-      },
-      {
-        'icon': Icons.event_note,
-        'label': 'فعالياتي',
-        'route': AppRoutes.EVENTS,
-        'color': AppColors.info,
-      },
       {
         'icon': Icons.add_circle_outline,
         'label': 'نشر فعالية',
@@ -305,17 +293,19 @@ class DashboardView extends GetView<DashboardController> {
         'color': AppColors.success,
       },
       {
+        'icon': Icons.event_note,
+        'label': 'فعالياتي',
+        'route': AppRoutes.EVENTS,
+        'color': AppColors.info,
+      },
+
+      {
         'icon': Icons.campaign_outlined,
-        'label': 'فعالياتي الإعلانية',
+        'label': ' رعاياتي',
         'route': AppRoutes.MY_SPONSORSHIPS,
         'color': AppColors.orange,
       },
-      {
-        'icon': Icons.favorite,
-        'label': 'مفضلاتي',
-        'route': AppRoutes.FAVORITES,
-        'color': AppColors.darkAccent,
-      },
+
       {
         'icon': Icons.bar_chart,
         'label': 'التقارير',
@@ -336,8 +326,7 @@ class DashboardView extends GetView<DashboardController> {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'الإجراءات السريعة',
-            style:
-                TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ),
         const SizedBox(height: 12),
@@ -348,12 +337,10 @@ class DashboardView extends GetView<DashboardController> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: actions.length,
             itemBuilder: (_, i) => GestureDetector(
-              onTap: () =>
-                  Get.toNamed(actions[i]['route'] as String),
+              onTap: () => Get.toNamed(actions[i]['route'] as String),
               child: Container(
                 width: 72,
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 4),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -361,10 +348,8 @@ class DashboardView extends GetView<DashboardController> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: (actions[i]['color'] as Color)
-                            .withOpacity(0.15),
-                        borderRadius:
-                            BorderRadius.circular(14),
+                        color: (actions[i]['color'] as Color).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
                         actions[i]['icon'] as IconData,
@@ -390,28 +375,26 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   Widget _sectionHeader(String title, String route) => Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-            const Spacer(),
-            GestureDetector(
-              onTap: () => Get.toNamed(route),
-              child: const Text(
-                'عرض الكل',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.darkPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    child: Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-      );
+        const Spacer(),
+        GestureDetector(
+          onTap: () => Get.toNamed(route),
+          child: const Text(
+            'عرض الكل',
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.darkPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

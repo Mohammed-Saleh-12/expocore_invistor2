@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final Color? gradient;
 
-  const CustomButton({
+  const CustomButton( {
     super.key,
     required this.label,
     this.onTap,

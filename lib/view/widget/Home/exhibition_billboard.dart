@@ -79,7 +79,6 @@ class _ExhibitionBillboardState extends State<ExhibitionBillboard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         const SizedBox(height: 10),
         Stack(
           alignment: Alignment.center,

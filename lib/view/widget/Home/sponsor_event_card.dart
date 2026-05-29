@@ -16,12 +16,17 @@ class SponsorEventCard extends StatelessWidget {
 
   IconData _typeIcon(String type) {
     switch (type) {
-      case 'مؤتمر':      return Icons.record_voice_over_outlined;
-      case 'ندوة':        return Icons.people_outline;
+      case 'مؤتمر':
+        return Icons.record_voice_over_outlined;
+      case 'ندوة':
+        return Icons.people_outline;
       case 'حفل افتتاح':
-      case 'حفل ختامي':  return Icons.celebration_outlined;
-      case 'مسابقة':      return Icons.emoji_events_outlined;
-      default:            return Icons.event_outlined;
+      case 'حفل ختامي':
+        return Icons.celebration_outlined;
+      case 'مسابقة':
+        return Icons.emoji_events_outlined;
+      default:
+        return Icons.event_outlined;
     }
   }
 
@@ -42,9 +47,10 @@ class SponsorEventCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 3))
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: Column(
@@ -52,8 +58,9 @@ class SponsorEventCard extends StatelessWidget {
           children: [
             // Image header
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: Stack(
                 children: [
                   Image.network(
@@ -62,14 +69,17 @@ class SponsorEventCard extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
-                      height: 100,
+                      height: 150,
                       color: AppColors.darkSurface,
-                      child: const Icon(Icons.image,
-                          size: 40, color: AppColors.grey),
+                      child: const Icon(
+                        Icons.image,
+                        size: 40,
+                        color: AppColors.grey,
+                      ),
                     ),
                   ),
                   Container(
-                    height: 100,
+                    height: 150,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.transparent, Color(0x99000000)],
@@ -83,20 +93,26 @@ class SponsorEventCard extends StatelessWidget {
                     right: 10,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                            colors: [
-                              AppColors.darkSecondary,
-                              AppColors.darkAccent
-                            ]),
+                          colors: [
+                            AppColors.darkSecondary,
+                            AppColors.darkAccent,
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('فرصة إعلانية',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700)),
+                      child: const Text(
+                        'فرصة إعلانية',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -116,24 +132,33 @@ class SponsorEventCard extends StatelessWidget {
                           gradient: AppColors.darkCTAGradient,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(_typeIcon(event.type),
-                            color: Colors.white, size: 18),
+                        child: Icon(
+                          _typeIcon(event.type),
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(event.name,
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis),
                             Text(
-                                '${event.type} • ${event.exhibitionName}',
-                                style: const TextStyle(
-                                    fontSize: 11, color: AppColors.grey)),
+                              event.name,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              '${event.type} • ${event.exhibitionName}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.grey,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -153,56 +178,72 @@ class SponsorEventCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  _infoRow(Icons.calendar_today_outlined,
-                      '${event.date}   ${event.startTime} — ${event.endTime}'),
+                  _infoRow(
+                    Icons.calendar_today_outlined,
+                    '${event.date}   ${event.startTime} — ${event.endTime}',
+                  ),
                   const SizedBox(height: 4),
                   _infoRow(Icons.location_on_outlined, event.place),
                   const SizedBox(height: 4),
-                  _infoRow(Icons.schedule_outlined,
-                      'مدة الإدراج: ${event.listingDays} أيام'),
+                  _infoRow(
+                    Icons.schedule_outlined,
+                    'مدة الإدراج: ${event.listingDays} أيام',
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.success.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                              color: AppColors.success.withOpacity(0.4)),
+                            color: AppColors.success.withOpacity(0.4),
+                          ),
                         ),
                         child: Text(
                           'من ${minPrice.toStringAsFixed(0)} ﷼',
                           style: const TextStyle(
-                              color: AppColors.success,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700),
+                            color: AppColors.success,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '${event.durationOptions.length} خيارات للمشاركة',
                         style: const TextStyle(
-                            fontSize: 11, color: AppColors.grey),
+                          fontSize: 11,
+                          color: AppColors.grey,
+                        ),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                              colors: [
-                                AppColors.darkPrimary,
-                                AppColors.darkSecondary
-                              ]),
+                            colors: [
+                              AppColors.darkPrimary,
+                              AppColors.darkSecondary,
+                            ],
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text('احجز الآن',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700)),
+                        child: const Text(
+                          'احجز الآن',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -216,15 +257,17 @@ class SponsorEventCard extends StatelessWidget {
   }
 
   Widget _infoRow(IconData icon, String text) => Row(
-        children: [
-          Icon(icon, size: 13, color: AppColors.grey),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Text(text,
-                style: const TextStyle(fontSize: 11, color: AppColors.grey),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 13, color: AppColors.grey),
+      const SizedBox(width: 5),
+      Expanded(
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 11, color: AppColors.grey),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ],
+  );
 }

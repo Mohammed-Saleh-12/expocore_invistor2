@@ -283,7 +283,7 @@ class CreateEventView extends GetView<EventsController> {
               // ── Seats / Registration ────────────────────────────────
               _sectionHeader('التسجيل والتذاكر'),
               const SizedBox(height: 12),
-              Obx(() => _registrationToggle(isDark)),
+              _registrationToggle(isDark),
               const SizedBox(height: 12),
               Obx(() {
                 if (!controller.hasBookableSeats.value) {
@@ -421,7 +421,6 @@ class CreateEventView extends GetView<EventsController> {
     );
   }
 
-  // Fixed: Expanded is OUTSIDE Obx so it is a direct child of Row
   Widget _registrationToggle(bool isDark) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -439,7 +438,6 @@ class CreateEventView extends GetView<EventsController> {
         ],
       );
 
-  // Expanded is the outer widget; Obx only wraps the animated container
   Widget _toggleOption(
       bool isDark, bool value, IconData icon, String label) {
     return Expanded(
@@ -491,65 +489,9 @@ class CreateEventView extends GetView<EventsController> {
   Widget _inviteTypeSelector(bool isDark) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _fieldLabel('نوع الدعوة'),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _inviteOption(
-                  isDark, true, Icons.public_outlined, 'دعوة عامة'),
-              const SizedBox(width: 10),
-              _inviteOption(isDark, false,
-                  Icons.app_registration_outlined, 'تسجيل في الموقع'),
-            ],
-          ),
+          
         ],
       );
-
-  // Expanded is the outer widget; reads observable inside Obx via GestureDetector rebuild
-  Widget _inviteOption(
-      bool isDark, bool value, IconData icon, String label) {
-    return Expanded(
-      child: Obx(() {
-        final selected = controller.isGeneralInvite.value == value;
-        return GestureDetector(
-          onTap: () => controller.isGeneralInvite.value = value,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              color: selected
-                  ? AppColors.darkPrimary.withOpacity(0.15)
-                  : (isDark ? AppColors.darkCard : AppColors.lightCard),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: selected
-                      ? AppColors.darkPrimary
-                      : AppColors.grey.withOpacity(0.25)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon,
-                    size: 16,
-                    color:
-                        selected ? AppColors.darkPrimary : AppColors.grey),
-                const SizedBox(width: 6),
-                Text(label,
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: selected
-                            ? AppColors.darkPrimary
-                            : AppColors.grey,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.normal)),
-              ],
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
   Widget _uploadBox(bool isDark, IconData icon, String label) =>
       GestureDetector(
         onTap: () {},

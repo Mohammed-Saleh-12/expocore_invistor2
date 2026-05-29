@@ -100,9 +100,9 @@ class MessagesView extends GetView<MessagesController> {
     padding: EdgeInsets.only(
       left: 12,
       right: 12,
+      top: 6,
       bottom: MediaQuery.of(context).viewInsets.top + 8,
     ),
-    color: isDark ? AppColors.darkCard : AppColors.lightCard,
     child: Row(
       children: [
         Expanded(
@@ -111,10 +111,7 @@ class MessagesView extends GetView<MessagesController> {
             textDirection: TextDirection.rtl,
             decoration: InputDecoration(
               hintText: 'اكتب رسالتك...',
-              hintStyle: TextStyle(
-                color: AppColors.grey.withOpacity(0.7),
-                fontSize: 14,
-              ),
+              hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
               filled: true,
               fillColor: isDark
                   ? AppColors.darkSurface
@@ -137,7 +134,11 @@ class MessagesView extends GetView<MessagesController> {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              gradient: AppColors.darkCTAGradient,
+              gradient: LinearGradient(
+                colors: [Color(0xFFFF1592), Color(0xFF7A1FFF)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -177,7 +178,13 @@ class _Bubble extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          gradient: isMe ? AppColors.darkCTAGradient : null,
+          gradient: isMe
+              ? LinearGradient(
+                  colors: [Color(0xFFFF1592), Color(0xFF7A1FFF)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : null,
           color: isMe
               ? null
               : (isDark ? AppColors.darkCard : AppColors.lightCard),

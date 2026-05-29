@@ -301,8 +301,6 @@ class MySponsorshipDetailView extends StatelessWidget {
 
   Widget _analyticsTile(BuildContext context, String label, String value,
       IconData icon, Color color) {
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),

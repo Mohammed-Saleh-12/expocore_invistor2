@@ -13,29 +13,10 @@ class BoothsView extends GetView<BoothController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'أجنحتي',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-        ),
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkBg
-            : AppColors.lightBg,
-        elevation: 0,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
-        backgroundColor: AppColors.darkPrimary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'حجز جناح جديد',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
-      ),
       bottomNavigationBar: const BottomNavCustom(),
       body: Column(
         children: [
+          SizedBox(height: 36),
           Obx(
             () => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -79,12 +60,13 @@ class BoothsView extends GetView<BoothController> {
           ),
           Expanded(
             child: Obx(() {
-              if (controller.filtered.isEmpty)
+              if (controller.filtered.isEmpty) {
                 return EmptyWidget(
                   message: 'لا توجد أجنحة',
                   buttonLabel: 'حجز جناح',
-                  onAction: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
+                  onAction: () => Get.toNamed(AppRoutes.EXHIBITIONS),
                 );
+              }
               return ListView.builder(
                 itemCount: controller.filtered.length,
                 itemBuilder: (_, i) {

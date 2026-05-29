@@ -14,20 +14,10 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'المعارض',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-        ),
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkBg
-            : AppColors.lightBg,
-        elevation: 0,
-      ),
       bottomNavigationBar: const BottomNavCustom(),
       body: Column(
         children: [
+          SizedBox(height: 36),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Column(
@@ -100,16 +90,16 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) return const LoadingWidget();
-              if (controller.filtered.isEmpty)
+              if (controller.filtered.isEmpty) {
                 return EmptyWidget(
                   message: 'لا توجد معارض',
                   buttonLabel: 'تحديث',
                   onAction: controller.refresh,
                 );
+              }
               return RefreshIndicator(
                 onRefresh: controller.refresh,
                 child: ListView.builder(
