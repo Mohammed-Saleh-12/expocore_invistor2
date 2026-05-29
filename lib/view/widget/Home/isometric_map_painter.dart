@@ -105,16 +105,21 @@ class IsometricMapPainter extends CustomPainter {
 
     Color topColor, leftColor, rightColor, outlineColor;
 
-    if (booth.isBooked) {
-      topColor    = isDark ? const Color(0xFF3A3650) : const Color(0xFFCCCCCC);
-      leftColor   = isDark ? const Color(0xFF2A2640) : const Color(0xFFBBBBBB);
-      rightColor  = isDark ? const Color(0xFF222035) : const Color(0xFFAAAAAA);
-      outlineColor = Colors.transparent;
+    if (isSelected && booth.isBooked) {
+      topColor    = isDark ? const Color(0xFF52407A) : const Color(0xFFDDD0F5);
+      leftColor   = isDark ? const Color(0xFF3D2E60) : const Color(0xFFCCBCEE);
+      rightColor  = isDark ? const Color(0xFF2E2250) : const Color(0xFFBBADE0);
+      outlineColor = const Color(0xFF9B59F5);
     } else if (isSelected) {
       topColor    = const Color(0xFF9B59F5);
       leftColor   = const Color(0xFF7A1FFF);
       rightColor  = const Color(0xFF5D0FCC);
       outlineColor = const Color(0xFFFFD700);
+    } else if (booth.isBooked) {
+      topColor    = isDark ? const Color(0xFF3A3650) : const Color(0xFFCCCCCC);
+      leftColor   = isDark ? const Color(0xFF2A2640) : const Color(0xFFBBBBBB);
+      rightColor  = isDark ? const Color(0xFF222035) : const Color(0xFFAAAAAA);
+      outlineColor = Colors.transparent;
     } else {
       topColor    = hallColor.withOpacity(0.85);
       leftColor   = _darken(hallColor, 0.25);
@@ -177,12 +182,39 @@ class IsometricMapPainter extends CustomPainter {
       canvas.drawPath(topFace,   edgePaint);
     }
 
-    if (!booth.isBooked || isSelected) {
+    if (booth.isBooked && !isSelected) {
+      final center = _iso(c + bw / 2, r + bd / 2, h, origin);
+      _drawBookedBoothLabel(canvas, booth.number, center);
+    } else if (!booth.isBooked || isSelected) {
       final center = _iso(c + bw / 2, r + bd / 2, h, origin);
       _drawBoothLabel(canvas, booth.number, center, isSelected);
     }
 
     hitAreas.add(BoothHitArea(booth, topFace));
+  }
+
+  void _drawBookedBoothLabel(Canvas canvas, String text, Offset pos) {
+    final tp = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.white.withOpacity(0.55),
+          fontSize: 7.5,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
+
+    final iconPainter = TextPainter(
+      text: const TextSpan(
+        text: '🏢',
+        style: TextStyle(fontSize: 8),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    iconPainter.paint(canvas, pos + Offset(-iconPainter.width / 2, tp.height / 2 + 1));
   }
 
   void _drawBoothLabel(Canvas canvas, String text, Offset pos, bool selected) {

@@ -12,7 +12,7 @@ class BoothMap3dView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<BoothMapController>();
+    final ctrl  = Get.find<BoothMapController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -26,10 +26,8 @@ class BoothMap3dView extends StatelessWidget {
               children: [
                 CircularProgressIndicator(color: AppColors.darkPrimary),
                 SizedBox(height: 16),
-                Text(
-                  'جارٍ تحميل خريطة المعرض...',
-                  style: TextStyle(color: AppColors.grey),
-                ),
+                Text('جارٍ تحميل خريطة المعرض...',
+                    style: TextStyle(color: AppColors.grey)),
               ],
             ),
           );
@@ -46,11 +44,14 @@ class BoothMap3dView extends StatelessWidget {
             Expanded(
               child: _MapCanvas(ctrl: ctrl, mapModel: mapModel, isDark: isDark),
             ),
-            Obx(
-              () => ctrl.selectedBooth.value != null
-                  ? _BoothInfoPanel(ctrl: ctrl, isDark: isDark)
-                  : const SizedBox.shrink(),
-            ),
+            Obx(() {
+              final booth = ctrl.selectedBooth.value;
+              if (booth == null) return const SizedBox.shrink();
+              if (booth.isBooked) {
+                return _BookedCompanyPanel(ctrl: ctrl, isDark: isDark);
+              }
+              return _BoothInfoPanel(ctrl: ctrl, isDark: isDark);
+            }),
           ],
         );
       }),
@@ -58,16 +59,14 @@ class BoothMap3dView extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────── Header ──────────────────────────────
+
 class _MapHeader extends StatelessWidget {
   final dynamic mapModel;
   final BoothMapController ctrl;
   final bool isDark;
 
-  const _MapHeader({
-    required this.mapModel,
-    required this.ctrl,
-    required this.isDark,
-  });
+  const _MapHeader({required this.mapModel, required this.ctrl, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +75,7 @@ class _MapHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : AppColors.lightCard,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -100,11 +95,8 @@ class _MapHeader extends StatelessWidget {
               ),
               IconButton(
                 onPressed: ctrl.resetView,
-                icon: Icon(
-                  Icons.center_focus_strong_rounded,
-                  color: AppColors.darkPrimary,
-                  size: 22,
-                ),
+                icon: const Icon(Icons.center_focus_strong_rounded,
+                    color: AppColors.darkPrimary, size: 22),
                 tooltip: 'إعادة ضبط العرض',
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -129,7 +121,7 @@ class _LegendRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _legendItem(AppColors.info, 'متاح', isDark),
-        _legendItem(AppColors.grey.withOpacity(0.5), 'محجوز', isDark),
+        _legendItem(const Color(0xFF3A3650), 'محجوز - اضغط للعرض', isDark),
         _legendItem(AppColors.darkPrimary, 'مختار', isDark),
         _legendItem(const Color(0xFF4CAF50), 'مدخل', isDark),
       ],
@@ -139,35 +131,24 @@ class _LegendRow extends StatelessWidget {
   Widget _legendItem(Color c, String label, bool isDark) => Row(
     children: [
       Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          color: c,
-          borderRadius: BorderRadius.circular(3),
-        ),
+        width: 12, height: 12,
+        decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(3)),
       ),
       const SizedBox(width: 5),
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          color: isDark ? Colors.white70 : AppColors.grey,
-        ),
-      ),
+      Text(label,
+          style: TextStyle(fontSize: 10, color: isDark ? Colors.white70 : AppColors.grey)),
     ],
   );
 }
+
+// ─────────────────────────────────────── Canvas ──────────────────────────────
 
 class _MapCanvas extends StatefulWidget {
   final BoothMapController ctrl;
   final ExhibitionMapModel mapModel;
   final bool isDark;
 
-  const _MapCanvas({
-    required this.ctrl,
-    required this.mapModel,
-    required this.isDark,
-  });
+  const _MapCanvas({required this.ctrl, required this.mapModel, required this.isDark});
 
   @override
   State<_MapCanvas> createState() => _MapCanvasState();
@@ -205,7 +186,7 @@ class _MapCanvasState extends State<_MapCanvas> {
   }
 
   void _handleTap(Offset tapInWidget) {
-    final matrix = widget.ctrl.transformationController.value;
+    final matrix  = widget.ctrl.transformationController.value;
     final inverted = Matrix4.inverted(matrix);
     final tapInCanvas = MatrixUtils.transformPoint(inverted, tapInWidget);
 
@@ -219,6 +200,8 @@ class _MapCanvasState extends State<_MapCanvas> {
   }
 }
 
+// ─────────────────────────── Available Booth Panel ───────────────────────────
+
 class _BoothInfoPanel extends StatelessWidget {
   final BoothMapController ctrl;
   final bool isDark;
@@ -228,7 +211,7 @@ class _BoothInfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final booth = ctrl.selectedBooth.value!;
-    final hall = ctrl.hallForBooth(booth);
+    final hall  = ctrl.hallForBooth(booth);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 280),
@@ -237,11 +220,7 @@ class _BoothInfoPanel extends StatelessWidget {
         color: isDark ? AppColors.darkCard : AppColors.lightCard,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.18),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 20, offset: const Offset(0, -4)),
         ],
       ),
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
@@ -251,8 +230,7 @@ class _BoothInfoPanel extends StatelessWidget {
         children: [
           Center(
             child: Container(
-              width: 40,
-              height: 4,
+              width: 40, height: 4,
               decoration: BoxDecoration(
                 color: isDark ? Colors.white24 : Colors.black12,
                 borderRadius: BorderRadius.circular(2),
@@ -263,20 +241,14 @@ class _BoothInfoPanel extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 42,
-                height: 42,
+                width: 42, height: 42,
                 decoration: BoxDecoration(
-                  color:
-                      hall?.color.withOpacity(0.15) ??
-                      AppColors.darkPrimary.withOpacity(0.15),
+                  color: (hall?.color ?? AppColors.darkPrimary).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.store_mall_directory_rounded,
-                    color: hall?.color ?? AppColors.darkPrimary,
-                    size: 22,
-                  ),
+                  child: Icon(Icons.store_mall_directory_rounded,
+                      color: hall?.color ?? AppColors.darkPrimary, size: 22),
                 ),
               ),
               const SizedBox(width: 12),
@@ -284,21 +256,11 @@ class _BoothInfoPanel extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'الجناح ${booth.number}',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      booth.hallName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: hall?.color ?? AppColors.grey,
-                      ),
-                    ),
+                    Text('الجناح ${booth.number}',
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+                            color: isDark ? Colors.white : Colors.black87)),
+                    Text(booth.hallName,
+                        style: TextStyle(fontSize: 12, color: hall?.color ?? AppColors.grey)),
                   ],
                 ),
               ),
@@ -307,16 +269,9 @@ class _BoothInfoPanel extends StatelessWidget {
                 children: [
                   Text(
                     '${booth.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ريال',
-                    style: const TextStyle(
-                      color: AppColors.orange,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                    ),
+                    style: const TextStyle(color: AppColors.orange, fontWeight: FontWeight.w800, fontSize: 15),
                   ),
-                  const Text(
-                    'للمعرض كاملاً',
-                    style: TextStyle(color: AppColors.grey, fontSize: 10),
-                  ),
+                  const Text('للمعرض كاملاً', style: TextStyle(color: AppColors.grey, fontSize: 10)),
                 ],
               ),
             ],
@@ -324,33 +279,17 @@ class _BoothInfoPanel extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _InfoChip(
-                icon: Icons.straighten_rounded,
-                label: '${booth.area.toInt()} م²',
-                isDark: isDark,
-              ),
+              _InfoChip(icon: Icons.straighten_rounded,  label: '${booth.area.toInt()} م²', isDark: isDark),
               const SizedBox(width: 8),
-              _InfoChip(
-                icon: Icons.height_rounded,
-                label: 'ارتفاع ${booth.height}م',
-                isDark: isDark,
-              ),
+              _InfoChip(icon: Icons.height_rounded,       label: 'ارتفاع ${booth.height}م', isDark: isDark),
               const SizedBox(width: 8),
-              _InfoChip(
-                icon: Icons.grid_3x3_rounded,
-                label: '${booth.gridWidth}×${booth.gridDepth}',
-                isDark: isDark,
-              ),
+              _InfoChip(icon: Icons.grid_3x3_rounded,    label: '${booth.gridWidth}×${booth.gridDepth}', isDark: isDark),
             ],
           ),
           if (booth.amenities.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 6,
-              children: booth.amenities
-                  .map((a) => _AmenityChip(label: a, isDark: isDark))
-                  .toList(),
-            ),
+            Wrap(spacing: 6,
+                children: booth.amenities.map((a) => _AmenityChip(label: a, isDark: isDark)).toList()),
           ],
           const SizedBox(height: 16),
           Row(
@@ -363,9 +302,7 @@ class _BoothInfoPanel extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.grey,
                     side: const BorderSide(color: AppColors.grey),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -373,10 +310,7 @@ class _BoothInfoPanel extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 flex: 2,
-                child: CustomButton(
-                  label: 'احجز هذا الجناح',
-                  onTap: ctrl.proceedToBooking,
-                ),
+                child: CustomButton(label: 'احجز هذا الجناح', onTap: ctrl.proceedToBooking),
               ),
             ],
           ),
@@ -386,16 +320,175 @@ class _BoothInfoPanel extends StatelessWidget {
   }
 }
 
+// ─────────────────────── Booked (Company Info) Panel ─────────────────────────
+
+class _BookedCompanyPanel extends StatelessWidget {
+  final BoothMapController ctrl;
+  final bool isDark;
+
+  const _BookedCompanyPanel({required this.ctrl, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final booth   = ctrl.selectedBooth.value!;
+    final company = ctrl.companyForBooth(booth);
+
+    final companyName  = company?.name     ?? 'شركة محجوزة';
+    final companyEmail = company?.email    ?? '—';
+    final initials     = company?.initials ?? 'ش';
+    final avatarColor  = company?.color    ?? AppColors.darkPrimary;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCard : AppColors.lightCard,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 24, offset: const Offset(0, -6)),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.black12,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // "Reserved" badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: avatarColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: avatarColor.withOpacity(0.4)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_rounded, size: 11, color: avatarColor),
+                const SizedBox(width: 5),
+                Text(
+                  'الجناح ${booth.number} — محجوز',
+                  style: TextStyle(fontSize: 11, color: avatarColor, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Company card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [avatarColor.withOpacity(0.08), avatarColor.withOpacity(0.02)],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: avatarColor.withOpacity(0.18)),
+            ),
+            child: Row(
+              children: [
+                // Avatar circle with initials
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [avatarColor, avatarColor.withOpacity(0.7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: avatarColor.withOpacity(0.35), blurRadius: 10, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      initials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        companyName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(Icons.email_outlined, size: 13, color: avatarColor),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              companyEmail,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? Colors.white60 : AppColors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: ctrl.clearSelection,
+              icon: const Icon(Icons.close_rounded, size: 16),
+              label: const Text('إغلاق'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.grey,
+                side: const BorderSide(color: AppColors.grey),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────── Chips ───────────────────────────────────
+
 class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isDark;
-
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-    required this.isDark,
-  });
+  const _InfoChip({required this.icon, required this.label, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -410,13 +503,8 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: AppColors.darkPrimary),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
+          Text(label,
+              style: TextStyle(fontSize: 11, color: isDark ? Colors.white70 : Colors.black87)),
         ],
       ),
     );
@@ -426,7 +514,6 @@ class _InfoChip extends StatelessWidget {
 class _AmenityChip extends StatelessWidget {
   final String label;
   final bool isDark;
-
   const _AmenityChip({required this.label, required this.isDark});
 
   @override
@@ -439,10 +526,7 @@ class _AmenityChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppColors.darkPrimary.withOpacity(0.25)),
       ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 10, color: AppColors.darkPrimary),
-      ),
+      child: Text(label, style: const TextStyle(fontSize: 10, color: AppColors.darkPrimary)),
     );
   }
 }

@@ -15,6 +15,7 @@ import '../controller/Home/settings_controller.dart';
 import '../controller/Home/profile_company_controller.dart';
 import '../controller/Home/booking_controller.dart';
 import '../controller/Home/booth_map_controller.dart';
+import '../controller/Home/booth_management_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -35,5 +36,6 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ProfileCompanyController(), fenix: true);
     Get.lazyPut(() => BookingController(), fenix: true);
     Get.lazyPut(() => BoothMapController(), fenix: true);
+    Get.lazyPut(() => BoothManagementController(), fenix: true);
   }
 }
