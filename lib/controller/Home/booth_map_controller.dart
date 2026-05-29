@@ -20,19 +20,20 @@ class BoothCompanyInfo {
 }
 
 class BoothMapController extends GetxController {
-  final mapData       = Rxn<ExhibitionMapModel>();
-  final selectedBooth = Rxn<MapBoothModel>();
-  final isLoading     = true.obs;
-  final allBooths     = <MapBoothModel>[].obs;
+  final mapData                  = Rxn<ExhibitionMapModel>();
+  final selectedBooth            = Rxn<MapBoothModel>();
+  final selectedBoothPosition    = Rxn<Offset>();
+  final isLoading                = true.obs;
+  final allBooths                = <MapBoothModel>[].obs;
 
   final transformationController = TransformationController();
 
   static const bookedCompanies = <int, BoothCompanyInfo>{
-    2:  BoothCompanyInfo(name: 'تقنية الغد', email: 'info@techfuture.sa',    initials: 'تغ', color: Color(0xFF7A1FFF)),
-    6:  BoothCompanyInfo(name: 'حلول البيانات', email: 'hello@datasol.com',  initials: 'حب', color: Color(0xFF1565C0)),
-    7:  BoothCompanyInfo(name: 'ابتكار ذكي',  email: 'contact@smartinno.sa', initials: 'اذ', color: Color(0xFF00897B)),
-    10: BoothCompanyInfo(name: 'ميديا برو',   email: 'team@mediapro.com',    initials: 'مب', color: Color(0xFFE65100)),
-    13: BoothCompanyInfo(name: 'تصميم عصري',  email: 'info@moderndesign.sa', initials: 'تع', color: Color(0xFF6A1B9A)),
+    2:  BoothCompanyInfo(name: 'تقنية الغد',    email: 'info@techfuture.sa',    initials: 'تغ', color: Color(0xFF7A1FFF)),
+    6:  BoothCompanyInfo(name: 'حلول البيانات', email: 'hello@datasol.com',     initials: 'حب', color: Color(0xFF1565C0)),
+    7:  BoothCompanyInfo(name: 'ابتكار ذكي',   email: 'contact@smartinno.sa',  initials: 'اذ', color: Color(0xFF00897B)),
+    10: BoothCompanyInfo(name: 'ميديا برو',    email: 'team@mediapro.com',     initials: 'مب', color: Color(0xFFE65100)),
+    13: BoothCompanyInfo(name: 'تصميم عصري',   email: 'info@moderndesign.sa',  initials: 'تع', color: Color(0xFF6A1B9A)),
   };
 
   BoothCompanyInfo? companyForBooth(MapBoothModel booth) =>
@@ -53,20 +54,24 @@ class BoothMapController extends GetxController {
   Future<void> loadMapData() async {
     isLoading.value = true;
     await Future.delayed(const Duration(milliseconds: 100));
-    mapData.value  = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
+    mapData.value   = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
     allBooths.value = mapData.value!.halls.expand((h) => h.booths).toList();
     isLoading.value = false;
   }
 
-  void onBoothTapped(MapBoothModel booth) {
+  void onBoothTapped(MapBoothModel booth, {Offset? screenPosition}) {
     if (selectedBooth.value?.id == booth.id) {
-      selectedBooth.value = null;
+      clearSelection();
     } else {
-      selectedBooth.value = booth;
+      selectedBooth.value         = booth;
+      selectedBoothPosition.value = screenPosition;
     }
   }
 
-  void clearSelection() => selectedBooth.value = null;
+  void clearSelection() {
+    selectedBooth.value         = null;
+    selectedBoothPosition.value = null;
+  }
 
   void resetView() {
     transformationController.value = Matrix4.identity();

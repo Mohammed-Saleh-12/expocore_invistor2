@@ -182,39 +182,13 @@ class IsometricMapPainter extends CustomPainter {
       canvas.drawPath(topFace,   edgePaint);
     }
 
-    if (booth.isBooked && !isSelected) {
-      final center = _iso(c + bw / 2, r + bd / 2, h, origin);
-      _drawBookedBoothLabel(canvas, booth.number, center);
-    } else if (!booth.isBooked || isSelected) {
+    // Only show label on available booths (or selected booked booth)
+    if (!booth.isBooked || isSelected) {
       final center = _iso(c + bw / 2, r + bd / 2, h, origin);
       _drawBoothLabel(canvas, booth.number, center, isSelected);
     }
 
     hitAreas.add(BoothHitArea(booth, topFace));
-  }
-
-  void _drawBookedBoothLabel(Canvas canvas, String text, Offset pos) {
-    final tp = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.55),
-          fontSize: 7.5,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
-
-    final iconPainter = TextPainter(
-      text: const TextSpan(
-        text: '🏢',
-        style: TextStyle(fontSize: 8),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    iconPainter.paint(canvas, pos + Offset(-iconPainter.width / 2, tp.height / 2 + 1));
   }
 
   void _drawBoothLabel(Canvas canvas, String text, Offset pos, bool selected) {
