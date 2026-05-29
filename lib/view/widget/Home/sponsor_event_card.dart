@@ -65,7 +65,7 @@ class SponsorEventCard extends StatelessWidget {
                 children: [
                   Image.network(
                     event.exhibitionImageUrl,
-                    height: 100,
+                    height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
@@ -170,7 +170,7 @@ class SponsorEventCard extends StatelessWidget {
                                 ? Icons.favorite
                                 : Icons.favorite_border,
                             color: event.isFavorite
-                                ? AppColors.darkSecondary
+                                ? AppColors.error
                                 : AppColors.grey,
                             size: 22,
                           ),

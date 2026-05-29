@@ -7,11 +7,7 @@ class EventBillboard extends StatefulWidget {
   final List<ExhibitionSponsorEvent> events;
   final void Function(ExhibitionSponsorEvent)? onTap;
 
-  const EventBillboard({
-    super.key,
-    required this.events,
-    this.onTap,
-  });
+  const EventBillboard({super.key, required this.events, this.onTap});
 
   @override
   State<EventBillboard> createState() => _EventBillboardState();
@@ -39,17 +35,21 @@ class _EventBillboardState extends State<EventBillboard> {
   void _next() {
     if (widget.events.isEmpty) return;
     final next = (_current + 1) % widget.events.length;
-    _pageController.animateToPage(next,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubic);
+    _pageController.animateToPage(
+      next,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   void _prev() {
     if (widget.events.isEmpty) return;
     final prev = (_current - 1 + widget.events.length) % widget.events.length;
-    _pageController.animateToPage(prev,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubic);
+    _pageController.animateToPage(
+      prev,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -124,12 +124,17 @@ class _EventBillboardSlide extends StatelessWidget {
 
   IconData _typeIcon(String type) {
     switch (type) {
-      case 'مؤتمر':      return Icons.record_voice_over_outlined;
-      case 'ندوة':        return Icons.people_outline;
+      case 'مؤتمر':
+        return Icons.record_voice_over_outlined;
+      case 'ندوة':
+        return Icons.people_outline;
       case 'حفل افتتاح':
-      case 'حفل ختامي':  return Icons.celebration_outlined;
-      case 'مسابقة':      return Icons.emoji_events_outlined;
-      default:            return Icons.event_outlined;
+      case 'حفل ختامي':
+        return Icons.celebration_outlined;
+      case 'مسابقة':
+        return Icons.emoji_events_outlined;
+      default:
+        return Icons.event_outlined;
     }
   }
 
@@ -141,9 +146,10 @@ class _EventBillboardSlide extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 16,
-              offset: const Offset(0, 6)),
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
         ],
       ),
       child: ClipRRect(
@@ -156,7 +162,7 @@ class _EventBillboardSlide extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: AppColors.darkSurface,
-                child: const Icon(Icons.image, size: 64, color: AppColors.grey),
+                child: const Icon(Icons.image, size: 84, color: AppColors.grey),
               ),
             ),
             Container(
@@ -174,8 +180,10 @@ class _EventBillboardSlide extends StatelessWidget {
               top: 12,
               right: 12,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [AppColors.darkSecondary, AppColors.darkAccent],
@@ -185,9 +193,10 @@ class _EventBillboardSlide extends StatelessWidget {
                 child: const Text(
                   'فرصة إعلانية',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700),
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -196,8 +205,10 @@ class _EventBillboardSlide extends StatelessWidget {
               top: 12,
               left: 12,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.darkPrimary.withOpacity(0.85),
                   borderRadius: BorderRadius.circular(20),
@@ -205,14 +216,16 @@ class _EventBillboardSlide extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(_typeIcon(event.type),
-                        size: 12, color: Colors.white),
+                    Icon(_typeIcon(event.type), size: 12, color: Colors.white),
                     const SizedBox(width: 4),
-                    Text(event.type,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700)),
+                    Text(
+                      event.type,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -241,26 +254,36 @@ class _EventBillboardSlide extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.store_outlined,
-                            size: 12, color: Colors.white70),
+                        const Icon(
+                          Icons.store_outlined,
+                          size: 12,
+                          color: Colors.white70,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             event.exhibitionName,
                             style: const TextStyle(
-                                color: Colors.white70, fontSize: 11),
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(Icons.calendar_today_outlined,
-                            size: 12, color: Colors.white70),
+                        const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 12,
+                          color: Colors.white70,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           event.date,
                           style: const TextStyle(
-                              color: Colors.white70, fontSize: 11),
+                            color: Colors.white70,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -269,7 +292,9 @@ class _EventBillboardSlide extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.success.withOpacity(0.85),
                             borderRadius: BorderRadius.circular(8),
@@ -277,16 +302,19 @@ class _EventBillboardSlide extends StatelessWidget {
                           child: Text(
                             'من ${event.durationOptions.first.price.toStringAsFixed(0)} ﷼',
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700),
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '${event.listingDays} أيام إعلانية',
                           style: const TextStyle(
-                              color: Colors.white60, fontSize: 11),
+                            color: Colors.white60,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
