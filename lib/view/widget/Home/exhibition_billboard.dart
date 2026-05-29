@@ -79,13 +79,7 @@ class _ExhibitionBillboardState extends State<ExhibitionBillboard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'المعارض المميزة',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-        ),
+        
         const SizedBox(height: 10),
         Stack(
           alignment: Alignment.center,
