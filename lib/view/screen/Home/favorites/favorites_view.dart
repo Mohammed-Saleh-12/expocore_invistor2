@@ -18,23 +18,13 @@ class FavoritesView extends GetView<FavoritesController> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: 8),
-              const Text(
-                'مفضلاتي',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkBg
               : AppColors.lightBg,
           elevation: 0,
           automaticallyImplyLeading: false,
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(44),
+            preferredSize: const Size.fromHeight(6),
             child: Obx(
               () => TabBar(
                 onTap: (i) => controller.selectedTab.value = i,

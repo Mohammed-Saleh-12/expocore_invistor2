@@ -15,7 +15,6 @@ import 'view/screen/Home/booths/booths_view.dart';
 import 'view/screen/Home/booths/booth_map3d_view.dart';
 import 'view/screen/Home/booths/booth_detail_view.dart';
 import 'view/screen/Home/booths/booth_management_view.dart';
-import 'controller/Home/booth_management_controller.dart';
 import 'view/screen/Home/booths/booking_request_view.dart';
 import 'view/screen/Home/booths/booking_detail_view.dart';
 import 'view/screen/Home/campaigns/campaigns_view.dart';

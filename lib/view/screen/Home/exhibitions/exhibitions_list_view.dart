@@ -90,6 +90,7 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
               ],
             ),
           ),
+          SizedBox(height: 6),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) return const LoadingWidget();

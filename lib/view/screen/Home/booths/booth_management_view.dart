@@ -44,13 +44,7 @@ class BoothManagementView extends GetView<BoothManagementController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _BoothInfoCard(isDark: isDark),
-            const SizedBox(height: 20),
-            _SectionHeader(
-              icon: Icons.business_rounded,
-              title: 'معلومات الشركة',
-              subtitle: 'تُعرض في تطبيق الزوار وعلى خريطة المعرض',
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _BasicInfoCard(isDark: isDark),
             const SizedBox(height: 12),
             _CompanyProfileForm(isDark: isDark),
@@ -65,14 +59,14 @@ class BoothManagementView extends GetView<BoothManagementController> {
               subtitle: 'الفعاليات التي أنشأتها في هذا المعرض',
               action: TextButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.CREATE_EVENT),
-                icon: const Icon(Icons.add_rounded,
-                    size: 16, color: AppColors.darkPrimary),
+                icon: const Icon(
+                  Icons.add_rounded,
+                  size: 16,
+                  color: AppColors.darkPrimary,
+                ),
                 label: const Text(
                   'إضافة فعالية',
-                  style: TextStyle(
-                    color: AppColors.darkPrimary,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: AppColors.darkPrimary, fontSize: 12),
                 ),
               ),
             ),
@@ -83,7 +77,6 @@ class BoothManagementView extends GetView<BoothManagementController> {
               label: 'حفظ معلومات الشركة',
               onTap: controller.saveProfile,
             ),
-            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -125,7 +118,9 @@ class _SectionHeader extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w700),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Text(
                 subtitle,
@@ -176,8 +171,7 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
       child: Column(
         children: [
           ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Stack(
               children: [
                 Image.network(
@@ -188,14 +182,21 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                   errorBuilder: (_, __, ___) => Container(
                     height: 140,
                     color: AppColors.darkSurface,
-                    child: const Icon(Icons.store, size: 48, color: AppColors.grey),
+                    child: const Icon(
+                      Icons.store,
+                      size: 48,
+                      color: AppColors.grey,
+                    ),
                   ),
                 ),
                 Container(
                   height: 140,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.55)],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.55),
+                      ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -229,7 +230,10 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                   top: 10,
                   left: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: _statusColor(b.status).withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
@@ -252,11 +256,19 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _statItem(Icons.straighten_rounded, '${b.area.toInt()}م²', 'المساحة'),
+                _statItem(
+                  Icons.straighten_rounded,
+                  '${b.area.toInt()}م²',
+                  'المساحة',
+                ),
                 _divider(),
                 _statItem(Icons.location_on_outlined, b.location, 'الموقع'),
                 _divider(),
-                _statItem(Icons.monetization_on_outlined, '${b.price.toInt()} ر', 'السعر'),
+                _statItem(
+                  Icons.monetization_on_outlined,
+                  '${b.price.toInt()} ر',
+                  'السعر',
+                ),
                 _divider(),
                 _statItem(Icons.calendar_today_outlined, b.endDate, 'الانتهاء'),
               ],
@@ -268,19 +280,20 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
   }
 
   Widget _statItem(IconData icon, String val, String label) => Column(
-        children: [
-          Icon(icon, size: 15, color: AppColors.darkPrimary),
-          const SizedBox(height: 3),
-          Text(
-            val,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(label, style: const TextStyle(fontSize: 9, color: AppColors.grey)),
-        ],
-      );
+    children: [
+      Icon(icon, size: 15, color: AppColors.darkPrimary),
+      const SizedBox(height: 3),
+      Text(
+        val,
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+        overflow: TextOverflow.ellipsis,
+      ),
+      Text(label, style: const TextStyle(fontSize: 9, color: AppColors.grey)),
+    ],
+  );
 
-  Widget _divider() => Container(width: 1, height: 30, color: AppColors.grey.withOpacity(0.2));
+  Widget _divider() =>
+      Container(width: 1, height: 30, color: AppColors.grey.withOpacity(0.2));
 }
 
 class _BasicInfoCard extends GetView<BoothManagementController> {
@@ -301,30 +314,6 @@ class _BasicInfoCard extends GetView<BoothManagementController> {
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded,
-                  size: 14, color: AppColors.darkPrimary),
-              const SizedBox(width: 6),
-              const Text(
-                'المعلومات الأساسية',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.darkPrimary,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                'مستوردة تلقائياً من الحجز',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppColors.darkPrimary.withOpacity(0.7),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
               Container(
                 width: 46,
                 height: 46,
@@ -332,8 +321,11 @@ class _BasicInfoCard extends GetView<BoothManagementController> {
                   gradient: AppColors.darkCTAGradient,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.business_rounded,
-                    color: Colors.white, size: 22),
+                child: const Icon(
+                  Icons.business_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -342,13 +334,17 @@ class _BasicInfoCard extends GetView<BoothManagementController> {
                   children: [
                     const Text(
                       'شركة التقنية الرائدة',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     Text(
                       'investor@leadtech.sa',
                       style: TextStyle(
-                          fontSize: 11,
-                          color: isDark ? Colors.white60 : AppColors.grey),
+                        fontSize: 11,
+                        color: isDark ? Colors.white60 : AppColors.grey,
+                      ),
                     ),
                   ],
                 ),
@@ -366,29 +362,30 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
   final bool isDark;
   const _CompanyProfileForm({required this.isDark});
 
-  InputDecoration _decoration(String label, IconData icon, bool isDark) =>
-      InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, size: 18, color: AppColors.darkPrimary),
-        filled: true,
-        fillColor: isDark ? AppColors.darkCard : AppColors.lightCard,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.25)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: AppColors.darkPrimary, width: 1.5),
-        ),
-        labelStyle: const TextStyle(fontSize: 13, color: AppColors.grey),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      );
+  InputDecoration _decoration(
+    String label,
+    IconData icon,
+    bool isDark,
+  ) => InputDecoration(
+    labelText: label,
+    prefixIcon: Icon(icon, size: 18, color: AppColors.darkPrimary),
+    filled: true,
+    fillColor: isDark ? AppColors.darkCard : AppColors.lightCard,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: AppColors.grey.withOpacity(0.25)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+    ),
+    labelStyle: const TextStyle(fontSize: 13, color: AppColors.grey),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -396,15 +393,21 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
       children: [
         TextField(
           controller: controller.companyNatureCtrl,
-          decoration:
-              _decoration('طبيعة الشركة', Icons.category_outlined, isDark),
+          decoration: _decoration(
+            'طبيعة الشركة',
+            Icons.category_outlined,
+            isDark,
+          ),
           style: const TextStyle(fontSize: 13),
         ),
         const SizedBox(height: 10),
         TextField(
           controller: controller.servicesProductsCtrl,
           decoration: _decoration(
-              'الخدمات أو المنتجات المقدمة', Icons.inventory_2_outlined, isDark),
+            'الخدمات أو المنتجات المقدمة',
+            Icons.inventory_2_outlined,
+            isDark,
+          ),
           maxLines: 3,
           style: const TextStyle(fontSize: 13),
         ),
@@ -412,7 +415,10 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
         TextField(
           controller: controller.headquartersCtrl,
           decoration: _decoration(
-              'عنوان المقر الرئيسي', Icons.location_city_outlined, isDark),
+            'عنوان المقر الرئيسي',
+            Icons.location_city_outlined,
+            isDark,
+          ),
           style: const TextStyle(fontSize: 13),
         ),
       ],
@@ -433,9 +439,10 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 6,
-              offset: const Offset(0, 2)),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -469,13 +476,15 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                       : controller.addProfileLink(link),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: isAdded
                           ? AppColors.darkPrimary.withOpacity(0.12)
                           : (isDark
-                              ? AppColors.darkSurface
-                              : AppColors.lightSurface),
+                                ? AppColors.darkSurface
+                                : AppColors.lightSurface),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isAdded
@@ -489,7 +498,9 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                         Icon(
                           isAdded ? Icons.check_rounded : Icons.add_rounded,
                           size: 12,
-                          color: isAdded ? AppColors.darkPrimary : AppColors.grey,
+                          color: isAdded
+                              ? AppColors.darkPrimary
+                              : AppColors.grey,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -517,28 +528,38 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                     (l) => Container(
                       margin: const EdgeInsets.only(bottom: 6),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.darkPrimary.withOpacity(0.07),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.link_rounded,
-                              size: 13, color: AppColors.darkPrimary),
+                          const Icon(
+                            Icons.link_rounded,
+                            size: 13,
+                            color: AppColors.darkPrimary,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               l,
                               style: const TextStyle(
-                                  fontSize: 12, color: AppColors.darkPrimary),
+                                fontSize: 12,
+                                color: AppColors.darkPrimary,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           GestureDetector(
                             onTap: () => controller.removeSocialLink(l),
-                            child: const Icon(Icons.close_rounded,
-                                size: 14, color: AppColors.grey),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 14,
+                              color: AppColors.grey,
+                            ),
                           ),
                         ],
                       ),
@@ -555,8 +576,11 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                   decoration: InputDecoration(
                     hintText: 'أضف رابطاً جديداً...',
                     hintStyle: const TextStyle(fontSize: 12),
-                    prefixIcon: const Icon(Icons.add_link_rounded,
-                        size: 16, color: AppColors.grey),
+                    prefixIcon: const Icon(
+                      Icons.add_link_rounded,
+                      size: 16,
+                      color: AppColors.grey,
+                    ),
                     filled: true,
                     fillColor: isDark
                         ? AppColors.darkSurface
@@ -566,7 +590,9 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                   ),
                   style: const TextStyle(fontSize: 12),
                 ),
@@ -580,8 +606,11 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                     gradient: AppColors.darkCTAGradient,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.add_rounded,
-                      color: Colors.white, size: 18),
+                  child: const Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
             ],
@@ -653,9 +682,10 @@ class _ImageGrid extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 6,
-              offset: const Offset(0, 2)),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -668,7 +698,9 @@ class _ImageGrid extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w700),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
@@ -709,8 +741,11 @@ class _ImageGrid extends StatelessWidget {
                       child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_photo_alternate_outlined,
-                              color: AppColors.darkPrimary, size: 24),
+                          Icon(
+                            Icons.add_photo_alternate_outlined,
+                            color: AppColors.darkPrimary,
+                            size: 24,
+                          ),
                           SizedBox(height: 4),
                           Text(
                             'إضافة',
@@ -749,8 +784,11 @@ class _BoothEventsList extends GetView<BoothManagementController> {
           ),
           child: Column(
             children: [
-              Icon(Icons.event_busy_rounded,
-                  size: 36, color: AppColors.grey.withOpacity(0.5)),
+              Icon(
+                Icons.event_busy_rounded,
+                size: 36,
+                color: AppColors.grey.withOpacity(0.5),
+              ),
               const SizedBox(height: 8),
               const Text(
                 'لا توجد فعاليات لهذا المعرض بعد',
@@ -810,9 +848,10 @@ class _EventItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 5,
-              offset: const Offset(0, 2)),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -824,8 +863,11 @@ class _EventItem extends StatelessWidget {
               color: AppColors.darkPrimary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.event_rounded,
-                color: AppColors.darkPrimary, size: 20),
+            child: const Icon(
+              Icons.event_rounded,
+              color: AppColors.darkPrimary,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -835,28 +877,40 @@ class _EventItem extends StatelessWidget {
                 Text(
                   event.name,
                   style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w700),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 3),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined,
-                        size: 11, color: AppColors.grey),
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 11,
+                      color: AppColors.grey,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       event.date,
                       style: const TextStyle(
-                          fontSize: 11, color: AppColors.grey),
+                        fontSize: 11,
+                        color: AppColors.grey,
+                      ),
                     ),
                     const SizedBox(width: 10),
-                    const Icon(Icons.access_time_rounded,
-                        size: 11, color: AppColors.grey),
+                    const Icon(
+                      Icons.access_time_rounded,
+                      size: 11,
+                      color: AppColors.grey,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       event.time,
                       style: const TextStyle(
-                          fontSize: 11, color: AppColors.grey),
+                        fontSize: 11,
+                        color: AppColors.grey,
+                      ),
                     ),
                   ],
                 ),
@@ -884,8 +938,7 @@ class _EventItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${event.registeredCount} مسجّل',
-                style: const TextStyle(
-                    fontSize: 10, color: AppColors.grey),
+                style: const TextStyle(fontSize: 10, color: AppColors.grey),
               ),
             ],
           ),
