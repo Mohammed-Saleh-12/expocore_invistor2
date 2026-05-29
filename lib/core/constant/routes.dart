@@ -12,6 +12,7 @@ class AppRoutes {
   static const String BOOTHS               = '/booths';
   static const String BOOTH_MAP_3D         = '/booths/map3d';
   static const String BOOTH_DETAIL         = '/booths/detail';
+  static const String BOOTH_MANAGEMENT     = '/booths/management';
   static const String BOOKING_REQUEST      = '/booths/book';
   static const String BOOKING_DETAIL       = '/booths/booking-detail';
   static const String CAMPAIGNS            = '/campaigns';

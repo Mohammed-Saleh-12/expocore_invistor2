@@ -16,7 +16,7 @@ class BoothsView extends GetView<BoothController> {
       bottomNavigationBar: const BottomNavCustom(),
       body: Column(
         children: [
-          SizedBox(height: 36),
+          const SizedBox(height: 36),
           Obx(
             () => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -71,12 +71,19 @@ class BoothsView extends GetView<BoothController> {
                 itemCount: controller.filtered.length,
                 itemBuilder: (_, i) {
                   final b = controller.filtered[i];
+                  final isApproved = b.status == 'active';
                   return BoothCard(
                     booth: b,
-                    onTap: () =>
-                        Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
+                    onManage: () => isApproved
+                        ? Get.toNamed(AppRoutes.BOOTH_MANAGEMENT, arguments: b)
+                        : Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
                     onFavorite: () => controller.toggleFavorite(b),
-                    onReport: () => Get.toNamed(AppRoutes.REPORTS),
+                    onReport: isApproved
+                        ? () => Get.toNamed(AppRoutes.REPORTS)
+                        : null,
+                    onViewMap: !isApproved
+                        ? () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)
+                        : null,
                   );
                 },
               );

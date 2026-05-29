@@ -14,6 +14,8 @@ import 'view/screen/Home/profile_company/profile_company_view.dart';
 import 'view/screen/Home/booths/booths_view.dart';
 import 'view/screen/Home/booths/booth_map3d_view.dart';
 import 'view/screen/Home/booths/booth_detail_view.dart';
+import 'view/screen/Home/booths/booth_management_view.dart';
+import 'controller/Home/booth_management_controller.dart';
 import 'view/screen/Home/booths/booking_request_view.dart';
 import 'view/screen/Home/booths/booking_detail_view.dart';
 import 'view/screen/Home/campaigns/campaigns_view.dart';
@@ -48,6 +50,11 @@ class AppPages {
     GetPage(name: AppRoutes.BOOTHS,            page: () => const BoothsView()),
     GetPage(name: AppRoutes.BOOTH_MAP_3D,      page: () => const BoothMap3dView()),
     GetPage(name: AppRoutes.BOOTH_DETAIL,      page: () => const BoothDetailView()),
+    GetPage(
+      name: AppRoutes.BOOTH_MANAGEMENT,
+      page: () => const BoothManagementView(),
+      binding: BindingsBuilder(() => Get.put(BoothManagementController())),
+    ),
     GetPage(name: AppRoutes.BOOKING_REQUEST,   page: () => const BookingRequestView()),
     GetPage(name: AppRoutes.BOOKING_DETAIL,    page: () => const BookingDetailView()),
     GetPage(name: AppRoutes.CAMPAIGNS,         page: () => const CampaignsView()),

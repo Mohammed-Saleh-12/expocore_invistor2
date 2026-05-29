@@ -204,9 +204,16 @@ class FavoritesView extends GetView<FavoritesController> {
           ),
           child: BoothCard(
             booth: b,
-            onTap: () => Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
+            onManage: () => b.status == 'active'
+                ? Get.toNamed(AppRoutes.BOOTH_MANAGEMENT, arguments: b)
+                : Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
             onFavorite: () => controller.removeBooth(b),
-            onReport: () => Get.toNamed(AppRoutes.REPORTS),
+            onReport: b.status == 'active'
+                ? () => Get.toNamed(AppRoutes.REPORTS)
+                : null,
+            onViewMap: b.status != 'active'
+                ? () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)
+                : null,
           ),
         );
       },
