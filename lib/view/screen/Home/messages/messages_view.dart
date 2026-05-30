@@ -12,9 +12,7 @@ class MessagesView extends GetView<MessagesController> {
     return Obx(() {
       final conv = controller.activeConversation;
       if (conv == null) {
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       }
       final accentColor = Color(conv.color);
       return Scaffold(
@@ -26,14 +24,16 @@ class MessagesView extends GetView<MessagesController> {
               child: Obx(
                 () => ListView.builder(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   itemCount: controller.activeMessages.length,
                   itemBuilder: (_, i) {
                     final m = controller.activeMessages[i];
                     return _Bubble(
-                      isMe:  m.isMe,
-                      text:  m.text,
-                      time:  m.time,
+                      isMe: m.isMe,
+                      text: m.text,
+                      time: m.time,
                       isRead: m.isRead,
                       accentColor: accentColor,
                     );
@@ -87,13 +87,17 @@ class MessagesView extends GetView<MessagesController> {
                 Text(
                   conv.exhibitionName as String,
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w700),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'messages_online'.tr,
                   style: const TextStyle(
-                      fontSize: 11, color: AppColors.success),
+                    fontSize: 11,
+                    color: AppColors.success,
+                  ),
                 ),
               ],
             ),
@@ -108,24 +112,28 @@ class MessagesView extends GetView<MessagesController> {
             final Map<String, String> quickMessages = {
               'booking': 'استفسار عن حجز الجناح في $exhibitionName',
               'services': 'ما هي الخدمات المتاحة في المعرض؟',
-              'events':   'هل هناك فعاليات قادمة في $exhibitionName؟',
-              'reports':  'أحتاج تقريراً عن أداء جناحي',
+              'events': 'هل هناك فعاليات قادمة في $exhibitionName؟',
+              'reports': 'أحتاج تقريراً عن أداء جناحي',
             };
             controller.inputCtrl.text = quickMessages[val] ?? '';
           },
           itemBuilder: (_) => [
             PopupMenuItem(
-                value: 'booking',
-                child: Text('messages_quick_booking'.tr)),
+              value: 'booking',
+              child: Text('messages_quick_booking'.tr),
+            ),
             PopupMenuItem(
-                value: 'services',
-                child: Text('messages_quick_services'.tr)),
+              value: 'services',
+              child: Text('messages_quick_services'.tr),
+            ),
             PopupMenuItem(
-                value: 'events',
-                child: Text('messages_quick_events'.tr)),
+              value: 'events',
+              child: Text('messages_quick_events'.tr),
+            ),
             PopupMenuItem(
-                value: 'reports',
-                child: Text('messages_quick_reports'.tr)),
+              value: 'reports',
+              child: Text('messages_quick_reports'.tr),
+            ),
           ],
         ),
       ],
@@ -147,16 +155,6 @@ class _InputBar extends GetView<MessagesController> {
       top: 8,
       bottom: MediaQuery.of(context).viewInsets.bottom + 12,
     ),
-    decoration: BoxDecoration(
-      color: isDark ? AppColors.darkCard : AppColors.lightCard,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.08),
-          blurRadius: 8,
-          offset: const Offset(0, -2),
-        ),
-      ],
-    ),
     child: Row(
       children: [
         Expanded(
@@ -174,7 +172,9 @@ class _InputBar extends GetView<MessagesController> {
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 10),
+                horizontal: 16,
+                vertical: 10,
+              ),
             ),
           ),
         ),
@@ -192,8 +192,11 @@ class _InputBar extends GetView<MessagesController> {
               ),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.send_rounded,
-                color: Colors.white, size: 20),
+            child: const Icon(
+              Icons.send_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
         ),
       ],
@@ -204,11 +207,11 @@ class _InputBar extends GetView<MessagesController> {
 // ──────────────────────── Message Bubble ───────────────────────
 
 class _Bubble extends StatelessWidget {
-  final bool   isMe;
+  final bool isMe;
   final String text;
   final String time;
-  final bool   isRead;
-  final Color  accentColor;
+  final bool isRead;
+  final Color accentColor;
 
   const _Bubble({
     required this.isMe,
@@ -226,7 +229,8 @@ class _Bubble extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.72),
+          maxWidth: MediaQuery.of(context).size.width * 0.72,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           gradient: isMe
@@ -241,9 +245,9 @@ class _Bubble extends StatelessWidget {
               : (isDark ? AppColors.darkCard : AppColors.lightCard),
           borderRadius: BorderRadius.only(
             topRight: const Radius.circular(16),
-            topLeft:  const Radius.circular(16),
+            topLeft: const Radius.circular(16),
             bottomRight: Radius.circular(isMe ? 4 : 16),
-            bottomLeft:  Radius.circular(isMe ? 16 : 4),
+            bottomLeft: Radius.circular(isMe ? 16 : 4),
           ),
           boxShadow: [
             BoxShadow(
@@ -254,8 +258,9 @@ class _Bubble extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+          crossAxisAlignment: isMe
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.end,
           children: [
             Text(
               text,

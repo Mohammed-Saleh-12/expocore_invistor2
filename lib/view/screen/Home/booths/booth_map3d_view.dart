@@ -465,7 +465,6 @@ class _DialogCard extends StatelessWidget {
             ),
           ),
           // ── Downward arrow pointer ──
-          _Arrow(color: accentColor),
         ],
       ),
     );
@@ -554,19 +553,6 @@ class _DialogCard extends StatelessWidget {
               ],
             ),
           ),
-          // Close button
-          GestureDetector(
-            onTap: onClose,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: accent.withOpacity(0.14),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.close_rounded, size: 15, color: accent),
-            ),
-          ),
         ],
       ),
     );
@@ -601,49 +587,6 @@ class _DialogCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Arrow extends StatelessWidget {
-  final Color color;
-  const _Arrow({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 10,
-      child: Center(
-        child: ClipRect(
-          child: CustomPaint(
-            size: const Size(18, 10),
-            painter: _ArrowPainter(color: color),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ArrowPainter extends CustomPainter {
-  final Color color;
-  const _ArrowPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color.withOpacity(0.55)
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(
-      Path()
-        ..moveTo(0, 0)
-        ..lineTo(size.width, 0)
-        ..lineTo(size.width / 2, size.height)
-        ..close(),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_ArrowPainter old) => old.color != color;
 }
 
 // ─────────────────────── Available Booth Booking Panel ───────────────────────

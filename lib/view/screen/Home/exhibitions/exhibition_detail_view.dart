@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/controller/Home/messages_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constant/appcolors.dart';
@@ -22,7 +23,7 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
   late TabController _tabs;
   late ExhibitionModel exhibition;
   late EventsController _eventsCtrl;
-
+  late ExhibitionModel exhibitionName;
   @override
   void initState() {
     super.initState();
@@ -30,6 +31,8 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
         Get.arguments as ExhibitionModel? ?? DummyData.exhibitions.first;
     _tabs = TabController(length: 2, vsync: this);
     _eventsCtrl = Get.find<EventsController>();
+    exhibitionName =
+        Get.arguments as ExhibitionModel? ?? DummyData.exhibitions.first;
   }
 
   @override
@@ -258,6 +261,38 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                   CustomButton(
                     label: 'استعراض الأجنحة وحجز',
                     onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
+                  ),
+                  SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Get.find<MessagesController>()
+                            .openConversationForExhibitionName(
+                              exhibitionName.name,
+                            );
+                      },
+                      icon: const Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 18,
+                      ),
+                      label: Text(
+                        'booth_contact_mgmt'.tr,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.darkPrimary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
                   ),
                 ],
               ),

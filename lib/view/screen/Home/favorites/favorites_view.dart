@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/view/widget/Home/sponsor_event_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controller/Home/favorites_controller.dart';
@@ -5,7 +6,6 @@ import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/bottom_nav_custom.dart';
 import '../../../widget/Home/exhibition_card.dart';
-import '../../../widget/Home/event_card.dart';
 import '../../../widget/Home/booth_card.dart';
 import '../../../widget/Home/empty_widget.dart';
 
@@ -126,7 +126,7 @@ class FavoritesView extends GetView<FavoritesController> {
       return EmptyWidget(
         message: 'لم تضف أي فعاليات للمفضلة بعد',
         buttonLabel: 'تصفح الفعاليات',
-        onAction: () => Get.toNamed(AppRoutes.EVENTS),
+        onAction: () => Get.toNamed(AppRoutes.EXHIBITION_EVENTS),
       );
     }
     return ListView.builder(
@@ -151,7 +151,7 @@ class FavoritesView extends GetView<FavoritesController> {
               size: 28,
             ),
           ),
-          child: EventCard(
+          child: SponsorEventCard(
             event: e,
             onTap: () {},
             showFavorite: true,

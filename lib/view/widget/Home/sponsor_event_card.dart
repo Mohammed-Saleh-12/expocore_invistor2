@@ -6,12 +6,12 @@ class SponsorEventCard extends StatelessWidget {
   final ExhibitionSponsorEvent event;
   final VoidCallback onTap;
   final VoidCallback? onFavorite;
-
+  final bool? showFavorite;
   const SponsorEventCard({
     super.key,
     required this.event,
     required this.onTap,
-    this.onFavorite,
+    this.onFavorite,  this.showFavorite,
   });
 
   IconData _typeIcon(String type) {

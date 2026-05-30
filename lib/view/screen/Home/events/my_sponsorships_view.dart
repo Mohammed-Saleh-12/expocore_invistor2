@@ -13,7 +13,7 @@ class MySponshorshipsView extends GetView<EventsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'فعالياتي الإعلانية المحجوزة'),
+      appBar: const CustomAppBar(title: 'فعالياتي الإعلانية'),
       body: Obx(() {
         if (controller.mySponsorshipBookings.isEmpty) {
           return EmptyWidget(
@@ -29,10 +29,8 @@ class MySponshorshipsView extends GetView<EventsController> {
             final booking = controller.mySponsorshipBookings[i];
             return _SponsorshipBookingCard(
               booking: booking,
-              onTap: () => Get.toNamed(
-                AppRoutes.SPONSORSHIP_DETAIL,
-                arguments: booking,
-              ),
+              onTap: () =>
+                  Get.toNamed(AppRoutes.SPONSORSHIP_DETAIL, arguments: booking),
             );
           },
         );
@@ -45,8 +43,7 @@ class _SponsorshipBookingCard extends StatelessWidget {
   final SponsorshipBookingModel booking;
   final VoidCallback onTap;
 
-  const _SponsorshipBookingCard(
-      {required this.booking, required this.onTap});
+  const _SponsorshipBookingCard({required this.booking, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +63,10 @@ class _SponsorshipBookingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 3))
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: Column(
@@ -80,47 +78,59 @@ class _SponsorshipBookingCard extends StatelessWidget {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [
-                      AppColors.darkPrimary,
-                      AppColors.darkSecondary
-                    ]),
+                    gradient: const LinearGradient(
+                      colors: [AppColors.darkPrimary, AppColors.darkSecondary],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.campaign_outlined,
-                      color: Colors.white, size: 22),
+                  child: const Icon(
+                    Icons.campaign_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(booking.eventName,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
                       Text(
-                          '${booking.eventType} • ${booking.exhibitionName}',
-                          style: const TextStyle(
-                              fontSize: 11, color: AppColors.grey)),
+                        booking.eventName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${booking.eventType} • ${booking.exhibitionName}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.grey,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border:
-                        Border.all(color: statusColor.withOpacity(0.4)),
+                    border: Border.all(color: statusColor.withOpacity(0.4)),
                   ),
-                  child: Text(statusLabel,
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: statusColor,
-                          fontWeight: FontWeight.w600)),
+                  child: Text(
+                    statusLabel,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: statusColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -129,8 +139,7 @@ class _SponsorshipBookingCard extends StatelessWidget {
             const SizedBox(height: 4),
             _infoRow(Icons.location_on_outlined, booking.place),
             const SizedBox(height: 4),
-            _infoRow(
-                Icons.schedule_outlined, booking.selectedDurationLabel),
+            _infoRow(Icons.schedule_outlined, booking.selectedDurationLabel),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(10),
@@ -141,14 +150,26 @@ class _SponsorshipBookingCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _stat('الزوار', '${booking.totalVisitors}',
-                      Icons.people_outline),
-                  _stat('الحضور', '${booking.totalAttendees}',
-                      Icons.how_to_reg_outlined),
-                  _stat('المدة', '${booking.selectedDays} أيام',
-                      Icons.timelapse_outlined),
-                  _stat('السعر', '${booking.price.toStringAsFixed(0)} ﷼',
-                      Icons.payments_outlined),
+                  _stat(
+                    'الزوار',
+                    '${booking.totalVisitors}',
+                    Icons.people_outline,
+                  ),
+                  _stat(
+                    'الحضور',
+                    '${booking.totalAttendees}',
+                    Icons.how_to_reg_outlined,
+                  ),
+                  _stat(
+                    'المدة',
+                    '${booking.selectedDays} أيام',
+                    Icons.timelapse_outlined,
+                  ),
+                  _stat(
+                    'السعر',
+                    '${booking.price.toStringAsFixed(0)} ﷼',
+                    Icons.payments_outlined,
+                  ),
                 ],
               ),
             ),
@@ -159,24 +180,22 @@ class _SponsorshipBookingCard extends StatelessWidget {
   }
 
   Widget _infoRow(IconData icon, String text) => Row(
-        children: [
-          Icon(icon, size: 13, color: AppColors.grey),
-          const SizedBox(width: 5),
-          Text(text,
-              style: const TextStyle(fontSize: 12, color: AppColors.grey)),
-        ],
-      );
+    children: [
+      Icon(icon, size: 13, color: AppColors.grey),
+      const SizedBox(width: 5),
+      Text(text, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
+    ],
+  );
 
   Widget _stat(String label, String value, IconData icon) => Column(
-        children: [
-          Icon(icon, size: 16, color: AppColors.darkPrimary),
-          const SizedBox(height: 3),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700)),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 10, color: AppColors.grey)),
-        ],
-      );
+    children: [
+      Icon(icon, size: 16, color: AppColors.darkPrimary),
+      const SizedBox(height: 3),
+      Text(
+        value,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+      ),
+      Text(label, style: const TextStyle(fontSize: 10, color: AppColors.grey)),
+    ],
+  );
 }

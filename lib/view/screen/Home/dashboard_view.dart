@@ -121,7 +121,7 @@ class DashboardView extends GetView<DashboardController> {
                         arguments: e,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     _performanceCard(context),
                     const SizedBox(height: 20),
                     _quickActions(context),
