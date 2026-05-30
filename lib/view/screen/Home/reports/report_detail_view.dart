@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../../../controller/Home/reports_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../data/model/report/report_model.dart';
@@ -100,32 +99,13 @@ class ReportDetailView extends GetView<ReportsController> {
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text('مخطط الأداء', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
       const SizedBox(height: 16),
-      SizedBox(height: 180, child: LineChart(
-        LineChartData(
-          gridData: const FlGridData(show: true, drawVerticalLine: false),
-          titlesData: FlTitlesData(
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, getTitlesWidget: (v, _) {
-              if (v.toInt() < r.sparklineData.length) return Text('${v.toInt() + 1}', style: const TextStyle(fontSize: 9, color: AppColors.grey));
-              return const SizedBox();
-            }, reservedSize: 18)),
-          ),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [LineChartBarData(
-            spots: r.sparklineData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList(),
-            isCurved: true,
-            gradient: AppColors.darkCTAGradient,
-            barWidth: 3,
-            belowBarData: BarAreaData(show: true, gradient: LinearGradient(
-              colors: [AppColors.darkPrimary.withOpacity(0.3), AppColors.darkAccent.withOpacity(0.05)],
-              begin: Alignment.topCenter, end: Alignment.bottomCenter,
-            )),
-            dotData: const FlDotData(show: false),
-          )],
+      SizedBox(
+        height: 180,
+        child: CustomPaint(
+          painter: _SparklinePainter(data: r.sparklineData, color: AppColors.darkPrimary),
+          child: const SizedBox.expand(),
         ),
-      )),
+      ),
     ]),
   );
 
@@ -171,4 +151,66 @@ class ReportDetailView extends GetView<ReportsController> {
       )),
     ]),
   );
+}
+class _SparklinePainter extends CustomPainter {
+  final List<double> data;
+  final Color color;
+  _SparklinePainter({required this.data, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (data.isEmpty) return;
+    final maxVal = data.reduce((a, b) => a > b ? a : b);
+    final minVal = data.reduce((a, b) => a < b ? a : b);
+    final range = (maxVal - minVal) == 0 ? 1.0 : maxVal - minVal;
+
+    final linePaint = Paint()
+      ..color = color
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final fillPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [color.withOpacity(0.25), color.withOpacity(0.02)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+
+    final gridPaint = Paint()
+      ..color = AppColors.grey.withOpacity(0.15)
+      ..strokeWidth = 1;
+
+    for (int i = 1; i <= 3; i++) {
+      final y = size.height * i / 4;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
+    final points = <Offset>[];
+    for (int i = 0; i < data.length; i++) {
+      final x = size.width * i / (data.length - 1);
+      final y = size.height * (1 - (data[i] - minVal) / range);
+      points.add(Offset(x, y));
+    }
+
+    if (points.length < 2) return;
+
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (int i = 1; i < points.length; i++) {
+      final cp1 = Offset((points[i - 1].dx + points[i].dx) / 2, points[i - 1].dy);
+      final cp2 = Offset((points[i - 1].dx + points[i].dx) / 2, points[i].dy);
+      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, points[i].dx, points[i].dy);
+    }
+
+    final fillPath = Path.from(path)
+      ..lineTo(points.last.dx, size.height)
+      ..lineTo(points.first.dx, size.height)
+      ..close();
+    canvas.drawPath(fillPath, fillPaint);
+    canvas.drawPath(path, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(_SparklinePainter old) => old.data != data || old.color != color;
 }

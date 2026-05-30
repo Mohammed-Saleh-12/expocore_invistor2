@@ -9,109 +9,162 @@ class MessagesView extends GetView<MessagesController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      appBar: AppBar(
+    return Obx(() {
+      final conv = controller.activeConversation;
+      if (conv == null) {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+      final accentColor = Color(conv.color);
+      return Scaffold(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Get.back(),
-        ),
-        title: Row(
+        appBar: _buildAppBar(conv, accentColor),
+        body: Column(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: AppColors.darkCTAGradient,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Center(
-                child: Text(
-                  'EC',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                  ),
+            Expanded(
+              child: Obx(
+                () => ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
+                  itemCount: controller.activeMessages.length,
+                  itemBuilder: (_, i) {
+                    final m = controller.activeMessages[i];
+                    return _Bubble(
+                      isMe:  m.isMe,
+                      text:  m.text,
+                      time:  m.time,
+                      isRead: m.isRead,
+                      accentColor: accentColor,
+                    );
+                  },
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            const Column(
+            _InputBar(isDark: isDark),
+          ],
+        ),
+      );
+    });
+  }
+
+  AppBar _buildAppBar(dynamic conv, Color accentColor) {
+    return AppBar(
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        onPressed: () => Get.back(),
+      ),
+      title: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [accentColor, accentColor.withOpacity(0.65)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                conv.exhibitionInitials as String,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'إدارة المعرض',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  conv.exhibitionName as String,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  'متاح الآن',
-                  style: TextStyle(fontSize: 11, color: AppColors.success),
+                  'messages_online'.tr,
+                  style: const TextStyle(
+                      fontSize: 11, color: AppColors.success),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+      actions: [
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (val) {
+            final exhibitionName = conv.exhibitionName as String;
+            final Map<String, String> quickMessages = {
+              'booking': 'استفسار عن حجز الجناح في $exhibitionName',
+              'services': 'ما هي الخدمات المتاحة في المعرض؟',
+              'events':   'هل هناك فعاليات قادمة في $exhibitionName؟',
+              'reports':  'أحتاج تقريراً عن أداء جناحي',
+            };
+            controller.inputCtrl.text = quickMessages[val] ?? '';
+          },
+          itemBuilder: (_) => [
+            PopupMenuItem(
+                value: 'booking',
+                child: Text('messages_quick_booking'.tr)),
+            PopupMenuItem(
+                value: 'services',
+                child: Text('messages_quick_services'.tr)),
+            PopupMenuItem(
+                value: 'events',
+                child: Text('messages_quick_events'.tr)),
+            PopupMenuItem(
+                value: 'reports',
+                child: Text('messages_quick_reports'.tr)),
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (_) => [
-              const PopupMenuItem(
-                value: 'booking',
-                child: Text('استفسار عن حجز'),
-              ),
-              const PopupMenuItem(value: 'services', child: Text('الخدمات')),
-              const PopupMenuItem(value: 'events', child: Text('الفعاليات')),
-              const PopupMenuItem(value: 'reports', child: Text('التقارير')),
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(
-              () => ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                itemCount: controller.messages.length,
-                itemBuilder: (_, i) {
-                  final m = controller.messages[i];
-                  return _Bubble(
-                    isMe: m.isMe,
-                    text: m.text,
-                    time: m.time,
-                    isRead: m.isRead,
-                  );
-                },
-              ),
-            ),
-          ),
-          _inputBar(context, isDark),
-        ],
-      ),
+      ],
     );
   }
+}
 
-  Widget _inputBar(BuildContext context, bool isDark) => Container(
+// ──────────────────────── Input Bar ────────────────────────────
+
+class _InputBar extends GetView<MessagesController> {
+  final bool isDark;
+  const _InputBar({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) => Container(
     padding: EdgeInsets.only(
       left: 12,
       right: 12,
-      top: 6,
-      bottom: MediaQuery.of(context).viewInsets.top + 8,
+      top: 8,
+      bottom: MediaQuery.of(context).viewInsets.bottom + 12,
+    ),
+    decoration: BoxDecoration(
+      color: isDark ? AppColors.darkCard : AppColors.lightCard,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 8,
+          offset: const Offset(0, -2),
+        ),
+      ],
     ),
     child: Row(
       children: [
         Expanded(
           child: TextField(
             controller: controller.inputCtrl,
-            textDirection: TextDirection.rtl,
             decoration: InputDecoration(
-              hintText: 'اكتب رسالتك...',
-              hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+              hintText: 'messages_type_hint'.tr,
+              hintStyle: const TextStyle(color: AppColors.grey, fontSize: 14),
               filled: true,
               fillColor: isDark
                   ? AppColors.darkSurface
@@ -121,9 +174,7 @@ class MessagesView extends GetView<MessagesController> {
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+                  horizontal: 16, vertical: 10),
             ),
           ),
         ),
@@ -133,7 +184,7 @@ class MessagesView extends GetView<MessagesController> {
           child: Container(
             width: 46,
             height: 46,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFFFF1592), Color(0xFF7A1FFF)],
                 begin: Alignment.centerLeft,
@@ -141,11 +192,8 @@ class MessagesView extends GetView<MessagesController> {
               ),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.send_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+            child: const Icon(Icons.send_rounded,
+                color: Colors.white, size: 20),
           ),
         ),
       ],
@@ -153,17 +201,21 @@ class MessagesView extends GetView<MessagesController> {
   );
 }
 
+// ──────────────────────── Message Bubble ───────────────────────
+
 class _Bubble extends StatelessWidget {
-  final bool isMe;
+  final bool   isMe;
   final String text;
   final String time;
-  final bool isRead;
+  final bool   isRead;
+  final Color  accentColor;
 
   const _Bubble({
     required this.isMe,
     required this.text,
     required this.time,
     required this.isRead,
+    required this.accentColor,
   });
 
   @override
@@ -174,12 +226,11 @@ class _Bubble extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.72,
-        ),
+            maxWidth: MediaQuery.of(context).size.width * 0.72),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           gradient: isMe
-              ? LinearGradient(
+              ? const LinearGradient(
                   colors: [Color(0xFFFF1592), Color(0xFF7A1FFF)],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -190,9 +241,9 @@ class _Bubble extends StatelessWidget {
               : (isDark ? AppColors.darkCard : AppColors.lightCard),
           borderRadius: BorderRadius.only(
             topRight: const Radius.circular(16),
-            topLeft: const Radius.circular(16),
+            topLeft:  const Radius.circular(16),
             bottomRight: Radius.circular(isMe ? 4 : 16),
-            bottomLeft: Radius.circular(isMe ? 16 : 4),
+            bottomLeft:  Radius.circular(isMe ? 16 : 4),
           ),
           boxShadow: [
             BoxShadow(
@@ -203,9 +254,8 @@ class _Bubble extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: isMe
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.end,
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             Text(
               text,

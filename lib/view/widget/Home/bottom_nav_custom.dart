@@ -6,34 +6,27 @@ import '../../../core/constant/routes.dart';
 class BottomNavCustom extends StatelessWidget {
   const BottomNavCustom({super.key});
 
-  static const _items = [
-    {
-      'icon': Icons.home_outlined,
-      'activeIcon': Icons.home,
-      'label': 'الرئيسية',
-    },
-    {
-      'icon': Icons.store_outlined,
-      'activeIcon': Icons.store,
-      'label': 'المعارض',
-    },
-    {
-      'icon': Icons.grid_view_outlined,
-      'activeIcon': Icons.grid_view,
-      'label': 'أجنحتي',
-    },
-    {
-      'icon': Icons.favorite_outline,
-      'activeIcon': Icons.favorite,
-      'label': 'المفضلة',
-    },
-    {
-      'icon': Icons.more_horiz_outlined,
-      'activeIcon': Icons.more_horiz,
-      'label': 'المزيد',
-    },
+  static const _icons = [
+    Icons.home_outlined,
+    Icons.store_outlined,
+    Icons.grid_view_outlined,
+    Icons.favorite_outline,
+    Icons.more_horiz_outlined,
   ];
-
+  static const _activeIcons = [
+    Icons.home,
+    Icons.store,
+    Icons.grid_view,
+    Icons.favorite,
+    Icons.more_horiz,
+  ];
+  static const _labelKeys = [
+    'nav_home',
+    'nav_exhibitions',
+    'nav_my_booths',
+    'nav_favorites',
+    'nav_more',
+  ];
   static const _routes = [
     AppRoutes.DASHBOARD,
     AppRoutes.EXHIBITIONS,
@@ -52,7 +45,7 @@ class BottomNavCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark    = Theme.of(context).brightness == Brightness.dark;
     final activeIdx = _activeIndex();
     return Container(
       decoration: BoxDecoration(
@@ -69,7 +62,7 @@ class BottomNavCustom extends StatelessWidget {
         child: SizedBox(
           height: 60,
           child: Row(
-            children: List.generate(_items.length, (i) {
+            children: List.generate(_icons.length, (i) {
               final isActive = activeIdx == i;
               return Expanded(
                 child: GestureDetector(
@@ -83,19 +76,19 @@ class BottomNavCustom extends StatelessWidget {
                               shaderCallback: (b) =>
                                   AppColors.darkCTAGradient.createShader(b),
                               child: Icon(
-                                _items[i]['activeIcon'] as IconData,
+                                _activeIcons[i],
                                 color: Colors.white,
                                 size: 24,
                               ),
                             )
                           : Icon(
-                              _items[i]['icon'] as IconData,
+                              _icons[i],
                               color: AppColors.grey,
                               size: 24,
                             ),
                       const SizedBox(height: 2),
                       Text(
-                        _items[i]['label'] as String,
+                        _labelKeys[i].tr,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: isActive

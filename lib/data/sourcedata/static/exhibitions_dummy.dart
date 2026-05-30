@@ -1,3 +1,5 @@
+import 'package:expocore_invistor2/data/model/message/conversation_model.dart';
+
 import '../../model/exhibition/exhibition_model.dart';
 import '../../model/event/event_model.dart';
 import '../../model/event/exhibition_sponsor_event_model.dart';
@@ -449,6 +451,50 @@ class DummyData {
     NotificationModel(id: 4, title: 'رسالة جديدة', body: 'رسالة جديدة من إدارة معرض التقنية 2026', type: 'new_message', time: 'أمس', isRead: true, route: '/messages'),
     NotificationModel(id: 5, title: 'تقريرك الشهري جاهز', body: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', time: 'أمس', isRead: true, route: '/reports'),
     NotificationModel(id: 6, title: 'تذكير: فعاليتك تبدأ قريباً', body: 'ورشة عمل الذكاء الاصطناعي تبدأ خلال ساعة', type: 'event_reminder', time: 'منذ يومين', isRead: true, route: '/events'),
-    NotificationModel(id: 7, title: 'معرض مفضّل بدأ التسجيل', body: 'معرض الغذاء والضيافة المحفوظ في مفضلاتك فتح باب التسجيل', type: 'favorite_update', time: 'منذ 3 أيام', isRead: true, route: '/favorites'),
+NotificationModel(id: 7, title: 'معرض مفضّل بدأ التسجيل', body: 'معرض الغذاء والضيافة المحفوظ في مفضلاتك فتح باب التسجيل', type: 'favorite_update', time: 'منذ 3 أيام', isRead: true, route: '/favorites'),
   ];
+
+  static List<ConversationModel> conversations = [
+    ConversationModel(
+      id: 1,
+      exhibitionId: 1,
+      exhibitionName: 'معرض التقنية 2026',
+      exhibitionInitials: 'تق',
+      color: 0xFF7A1FFF,
+      unreadCount: 2,
+      messages: [
+        MessageModel(id: 101, text: 'مرحباً، كيف يمكننا مساعدتك؟', isMe: false, time: '09:00', isRead: true),
+        MessageModel(id: 102, text: 'أريد الاستفسار عن حجز الجناح B12', isMe: true, time: '09:02', isRead: true),
+        MessageModel(id: 103, text: 'بالتأكيد! الجناح B12 متاح. هل تريد تفاصيل؟', isMe: false, time: '09:05', isRead: true),
+        MessageModel(id: 104, text: 'نعم، أرسل لي التفاصيل من فضلك', isMe: true, time: '09:06', isRead: true),
+        MessageModel(id: 105, text: 'الجناح B12 مساحته 20×20م، السعر 15,000 ريال للمعرض كاملاً.', isMe: false, time: '09:10', isRead: false),
+        MessageModel(id: 106, text: 'هل يمكنني الاطلاع على الصور والخدمات المتوفرة؟', isMe: false, time: '09:11', isRead: false),
+      ],
+    ),
+    ConversationModel(
+      id: 2,
+      exhibitionId: 2,
+      exhibitionName: 'معرض الغذاء والضيافة',
+      exhibitionInitials: 'غض',
+      color: 0xFF1565C0,
+      unreadCount: 0,
+      messages: [
+        MessageModel(id: 201, text: 'مرحباً بكم في معرض الغذاء والضيافة', isMe: false, time: '11:30', isRead: true),
+        MessageModel(id: 202, text: 'شكراً، أود الاستفسار عن الجناح C05', isMe: true, time: '11:32', isRead: true),
+        MessageModel(id: 203, text: 'طلب حجزكم للجناح C05 قيد المراجعة. سيتم إعلامكم خلال 24 ساعة.', isMe: false, time: '11:45', isRead: true),
+      ],
+    ),
+    ConversationModel(
+      id: 3,
+      exhibitionId: 3,
+      exhibitionName: 'معرض الموضة والأزياء',
+      exhibitionInitials: 'مأ',
+      color: 0xFFE65100,
+      unreadCount: 1,
+      messages: [
+        MessageModel(id: 301, text: 'للأسف، طلب الحجز للجناح A01 لم يُقبل هذه المرة.', isMe: false, time: '14:00', isRead: true),
+        MessageModel(id: 302, text: 'هل يمكنني معرفة السبب؟', isMe: true, time: '14:05', isRead: true),
+        MessageModel(id: 303, text: 'يسعدنا مساعدتك في المرة القادمة. هل تريد الاطلاع على الأجنحة المتاحة؟', isMe: false, time: '14:10', isRead: false),
+      ],
+    ),  ];
 }
