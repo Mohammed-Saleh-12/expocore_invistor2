@@ -1,0 +1,26 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "BZUIDKRfUBjcgbFeGfnR4"
+uri = "file://docs/01_requirements.md"
+type = "text"
+title = "1 — Functional & Non-Functional Requirements"
+
+[[outputs]]
+id = "561fRSPWZ639YiSR0Yh5l"
+uri = "file://docs/02_use_cases.md"
+type = "text"
+title = "2 — Use Cases with Table"
+
+[[outputs]]
+id = "xCinIIuMJWQTPtWJMsguH"
+uri = "file://docs/03_essential_use_cases.md"
+type = "text"
+title = "3 — Essential Use Cases (Detailed Steps)"
+
+[[outputs]]
+id = "n-kdi-vqw0SZxq0PMnUDl"
+uri = "file://docs/04_technical_design.md"
+type = "text"
+title = "4 — Technical Design (Class Diagram + ERD)"
