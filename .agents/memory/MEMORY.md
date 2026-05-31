@@ -1,0 +1,1 @@
+- [Flutter dart2js compiler crash fix](flutter-dart2js-crash.md) — stale .dart_tool files cause dart2js crash on rebuild; fix with flutter clean + flutter pub get + rebuild.
