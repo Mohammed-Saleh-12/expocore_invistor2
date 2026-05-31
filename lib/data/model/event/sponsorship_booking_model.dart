@@ -1,6 +1,6 @@
 class SponsorshipBookingModel {
-  final int id;
-  final int eventId;
+  final int    id;
+  final int    eventId;
   final String eventName;
   final String eventType;
   final String exhibitionName;
@@ -8,15 +8,15 @@ class SponsorshipBookingModel {
   final String place;
   final String time;
   final String selectedDurationLabel;
-  final int selectedDays;
+  final int    selectedDays;
   final double price;
   String status;
   final String bookedAt;
-  final int totalVisitors;
-  final int totalAttendees;
+  final int    totalVisitors;
+  final int    totalAttendees;
   final List<int> dailyVisitors;
-  final int currentDay;
-  final int totalDays;
+  final int    currentDay;
+  final int    totalDays;
 
   SponsorshipBookingModel({
     required this.id,
@@ -38,4 +38,33 @@ class SponsorshipBookingModel {
     this.currentDay = 1,
     this.totalDays = 3,
   });
+
+  factory SponsorshipBookingModel.fromJson(Map<String, dynamic> j) =>
+      SponsorshipBookingModel(
+        id:                    j['id'] ?? 0,
+        eventId:               j['event_id'] ?? 0,
+        eventName:             j['event_name'] ?? '',
+        eventType:             j['event_type'] ?? '',
+        exhibitionName:        j['exhibition_name'] ?? '',
+        date:                  j['date'] ?? '',
+        place:                 j['place'] ?? '',
+        time:                  j['time'] ?? '',
+        selectedDurationLabel: j['selected_duration_label'] ?? '',
+        selectedDays:          j['selected_days'] ?? 1,
+        price:                 (j['price'] ?? 0).toDouble(),
+        status:                j['status'] ?? 'pending',
+        bookedAt:              j['booked_at'] ?? '',
+        totalVisitors:         j['total_visitors'] ?? 0,
+        totalAttendees:        j['total_attendees'] ?? 0,
+        dailyVisitors:         List<int>.from(j['daily_visitors'] ?? []),
+        currentDay:            j['current_day'] ?? 1,
+        totalDays:             j['total_days'] ?? 1,
+      );
+
+  Map<String, dynamic> toJson() => {
+    'event_id':               eventId,
+    'selected_duration_label': selectedDurationLabel,
+    'selected_days':          selectedDays,
+    'price':                  price,
+  };
 }

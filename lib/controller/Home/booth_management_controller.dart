@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../core/class/StatusRequest.dart';
+import '../../core/class/crud.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/event_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import '../../linkapi.dart';
 
 class BoothManagementController extends GetxController {
+  final _crud = Crud();
   late BoothModel booth;
 
   final companyNatureCtrl    = TextEditingController();
@@ -16,7 +20,9 @@ class BoothManagementController extends GetxController {
   final productImages = <String>[].obs;
   final boothImages   = <String>[].obs;
   final boothEvents   = <EventModel>[].obs;
+  final isLoading     = false.obs;
   final isSaving      = false.obs;
+  final status        = StatusRequest.none.obs;
 
   final profileLinks = [
     'https://linkedin.com/company/myco',
@@ -28,18 +34,29 @@ class BoothManagementController extends GetxController {
   void onInit() {
     super.onInit();
     booth = Get.arguments as BoothModel? ?? DummyData.myBooths.first;
-    _loadEvents();
-    _loadDummyProfileData();
+    _loadBoothProfile();
+    _loadBoothEvents();
   }
 
-  void _loadEvents() {
-    boothEvents.value = DummyData.events
-        .where((e) => e.exhibitionName == booth.exhibitionName)
-        .toList();
+  Future<void> _loadBoothProfile() async {
+    isLoading.value = true;
+    final result = await _crud.getData(AppLink.boothProfile(booth.id));
+    if (result['status'] == true) {
+      final d = _body(result['data']);
+      companyNatureCtrl.text    = d['company_nature'] ?? '';
+      servicesProductsCtrl.text = d['services_products'] ?? '';
+      headquartersCtrl.text     = d['headquarters'] ?? '';
+      socialLinks.value         = List<String>.from(d['social_links'] ?? []);
+      productImages.value       = List<String>.from(d['product_images'] ?? []);
+      boothImages.value         = List<String>.from(d['booth_images'] ?? []);
+    } else {
+      _loadFallbackProfile();
+    }
+    isLoading.value = false;
   }
 
-  void _loadDummyProfileData() {
-    socialLinks.value = ['https://linkedin.com/company/myco'];
+  void _loadFallbackProfile() {
+    socialLinks.value   = ['https://linkedin.com/company/myco'];
     productImages.value = [
       'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
       'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400',
@@ -47,6 +64,22 @@ class BoothManagementController extends GetxController {
     boothImages.value = [
       'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
     ];
+  }
+
+  Future<void> _loadBoothEvents() async {
+    final result = await _crud.getData(
+      AppLink.investorEvents,
+      params: {'booth_id': booth.id},
+    );
+    if (result['status'] == true) {
+      boothEvents.value = _asList(result['data'])
+          .map((e) => EventModel.fromJson(e))
+          .toList();
+    } else {
+      boothEvents.value = DummyData.events
+          .where((e) => e.exhibitionName == booth.exhibitionName)
+          .toList();
+    }
   }
 
   void addSocialLink() {
@@ -77,18 +110,45 @@ class BoothManagementController extends GetxController {
 
   Future<void> saveProfile() async {
     isSaving.value = true;
-    await Future.delayed(const Duration(seconds: 1));
+    status.value   = StatusRequest.loading;
+
+    final result = await _crud.putData(AppLink.boothProfile(booth.id), {
+      'company_nature':    companyNatureCtrl.text.trim(),
+      'services_products': servicesProductsCtrl.text.trim(),
+      'headquarters':      headquartersCtrl.text.trim(),
+      'social_links':      socialLinks.toList(),
+      'product_images':    productImages.toList(),
+      'booth_images':      boothImages.toList(),
+    });
+
+    if (result['status'] == true) {
+      status.value = StatusRequest.success;
+      Get.snackbar(
+        'تم الحفظ', 'تم حفظ معلومات الشركة بنجاح',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
+        colorText: Colors.white,
+        borderRadius: 12,
+        margin: const EdgeInsets.all(16),
+      );
+    } else {
+      status.value = StatusRequest.failure;
+      Get.snackbar('خطأ', result['message'] ?? 'فشل الحفظ',
+          snackPosition: SnackPosition.BOTTOM);
+    }
     isSaving.value = false;
-    Get.snackbar(
-      'تم الحفظ',
-      'تم حفظ معلومات الشركة بنجاح',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
-      colorText: Colors.white,
-      borderRadius: 12,
-      margin: const EdgeInsets.all(16),
-    );
   }
+
+  Future<void> refresh() => _loadBoothProfile();
+
+  List _asList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map && data['data'] is List) return data['data'];
+    return [];
+  }
+
+  dynamic _body(dynamic data) =>
+      (data is Map && data['data'] is Map) ? data['data'] : (data ?? {});
 
   @override
   void onClose() {

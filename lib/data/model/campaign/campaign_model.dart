@@ -20,4 +20,26 @@ class CampaignModel {
     required this.budget,
     required this.weeklyTrend,
   });
+
+  factory CampaignModel.fromJson(Map<String, dynamic> j) => CampaignModel(
+    id:          j['id'] ?? 0,
+    title:       j['title'] ?? '',
+    type:        j['type'] ?? '',
+    startDate:   j['start_date'] ?? '',
+    endDate:     j['end_date'] ?? '',
+    reach:       j['reach'] ?? 0,
+    status:      j['status'] ?? 'active',
+    budget:      (j['budget'] ?? 0).toDouble(),
+    weeklyTrend: List<double>.from(
+      (j['weekly_trend'] ?? []).map((v) => (v as num).toDouble()),
+    ),
+  );
+
+  Map<String, dynamic> toJson() => {
+    'title':      title,
+    'type':       type,
+    'start_date': startDate,
+    'end_date':   endDate,
+    'budget':     budget,
+  };
 }

@@ -26,4 +26,21 @@ class ReportModel {
     required this.trend,
     required this.sparklineData,
   });
+
+  factory ReportModel.fromJson(Map<String, dynamic> j) => ReportModel(
+    id:             j['id']?.toString() ?? '',
+    title:          j['title'] ?? '',
+    type:           j['type'] ?? '',
+    description:    j['description'] ?? '',
+    period:         j['period'] ?? '',
+    boothName:      j['booth_name'] ?? '',
+    exhibitionName: j['exhibition_name'] ?? '',
+    createdAt:      j['created_at'] ?? '',
+    mainValue:      (j['main_value'] ?? 0).toDouble(),
+    mainLabel:      j['main_label'] ?? '',
+    trend:          (j['trend'] ?? 0).toDouble(),
+    sparklineData:  List<double>.from(
+      (j['sparkline_data'] ?? []).map((v) => (v as num).toDouble()),
+    ),
+  );
 }

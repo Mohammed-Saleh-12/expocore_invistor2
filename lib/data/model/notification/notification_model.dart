@@ -16,4 +16,20 @@ class NotificationModel {
     required this.isRead,
     this.route,
   });
+
+  factory NotificationModel.fromJson(Map<String, dynamic> j) =>
+      NotificationModel(
+        id:      j['id'] ?? 0,
+        title:   j['title'] ?? '',
+        body:    j['body'] ?? j['message'] ?? '',
+        type:    j['type'] ?? '',
+        time:    j['time'] ?? j['created_at'] ?? '',
+        isRead:  j['is_read'] ?? false,
+        route:   j['route'],
+      );
+
+  NotificationModel copyWith({bool? isRead}) => NotificationModel(
+    id: id, title: title, body: body, type: type,
+    time: time, isRead: isRead ?? this.isRead, route: route,
+  );
 }

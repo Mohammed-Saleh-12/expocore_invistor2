@@ -19,6 +19,23 @@ class ConversationModel {
     this.unreadCount = 0,
   });
 
+  factory ConversationModel.fromJson(Map<String, dynamic> j) =>
+      ConversationModel(
+        id:                  j['id'] ?? 0,
+        exhibitionId:        j['exhibition_id'] ?? 0,
+        exhibitionName:      j['exhibition_name'] ?? '',
+        exhibitionInitials:  j['exhibition_initials'] ?? '',
+        color: int.tryParse(
+                  (j['color'] as String? ?? 'FF7A1FFF').replaceFirst('#', ''),
+                  radix: 16,
+                ) ??
+                0xFF7A1FFF,
+        messages: (j['messages'] as List? ?? [])
+            .map((m) => MessageModel.fromJson(m))
+            .toList(),
+        unreadCount: j['unread_count'] ?? 0,
+      );
+
   MessageModel? get lastMessageObj =>
       messages.isNotEmpty ? messages.last : null;
 

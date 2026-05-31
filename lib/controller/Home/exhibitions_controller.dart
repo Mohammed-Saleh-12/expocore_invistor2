@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../core/class/crud.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import '../../linkapi.dart';
 
 class ExhibitionsController extends GetxController {
-  final searchCtrl    = TextEditingController();
-  final exhibitions   = <ExhibitionModel>[].obs;
-  final filtered      = <ExhibitionModel>[].obs;
-  final statusFilter  = 'الكل'.obs;
-  final filters       = ['الكل', 'قادم', 'جارٍ', 'منتهٍ'];
-  final isLoading     = false.obs;
+  final _crud       = Crud();
+  final searchCtrl  = TextEditingController();
+  final exhibitions = <ExhibitionModel>[].obs;
+  final filtered    = <ExhibitionModel>[].obs;
+  final statusFilter = 'الكل'.obs;
+  final isLoading   = false.obs;
+  final filters     = ['الكل', 'قادم', 'جارٍ', 'منتهٍ'];
 
   @override
   void onInit() {
-    exhibitions.value = DummyData.exhibitions;
-    filtered.value    = exhibitions;
+    _loadExhibitions();
     super.onInit();
+  }
+
+  Future<void> _loadExhibitions() async {
+    isLoading.value = true;
+    final result = await _crud.getData(AppLink.exhibitions);
+    if (result['status'] == true) {
+      final list = _asList(result['data']);
+      exhibitions.value = list.map((e) => ExhibitionModel.fromJson(e)).toList();
+    } else {
+      exhibitions.value = DummyData.exhibitions;
+    }
+    filtered.value = exhibitions;
+    isLoading.value = false;
   }
 
   void applyFilter(String f) {
@@ -38,15 +53,26 @@ class ExhibitionsController extends GetxController {
   }
 
   void toggleFavorite(ExhibitionModel e) {
-    e.isFavorite = !e.isFavorite;
+    final wasFav = e.isFavorite;
+    e.isFavorite = !wasFav;
     exhibitions.refresh();
     filtered.refresh();
+    if (wasFav) {
+      _crud.deleteData(AppLink.favoriteExhibition(e.id));
+    } else {
+      _crud.postData(AppLink.favoriteExhibition(e.id), {});
+    }
   }
 
-  Future<void> refresh() async {
-    isLoading.value = true;
-    await Future.delayed(const Duration(milliseconds: 800));
-    isLoading.value = false;
+  Future<void> refresh() => _loadExhibitions();
+
+  List _asList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      if (data['data'] is List) return data['data'];
+      if (data['exhibitions'] is List) return data['exhibitions'];
+    }
+    return [];
   }
 
   @override
