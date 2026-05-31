@@ -32,6 +32,7 @@ import 'view/screen/Home/analytics/analytics_view.dart';
 import 'view/screen/Home/reports/reports_list_view.dart';
 import 'view/screen/Home/reports/report_detail_view.dart';
 import 'view/screen/Home/messages/messages_view.dart';
+import 'view/screen/Home/messages/visitor_messages_view.dart';
 import 'view/screen/Home/notifications/notifications_view.dart';
 import 'view/screen/Home/settings/settings_view.dart';
 
@@ -66,8 +67,9 @@ class AppPages {
     GetPage(name: AppRoutes.ANALYTICS,          page: () => const AnalyticsView()),
     GetPage(name: AppRoutes.REPORTS,            page: () => const ReportsListView()),
     GetPage(name: AppRoutes.REPORT_DETAIL,      page: () => const ReportDetailView()),
-    GetPage(name: AppRoutes.MESSAGES,           page: () => const ConversationsListView()),
-    GetPage(name: AppRoutes.CONVERSATION,       page: () => const MessagesView()),
+    GetPage(name: AppRoutes.MESSAGES,            page: () => const ConversationsListView()),
+    GetPage(name: AppRoutes.CONVERSATION,        page: () => const MessagesView()),
+    GetPage(name: AppRoutes.VISITOR_CONVERSATION,page: () => const VisitorMessagesView()),
     GetPage(name: AppRoutes.NOTIFICATIONS,      page: () => const NotificationsView()),
     GetPage(name: AppRoutes.SETTINGS,           page: () => const SettingsView()),
   ];

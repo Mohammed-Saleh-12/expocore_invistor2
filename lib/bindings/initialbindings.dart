@@ -10,6 +10,7 @@ import '../controller/Home/events_controller.dart';
 import '../controller/Home/campaigns_controller.dart';
 import '../controller/Home/analytics_controller.dart';
 import '../controller/Home/messages_controller.dart';
+import '../controller/Home/visitor_messages_controller.dart';
 import '../controller/Home/notifications_controller.dart';
 import '../controller/Home/settings_controller.dart';
 import '../controller/Home/profile_company_controller.dart';
@@ -31,6 +32,7 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => CampaignsController(), fenix: true);
     Get.lazyPut(() => AnalyticsController(), fenix: true);
     Get.lazyPut(() => MessagesController(), fenix: true);
+    Get.lazyPut(() => VisitorMessagesController(), fenix: true);
     Get.lazyPut(() => NotificationsController(), fenix: true);
     Get.lazyPut(() => SettingsController(), fenix: true);
     Get.lazyPut(() => ProfileCompanyController(), fenix: true);

@@ -30,6 +30,7 @@ class AppRoutes {
   static const String REPORT_DETAIL = '/reports/detail';
   static const String MESSAGES = '/messages';
   static const String CONVERSATION = '/messages/chat';
+  static const String VISITOR_CONVERSATION = '/messages/visitor-chat';
   static const String NOTIFICATIONS = '/notifications';
   static const String SETTINGS = '/settings';
 }

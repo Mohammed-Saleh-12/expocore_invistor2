@@ -1,4 +1,5 @@
 import 'package:expocore_invistor2/data/model/message/conversation_model.dart';
+import 'package:expocore_invistor2/data/model/message/visitor_conversation_model.dart';
 
 import '../../model/exhibition/exhibition_model.dart';
 import '../../model/event/event_model.dart';
@@ -452,6 +453,61 @@ class DummyData {
     NotificationModel(id: 5, title: 'تقريرك الشهري جاهز', body: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', time: 'أمس', isRead: true, route: '/reports'),
     NotificationModel(id: 6, title: 'تذكير: فعاليتك تبدأ قريباً', body: 'ورشة عمل الذكاء الاصطناعي تبدأ خلال ساعة', type: 'event_reminder', time: 'منذ يومين', isRead: true, route: '/events'),
 NotificationModel(id: 7, title: 'معرض مفضّل بدأ التسجيل', body: 'معرض الغذاء والضيافة المحفوظ في مفضلاتك فتح باب التسجيل', type: 'favorite_update', time: 'منذ 3 أيام', isRead: true, route: '/favorites'),
+  ];
+
+  static List<VisitorConversationModel> visitorConversations = [
+    VisitorConversationModel(
+      id: 601,
+      visitorName: 'محمد العمري',
+      visitorInitials: 'مع',
+      color: 0xFFFF1592,
+      unreadCount: 3,
+      messages: [
+        MessageModel(id: 601, text: 'مرحباً، أود الاستفسار عن منتجاتكم', isMe: false, time: '10:15', isRead: true),
+        MessageModel(id: 602, text: 'أهلاً بك! يسعدنا مساعدتك. ما الذي يهمك بالتحديد؟', isMe: true, time: '10:17', isRead: true),
+        MessageModel(id: 603, text: 'هل لديكم حلول للشركات الصغيرة؟', isMe: false, time: '10:20', isRead: true),
+        MessageModel(id: 604, text: 'نعم، لدينا باقات مخصصة للشركات الصغيرة والمتوسطة', isMe: false, time: '10:25', isRead: false),
+        MessageModel(id: 605, text: 'هل يمكنني الحصول على عرض سعر؟', isMe: false, time: '10:26', isRead: false),
+        MessageModel(id: 606, text: 'بالطبع! هل يمكنك مشاركة متطلباتك؟', isMe: false, time: '10:27', isRead: false),
+      ],
+    ),
+    VisitorConversationModel(
+      id: 602,
+      visitorName: 'سارة الأحمدي',
+      visitorInitials: 'سأ',
+      color: 0xFF7A1FFF,
+      unreadCount: 0,
+      messages: [
+        MessageModel(id: 611, text: 'مرحباً، هل ستشاركون في المعرض القادم؟', isMe: false, time: '13:00', isRead: true),
+        MessageModel(id: 612, text: 'نعم، سنكون في الجناح B12 في معرض التقنية 2026', isMe: true, time: '13:02', isRead: true),
+        MessageModel(id: 613, text: 'رائع! سأزوركم بالتأكيد', isMe: false, time: '13:05', isRead: true),
+        MessageModel(id: 614, text: 'نتطلع لرؤيتك! سيكون هناك عروض خاصة', isMe: true, time: '13:06', isRead: true),
+      ],
+    ),
+    VisitorConversationModel(
+      id: 603,
+      visitorName: 'خالد المطيري',
+      visitorInitials: 'خم',
+      color: 0xFF1565C0,
+      unreadCount: 1,
+      messages: [
+        MessageModel(id: 621, text: 'السلام عليكم، أريد الحجز في فعاليتكم', isMe: false, time: '15:30', isRead: true),
+        MessageModel(id: 622, text: 'وعليكم السلام! يمكنك الحجز عبر التطبيق', isMe: true, time: '15:32', isRead: true),
+        MessageModel(id: 623, text: 'شكراً، هل هناك مقاعد متاحة؟', isMe: false, time: '15:45', isRead: false),
+      ],
+    ),
+    VisitorConversationModel(
+      id: 604,
+      visitorName: 'نورة السالم',
+      visitorInitials: 'نس',
+      color: 0xFFE65100,
+      unreadCount: 0,
+      messages: [
+        MessageModel(id: 631, text: 'هل يوجد لديكم عروض للزوار الجدد؟', isMe: false, time: '09:00', isRead: true),
+        MessageModel(id: 632, text: 'نعم! خصم 20% على أول طلب للزوار الجدد', isMe: true, time: '09:05', isRead: true),
+        MessageModel(id: 633, text: 'ممتاز، سأستفيد من العرض', isMe: false, time: '09:10', isRead: true),
+      ],
+    ),
   ];
 
   static List<ConversationModel> conversations = [
