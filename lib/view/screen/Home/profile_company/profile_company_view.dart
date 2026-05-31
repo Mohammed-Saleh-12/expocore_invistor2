@@ -60,6 +60,12 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                           ? Column(
                               children: [
                                 CustomTextField(
+                                  controller: controller.locationCtrl,
+                                  hint: 'مقر الشركة ',
+                                  prefixIcon: Icons.location_on_outlined,
+                                ),
+                                const SizedBox(height: 10),
+                                CustomTextField(
                                   controller: controller.emailCtrl,
                                   hint: 'البريد الإلكتروني',
                                   prefixIcon: Icons.email_outlined,
@@ -81,6 +87,11 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                _contactRow(
+                                  Icons.location_on_outlined,
+                                  controller.locationCtrl.text,
+                                ),
+                                const SizedBox(height: 8),
                                 _contactRow(
                                   Icons.email_outlined,
                                   controller.emailCtrl.text,

@@ -29,8 +29,10 @@ class SettingsView extends GetView<SettingsController> {
 
   Widget _profileSection(BuildContext context, bool isDark) => Container(
     width: double.infinity,
+    margin: EdgeInsets.only(right: 16, left: 16, top: 6),
     padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
     decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
       gradient: isDark ? AppColors.darkCardGradient : null,
       color: isDark ? null : AppColors.lightCard,
     ),

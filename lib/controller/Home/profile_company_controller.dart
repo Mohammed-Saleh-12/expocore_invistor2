@@ -10,6 +10,7 @@ class ProfileCompanyController extends GetxController {
   final _crud       = Crud();
   final nameCtrl    = TextEditingController();
   final emailCtrl   = TextEditingController();
+  final locationCtrl   = TextEditingController();
   final phoneCtrl   = TextEditingController();
   final websiteCtrl = TextEditingController();
   final bioCtrl     = TextEditingController();
@@ -31,6 +32,7 @@ class ProfileCompanyController extends GetxController {
       final d = _body(result['data']);
       nameCtrl.text    = d['company_name'] ?? d['name'] ?? '';
       emailCtrl.text   = d['email'] ?? '';
+      locationCtrl.text   = d['location'] ?? '';
       phoneCtrl.text   = d['phone'] ?? '';
       websiteCtrl.text = d['website'] ?? '';
       bioCtrl.text     = d['bio'] ?? '';
@@ -39,6 +41,7 @@ class ProfileCompanyController extends GetxController {
     } else {
       nameCtrl.text    = Get.find<Services>().companyName;
       emailCtrl.text   = 'info@company.sa';
+      locationCtrl.text   = 'syria/Damascus';
       phoneCtrl.text   = '+966 50 123 4567';
       websiteCtrl.text = 'www.company.sa';
       bioCtrl.text     = 'شركة رائدة في مجال التقنية والذكاء الاصطناعي، تأسست عام 2018.';
@@ -55,6 +58,7 @@ class ProfileCompanyController extends GetxController {
     final result = await _crud.putData(AppLink.investorProfile, {
       'company_name': nameCtrl.text.trim(),
       'email':        emailCtrl.text.trim(),
+      'location':        locationCtrl.text.trim(),
       'phone':        phoneCtrl.text.trim(),
       'website':      websiteCtrl.text.trim(),
       'bio':          bioCtrl.text.trim(),

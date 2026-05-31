@@ -15,7 +15,6 @@ class ReportsListView extends GetView<ReportsController> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'التقارير والتحليلات',
-        showBack: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: AppColors.darkPrimary),

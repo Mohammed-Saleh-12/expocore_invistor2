@@ -37,7 +37,7 @@ class _MessagesAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize =>
-      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight);
+      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight - 26);
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +55,13 @@ class _MessagesAppBar extends StatelessWidget implements PreferredSizeWidget {
         indicatorWeight: 3,
         labelColor: AppColors.darkPrimary,
         unselectedLabelColor: AppColors.grey,
-        labelStyle: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-        ),
+        labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
         unselectedLabelStyle: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
         tabs: const [
-          Tab(text: 'أقسام المعرض'),
+          Tab(text: 'إدارات المعارض'),
           Tab(text: 'الزوار'),
         ],
       ),
@@ -240,7 +237,9 @@ class _ConversationTile extends StatelessWidget {
                           color: AppColors.darkPrimary,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isDark ? AppColors.darkBg : AppColors.lightBg,
+                            color: isDark
+                                ? AppColors.darkBg
+                                : AppColors.lightBg,
                             width: 2,
                           ),
                         ),
@@ -339,8 +338,10 @@ class _EmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 64, color: AppColors.grey.withOpacity(0.5)),
           const SizedBox(height: 16),
-          Text(label,
-              style: const TextStyle(color: AppColors.grey, fontSize: 15)),
+          Text(
+            label,
+            style: const TextStyle(color: AppColors.grey, fontSize: 15),
+          ),
         ],
       ),
     );
