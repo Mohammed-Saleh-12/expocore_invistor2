@@ -116,12 +116,6 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
               ),
               onPressed: () => Get.back(),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.share_outlined, color: Colors.white),
-                onPressed: () {},
-              ),
-            ],
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -252,12 +246,13 @@ class _ExhibitionDetailViewState extends State<ExhibitionDetailView>
                     unselectedLabelColor: AppColors.grey,
                   ),
                   SizedBox(
-                    height: 300,
+                    height: 340,
                     child: TabBarView(
                       controller: _tabs,
                       children: [_servicesTab(), _eventsTab(context)],
                     ),
                   ),
+                  SizedBox(height: 50),
                   CustomButton(
                     label: 'استعراض الأجنحة وحجز',
                     onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),

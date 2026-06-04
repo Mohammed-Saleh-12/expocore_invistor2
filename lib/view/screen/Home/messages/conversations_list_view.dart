@@ -4,7 +4,6 @@ import '../../../../controller/Home/messages_controller.dart';
 import '../../../../controller/Home/visitor_messages_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
-import '../../../widget/Home/bottom_nav_custom.dart';
 
 class ConversationsListView extends StatelessWidget {
   const ConversationsListView({super.key});
@@ -12,12 +11,13 @@ class ConversationsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DefaultTabController(
       length: 2,
+
       child: Scaffold(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
         appBar: _MessagesAppBar(isDark: isDark),
-        bottomNavigationBar: const BottomNavCustom(),
         body: TabBarView(
           children: [
             _ExhibitionConversationsTab(isDark: isDark),
@@ -37,7 +37,7 @@ class _MessagesAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize =>
-      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight - 26);
+      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,12 @@ class _MessagesAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       elevation: 0,
       centerTitle: true,
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+
       title: Text(
         'messages_title'.tr,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),

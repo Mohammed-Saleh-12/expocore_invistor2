@@ -55,7 +55,7 @@ class BoothManagementView extends GetView<BoothManagementController> {
             const SizedBox(height: 20),
             _SectionHeader(
               icon: Icons.event_rounded,
-              title: 'فعاليات المعرض',
+              title: 'فعاليات الجناح',
               subtitle: 'الفعاليات التي أنشأتها في هذا المعرض',
               action: TextButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.CREATE_EVENT),

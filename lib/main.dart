@@ -22,17 +22,17 @@ class ExpoCore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-     title:             'ExpoCore',
+      title: 'ExpoCore',
       debugShowCheckedModeBanner: false,
-      theme:             AppTheme.lightTheme,
-      darkTheme:         AppTheme.darkTheme,
-      themeMode:         isDark ? ThemeMode.dark : ThemeMode.light,
-      translations:      MyTranslation(),
-      locale:            Locale(appLang.value, appLang.value == 'ar' ? 'SA' : 'US'),
-      fallbackLocale:    const Locale('ar', 'SA'),
-      initialBinding:   InitialBindings(),
-      initialRoute:      AppRoutes.SPLASH,
-      getPages:          AppPages.routes,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      translations: MyTranslation(),
+      locale: Locale(appLang.value, appLang.value == 'ar' ? 'SA' : 'US'),
+      fallbackLocale: const Locale('ar', 'SA'),
+      initialBinding: InitialBindings(),
+      initialRoute: AppRoutes.SPLASH,
+      getPages: AppPages.routes,
       defaultTransition: Transition.fadeIn,
       builder: (context, child) => Obx(
         () => Directionality(
