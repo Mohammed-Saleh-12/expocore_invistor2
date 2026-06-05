@@ -20,31 +20,32 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     if (!formKey.currentState!.validate()) return;
-    status.value = StatusRequest.loading;
+    // status.value = StatusRequest.loading;
 
-    final result = await _crud.postData(AppLink.login, {
-      'email':       emailCtrl.text.trim(),
-      'password':    passwordCtrl.text,
-      'remember_me': rememberMe.value,
-    });
+    // final result = await _crud.postData(AppLink.login, {
+    //   'email':       emailCtrl.text.trim(),
+    //   'password':    passwordCtrl.text,
+    //   'remember_me': rememberMe.value,
+    // });
 
-    if (result['status'] == true) {
-      final data = result['data'];
-      final token   = _extract(data, ['token', 'access_token']) ?? '';
-      final company = _extract(data, ['company_name', 'user.company_name']) ?? 'شركتي';
-      final svc = Get.find<Services>();
-      await svc.saveToken(token);
-      await svc.saveCompany(company);
-      status.value = StatusRequest.success;
-      Get.offAllNamed(AppRoutes.DASHBOARD);
-    } else {
-      status.value = StatusRequest.failure;
-      Get.snackbar(
-        'خطأ في تسجيل الدخول',
-        result['message'] ?? 'تحقق من البيانات',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+    // if (result['status'] == true) {
+    //   final data = result['data'];
+    //   final token   = _extract(data, ['token', 'access_token']) ?? '';
+    //   final company = _extract(data, ['company_name', 'user.company_name']) ?? 'شركتي';
+    //   final svc = Get.find<Services>();
+    //   await svc.saveToken(token);
+    //   await svc.saveCompany(company);
+    //   status.value = StatusRequest.success;
+      
+    // } else {
+    //   status.value = StatusRequest.failure;
+    //   Get.snackbar(
+    //     'خطأ في تسجيل الدخول',
+    //     result['message'] ?? 'تحقق من البيانات',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //   );
+    // }
+    Get.offAllNamed(AppRoutes.DASHBOARD);
   }
 
   dynamic _extract(dynamic data, List<String> keys) {
