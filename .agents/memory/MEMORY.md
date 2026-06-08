@@ -1,0 +1,2 @@
+- [Flutter dart2js compiler crash fix](flutter-dart2js-crash.md) — stale .dart_tool files cause dart2js crash on rebuild; fix with flutter clean + flutter pub get + rebuild.
+- [Backend wiring pattern](backend-wiring.md) — all controllers use real Crud calls with DummyData fallback; dio must be imported as alias to avoid FormData/MultipartFile conflict with get package.

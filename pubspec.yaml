@@ -1,0 +1,37 @@
+name: expocore_invistor2
+description: "ExpoCore - Investor Platform"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.6.6
+  dio: ^5.4.0
+  shared_preferences: ^2.2.2
+  google_fonts: ^6.2.1
+  fl_chart: ^0.68.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  intl: ^0.19.0
+  connectivity_plus: ^5.0.2
+  lottie: ^3.1.0
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.5
+  share_plus: ^9.0.0
+  cupertino_icons: ^1.0.8
+  mobile_scanner: ^5.2.3
+  flutter_svg: ^2.0.10+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo/

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub *)",
+      "PowerShell(chcp; Write-Host \"ACP: $\\([System.Text.Encoding]::Default.CodePage\\)\")",
+      "Bash(flutter analyze *)",
+      "Bash(grep -v \"//\")",
+      "Bash(grep -rnoE \"[a-zA-Z0-9_\\\\\\)\\\\]]\\\\!\\([^=]|$\\)\" lib/web/)",
+      "Bash(sed -n '167p' lib/web/pages/web_create_event_page.dart)",
+      "Bash(sed -n '154,158p' lib/web/pages/web_scanner_page.dart)",
+      "Bash(sed -n '335p' lib/web/pages/web_settings_page.dart)",
+      "Bash(perl -0pi -e 's/Row\\\\\\(children: const \\\\[\\\\n\\(\\\\s+\\)Icon\\\\\\(Icons\\\\.check_circle_rounded, color: AppColors\\\\.success, size: 22\\\\\\),\\\\n\\\\s+SizedBox\\\\\\(width: 8\\\\\\),/Row\\(children: [\\\\n${1}const Icon\\(Icons.check_circle_rounded, color: AppColors.success, size: 22\\),\\\\n${1}const SizedBox\\(width: 8\\),/' lib/web/pages/web_scanner_page.dart)",
+      "Bash(sed -n '153,157p' lib/web/pages/web_scanner_page.dart)",
+      "Bash(perl -pi -e 's/CircularProgressIndicator\\\\\\(color: WebTheme\\\\.text, strokeWidth: 2\\\\\\)/CircularProgressIndicator\\(color: Colors.white, strokeWidth: 2\\)/g' lib/web/pages/web_create_event_page.dart lib/web/pages/web_settings_page.dart lib/web/web_login_page.dart lib/web/web_register_page.dart lib/web/pages/web_sponsor_event_page.dart)",
+      "Bash(perl -pi -e 's/active \\\\? WebTheme\\\\.text : AppColors\\\\.grey/active ? WebTheme.onGradient : AppColors.grey/g; s/Color\\\\\\(0x18FFFFFF\\\\\\)/WebTheme.border/g' lib/web/widgets/web_sidebar.dart)",
+      "Bash(perl -pi -e 's/const Divider\\\\\\(color: WebTheme\\\\.border/Divider\\(color: WebTheme.border/g' lib/web/widgets/web_sidebar.dart)",
+      "Bash(perl -0pi -e 's/\\(\\\\x27مرحباً، \\\\$\\\\{c\\\\.companyName\\\\.value\\\\.isEmpty \\\\? \"زائر\" : c\\\\.companyName\\\\.value\\\\} 👋\\\\x27,\\\\s*\\\\n\\\\s*style: TextStyle\\\\\\(color: \\)WebTheme\\\\.text/${1}WebTheme.onGradient/' lib/web/pages/web_dashboard_page.dart)",
+      "Bash(perl -pi -e 's/style: TextStyle\\\\\\(color: WebTheme\\\\.text\\\\.withOpacity\\\\\\(0\\\\.85\\\\\\), fontSize: 15\\\\\\)\\\\\\)/style: TextStyle\\(color: WebTheme.onGradient.withOpacity\\(0.85\\), fontSize: 15\\)\\)/; s/color: WebTheme\\\\.text\\\\.withOpacity\\\\\\(0\\\\.12\\\\\\)/color: WebTheme.onGradient.withOpacity\\(0.12\\)/; s/child: Icon\\\\\\(Icons\\\\.insights_rounded, color: WebTheme\\\\.text, size: 44\\\\\\)/child: Icon\\(Icons.insights_rounded, color: WebTheme.onGradient, size: 44\\)/' lib/web/pages/web_dashboard_page.dart)",
+      "Bash(sed -n '88,101p' lib/web/pages/web_dashboard_page.dart)",
+      "Bash(perl -pi -e ' *)",
+      "Bash(perl -0pi -e \"s/\\\\? 'مطلوب' : null/? 'field_required'.tr : null/g; s/'الشروط والأحكام',/'register_terms'.tr,/; s/'تسجيل الدخول',/'login_title'.tr,/;\" lib/view/screen/auth/register_view.dart)"
+    ]
+  }
+}
