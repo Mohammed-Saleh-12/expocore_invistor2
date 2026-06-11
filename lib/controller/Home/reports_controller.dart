@@ -23,6 +23,9 @@ class ReportsController extends GetxController {
     'الفعاليات': 'events', 'الحملات': 'campaigns', 'المقارنة': 'compare',
   };
 
+  // ── Derived helpers ───────────────────────────────────────
+  bool get hasDateFilter => dateFrom.value != null || dateTo.value != null;
+
   @override
   void onInit() {
     _loadReports();
@@ -40,17 +43,67 @@ class ReportsController extends GetxController {
       reports.value = DummyData.reports;
       statusRequest.value = StatusRequest.failure;
     }
-    filtered.value = reports;
+    applyFilters();
   }
 
+  // ── Filter by type chip ───────────────────────────────────
   void filterByType(String type) {
     selectedType.value = type;
-    if (type == 'الكل') {
-      filtered.value = reports;
-    } else {
-      final mapped = typeMap[type] ?? 'all';
-      filtered.value = reports.where((r) => r.type == mapped).toList();
+    applyFilters();
+  }
+
+  // ── Filter by date range ──────────────────────────────────
+  void filterByDate(DateTime? from, DateTime? to) {
+    dateFrom.value = from;
+    dateTo.value   = to;
+    applyFilters();
+  }
+
+  // ── Clear date filter only ────────────────────────────────
+  void clearDateFilter() {
+    dateFrom.value = null;
+    dateTo.value   = null;
+    applyFilters();
+  }
+
+  // ── Combined filter (type + date range) ──────────────────
+  void applyFilters() {
+    Iterable<ReportModel> list = reports;
+
+    // Type filter
+    if (selectedType.value != 'الكل') {
+      final mapped = typeMap[selectedType.value] ?? 'all';
+      list = list.where((r) => r.type == mapped);
     }
+
+    // Date-from filter — keep reports whose creation date >= dateFrom
+    if (dateFrom.value != null) {
+      final from = DateTime(
+        dateFrom.value!.year,
+        dateFrom.value!.month,
+        dateFrom.value!.day,
+      );
+      list = list.where((r) {
+        final d = _parseDate(r.createdAt);
+        return d == null || !d.isBefore(from);
+      });
+    }
+
+    // Date-to filter — keep reports whose creation date <= dateTo
+    if (dateTo.value != null) {
+      final to = DateTime(
+        dateTo.value!.year,
+        dateTo.value!.month,
+        dateTo.value!.day,
+        23, 59, 59,
+      );
+      list = list.where((r) {
+        final d = _parseDate(r.createdAt);
+        return d == null || !d.isAfter(to);
+      });
+    }
+
+    filtered.value = list.toList();
   }
 
   Future<void> downloadReport(String reportId, {String format = 'pdf'}) async {
@@ -75,19 +128,25 @@ class ReportsController extends GetxController {
     }
   }
 
-  /// تنسيق التاريخ للعرض (مسؤولية الكنترولر لا الواجهة)
+  /// Format a DateTime for display (controller responsibility, not view)
   String formatDate(DateTime? d) {
     if (d == null) return '';
-    final m = d.month.toString().padLeft(2, '0');
+    final m   = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
     return '${d.year}-$m-$day';
   }
 
   Future<void> refresh() => _loadReports();
 
+  // ── Helpers ───────────────────────────────────────────────
   List _asList(dynamic data) {
     if (data is List) return data;
     if (data is Map && data['data'] is List) return data['data'];
     return [];
+  }
+
+  /// Try to parse ISO-style date strings like "2026-01-15"
+  DateTime? _parseDate(String raw) {
+    try { return DateTime.parse(raw.trim()); } catch (_) { return null; }
   }
 }
