@@ -148,7 +148,7 @@ class WebDashboardPage extends StatelessWidget {
               _StatData('إجمالي الحجوزات', '${c.totalBookings.value}', Icons.bookmark_rounded, AppColors.darkPrimary, '+8.5%'),
               _StatData('الأجنحة النشطة', '${c.activeBooths.value}', Icons.grid_view_rounded, AppColors.darkSecondary, '+12%'),
               _StatData('الفعاليات المنشورة', '${c.publishedEvents.value}', Icons.event_rounded, AppColors.darkAccent, '+22%'),
-              _StatData('إجمالي التفاعل', _fmt(c.totalEngagement.value), Icons.trending_up_rounded, AppColors.darkPink, '+15.7%'),
+              _StatData('إجمالي التفاعل', c.formatEngagement(c.totalEngagement.value), Icons.trending_up_rounded, AppColors.darkPink, '+15.7%'),
             ];
             return LayoutBuilder(
               builder: (context, cons) {
@@ -205,8 +205,6 @@ class WebDashboardPage extends StatelessWidget {
         decoration: BoxDecoration(color: WebTheme.surface, borderRadius: BorderRadius.circular(16)),
         child: Text(t, style: TextStyle(color: AppColors.grey)),
       );
-
-  String _fmt(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}K' : '$v';
 }
 
 // ── Quick action model + button ─────────────────────────────

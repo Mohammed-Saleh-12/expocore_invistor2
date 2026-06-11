@@ -19,7 +19,8 @@ class WebNavController extends GetxController {
       ? Get.find<WebNavController>()
       : Get.put(WebNavController(), permanent: true);
 
-  final selected = 0.obs;
+  final selected    = 0.obs;
+  final messagesTab = 0.obs;   // حالة تبويب الرسائل (مسؤولية الكنترولر)
 
   // ── أقسام الموقع (بيانات التنقّل) ─────────────────────────
   final sections = const <WebSection>[

@@ -4,48 +4,45 @@ import 'package:get/get.dart';
 import '../../controller/Home/messages_controller.dart';
 import '../../controller/Home/visitor_messages_controller.dart';
 import '../../core/constant/appcolors.dart';
+import '../controllers/web_nav_controller.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebMessagesPage  —  الرسائل (الإدارة / الزوار)
 // ════════════════════════════════════════════════════════════
-class WebMessagesPage extends StatefulWidget {
+class WebMessagesPage extends StatelessWidget {
   const WebMessagesPage({super.key});
 
   @override
-  State<WebMessagesPage> createState() => _WebMessagesPageState();
-}
-
-class _WebMessagesPageState extends State<WebMessagesPage> {
-  int _tab = 0; // 0 = إدارة المعارض، 1 = الزوار
-
-  @override
   Widget build(BuildContext context) {
+    final nav = WebNavController.to;
     return Padding(
       padding: const EdgeInsets.all(28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Segment toggle ───────────────────────────────
-          Row(
-            children: [
-              _seg('رسائل الإدارة', 0),
-              const SizedBox(width: 10),
-              _seg('رسائل الزوار', 1),
-            ],
-          ),
+          // ── Segment toggle (حالة التبويب في الكنترولر) ──
+          Obx(() => Row(
+                children: [
+                  _seg(nav, 'رسائل الإدارة', 0),
+                  const SizedBox(width: 10),
+                  _seg(nav, 'رسائل الزوار', 1),
+                ],
+              )),
           const SizedBox(height: 20),
           Expanded(
-            child: _tab == 0 ? const _AdminMessages() : const _VisitorMessages(),
+            child: Obx(() => nav.messagesTab.value == 0
+                ? const _AdminMessages()
+                : const _VisitorMessages()),
           ),
         ],
       ),
     );
   }
 
-  Widget _seg(String label, int index) {
-    final active = _tab == index;
+  Widget _seg(WebNavController nav, String label, int index) {
+    final active = nav.messagesTab.value == index;
     return GestureDetector(
-      onTap: () => setState(() => _tab = index),
+      onTap: () => nav.messagesTab.value = index,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
         decoration: BoxDecoration(

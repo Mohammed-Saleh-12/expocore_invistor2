@@ -75,6 +75,13 @@ class DashboardController extends GetxController {
 
   List<ExhibitionModel> get latestExhibitions => featuredExhibitions.take(3).toList();
 
+  /// تنسيق الأرقام الكبيرة (مسؤولية الكنترولر لا الواجهة)
+  String formatEngagement(int v) {
+    if (v >= 1000000) return '${(v / 1000000).toStringAsFixed(1)}M';
+    if (v >= 1000)    return '${(v / 1000).toStringAsFixed(1)}K';
+    return '$v';
+  }
+
   Future<void> refresh() => _loadDashboard();
 
   dynamic _body(dynamic data) =>

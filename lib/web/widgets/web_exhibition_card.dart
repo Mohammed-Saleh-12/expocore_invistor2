@@ -28,14 +28,6 @@ class _WebExhibitionCardState extends State<WebExhibitionCard> {
     }
   }
 
-  String get _statusLabel {
-    switch (widget.exhibition.status) {
-      case 'active':   return 'جارٍ';
-      case 'upcoming': return 'قادم';
-      default:         return 'منتهٍ';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final e = widget.exhibition;
@@ -86,7 +78,7 @@ class _WebExhibitionCardState extends State<WebExhibitionCard> {
                         color: _statusColor.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(_statusLabel,
+                      child: Text(e.statusLabel,
                           style: TextStyle(color: WebTheme.text, fontSize: 11, fontWeight: FontWeight.w700)),
                     ),
                   ),

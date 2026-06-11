@@ -1,0 +1,1 @@
+- [Flutter Web MVC Conventions](flutter-web-mvc.md) — rules for keeping views free of logic in this GetX project

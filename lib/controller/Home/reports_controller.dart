@@ -75,6 +75,14 @@ class ReportsController extends GetxController {
     }
   }
 
+  /// تنسيق التاريخ للعرض (مسؤولية الكنترولر لا الواجهة)
+  String formatDate(DateTime? d) {
+    if (d == null) return '';
+    final m = d.month.toString().padLeft(2, '0');
+    final day = d.day.toString().padLeft(2, '0');
+    return '${d.year}-$m-$day';
+  }
+
   Future<void> refresh() => _loadReports();
 
   List _asList(dynamic data) {

@@ -54,9 +54,9 @@ class WebReportsPage extends StatelessWidget {
           // ── Date range bar ───────────────────────────────
           Obx(() => Row(
                 children: [
-                  Expanded(child: _dateBox(context, 'من', c.dateFrom.value, (d) => c.dateFrom.value = d)),
+                  Expanded(child: _dateBox(context, c, 'من', c.dateFrom.value, (d) => c.dateFrom.value = d)),
                   const SizedBox(width: 12),
-                  Expanded(child: _dateBox(context, 'إلى', c.dateTo.value, (d) => c.dateTo.value = d)),
+                  Expanded(child: _dateBox(context, c, 'إلى', c.dateTo.value, (d) => c.dateTo.value = d)),
                 ],
               )),
           const SizedBox(height: 24),
@@ -81,7 +81,7 @@ class WebReportsPage extends StatelessWidget {
     );
   }
 
-  Widget _dateBox(BuildContext context, String label, DateTime? value, ValueChanged<DateTime> onPick) =>
+  Widget _dateBox(BuildContext context, ReportsController c, String label, DateTime? value, ValueChanged<DateTime> onPick) =>
       GestureDetector(
         onTap: () async {
           final picked = await showDatePicker(
@@ -98,7 +98,7 @@ class WebReportsPage extends StatelessWidget {
           child: Row(children: [
             Icon(Icons.calendar_today_outlined, color: AppColors.darkPrimary, size: 18),
             const SizedBox(width: 10),
-            Text(value == null ? label : '${value.year}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}',
+            Text(value == null ? label : c.formatDate(value),
                 style: TextStyle(color: value == null ? AppColors.grey : WebTheme.text, fontSize: 13)),
           ]),
         ),

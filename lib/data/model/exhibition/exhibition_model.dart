@@ -27,6 +27,15 @@ class ExhibitionModel {
     this.isFavorite = false,
   });
 
+  // ── Domain helpers (منطق النطاق — لا تبعيات واجهة) ─────────
+  String get statusLabel {
+    switch (status) {
+      case 'active':   return 'جارٍ';
+      case 'upcoming': return 'قادم';
+      default:         return 'منتهٍ';
+    }
+  }
+
   factory ExhibitionModel.fromJson(Map<String, dynamic> j) => ExhibitionModel(
     id:              j['id'],
     name:            j['name'] ?? '',

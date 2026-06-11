@@ -47,7 +47,7 @@ class WebSponsorshipDetailPage extends StatelessWidget {
                 _row(Icons.timelapse_rounded, 'المدة', booking.selectedDurationLabel),
                 _row(Icons.payments_outlined, 'السعر', '${booking.price.toInt()} ر.س'),
                 _row(Icons.event_available_outlined, 'تاريخ الحجز', booking.bookedAt),
-                _row(Icons.verified_outlined, 'الحالة', _statusLabel),
+                _row(Icons.verified_outlined, 'الحالة', booking.statusLabel),
               ]),
               const SizedBox(height: 16),
 
@@ -123,7 +123,7 @@ class WebSponsorshipDetailPage extends StatelessWidget {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Container(width: 7, height: 7, decoration: BoxDecoration(color: AppColors.success, shape: BoxShape.circle)),
                   const SizedBox(width: 6),
-                  Text(_statusLabel, style: TextStyle(color: AppColors.success, fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(booking.statusLabel, style: TextStyle(color: AppColors.success, fontSize: 12, fontWeight: FontWeight.w700)),
                 ]),
               ),
             ],
@@ -248,14 +248,4 @@ class WebSponsorshipDetailPage extends StatelessWidget {
         ),
       );
 
-  String get _statusLabel {
-    switch (booking.status) {
-      case 'approved':
-      case 'confirmed':
-      case 'active':  return 'مقبول';
-      case 'pending': return 'قيد المراجعة';
-      case 'rejected': return 'مرفوض';
-      default:        return booking.status;
-    }
-  }
 }

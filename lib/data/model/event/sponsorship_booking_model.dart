@@ -39,6 +39,18 @@ class SponsorshipBookingModel {
     this.totalDays = 3,
   });
 
+  // ── Domain helpers (منطق النطاق — لا تبعيات واجهة) ─────────
+  String get statusLabel {
+    switch (status) {
+      case 'approved':
+      case 'confirmed':
+      case 'active':   return 'مقبول';
+      case 'pending':  return 'قيد المراجعة';
+      case 'rejected': return 'مرفوض';
+      default:         return status;
+    }
+  }
+
   factory SponsorshipBookingModel.fromJson(Map<String, dynamic> j) =>
       SponsorshipBookingModel(
         id:                    j['id'] ?? 0,
