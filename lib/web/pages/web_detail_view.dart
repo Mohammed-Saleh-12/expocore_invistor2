@@ -6,6 +6,7 @@ import '../../controller/Home/favorites_controller.dart';
 import '../../controller/Home/messages_controller.dart';
 import '../../controller/Home/reports_controller.dart';
 import '../../core/constant/appcolors.dart';
+import '../../core/utils/report_type_helper.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/event_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
@@ -430,7 +431,7 @@ class _EventDetail extends StatelessWidget {
 }
 
 // ════════════════════════════════════════════════════════════
-//  Report detail
+//  Report detail — type-aware
 // ════════════════════════════════════════════════════════════
 class _ReportDetail extends StatelessWidget {
   final ReportModel r;
@@ -438,43 +439,73 @@ class _ReportDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rc = Get.find<ReportsController>();
+    final rc      = Get.find<ReportsController>();
+    final content = ReportTypeHelper.of(r);
+
     return _DetailScaffold(
       title: r.title,
+      badge: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: content.accentColor.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(content.icon, size: 13, color: content.accentColor),
+          const SizedBox(width: 5),
+          Text(content.typeLabel,
+              style: TextStyle(
+                  color: content.accentColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700)),
+        ]),
+      ),
       children: [
         _desc(r.description),
         const SizedBox(height: 18),
+
+        // ── Hero metric card ──────────────────────────────
         Container(
           padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(16)),
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(r.mainValue.toInt().toString(),
-                      style: TextStyle(color: WebTheme.text, fontSize: 36, fontWeight: FontWeight.w900)),
-                  Text(r.mainLabel, style: TextStyle(color: WebTheme.text70, fontSize: 14)),
-                ],
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                decoration: BoxDecoration(color: WebTheme.text.withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
-                child: Text('+${r.trend}%', style: TextStyle(color: WebTheme.text, fontSize: 16, fontWeight: FontWeight.w700)),
-              ),
-            ],
-          ),
+          decoration: BoxDecoration(
+              gradient: AppColors.favoriteGradient,
+              borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(content.kpis.first.value,
+                  style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900)),
+              Text(content.kpis.first.label,
+                  style: TextStyle(color: WebTheme.text70, fontSize: 14)),
+            ]),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                  color: WebTheme.text.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Text('+${r.trend}%',
+                  style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700)),
+            ),
+          ]),
         ),
         const SizedBox(height: 20),
-        // ── Sparkline chart ──────────────────────────────
+
+        // ── Sparkline chart ───────────────────────────────
         if (r.sparklineData.isNotEmpty) ...[
-          _subHeader('اتجاه الأداء'),
+          _subHeader(content.chartTitle),
           const SizedBox(height: 12),
           Container(
-            height: 120,
+            height: 130,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: WebTheme.surfaceAlt, borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+                color: WebTheme.surfaceAlt,
+                borderRadius: BorderRadius.circular(14)),
             child: CustomPaint(
               size: Size.infinite,
               painter: _SparklinePainter(r.sparklineData),
@@ -482,31 +513,96 @@ class _ReportDetail extends StatelessWidget {
           ),
           const SizedBox(height: 20),
         ],
+
+        // ── Info rows ─────────────────────────────────────
         _infoRow(Icons.storefront_rounded, 'الجناح', r.boothName),
         _infoRow(Icons.event_outlined, 'الفترة', r.period),
         _infoRow(Icons.access_time_rounded, 'تاريخ الإنشاء', r.createdAt),
         const SizedBox(height: 22),
 
-        // ── KPIs ─────────────────────────────────────────
+        // ── KPIs — type-specific ──────────────────────────
         _subHeader('المؤشرات الرئيسية'),
         const SizedBox(height: 12),
         Row(
-          children: [
-            _kpi('${r.mainValue.toInt()}', r.mainLabel, AppColors.darkPrimary),
-            const SizedBox(width: 12),
-            _kpi('78%', 'معدل التفاعل', AppColors.darkSecondary),
-            const SizedBox(width: 12),
-            _kpi('4.2', 'متوسط الزيارة (د)', AppColors.darkAccent),
-          ],
+          children: content.kpis
+              .map((kpi) => Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          left: content.kpis.indexOf(kpi) <
+                                  content.kpis.length - 1
+                              ? 12
+                              : 0),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                          color: WebTheme.surfaceAlt,
+                          borderRadius: BorderRadius.circular(14)),
+                      child: Column(children: [
+                        Text(kpi.value,
+                            style: TextStyle(
+                                color: kpi.color,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900)),
+                        const SizedBox(height: 4),
+                        Text(kpi.label,
+                            style: TextStyle(
+                                color: AppColors.grey, fontSize: 11),
+                            textAlign: TextAlign.center),
+                        if (kpi.trend.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(kpi.trend,
+                              style: const TextStyle(
+                                  color: AppColors.success,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600)),
+                        ],
+                      ]),
+                    ),
+                  ))
+              .toList(),
         ),
         const SizedBox(height: 22),
 
-        // ── Insights ─────────────────────────────────────
+        // ── Data table — type-specific ────────────────────
+        _subHeader('البيانات التفصيلية'),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: WebTheme.surfaceAlt,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Table(
+            border: TableBorder.all(
+                color: WebTheme.border, width: 0.5),
+            children: [
+              _webTableRow(content.tableHeaders, isHeader: true),
+              ...content.tableRows
+                  .map((row) => _webTableRow(row)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 22),
+
+        // ── Insights — type-specific ──────────────────────
         _subHeader('رؤى وتوصيات'),
         const SizedBox(height: 12),
-        _insight('أداء الجناح يتجاوز المتوسط بنسبة ${r.trend}% هذه الفترة'),
-        _insight('أعلى تفاعل سُجّل خلال ساعات الذروة المسائية'),
-        _insight('ينصح بزيادة المحتوى التفاعلي لرفع مدة الزيارة'),
+        ...content.insights.map((text) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.lightbulb_outline_rounded,
+                      color: AppColors.darkAccent, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Text(text,
+                          style: TextStyle(
+                              color: WebTheme.text,
+                              fontSize: 13,
+                              height: 1.6))),
+                ],
+              ),
+            )),
       ],
       actions: [
         Obx(() => _actionBtn(
@@ -515,35 +611,34 @@ class _ReportDetail extends StatelessWidget {
               onTap: () => rc.downloadReport(r.id),
             )),
         const SizedBox(width: 12),
-        _actionBtn('تنزيل Excel', filled: false, onTap: () => rc.downloadReport(r.id, format: 'excel')),
+        _actionBtn('تنزيل Excel',
+            filled: false,
+            onTap: () => rc.downloadReport(r.id, format: 'excel')),
       ],
     );
   }
 
-  Widget _kpi(String value, String label, Color color) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: WebTheme.surfaceAlt, borderRadius: BorderRadius.circular(14)),
-          child: Column(
-            children: [
-              Text(value, style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.w900)),
-              const SizedBox(height: 4),
-              Text(label, style: TextStyle(color: AppColors.grey, fontSize: 11), textAlign: TextAlign.center),
-            ],
-          ),
-        ),
-      );
-
-  Widget _insight(String text) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.lightbulb_outline_rounded, color: AppColors.darkAccent, size: 18),
-            const SizedBox(width: 10),
-            Expanded(child: Text(text, style: TextStyle(color: WebTheme.text, fontSize: 13, height: 1.6))),
-          ],
-        ),
+  TableRow _webTableRow(List<String> cells, {bool isHeader = false}) =>
+      TableRow(
+        decoration: isHeader
+            ? BoxDecoration(color: AppColors.darkPrimary.withOpacity(0.15))
+            : null,
+        children: cells
+            .map((cell) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 10),
+                  child: Text(cell,
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isHeader
+                              ? FontWeight.w700
+                              : FontWeight.w400,
+                          color: isHeader
+                              ? AppColors.darkPrimary
+                              : WebTheme.text),
+                      textAlign: TextAlign.center),
+                ))
+            .toList(),
       );
 }
 

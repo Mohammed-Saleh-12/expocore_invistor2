@@ -110,7 +110,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     _logoCtrl.forward();
     await Future.delayed(const Duration(milliseconds: 700));
     _textCtrl.forward();
-    await Future.delayed(const Duration(seconds: 60));
+    await Future.delayed(const Duration(milliseconds: 1400));
     _navigate();
   }
 
