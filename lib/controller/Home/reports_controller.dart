@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
+import '../../core/services/pdf_export_service.dart';
+import '../../core/utils/report_type_helper.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../linkapi.dart';
@@ -104,6 +106,12 @@ class ReportsController extends GetxController {
     }
 
     filtered.value = list.toList();
+  }
+
+  // ── Export to PDF via window.print() ─────────────────────
+  void exportToPdf(ReportModel r) {
+    final content = ReportTypeHelper.of(r);
+    PdfExportService.printReport(r, content);
   }
 
   Future<void> downloadReport(String reportId, {String format = 'pdf'}) async {

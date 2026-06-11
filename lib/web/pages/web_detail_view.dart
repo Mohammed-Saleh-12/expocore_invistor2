@@ -605,15 +605,14 @@ class _ReportDetail extends StatelessWidget {
             )),
       ],
       actions: [
-        Obx(() => _actionBtn(
-              rc.isDownloading.value ? 'جارٍ التنزيل...' : 'تنزيل PDF',
-              filled: true,
-              onTap: () => rc.downloadReport(r.id),
-            )),
+        _actionBtn('تصدير PDF (طباعة)',
+            filled: true, onTap: () => rc.exportToPdf(r)),
         const SizedBox(width: 12),
-        _actionBtn('تنزيل Excel',
-            filled: false,
-            onTap: () => rc.downloadReport(r.id, format: 'excel')),
+        Obx(() => _actionBtn(
+              rc.isDownloading.value ? 'جارٍ التنزيل...' : 'تنزيل Excel',
+              filled: false,
+              onTap: () => rc.downloadReport(r.id, format: 'excel'),
+            )),
       ],
     );
   }
