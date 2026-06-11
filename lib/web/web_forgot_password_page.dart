@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/auth/login_controller.dart';
+import '../controller/auth/forgot_password_controller.dart';
 import '../core/class/StatusRequest.dart';
 import '../core/constant/appcolors.dart';
 import '../view/widget/Home/expocore_logo.dart';
-import '../view/widget/Home/language_toggle.dart';
 import 'controllers/web_auth_controller.dart';
 import 'web_theme.dart';
 import 'widgets/web_fade_in.dart';
 
 // ════════════════════════════════════════════════════════════
-//  WebLoginPage  —  View فقط (MVC)
-//  لا تحتوي على أي منطق أو تنسيق بين الكنترولرات
-//  كل ذلك موجود في WebAuthController و LoginController
+//  WebForgotPasswordPage  —  View فقط (MVC)
+//  لا تحتوي على أي منطق — كل ذلك في ForgotPasswordController
+//  و WebAuthController
 // ════════════════════════════════════════════════════════════
-class WebLoginPage extends StatelessWidget {
-  const WebLoginPage({super.key});
+class WebForgotPasswordPage extends StatelessWidget {
+  const WebForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<LoginController>();
+    final c    = Get.find<ForgotPasswordController>();
     final wide = MediaQuery.of(context).size.width >= 1000;
 
     return Scaffold(
@@ -31,7 +30,7 @@ class WebLoginPage extends StatelessWidget {
               flex: 5,
               child: WebFadeIn(
                 beginOffset: Offset(-0.08, 0),
-                child: _LoginBrand(),
+                child: _ForgotBrand(),
               ),
             ),
           Expanded(
@@ -45,7 +44,9 @@ class WebLoginPage extends StatelessWidget {
                     delay: const Duration(milliseconds: 200),
                     scale: true,
                     beginOffset: const Offset(0, 0.15),
-                    child: _LoginForm(c: c),
+                    child: Obx(() => c.sent.value
+                        ? _SentPanel(c: c)
+                        : _ForgotForm(c: c)),
                   ),
                 ),
               ),
@@ -58,8 +59,8 @@ class WebLoginPage extends StatelessWidget {
 }
 
 // ── Brand side ──────────────────────────────────────────────
-class _LoginBrand extends StatelessWidget {
-  const _LoginBrand();
+class _ForgotBrand extends StatelessWidget {
+  const _ForgotBrand();
 
   @override
   Widget build(BuildContext context) {
@@ -108,13 +109,13 @@ class _LoginBrand extends StatelessWidget {
                 ShaderMask(
                   shaderCallback: (b) => AppColors.favoriteGradient.createShader(b),
                   child: Text(
-                    'login_brand_title'.tr,
+                    'forgot_brand_title'.tr,
                     style: TextStyle(fontSize: 44, fontWeight: FontWeight.w900, height: 1.25, color: WebTheme.text),
                   ),
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'login_brand_desc'.tr,
+                  'forgot_brand_desc'.tr,
                   style: TextStyle(fontSize: 16, height: 1.9, color: AppColors.grey.withOpacity(0.9)),
                 ),
               ],
@@ -136,10 +137,10 @@ class _LoginBrand extends StatelessWidget {
       );
 }
 
-// ── Form side ───────────────────────────────────────────────
-class _LoginForm extends StatelessWidget {
-  final LoginController c;
-  const _LoginForm({required this.c});
+// ── Form panel ───────────────────────────────────────────────
+class _ForgotForm extends StatelessWidget {
+  final ForgotPasswordController c;
+  const _ForgotForm({required this.c});
 
   @override
   Widget build(BuildContext context) {
@@ -148,111 +149,90 @@ class _LoginForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Align(alignment: Alignment.centerLeft, child: LanguageToggle()),
+          // ── Icon ──────────────────────────────────────────
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: AppColors.favoriteGradient,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 20)],
+            ),
+            child: const Icon(Icons.lock_reset_rounded, color: Colors.white, size: 28),
+          ),
           const SizedBox(height: 20),
+
+          // ── Title ─────────────────────────────────────────
           Text(
-            'login_title'.tr,
+            'forgot_title'.tr,
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: WebTheme.text),
           ),
           const SizedBox(height: 6),
           Text(
-            'login_enter_data'.tr,
-            style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85)),
+            'forgot_hint'.tr,
+            style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85), height: 1.6),
           ),
           const SizedBox(height: 32),
 
+          // ── Email field ───────────────────────────────────
           _label('login_email'.tr),
           const SizedBox(height: 8),
-          _field(
+          TextFormField(
             controller: c.emailCtrl,
-            hint: 'name@company.com',
-            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(color: WebTheme.text),
             validator: (v) {
               if (v == null || v.isEmpty) return 'login_email_required'.tr;
               if (!GetUtils.isEmail(v.trim())) return 'login_email_invalid'.tr;
               return null;
             },
-          ),
-          const SizedBox(height: 18),
-
-          _label('login_password'.tr),
-          const SizedBox(height: 8),
-          Obx(() => _field(
-                controller: c.passwordCtrl,
-                hint: '••••••••',
-                icon: Icons.lock_outline_rounded,
-                obscure: c.obscure.value,
-                suffix: IconButton(
-                  onPressed: c.toggleObscure,
-                  icon: Icon(
-                    c.obscure.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: AppColors.grey,
-                    size: 20,
-                  ),
-                ),
-                validator: (v) => (v == null || v.isEmpty) ? 'login_password_required'.tr : null,
-              )),
-          const SizedBox(height: 10),
-
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: WebAuthController.to.goToForgotPassword,
-              child: Text(
-                'login_forgot'.tr,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.darkPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+            decoration: InputDecoration(
+              hintText: 'name@company.com',
+              hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
+              prefixIcon: const Icon(Icons.email_outlined, color: AppColors.grey, size: 20),
+              filled: true,
+              fillColor: WebTheme.surfaceAlt,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 28),
 
+          // ── Submit button ─────────────────────────────────
           Obx(() => SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: _GradientButton(
                   loading: c.status.value == StatusRequest.loading,
-                  onTap: c.login,
-                  label: 'login_btn'.tr,
+                  onTap: c.sendResetLink,
+                  label: 'forgot_btn'.tr,
                 ),
               )),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
+          // ── Back to login ─────────────────────────────────
           Center(
-            child: TextButton.icon(
-              onPressed: c.fillDemo,
-              icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.darkPrimary, size: 18),
-              label: Text(
-                'login_demo'.tr,
-                style: const TextStyle(color: AppColors.darkPink, fontSize: 13, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${'login_no_account'.tr} ',
-                  style: const TextStyle(fontSize: 13, color: AppColors.grey),
-                ),
-                GestureDetector(
-                  onTap: WebAuthController.to.goToRegister,
-                  child: Text(
-                    'register_title'.tr,
+            child: GestureDetector(
+              onTap: WebAuthController.to.goToLogin,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.arrow_back_rounded, color: AppColors.darkPrimary, size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    'forgot_back_login'.tr,
                     style: const TextStyle(
                       fontSize: 13,
                       color: AppColors.darkPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -264,38 +244,70 @@ class _LoginForm extends StatelessWidget {
         t,
         style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w600),
       );
-
-  Widget _field({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool obscure = false,
-    Widget? suffix,
-    String? Function(String?)? validator,
-  }) =>
-      TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: validator,
-        style: TextStyle(color: WebTheme.text),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
-          prefixIcon: Icon(icon, color: AppColors.grey, size: 20),
-          suffixIcon: suffix,
-          filled: true,
-          fillColor: WebTheme.surfaceAlt,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
-          ),
-        ),
-      );
 }
 
-// ── Gradient button ─────────────────────────────────────────
+// ── Success confirmation panel ───────────────────────────────
+class _SentPanel extends StatelessWidget {
+  final ForgotPasswordController c;
+  const _SentPanel({required this.c});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(height: 20),
+        // ── Success icon ──────────────────────────────────
+        Container(
+          width: 90,
+          height: 90,
+          decoration: BoxDecoration(
+            color: AppColors.success.withOpacity(0.12),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.mark_email_read_outlined, size: 48, color: AppColors.success),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'forgot_sent_title'.tr,
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: WebTheme.text),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'forgot_sent_desc'.tr,
+          style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85), height: 1.6),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 36),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: _GradientButton(
+            loading: false,
+            onTap: () {
+              c.reset();
+              WebAuthController.to.goToLogin();
+            },
+            label: 'forgot_back_login'.tr,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: TextButton(
+            onPressed: c.reset,
+            child: Text(
+              'forgot_retry'.tr,
+              style: const TextStyle(fontSize: 13, color: AppColors.grey),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Gradient button (shared with login/register pages) ───────
 class _GradientButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;

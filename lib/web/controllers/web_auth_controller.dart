@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../controller/auth/forgot_password_controller.dart';
 import '../../controller/auth/login_controller.dart';
 import '../../controller/auth/register_controller.dart';
 import '../../core/class/StatusRequest.dart';
@@ -7,7 +8,7 @@ import '../../core/services/services.dart';
 // ════════════════════════════════════════════════════════════
 //  CONTROLLER  —  WebAuthController
 //  يدير حالة الدخول لطبقة الويب (مفصول عن الـ View)
-//  يراقب LoginController و RegisterController ويتفاعل معهما
+//  يراقب LoginController و RegisterController و ForgotPasswordController
 //  وفق نمط MVC — التنسيق بين الكنترولرات يتم هنا، لا في الـ View
 // ════════════════════════════════════════════════════════════
 class WebAuthController extends GetxController {
@@ -16,8 +17,9 @@ class WebAuthController extends GetxController {
       ? Get.find<WebAuthController>()
       : Get.put(WebAuthController(), permanent: true);
 
-  final loggedIn     = false.obs;
-  final showRegister = false.obs;
+  final loggedIn          = false.obs;
+  final showRegister      = false.obs;
+  final showForgotPassword = false.obs;
 
   @override
   void onInit() {
@@ -25,34 +27,56 @@ class WebAuthController extends GetxController {
     syncFromSession();
 
     // ── مراقبة نجاح تسجيل الدخول من LoginController ─────────
-    // التنسيق بين الكنترولرات مسؤولية الكنترولر، لا الـ View
     ever(Get.find<LoginController>().status, (StatusRequest s) {
       if (s == StatusRequest.success) markLoggedIn();
     });
 
     // ── مراقبة نجاح إنشاء الحساب من RegisterController ──────
-    // عند نجاح التسجيل → العودة لشاشة الدخول تلقائياً
     ever(Get.find<RegisterController>().status, (StatusRequest s) {
       if (s == StatusRequest.success) goToLogin();
     });
+
+    // ── مراقبة نجاح إرسال رابط الاستعادة ────────────────────
+    // لا حاجة للتنقل هنا — الـ View يعرض حالة النجاح مباشرةً
   }
 
-  void goToRegister() => showRegister.value = true;
-  void goToLogin()    => showRegister.value = false;
+  // ── Navigation ────────────────────────────────────────────
+  void goToRegister() {
+    showForgotPassword.value = false;
+    showRegister.value       = true;
+  }
 
-  /// مزامنة الحالة من الجلسة المحفوظة
+  void goToLogin() {
+    showRegister.value       = false;
+    showForgotPassword.value = false;
+    _resetForgotState();
+  }
+
+  void goToForgotPassword() {
+    showRegister.value       = false;
+    showForgotPassword.value = true;
+    _resetForgotState();
+  }
+
+  // ── Session ───────────────────────────────────────────────
   void syncFromSession() => loggedIn.value = _sessionValid();
 
-  /// تفعيل الدخول (بعد نجاح تسجيل الدخول)
   void markLoggedIn() => loggedIn.value = true;
 
-  /// تسجيل الخروج
   void logout() {
     try { Get.find<Services>().clearSession(); } catch (_) {}
     loggedIn.value = false;
   }
 
+  // ── Helpers ───────────────────────────────────────────────
   bool _sessionValid() {
     try { return Get.find<Services>().isLoggedIn; } catch (_) { return false; }
+  }
+
+  void _resetForgotState() {
+    try {
+      final fc = Get.find<ForgotPasswordController>();
+      fc.reset();
+    } catch (_) {}
   }
 }

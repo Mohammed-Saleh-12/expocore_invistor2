@@ -200,6 +200,20 @@ class MyTranslation extends Translations {
       'register_brand_title': 'ابدأ رحلتك معنا\nوأنشئ حسابك الآن',
       'register_brand_desc':  'سجّل شركتك وابدأ بإدارة معارضك وأجنحتك وفعالياتك من مكان واحد.',
 
+      // ── Forgot Password ──────────────────────────────────────────────
+      'forgot_title':        'استعادة كلمة المرور',
+      'forgot_hint':         'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور.',
+      'forgot_email_hint':   'البريد الإلكتروني',
+      'forgot_btn':          'إرسال رابط الاستعادة',
+      'forgot_back_login':   'العودة لتسجيل الدخول',
+      'forgot_retry':        'إعادة المحاولة',
+      'forgot_sent_title':   'تم الإرسال!',
+      'forgot_sent_desc':    'تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور.',
+      'forgot_brand_title':  'استعادة\nكلمة المرور',
+      'forgot_brand_desc':   'أدخل بريدك الإلكتروني وسنرسل لك رابط آمن لإعادة تعيين كلمة المرور خلال دقائق.',
+      'forgot_error_title':  'خطأ في الإرسال',
+      'forgot_error_generic':'حدث خطأ. يرجى المحاولة مرة أخرى.',
+
       // ── Notifications ────────────────────────────────────────────────
       'notifications_title':    'الإشعارات',
       'notifications_empty':    'لا توجد إشعارات',
@@ -449,6 +463,20 @@ class MyTranslation extends Translations {
       'login_brand_desc':     'Manage your exhibitions, book booths, analyze performance, and connect with visitors from one powerful dashboard.',
       'register_brand_title': 'Start Your Journey\nCreate Your Account Now',
       'register_brand_desc':  'Register your company and start managing your exhibitions, booths, and events from one place.',
+
+      // ── Forgot Password ──────────────────────────────────────────────
+      'forgot_title':        'Reset Password',
+      'forgot_hint':         'Enter your email and we will send you a link to reset your password.',
+      'forgot_email_hint':   'Email address',
+      'forgot_btn':          'Send Reset Link',
+      'forgot_back_login':   'Back to Login',
+      'forgot_retry':        'Try Again',
+      'forgot_sent_title':   'Email Sent!',
+      'forgot_sent_desc':    'Check your inbox for the password reset link.',
+      'forgot_brand_title':  'Reset Your\nPassword',
+      'forgot_brand_desc':   'Enter your email and we will send you a secure link to reset your password within minutes.',
+      'forgot_error_title':  'Send Failed',
+      'forgot_error_generic':'Something went wrong. Please try again.',
 
       // ── Notifications ────────────────────────────────────────────────
       'notifications_title':    'Notifications',

@@ -5,6 +5,7 @@ import 'controllers/web_auth_controller.dart';
 import 'controllers/web_nav_controller.dart';
 import 'web_login_page.dart';
 import 'web_register_page.dart';
+import 'web_forgot_password_page.dart';
 import 'widgets/web_sidebar.dart';
 import 'widgets/web_topbar.dart';
 import 'pages/web_dashboard_page.dart';
@@ -43,8 +44,10 @@ class _WebRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = WebAuthController.to;
     return Obx(() {
-      if (auth.loggedIn.value) return const _WebHome();
-      return auth.showRegister.value ? const WebRegisterPage() : const WebLoginPage();
+      if (auth.loggedIn.value)            return const _WebHome();
+      if (auth.showForgotPassword.value)  return const WebForgotPasswordPage();
+      if (auth.showRegister.value)        return const WebRegisterPage();
+      return const WebLoginPage();
     });
   }
 }

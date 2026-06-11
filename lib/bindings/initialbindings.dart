@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../controller/auth/login_controller.dart';
 import '../controller/auth/register_controller.dart';
+import '../controller/auth/forgot_password_controller.dart';
 import '../controller/Home/dashboard_controller.dart';
 import '../controller/Home/exhibitions_controller.dart';
 import '../controller/Home/booth_controller.dart';
@@ -25,9 +26,10 @@ class InitialBindings extends Bindings {
     // ── Auth controllers (shared: mobile + web) ──────────────
     Get.lazyPut(() => LoginController(), fenix: true);
     Get.lazyPut(() => RegisterController(), fenix: true);
+    Get.lazyPut(() => ForgotPasswordController(), fenix: true);
 
     // ── Web auth orchestration (web only) ────────────────────
-    // يجب تسجيله بعد LoginController و RegisterController
+    // يجب تسجيله بعد LoginController و RegisterController و ForgotPasswordController
     // حتى يتمكن onInit من الاستماع إليهما عبر ever()
     if (GetPlatform.isWeb) {
       Get.put(WebAuthController(), permanent: true);
