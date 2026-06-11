@@ -214,6 +214,24 @@ class MyTranslation extends Translations {
       'forgot_error_title':  'خطأ في الإرسال',
       'forgot_error_generic':'حدث خطأ. يرجى المحاولة مرة أخرى.',
 
+      // ── Reset Password ───────────────────────────────────────────────
+      'reset_title':         'تعيين كلمة مرور جديدة',
+      'reset_hint':          'أدخل كلمة المرور الجديدة وتأكيدها لإعادة تعيين حسابك.',
+      'reset_new_password':  'كلمة المرور الجديدة',
+      'reset_confirm_label': 'تأكيد كلمة المرور',
+      'reset_password_hint': 'كلمة مرور قوية (8 أحرف+)',
+      'reset_confirm_hint':  'أعد كتابة كلمة المرور',
+      'reset_password_min':  'يجب أن تكون 8 أحرف على الأقل',
+      'reset_btn':           'تعيين كلمة المرور',
+      'reset_done_title':    'تم التعيين بنجاح!',
+      'reset_done_desc':     'تم تغيير كلمة مرورك. يمكنك الآن تسجيل الدخول بكلمة مرورك الجديدة.',
+      'reset_brand_title':   'تعيين\nكلمة المرور',
+      'reset_brand_desc':    'أنشئ كلمة مرور جديدة وقوية لحماية حسابك على منصة ExpoCore.',
+      'reset_invalid_link':  'الرابط غير صالح أو منتهي الصلاحية. يرجى طلب رابط جديد.',
+      'reset_error_title':   'خطأ في إعادة التعيين',
+      'reset_error_no_token':'رابط غير صالح. يرجى طلب رابط جديد من صفحة استعادة كلمة المرور.',
+      'reset_error_generic': 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+
       // ── Notifications ────────────────────────────────────────────────
       'notifications_title':    'الإشعارات',
       'notifications_empty':    'لا توجد إشعارات',
@@ -477,6 +495,24 @@ class MyTranslation extends Translations {
       'forgot_brand_desc':   'Enter your email and we will send you a secure link to reset your password within minutes.',
       'forgot_error_title':  'Send Failed',
       'forgot_error_generic':'Something went wrong. Please try again.',
+
+      // ── Reset Password ───────────────────────────────────────────────
+      'reset_title':         'Set a New Password',
+      'reset_hint':          'Enter and confirm your new password to regain access to your account.',
+      'reset_new_password':  'New Password',
+      'reset_confirm_label': 'Confirm Password',
+      'reset_password_hint': 'Strong password (8+ characters)',
+      'reset_confirm_hint':  'Re-enter your password',
+      'reset_password_min':  'Must be at least 8 characters',
+      'reset_btn':           'Set Password',
+      'reset_done_title':    'Password Updated!',
+      'reset_done_desc':     'Your password has been changed. You can now log in with your new password.',
+      'reset_brand_title':   'Set a New\nPassword',
+      'reset_brand_desc':    'Create a strong new password to secure your ExpoCore account.',
+      'reset_invalid_link':  'This link is invalid or has expired. Please request a new one.',
+      'reset_error_title':   'Reset Failed',
+      'reset_error_no_token':'Invalid link. Please request a new reset link from the forgot password page.',
+      'reset_error_generic': 'Something went wrong. Please try again.',
 
       // ── Notifications ────────────────────────────────────────────────
       'notifications_title':    'Notifications',

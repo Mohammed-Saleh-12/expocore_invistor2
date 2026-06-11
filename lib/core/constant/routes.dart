@@ -3,7 +3,8 @@ class AppRoutes {
   static const String ONBOARDING = '/onboarding';
   static const String LOGIN = '/login';
   static const String REGISTER = '/register';
-  static const String FORGOT_PW = '/forgot-password';
+  static const String FORGOT_PW  = '/forgot-password';
+  static const String RESET_PW   = '/reset-password';
   static const String DASHBOARD = '/dashboard';
   static const String EXHIBITIONS = '/exhibitions';
   static const String EXHIBITION_DETAIL = '/exhibitions/detail';

@@ -7,6 +7,7 @@ import 'view/screen/Home/onboarding_view.dart';
 import 'view/screen/auth/login_view.dart';
 import 'view/screen/auth/register_view.dart';
 import 'view/screen/auth/forgot_password_view.dart';
+import 'view/screen/auth/reset_password_view.dart';
 import 'view/screen/Home/dashboard_view.dart';
 import 'view/screen/Home/exhibitions/exhibitions_list_view.dart';
 import 'view/screen/Home/exhibitions/exhibition_detail_view.dart';
@@ -44,6 +45,7 @@ class AppPages {
     GetPage(name: AppRoutes.LOGIN,              page: () => const LoginView()),
     GetPage(name: AppRoutes.REGISTER,           page: () => const RegisterView()),
     GetPage(name: AppRoutes.FORGOT_PW,          page: () => const ForgotPasswordView()),
+    GetPage(name: AppRoutes.RESET_PW,           page: () => const ResetPasswordView()),
     GetPage(name: AppRoutes.DASHBOARD,          page: () => const DashboardView()),
     GetPage(name: AppRoutes.EXHIBITIONS,        page: () => const ExhibitionsListView()),
     GetPage(name: AppRoutes.EXHIBITION_DETAIL,  page: () => const ExhibitionDetailView()),
