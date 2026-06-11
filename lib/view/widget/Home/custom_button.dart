@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final Color? gradient;
 
-  const CustomButton( {
+  const CustomButton({
     super.key,
     required this.label,
     this.onTap,
@@ -24,9 +24,6 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final grad =
-        gradient ?? (isDark ? AppColors.darkAccent : AppColors.darkAccent);
-
     if (isOutlined) {
       return SizedBox(
         width: width ?? double.infinity,
@@ -67,7 +64,7 @@ class CustomButton extends StatelessWidget {
           width: width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
-            color: grad,
+            gradient: AppColors.favoriteGradient,
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,

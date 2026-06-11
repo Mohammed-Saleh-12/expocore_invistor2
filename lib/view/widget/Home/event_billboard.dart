@@ -186,8 +186,9 @@ class _EventBillboardSlide extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.darkSecondary, AppColors.darkAccent],
+                    colors: [AppColors.darkPrimary, AppColors.darkSecondary],
                   ),
+
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(

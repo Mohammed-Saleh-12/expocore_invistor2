@@ -34,7 +34,7 @@ class BoothsView extends GetView<BoothController> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        gradient: active ? AppColors.darkCTAGradient : null,
+                        gradient: active ? AppColors.favoriteGradient : null,
                         color: active
                             ? null
                             : (Theme.of(context).brightness == Brightness.dark

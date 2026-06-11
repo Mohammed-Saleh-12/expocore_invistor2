@@ -45,7 +45,7 @@ class BottomNavCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark    = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeIdx = _activeIndex();
     return Container(
       decoration: BoxDecoration(
@@ -81,11 +81,7 @@ class BottomNavCustom extends StatelessWidget {
                                 size: 24,
                               ),
                             )
-                          : Icon(
-                              _icons[i],
-                              color: AppColors.grey,
-                              size: 24,
-                            ),
+                          : Icon(_icons[i], color: AppColors.grey, size: 24),
                       const SizedBox(height: 2),
                       Text(
                         _labelKeys[i].tr,

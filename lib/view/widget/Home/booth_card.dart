@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
-import 'favorite_button.dart';
 
 class BoothCard extends StatelessWidget {
   final BoothModel booth;
@@ -23,19 +22,27 @@ class BoothCard extends StatelessWidget {
 
   Color _statusColor(String s) {
     switch (s) {
-      case 'active':   return AppColors.success;
-      case 'pending':  return AppColors.info;
-      case 'rejected': return AppColors.error;
-      default:         return AppColors.grey;
+      case 'active':
+        return AppColors.success;
+      case 'pending':
+        return AppColors.info;
+      case 'rejected':
+        return AppColors.error;
+      default:
+        return AppColors.grey;
     }
   }
 
   String _statusLabel(String s) {
     switch (s) {
-      case 'active':   return 'نشط';
-      case 'pending':  return 'قيد المراجعة';
-      case 'rejected': return 'مرفوض';
-      default:         return 'منتهٍ';
+      case 'active':
+        return 'نشط';
+      case 'pending':
+        return 'قيد المراجعة';
+      case 'rejected':
+        return 'مرفوض';
+      default:
+        return 'منتهٍ';
     }
   }
 
@@ -63,7 +70,9 @@ class BoothCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
+                  borderRadius: const BorderRadius.horizontal(
+                    right: Radius.circular(16),
+                  ),
                   child: Image.network(
                     booth.imageUrl,
                     width: 100,
@@ -79,11 +88,16 @@ class BoothCard extends StatelessWidget {
                 ),
                 Positioned(
                   top: 6,
-                  right: 6,
-                  child: FavoriteButton(
-                    isFavorite: booth.isFavorite,
+                  right: 8,
+                  child: GestureDetector(
                     onTap: onFavorite,
-                    size: 30,
+                    child: Icon(
+                      booth.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: booth.isFavorite
+                          ? AppColors.error
+                          : AppColors.grey,
+                      size: 22,
+                    ),
                   ),
                 ),
               ],
@@ -127,17 +141,23 @@ class BoothCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       booth.exhibitionName,
-                      style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey,
+                      ),
                     ),
                     Text(
                       'المساحة: ${booth.area.toInt()}م²',
-                      style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.grey,
+                      ),
                     ),
                     Text(
                       'السعر: ${booth.price.toInt()} ريال',
                       style: const TextStyle(
                         fontSize: 11,
-                        color: AppColors.orange,
+                        color: AppColors.success,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -171,7 +191,7 @@ class _ApprovedButtons extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              gradient: AppColors.darkCTAGradient,
+              gradient: AppColors.favoriteGradient,
               borderRadius: BorderRadius.circular(7),
             ),
             child: const Text(
@@ -216,7 +236,7 @@ class _PendingButtons extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              gradient: AppColors.darkCTAGradient,
+              gradient: AppColors.favoriteGradient,
               borderRadius: BorderRadius.circular(7),
             ),
             child: const Text(
@@ -238,11 +258,18 @@ class _PendingButtons extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.map_outlined, size: 11, color: AppColors.darkPrimary),
+                  Icon(
+                    Icons.map_outlined,
+                    size: 11,
+                    color: AppColors.darkPrimary,
+                  ),
                   SizedBox(width: 3),
                   Text(
                     'على الخريطة',
-                    style: TextStyle(color: AppColors.darkPrimary, fontSize: 10),
+                    style: TextStyle(
+                      color: AppColors.darkPrimary,
+                      fontSize: 10,
+                    ),
                   ),
                 ],
               ),

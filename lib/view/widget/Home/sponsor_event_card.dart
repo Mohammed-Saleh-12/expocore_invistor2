@@ -11,7 +11,8 @@ class SponsorEventCard extends StatelessWidget {
     super.key,
     required this.event,
     required this.onTap,
-    this.onFavorite,  this.showFavorite,
+    this.onFavorite,
+    this.showFavorite,
   });
 
   IconData _typeIcon(String type) {
@@ -78,43 +79,24 @@ class SponsorEventCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 150,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.transparent, Color(0x99000000)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.darkSecondary,
-                            AppColors.darkAccent,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        'فرصة إعلانية',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
+
+                  if (onFavorite != null)
+                    Positioned(
+                      top: 10,
+                      left: 6,
+                      child: GestureDetector(
+                        onTap: onFavorite,
+                        child: Icon(
+                          event.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: event.isFavorite
+                              ? AppColors.error
+                              : AppColors.grey,
+                          size: 22,
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -162,19 +144,6 @@ class SponsorEventCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (onFavorite != null)
-                        GestureDetector(
-                          onTap: onFavorite,
-                          child: Icon(
-                            event.isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: event.isFavorite
-                                ? AppColors.error
-                                : AppColors.grey,
-                            size: 22,
-                          ),
-                        ),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -228,12 +197,7 @@ class SponsorEventCard extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppColors.darkPrimary,
-                              AppColors.darkSecondary,
-                            ],
-                          ),
+                          gradient: AppColors.favoriteGradient,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(

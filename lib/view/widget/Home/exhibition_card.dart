@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
-import 'favorite_button.dart';
 
 class ExhibitionCard extends StatelessWidget {
   final ExhibitionModel exhibition;
@@ -110,9 +109,17 @@ class ExhibitionCard extends StatelessWidget {
                 Positioned(
                   top: 10,
                   left: 10,
-                  child: FavoriteButton(
-                    isFavorite: exhibition.isFavorite,
+                  child: GestureDetector(
                     onTap: onFavorite,
+                    child: Icon(
+                      exhibition.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: exhibition.isFavorite
+                          ? AppColors.error
+                          : AppColors.grey,
+                      size: 22,
+                    ),
                   ),
                 ),
               ],
@@ -195,12 +202,8 @@ class ExhibitionCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                AppColors.darkPrimary,
-                                AppColors.darkSecondary,
-                              ],
-                            ),
+                            gradient: AppColors.favoriteGradient,
+
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(

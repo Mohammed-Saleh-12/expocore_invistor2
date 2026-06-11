@@ -178,6 +178,8 @@ class _AuthInterceptor extends dio.Interceptor {
     try {
       Get.find<Services>().clearSession();
     } catch (_) {}
+    // على الويب تتولى WebAuthController إدارة حالة الجلسة — لا نستخدم مسارات GetX
+    if (GetPlatform.isWeb) return;
     // إعادة توجيه للوجين — يُنفَّذ مرة واحدة فقط
     if (Get.currentRoute != '/login') {
       Get.offAllNamed('/login');

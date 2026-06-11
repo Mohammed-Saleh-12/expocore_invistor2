@@ -45,30 +45,24 @@ class DashboardView extends GetView<DashboardController> {
                     // Brand name
                     RichText(
                       text: const TextSpan(
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: 2),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                        ),
                         children: [
-                          TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
-                          TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
+                          TextSpan(
+                            text: 'EXPO',
+                            style: TextStyle(color: AppColors.darkSecondary),
+                          ),
+                          TextSpan(
+                            text: 'CORE',
+                            style: TextStyle(color: AppColors.darkAccent),
+                          ),
                         ],
                       ),
                     ),
                     const Spacer(),
-                    // Company name chip
-                    Obx(() => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.darkPrimary.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
-                      ),
-                      child: Text(
-                        controller.companyName.value.isNotEmpty
-                            ? controller.companyName.value
-                            : 'الرئيسية',
-                        style: const TextStyle(fontSize: 11, color: AppColors.darkPink, fontWeight: FontWeight.w600),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
                     Obx(
                       () => Stack(
                         children: [
@@ -82,8 +76,8 @@ class DashboardView extends GetView<DashboardController> {
                               right: 8,
                               top: 8,
                               child: Container(
-                                width: 16,
-                                height: 16,
+                                width: 14,
+                                height: 14,
                                 decoration: const BoxDecoration(
                                   color: AppColors.darkSecondary,
                                   shape: BoxShape.circle,
@@ -109,44 +103,51 @@ class DashboardView extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
-                    // Exhibition billboard (داخل Obx ليظهر بعد تحميل البيانات)
-                    Obx(() => ExhibitionBillboard(
-                          key: ValueKey(controller.featuredExhibitions.length),
-                          exhibitions: controller.featuredExhibitions.toList(),
-                          onTap: (e) => Get.toNamed(
-                            AppRoutes.EXHIBITION_DETAIL,
-                            arguments: e,
-                          ),
-                        )),
+                    Obx(
+                      () => ExhibitionBillboard(
+                        key: ValueKey(controller.featuredExhibitions.length),
+                        exhibitions: controller.featuredExhibitions.toList(),
+                        onTap: (e) => Get.toNamed(
+                          AppRoutes.EXHIBITION_DETAIL,
+                          arguments: e,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     _performanceCard(context),
                     const SizedBox(height: 20),
                     _quickActions(context),
                     const SizedBox(height: 20),
                     _sectionHeader('أحدث المعارض', AppRoutes.EXHIBITIONS),
-                    Obx(() => Column(
-                          children: controller.latestExhibitions
-                              .map(
-                                (e) => ExhibitionCard(
-                                  exhibition: e,
-                                  onTap: () => Get.toNamed(
-                                    AppRoutes.EXHIBITION_DETAIL,
-                                    arguments: e,
-                                  ),
-                                  onFavorite: () {},
+                    Obx(
+                      () => Column(
+                        children: controller.latestExhibitions
+                            .map(
+                              (e) => ExhibitionCard(
+                                exhibition: e,
+                                onTap: () => Get.toNamed(
+                                  AppRoutes.EXHIBITION_DETAIL,
+                                  arguments: e,
                                 ),
-                              )
-                              .toList(),
-                        )),
+                                onFavorite: () {},
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     // Events billboard (داخل Obx ليظهر بعد التحميل)
-                    Obx(() => EventBillboard(
-                          key: ValueKey(eventsCtrl.exhibitionSponsorEvents.length),
-                          events: eventsCtrl.exhibitionSponsorEvents.toList(),
-                          onTap: (ev) => _showSponsorSheet(context, ev, eventsCtrl),
-                        )),
-                    const SizedBox(height: 8),
+                    Obx(
+                      () => EventBillboard(
+                        key: ValueKey(
+                          eventsCtrl.exhibitionSponsorEvents.length,
+                        ),
+                        events: eventsCtrl.exhibitionSponsorEvents.toList(),
+                        onTap: (ev) =>
+                            _showSponsorSheet(context, ev, eventsCtrl),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     // Upcoming sponsor events from exhibitions investor participates in
                     _sectionHeader(
                       'فعاليات المعارض القادمة',
@@ -225,7 +226,9 @@ class DashboardView extends GetView<DashboardController> {
               () => DropdownButton<String>(
                 value: controller.selectedPeriod.value,
                 underline: const SizedBox(),
-                icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+                menuWidth: 100,
+                borderRadius: BorderRadius.circular(12),
+                icon: const Icon(Icons.keyboard_arrow_down, size: 16),
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.darkPrimary,
@@ -293,8 +296,8 @@ class DashboardView extends GetView<DashboardController> {
         'icon': Icons.qr_code_scanner_rounded,
         'label': 'مسح QR',
         'route': AppRoutes.QR_SCANNER,
-        'color': AppColors.darkPrimary,
-        'gradient': true,
+        'color': AppColors.darkAccent,
+        'gradient': false,
       },
       {
         'icon': Icons.add_circle_outline,
@@ -321,14 +324,14 @@ class DashboardView extends GetView<DashboardController> {
         'icon': Icons.bar_chart,
         'label': 'التقارير',
         'route': AppRoutes.REPORTS,
-        'color': AppColors.darkSecondary,
+        'color': AppColors.info,
         'gradient': false,
       },
       {
         'icon': Icons.message,
         'label': 'التواصل',
         'route': AppRoutes.MESSAGES,
-        'color': AppColors.darkAccent,
+        'color': const Color.fromARGB(255, 192, 31, 255),
         'gradient': false,
       },
     ];
@@ -351,7 +354,7 @@ class DashboardView extends GetView<DashboardController> {
             itemCount: actions.length,
             itemBuilder: (_, i) {
               final isGrad = actions[i]['gradient'] as bool;
-              final color  = actions[i]['color'] as Color;
+              final color = actions[i]['color'] as Color;
               return GestureDetector(
                 onTap: () => Get.toNamed(actions[i]['route'] as String),
                 child: Container(
@@ -368,7 +371,15 @@ class DashboardView extends GetView<DashboardController> {
                           color: isGrad ? null : color.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: isGrad
-                              ? [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 12, spreadRadius: 1)]
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.darkPrimary.withOpacity(
+                                      0.4,
+                                    ),
+                                    blurRadius: 12,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
                               : null,
                         ),
                         child: Icon(
@@ -382,7 +393,9 @@ class DashboardView extends GetView<DashboardController> {
                         actions[i]['label'] as String,
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: isGrad ? FontWeight.w700 : FontWeight.w400,
+                          fontWeight: isGrad
+                              ? FontWeight.w700
+                              : FontWeight.w400,
                           color: isGrad ? AppColors.darkPink : null,
                         ),
                         textAlign: TextAlign.center,

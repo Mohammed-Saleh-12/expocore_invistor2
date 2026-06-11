@@ -18,7 +18,7 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
       bottomNavigationBar: const BottomNavCustom(),
       body: Column(
         children: [
-          SizedBox(height: 36),
+          SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Column(
@@ -33,9 +33,13 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
                         onChanged: controller.onSearch,
                         decoration: InputDecoration(
                           hintText: 'ابحث عن معرض...',
-                          prefixIcon: const Icon(Icons.search, color: AppColors.grey),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: AppColors.grey,
+                          ),
                           filled: true,
-                          fillColor: Theme.of(context).brightness == Brightness.dark
+                          fillColor:
+                              Theme.of(context).brightness == Brightness.dark
                               ? AppColors.darkCard
                               : AppColors.lightCard,
                           border: OutlineInputBorder(
@@ -120,8 +124,8 @@ class _FilterButton extends StatelessWidget {
                 color: hasActive
                     ? null
                     : (Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkCard
-                        : AppColors.lightCard),
+                          ? AppColors.darkCard
+                          : AppColors.lightCard),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -136,7 +140,10 @@ class _FilterButton extends StatelessWidget {
                 right: -4,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
                   decoration: const BoxDecoration(
                     color: AppColors.darkSecondary,
                     shape: BoxShape.circle,
@@ -144,7 +151,11 @@ class _FilterButton extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     '$count',
-                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -168,13 +179,25 @@ class _ActiveFilters extends StatelessWidget {
       final chips = <Widget>[];
 
       if (controller.statusFilter.value != 'الكل') {
-        chips.add(_chip(controller.statusFilter.value, () => controller.applyFilter('الكل')));
+        chips.add(
+          _chip(
+            controller.statusFilter.value,
+            () => controller.applyFilter('الكل'),
+          ),
+        );
       }
       if (controller.sectorFilter.value != 'الكل') {
-        chips.add(_chip(controller.sectorFilter.value, () => controller.setSector('الكل')));
+        chips.add(
+          _chip(
+            controller.sectorFilter.value,
+            () => controller.setSector('الكل'),
+          ),
+        );
       }
       if (controller.cityFilter.value != 'الكل') {
-        chips.add(_chip(controller.cityFilter.value, () => controller.setCity('الكل')));
+        chips.add(
+          _chip(controller.cityFilter.value, () => controller.setCity('الكل')),
+        );
       }
 
       if (chips.isEmpty) return const SizedBox.shrink();
@@ -187,30 +210,34 @@ class _ActiveFilters extends StatelessWidget {
   }
 
   Widget _chip(String label, VoidCallback onRemove) => Container(
-        margin: const EdgeInsets.only(left: 8),
-        padding: const EdgeInsets.only(right: 12, left: 6, top: 6, bottom: 6),
-        decoration: BoxDecoration(
-          color: AppColors.darkPrimary.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.darkPrimary.withOpacity(0.35)),
+    margin: const EdgeInsets.only(left: 8),
+    padding: const EdgeInsets.only(right: 12, left: 6, top: 6, bottom: 6),
+    decoration: BoxDecoration(
+      color: AppColors.darkPrimary.withOpacity(0.15),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.darkPrimary.withOpacity(0.35)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.darkPink,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.darkPink,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(width: 4),
-            GestureDetector(
-              onTap: onRemove,
-              child: const Icon(Icons.close_rounded, size: 14, color: AppColors.darkPrimary),
-            ),
-          ],
+        const SizedBox(width: 4),
+        GestureDetector(
+          onTap: onRemove,
+          child: const Icon(
+            Icons.close_rounded,
+            size: 14,
+            color: AppColors.darkPrimary,
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
