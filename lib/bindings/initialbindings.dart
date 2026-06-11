@@ -17,12 +17,23 @@ import '../controller/Home/profile_company_controller.dart';
 import '../controller/Home/booking_controller.dart';
 import '../controller/Home/booth_map_controller.dart';
 import '../controller/Home/booth_management_controller.dart';
+import '../web/controllers/web_auth_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
   void dependencies() {
+    // ── Auth controllers (shared: mobile + web) ──────────────
     Get.lazyPut(() => LoginController(), fenix: true);
     Get.lazyPut(() => RegisterController(), fenix: true);
+
+    // ── Web auth orchestration (web only) ────────────────────
+    // يجب تسجيله بعد LoginController و RegisterController
+    // حتى يتمكن onInit من الاستماع إليهما عبر ever()
+    if (GetPlatform.isWeb) {
+      Get.put(WebAuthController(), permanent: true);
+    }
+
+    // ── Home controllers ─────────────────────────────────────
     Get.lazyPut(() => DashboardController(), fenix: true);
     Get.lazyPut(() => ExhibitionsController(), fenix: true);
     Get.lazyPut(() => BoothController(), fenix: true);

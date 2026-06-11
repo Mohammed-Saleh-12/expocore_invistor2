@@ -1,47 +1,27 @@
 import 'package:flutter/material.dart';
-import 'web_theme.dart';
 import 'package:get/get.dart';
 import '../controller/auth/login_controller.dart';
 import '../core/class/StatusRequest.dart';
 import '../core/constant/appcolors.dart';
 import '../view/widget/Home/expocore_logo.dart';
-import 'controllers/web_auth_controller.dart';
-import 'widgets/web_fade_in.dart';
 import '../view/widget/Home/language_toggle.dart';
+import 'controllers/web_auth_controller.dart';
+import 'web_theme.dart';
+import 'widgets/web_fade_in.dart';
 
 // ════════════════════════════════════════════════════════════
-//  WebLoginPage  —  صفحة دخول الويب (مقسّمة: تعريف + نموذج)
+//  WebLoginPage  —  View فقط (MVC)
+//  لا تحتوي على أي منطق أو تنسيق بين الكنترولرات
+//  كل ذلك موجود في WebAuthController و LoginController
 // ════════════════════════════════════════════════════════════
-class WebLoginPage extends StatefulWidget {
+class WebLoginPage extends StatelessWidget {
   const WebLoginPage({super.key});
 
   @override
-  State<WebLoginPage> createState() => _WebLoginPageState();
-}
-
-class _WebLoginPageState extends State<WebLoginPage> {
-  late final LoginController c;
-  Worker? _worker;
-
-  @override
-  void initState() {
-    super.initState();
-    c = Get.find<LoginController>();
-    // عند نجاح الدخول → فعّل واجهة الويب عبر الكنترولر
-    _worker = ever(c.status, (s) {
-      if (s == StatusRequest.success) WebAuthController.to.markLoggedIn();
-    });
-  }
-
-  @override
-  void dispose() {
-    _worker?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final c = Get.find<LoginController>();
     final wide = MediaQuery.of(context).size.width >= 1000;
+
     return Scaffold(
       backgroundColor: WebTheme.bg,
       body: Row(
@@ -49,7 +29,10 @@ class _WebLoginPageState extends State<WebLoginPage> {
           if (wide)
             const Expanded(
               flex: 5,
-              child: WebFadeIn(beginOffset: Offset(-0.08, 0), child: _LoginBrand()),
+              child: WebFadeIn(
+                beginOffset: Offset(-0.08, 0),
+                child: _LoginBrand(),
+              ),
             ),
           Expanded(
             flex: 4,
@@ -81,7 +64,7 @@ class _LoginBrand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF2D0A5C), Color(0xFF1A0533), Color(0xFF0D0221)],
           begin: Alignment.topLeft,
@@ -111,7 +94,7 @@ class _LoginBrand extends StatelessWidget {
                     ),
                     const SizedBox(width: 16),
                     RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
                         children: [
                           TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
@@ -143,9 +126,13 @@ class _LoginBrand extends StatelessWidget {
   }
 
   Widget _blob(double s, Color c) => Container(
-        width: s, height: s,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: c,
-            boxShadow: [BoxShadow(color: c, blurRadius: 120, spreadRadius: 40)]),
+        width: s,
+        height: s,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: c,
+          boxShadow: [BoxShadow(color: c, blurRadius: 120, spreadRadius: 40)],
+        ),
       );
 }
 
@@ -163,11 +150,15 @@ class _LoginForm extends StatelessWidget {
         children: [
           const Align(alignment: Alignment.centerLeft, child: LanguageToggle()),
           const SizedBox(height: 20),
-          Text('login_title'.tr,
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: WebTheme.text)),
+          Text(
+            'login_title'.tr,
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: WebTheme.text),
+          ),
           const SizedBox(height: 6),
-          Text('login_enter_data'.tr,
-              style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85))),
+          Text(
+            'login_enter_data'.tr,
+            style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85)),
+          ),
           const SizedBox(height: 32),
 
           _label('login_email'.tr),
@@ -195,14 +186,14 @@ class _LoginForm extends StatelessWidget {
                   onPressed: c.toggleObscure,
                   icon: Icon(
                     c.obscure.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: AppColors.grey, size: 20,
+                    color: AppColors.grey,
+                    size: 20,
                   ),
                 ),
                 validator: (v) => (v == null || v.isEmpty) ? 'login_password_required'.tr : null,
               )),
           const SizedBox(height: 24),
 
-          // Submit
           Obx(() => SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -214,27 +205,36 @@ class _LoginForm extends StatelessWidget {
               )),
           const SizedBox(height: 16),
 
-          // Demo
           Center(
             child: TextButton.icon(
               onPressed: c.fillDemo,
-              icon: Icon(Icons.play_circle_outline_rounded, color: AppColors.darkPrimary, size: 18),
-              label: Text('login_demo'.tr,
-                  style: TextStyle(color: AppColors.darkPink, fontSize: 13, fontWeight: FontWeight.w600)),
+              icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.darkPrimary, size: 18),
+              label: Text(
+                'login_demo'.tr,
+                style: const TextStyle(color: AppColors.darkPink, fontSize: 13, fontWeight: FontWeight.w600),
+              ),
             ),
           ),
           const SizedBox(height: 8),
 
-          // إنشاء حساب
           Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('${'login_no_account'.tr} ', style: const TextStyle(fontSize: 13, color: AppColors.grey)),
+                Text(
+                  '${'login_no_account'.tr} ',
+                  style: const TextStyle(fontSize: 13, color: AppColors.grey),
+                ),
                 GestureDetector(
                   onTap: WebAuthController.to.goToRegister,
-                  child: Text('register_title'.tr,
-                      style: const TextStyle(fontSize: 13, color: AppColors.darkPrimary, fontWeight: FontWeight.w700)),
+                  child: Text(
+                    'register_title'.tr,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.darkPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -244,8 +244,10 @@ class _LoginForm extends StatelessWidget {
     );
   }
 
-  Widget _label(String t) =>
-      Text(t, style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w600));
+  Widget _label(String t) => Text(
+        t,
+        style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w600),
+      );
 
   Widget _field({
     required TextEditingController controller,
@@ -271,7 +273,7 @@ class _LoginForm extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.darkPrimary, width: 1.5),
+            borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
           ),
         ),
       );
@@ -292,11 +294,13 @@ class _GradientButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: AppColors.favoriteGradient,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6))],
+          boxShadow: [
+            BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
         ),
         alignment: Alignment.center,
         child: loading
-            ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
             : Text(label, style: TextStyle(color: WebTheme.text, fontSize: 16, fontWeight: FontWeight.w700)),
       ),
     );
