@@ -22,6 +22,7 @@ import 'web_sponsorship_detail_page.dart';
 import 'web_scanner_page.dart';
 import 'web_notifications_page.dart';
 import 'web_sponsor_event_page.dart';
+import 'web_map_page.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDetailView  —  موجّه الصفحات الداخلية (يعرض الصفحة المناسبة)
@@ -53,6 +54,8 @@ class WebDetailView extends StatelessWidget {
         return const WebNotificationsPage();
       case WebDetailType.sponsorEvent:
         return WebSponsorEventPage(event: request.data as ExhibitionSponsorEvent);
+      case WebDetailType.map:
+        return const WebMapPage();
     }
   }
 }

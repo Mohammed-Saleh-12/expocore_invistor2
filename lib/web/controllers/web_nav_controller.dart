@@ -74,6 +74,9 @@ class WebNavController extends GetxController {
   void openSponsorEvent(ExhibitionSponsorEvent e) =>
       detail.value = WebDetailRequest(WebDetailType.sponsorEvent, data: e);
 
+  void openMap() =>
+      detail.value = const WebDetailRequest(WebDetailType.map);
+
   void closeDetail() => detail.value = null;
 
   WebSection get current => sections[selected.value];
@@ -90,6 +93,7 @@ class WebNavController extends GetxController {
       case WebDetailType.scanner:        return 'مسح QR / باركود';
       case WebDetailType.notifications:  return 'الإشعارات';
       case WebDetailType.sponsorEvent:   return 'رعاية الفعالية';
+      case WebDetailType.map:            return 'خريطة المعرض 3D';
       case null:                      return current.label;
     }
   }
