@@ -42,44 +42,44 @@ class LoginController extends GetxController {
   // ── Login ─────────────────────────────────────────────────
   Future<void> login() async {
     if (!formKey.currentState!.validate()) return;
-    // status.value = StatusRequest.loading;
+    status.value = StatusRequest.loading;
 
-    // // ── Demo mode: no API call needed ────────────────────────
-    // if (_isDemoCredentials()) {
-    //   await Future.delayed(const Duration(milliseconds: 800));
-    //   await _saveSession(
-    //     _demoToken,
-    //     _demoCompany,
-    //     email:  _demoEmail,
-    //     role:   'visitor',
-    //   );
-    //   status.value = StatusRequest.success;
-    //   if (!GetPlatform.isWeb) Get.offAllNamed(AppRoutes.DASHBOARD);
-    //   return;
-    // }
+    // ── Demo mode ────────────────────────────────────────────
+    if (_isDemoCredentials()) {
+      await Future.delayed(const Duration(milliseconds: 600));
+      await _saveSession(
+        _demoToken,
+        _demoCompany,
+        email: _demoEmail,
+        role:  'visitor',
+      );
+      status.value = StatusRequest.success;
+      if (!GetPlatform.isWeb) Get.offAllNamed(AppRoutes.DASHBOARD);
+      return;
+    }
 
-    // // ── Real API call ─────────────────────────────────────────
-    // final result = await _crud.postData(AppLink.login, {
-    //   'email':       emailCtrl.text.trim(),
-    //   'password':    passwordCtrl.text,
-    //   'remember_me': rememberMe.value,
-    // });
+    // ── Real API call ─────────────────────────────────────────
+    final result = await _crud.postData(AppLink.login, {
+      'email':       emailCtrl.text.trim(),
+      'password':    passwordCtrl.text,
+      'remember_me': rememberMe.value,
+    });
 
-    // if (result['status'] == true) {
-    //   final data    = result['data'];
-    //   final token   = _extract(data, ['token', 'access_token', 'data.token']) ?? '';
-    //   final company = _extract(data, ['company_name', 'user.company_name', 'data.company_name']) ?? 'شركتي';
-    //   final email   = _extract(data, ['email', 'user.email']) ?? '';
-    //   final userId  = (_extract(data, ['id', 'user.id', 'user_id']) as num?)?.toInt() ?? 0;
-    //   final role    = _extract(data, ['role', 'user.role']) ?? 'visitor';
-    //   final expiresIn = (_extract(data, ['expires_in']) as num?)?.toInt() ?? 0;
-    //   await _saveSession(token, company, email: email, userId: userId, role: role, expiresIn: expiresIn);
-    //   status.value = StatusRequest.success;
-    if (!GetPlatform.isWeb) Get.offAllNamed(AppRoutes.DASHBOARD);
-    // } else {
-    //   status.value = StatusRequest.failure;
-    //   _showError(result['message'] ?? 'تحقق من البريد الإلكتروني وكلمة المرور');
-    // }
+    if (result['status'] == true) {
+      final data      = result['data'];
+      final token     = _extract(data, ['token', 'access_token', 'data.token']) ?? '';
+      final company   = _extract(data, ['company_name', 'user.company_name', 'data.company_name']) ?? 'شركتي';
+      final email     = _extract(data, ['email', 'user.email']) ?? '';
+      final userId    = (_extract(data, ['id', 'user.id', 'user_id']) as num?)?.toInt() ?? 0;
+      final role      = _extract(data, ['role', 'user.role']) ?? 'visitor';
+      final expiresIn = (_extract(data, ['expires_in']) as num?)?.toInt() ?? 0;
+      await _saveSession(token, company, email: email, userId: userId, role: role, expiresIn: expiresIn);
+      status.value = StatusRequest.success;
+      if (!GetPlatform.isWeb) Get.offAllNamed(AppRoutes.DASHBOARD);
+    } else {
+      status.value = StatusRequest.failure;
+      _showError(result['message'] ?? 'تحقق من البريد الإلكتروني وكلمة المرور');
+    }
   }
 
   // ── Helpers ───────────────────────────────────────────────
