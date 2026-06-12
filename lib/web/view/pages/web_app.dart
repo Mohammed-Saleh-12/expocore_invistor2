@@ -93,7 +93,7 @@ class _WebHome extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Obx(() => WebTopbar()),
+                  const WebTopbar(),
                   Expanded(
                     child: Obx(() {
                       final detail  = nav.detail.value;

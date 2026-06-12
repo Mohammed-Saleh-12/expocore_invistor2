@@ -551,7 +551,7 @@ class _BoothDetail extends StatelessWidget {
         filled: true,
         onTap: () {
           Get.find<MessagesController>()
-              .openConversationForExhibitionName(b.exhibitionName);
+              .prepareConversationForExhibition(b.exhibitionName);
           WebNavController.to.select(6);
         },
       ),
