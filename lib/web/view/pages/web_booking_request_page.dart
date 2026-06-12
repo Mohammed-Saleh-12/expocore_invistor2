@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/booking_controller.dart';
+import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
 import '../../controllers/web_nav_controller.dart';
@@ -33,6 +34,13 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
     c.securitySvc.value = false;
     c.cleaningService.value = false;
     c.notesCtrl.clear();
+    ever(c.status, (StatusRequest s) {
+      if (s == StatusRequest.success && mounted) {
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (mounted) WebNavController.to.closeDetail();
+        });
+      }
+    });
   }
 
   @override

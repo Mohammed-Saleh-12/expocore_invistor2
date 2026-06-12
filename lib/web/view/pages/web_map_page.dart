@@ -432,12 +432,12 @@ class _WebBoothInfoPanel extends StatelessWidget {
                     area: booth.area, status: 'pending', price: booth.price, endDate: '2026-07-20',
                     location: '${booth.hallName} - صف ${booth.row + 1}', amenities: booth.amenities, isFavorite: false,
                   );
-                  WebNavController.to.openBooth(boothModel);
+                  WebNavController.to.openBookingRequest(boothModel);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
-                  child: const Text('حجز الجناح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  child: const Text('احجز هذا الجناح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                 ),
               ),
             ],
