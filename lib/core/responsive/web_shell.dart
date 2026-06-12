@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../web/web_app.dart';
+import '../../web/view/pages/web_app.dart';
 import 'responsive_config.dart';
 
 // ════════════════════════════════════════════════════════════

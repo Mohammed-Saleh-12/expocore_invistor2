@@ -14,7 +14,6 @@ import '../../data/model/event/exhibition_sponsor_event_model.dart';
 //  يدير تنقّل أقسام نسخة الويب
 // ════════════════════════════════════════════════════════════
 class WebNavController extends GetxController {
-  /// accessor آمن — يُنشئ الكنترولر عند أول استخدام
   static WebNavController get to => Get.isRegistered<WebNavController>()
       ? Get.find<WebNavController>()
       : Get.put(WebNavController(), permanent: true);
