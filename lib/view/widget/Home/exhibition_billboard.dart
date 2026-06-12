@@ -1,60 +1,14 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
+import '../../../controller/Home/exhibition_billboard_controller.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
 
-class ExhibitionBillboard extends StatefulWidget {
+class ExhibitionBillboard extends StatelessWidget {
   final List<ExhibitionModel> exhibitions;
   final void Function(ExhibitionModel)? onTap;
 
-  const ExhibitionBillboard({
-    super.key,
-    required this.exhibitions,
-    this.onTap,
-  });
-
-  @override
-  State<ExhibitionBillboard> createState() => _ExhibitionBillboardState();
-}
-
-class _ExhibitionBillboardState extends State<ExhibitionBillboard> {
-  late final PageController _pageController;
-  late final Timer _autoTimer;
-  int _current = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 1.0);
-    _autoTimer = Timer.periodic(const Duration(seconds: 4), (_) => _next());
-  }
-
-  @override
-  void dispose() {
-    _autoTimer.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _next() {
-    if (widget.exhibitions.isEmpty) return;
-    final next = (_current + 1) % widget.exhibitions.length;
-    _animateTo(next);
-  }
-
-  void _prev() {
-    if (widget.exhibitions.isEmpty) return;
-    final prev = (_current - 1 + widget.exhibitions.length) % widget.exhibitions.length;
-    _animateTo(prev);
-  }
-
-  void _animateTo(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOutCubic,
-    );
-  }
+  const ExhibitionBillboard({super.key, required this.exhibitions, this.onTap});
 
   String _statusLabel(String status) {
     switch (status) {
@@ -74,8 +28,9 @@ class _ExhibitionBillboardState extends State<ExhibitionBillboard> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.exhibitions.isEmpty) return const SizedBox.shrink();
-
+    if (exhibitions.isEmpty) return const SizedBox.shrink();
+    final ctrl = Get.put(ExhibitionBillboardController(), tag: 'exhibition_billboard');
+    ctrl.init(exhibitions.length);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -86,50 +41,41 @@ class _ExhibitionBillboardState extends State<ExhibitionBillboard> {
             SizedBox(
               height: 210,
               child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.exhibitions.length,
-                onPageChanged: (i) => setState(() => _current = i),
-                itemBuilder: (context, index) {
-                  final ex = widget.exhibitions[index];
+                controller: ctrl.pageCtrl,
+                itemCount: exhibitions.length,
+                onPageChanged: ctrl.onPageChanged,
+                itemBuilder: (_, index) {
+                  final ex = exhibitions[index];
                   return GestureDetector(
-                    onTap: () => widget.onTap?.call(ex),
-                    child: _BillboardSlide(exhibition: ex, statusLabel: _statusLabel(ex.status), statusColor: _statusColor(ex.status)),
+                    onTap: () => onTap?.call(ex),
+                    child: _BillboardSlide(
+                      exhibition: ex,
+                      statusLabel: _statusLabel(ex.status),
+                      statusColor: _statusColor(ex.status),
+                    ),
                   );
                 },
               ),
             ),
-
-            // Left arrow
-            Positioned(
-              left: 6,
-              child: _NavButton(icon: Icons.chevron_left_rounded, onTap: _prev),
-            ),
-
-            // Right arrow
-            Positioned(
-              right: 6,
-              child: _NavButton(icon: Icons.chevron_right_rounded, onTap: _next),
-            ),
-
-            // Dot indicators
+            Positioned(left: 6, child: _NavButton(icon: Icons.chevron_left_rounded, onTap: ctrl.prev)),
+            Positioned(right: 6, child: _NavButton(icon: Icons.chevron_right_rounded, onTap: ctrl.next)),
             Positioned(
               bottom: 10,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(widget.exhibitions.length, (i) {
-                  final isActive = i == _current;
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 350),
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: isActive ? 20 : 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: isActive ? Colors.white : Colors.white54,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  );
-                }),
-              ),
+              child: Obx(() => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(exhibitions.length, (i) {
+                      final isActive = i == ctrl.currentIndex.value;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 350),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: isActive ? 20 : 6, height: 6,
+                        decoration: BoxDecoration(
+                          color: isActive ? Colors.white : Colors.white54,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  )),
             ),
           ],
         ),
@@ -143,11 +89,7 @@ class _BillboardSlide extends StatelessWidget {
   final String statusLabel;
   final Color statusColor;
 
-  const _BillboardSlide({
-    required this.exhibition,
-    required this.statusLabel,
-    required this.statusColor,
-  });
+  const _BillboardSlide({required this.exhibition, required this.statusLabel, required this.statusColor});
 
   @override
   Widget build(BuildContext context) {
@@ -155,125 +97,64 @@ class _BillboardSlide extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 6)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 6))],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Background image
-            Image.network(
-              exhibition.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: AppColors.darkSurface,
-                child: const Icon(Icons.image, size: 64, color: AppColors.grey),
-              ),
-            ),
-
-            // Gradient overlay from bottom
+            Image.network(exhibition.imageUrl, fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(color: AppColors.darkSurface, child: const Icon(Icons.image, size: 64, color: AppColors.grey))),
             Container(
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Color(0xCC000000)],
-                  stops: [0.35, 1.0],
-                ),
+                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Color(0xCC000000)], stops: [0.35, 1.0]),
               ),
             ),
-
-            // Top-left: status badge
             Positioned(
-              top: 12,
-              left: 12,
+              top: 12, left: 12,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.85),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration: BoxDecoration(color: statusColor.withOpacity(0.85), borderRadius: BorderRadius.circular(20)),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 6, height: 6,
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                    ),
+                    Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
                     const SizedBox(width: 5),
-                    Text(
-                      statusLabel,
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
-                    ),
+                    Text(statusLabel, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
             ),
-
-            // Top-right: "إعلان" badge
             Positioned(
-              top: 12,
-              right: 12,
+              top: 12, right: 12,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.darkPrimary, AppColors.darkSecondary],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'إعلان مميز',
-                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
-                ),
+                decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppColors.darkPrimary, AppColors.darkSecondary]), borderRadius: BorderRadius.circular(20)),
+                child: const Text('إعلان مميز', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
               ),
             ),
-
-            // Bottom info panel
             Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
+              bottom: 0, left: 0, right: 0,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 0, 14, 22),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      exhibition.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.2,
-                        shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Text(exhibition.name,
+                        style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: 0.2, shadows: [Shadow(color: Colors.black54, blurRadius: 4)]),
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 6),
                     Row(
                       children: [
                         const Icon(Icons.calendar_today_outlined, size: 13, color: Colors.white70),
                         const SizedBox(width: 4),
-                        Text(
-                          '${exhibition.startDate} — ${exhibition.endDate}',
-                          style: const TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
+                        Text('${exhibition.startDate} — ${exhibition.endDate}', style: const TextStyle(color: Colors.white70, fontSize: 12)),
                         const SizedBox(width: 14),
                         const Icon(Icons.location_on_outlined, size: 13, color: Colors.white70),
                         const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            '${exhibition.location}، ${exhibition.city}',
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                        Expanded(child: Text('${exhibition.location}، ${exhibition.city}', style: const TextStyle(color: Colors.white70, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis)),
                       ],
                     ),
                   ],
@@ -290,22 +171,15 @@ class _BillboardSlide extends StatelessWidget {
 class _NavButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-
   const _NavButton({required this.icon, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.45),
-          shape: BoxShape.circle,
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 32, height: 32,
+          decoration: BoxDecoration(color: Colors.black.withOpacity(0.45), shape: BoxShape.circle),
+          child: Icon(icon, color: Colors.white, size: 22),
         ),
-        child: Icon(icon, color: Colors.white, size: 22),
-      ),
-    );
-  }
+      );
 }

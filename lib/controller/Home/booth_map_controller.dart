@@ -4,6 +4,7 @@ import '../../data/model/map/exhibition_map_model.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../core/constant/routes.dart';
+import '../../view/widget/Home/isometric_map_painter.dart';
 
 class BoothCompanyInfo {
   final String name;
@@ -27,6 +28,7 @@ class BoothMapController extends GetxController {
   final allBooths                = <MapBoothModel>[].obs;
 
   final transformationController = TransformationController();
+  final hitAreas = <BoothHitArea>[];
 
   static const bookedCompanies = <int, BoothCompanyInfo>{
     2:  BoothCompanyInfo(name: 'تقنية الغد',    email: 'info@techfuture.sa',    initials: 'تغ', color: Color(0xFF7A1FFF)),

@@ -9,9 +9,6 @@ import '../../../view/widget/Home/isometric_map_painter.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../../models/web_theme.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebMapPage  —  خريطة المعرض 3D (نسخة الويب)
-// ════════════════════════════════════════════════════════════
 class WebMapPage extends StatelessWidget {
   const WebMapPage({super.key});
 
@@ -27,10 +24,7 @@ class WebMapPage extends StatelessWidget {
             children: [
               CircularProgressIndicator(color: AppColors.darkPrimary),
               SizedBox(height: 16),
-              Text(
-                'جارٍ تحميل خريطة المعرض...',
-                style: TextStyle(color: AppColors.grey, fontSize: 15),
-              ),
+              Text('جارٍ تحميل خريطة المعرض...', style: TextStyle(color: AppColors.grey, fontSize: 15)),
             ],
           ),
         );
@@ -51,13 +45,10 @@ class WebMapPage extends StatelessWidget {
                 return Stack(
                   children: [
                     _WebMapCanvas(ctrl: ctrl, mapModel: mapModel),
-                    // ── Company info overlay (booked booths) ──
                     Obx(() {
                       final booth = ctrl.selectedBooth.value;
-                      final pos   = ctrl.selectedBoothPosition.value;
-                      if (booth == null || !booth.isBooked || pos == null) {
-                        return const SizedBox.shrink();
-                      }
+                      final pos = ctrl.selectedBoothPosition.value;
+                      if (booth == null || !booth.isBooked || pos == null) return const SizedBox.shrink();
                       return _WebBoothCompanyDialog(
                         key: ValueKey('dialog_${booth.id}'),
                         ctrl: ctrl,
@@ -70,7 +61,6 @@ class WebMapPage extends StatelessWidget {
               },
             ),
           ),
-          // ── Bottom info panel (available booths) ──
           Obx(() {
             final booth = ctrl.selectedBooth.value;
             if (booth == null || booth.isBooked) return const SizedBox.shrink();
@@ -93,10 +83,7 @@ class _WebMapHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        border: Border(bottom: BorderSide(color: WebTheme.border)),
-      ),
+      decoration: BoxDecoration(color: WebTheme.surface, border: Border(bottom: BorderSide(color: WebTheme.border))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -104,10 +91,7 @@ class _WebMapHeader extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: AppColors.favoriteGradient,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.map_rounded, color: Colors.white, size: 18),
               ),
               const SizedBox(width: 12),
@@ -115,22 +99,11 @@ class _WebMapHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      mapModel.exhibitionName,
-                      style: TextStyle(
-                        color: WebTheme.text,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      'استعرض الأجنحة — اضغط على أي جناح لعرض تفاصيله',
-                      style: TextStyle(color: AppColors.grey, fontSize: 12),
-                    ),
+                    Text(mapModel.exhibitionName, style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w800)),
+                    Text('استعرض الأجنحة — اضغط على أي جناح لعرض تفاصيله', style: TextStyle(color: AppColors.grey, fontSize: 12)),
                   ],
                 ),
               ),
-              // Reset view button
               Tooltip(
                 message: 'إعادة ضبط العرض',
                 child: InkWell(
@@ -143,8 +116,7 @@ class _WebMapHeader extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
                     ),
-                    child: const Icon(Icons.center_focus_strong_rounded,
-                        color: AppColors.darkPrimary, size: 18),
+                    child: const Icon(Icons.center_focus_strong_rounded, color: AppColors.darkPrimary, size: 18),
                   ),
                 ),
               ),
@@ -163,24 +135,18 @@ class _WebLegendRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _item(AppColors.info,               'متاح'),
+        _item(AppColors.info, 'متاح'),
         const SizedBox(width: 20),
-        _item(const Color(0xFF3A3650),      'محجوز'),
+        _item(const Color(0xFF3A3650), 'محجوز'),
         const SizedBox(width: 20),
-        _item(AppColors.darkPrimary,        'مختار'),
+        _item(AppColors.darkPrimary, 'مختار'),
         const SizedBox(width: 20),
-        _item(const Color(0xFF4CAF50),      'مدخل'),
+        _item(const Color(0xFF4CAF50), 'مدخل'),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: WebTheme.border,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: const Text(
-            'السحب: تحريك   •   التكبير: عجلة الفأرة / قرصة',
-            style: TextStyle(color: AppColors.grey, fontSize: 11),
-          ),
+          decoration: BoxDecoration(color: WebTheme.border, borderRadius: BorderRadius.circular(6)),
+          child: const Text('السحب: تحريك   •   التكبير: عجلة الفأرة / قرصة', style: TextStyle(color: AppColors.grey, fontSize: 11)),
         ),
       ],
     );
@@ -188,10 +154,7 @@ class _WebLegendRow extends StatelessWidget {
 
   Widget _item(Color c, String label) => Row(
         children: [
-          Container(
-            width: 12, height: 12,
-            decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(3)),
-          ),
+          Container(width: 12, height: 12, decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(3))),
           const SizedBox(width: 5),
           Text(label, style: const TextStyle(color: AppColors.grey, fontSize: 12)),
         ],
@@ -200,40 +163,31 @@ class _WebLegendRow extends StatelessWidget {
 
 // ─────────────────────────────────── Canvas ──────────────────────────────────
 
-class _WebMapCanvas extends StatefulWidget {
+class _WebMapCanvas extends StatelessWidget {
   final BoothMapController ctrl;
   final ExhibitionMapModel mapModel;
   const _WebMapCanvas({required this.ctrl, required this.mapModel});
 
   @override
-  State<_WebMapCanvas> createState() => _WebMapCanvasState();
-}
-
-class _WebMapCanvasState extends State<_WebMapCanvas> {
-  final List<BoothHitArea> _hitAreas = [];
-
-  @override
   Widget build(BuildContext context) {
     return ClipRect(
       child: InteractiveViewer(
-        transformationController: widget.ctrl.transformationController,
+        transformationController: ctrl.transformationController,
         minScale: 0.35,
         maxScale: 4.0,
         boundaryMargin: const EdgeInsets.all(300),
         child: Center(
           child: GestureDetector(
             onTapUp: (details) => _handleTap(details.localPosition),
-            child: Obx(
-              () => CustomPaint(
-                size: const Size(1000, 760),
-                painter: IsometricMapPainter(
-                  mapModel: widget.mapModel,
-                  selectedBooth: widget.ctrl.selectedBooth.value,
-                  hitAreas: _hitAreas,
-                  isDark: true,
-                ),
-              ),
-            ),
+            child: Obx(() => CustomPaint(
+                  size: const Size(1000, 760),
+                  painter: IsometricMapPainter(
+                    mapModel: mapModel,
+                    selectedBooth: ctrl.selectedBooth.value,
+                    hitAreas: ctrl.hitAreas,
+                    isDark: true,
+                  ),
+                )),
           ),
         ),
       ),
@@ -241,101 +195,53 @@ class _WebMapCanvasState extends State<_WebMapCanvas> {
   }
 
   void _handleTap(Offset tapInWidget) {
-    final matrix   = widget.ctrl.transformationController.value;
-    final inverted  = Matrix4.inverted(matrix);
+    final matrix = ctrl.transformationController.value;
+    final inverted = Matrix4.inverted(matrix);
     final tapInCanvas = MatrixUtils.transformPoint(inverted, tapInWidget);
-
-    for (final area in _hitAreas.reversed) {
+    for (final area in ctrl.hitAreas.reversed) {
       if (area.topFacePath.contains(tapInCanvas)) {
-        widget.ctrl.onBoothTapped(area.booth, screenPosition: tapInWidget);
+        ctrl.onBoothTapped(area.booth, screenPosition: tapInWidget);
         return;
       }
     }
-    widget.ctrl.clearSelection();
+    ctrl.clearSelection();
   }
 }
 
 // ───────────────────── Company Info Dialog (booked booth) ────────────────────
 
-class _WebBoothCompanyDialog extends StatefulWidget {
+class _WebBoothCompanyDialog extends StatelessWidget {
   final BoothMapController ctrl;
   final Offset tapPosition;
   final Size containerSize;
 
-  const _WebBoothCompanyDialog({
-    super.key,
-    required this.ctrl,
-    required this.tapPosition,
-    required this.containerSize,
-  });
-
-  @override
-  State<_WebBoothCompanyDialog> createState() => _WebBoothCompanyDialogState();
-}
-
-class _WebBoothCompanyDialogState extends State<_WebBoothCompanyDialog>
-    with TickerProviderStateMixin {
-  late final AnimationController _scaleCtrl;
-  late final AnimationController _shakeCtrl;
-  late final Animation<double> _scale;
-
   static const _w = 280.0;
   static const _h = 210.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _scaleCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
-    _shakeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 520));
-    _scale = CurvedAnimation(parent: _scaleCtrl, curve: Curves.easeInOutExpo);
-    _scaleCtrl.forward();
-    Future.delayed(const Duration(milliseconds: 60), () {
-      if (mounted) _shakeCtrl.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _scaleCtrl.dispose();
-    _shakeCtrl.dispose();
-    super.dispose();
-  }
-
-  double get _shakeX {
-    final t = _shakeCtrl.value;
-    return sin(t * pi * 6) * pow(1 - t, 1.5) * 11;
-  }
+  const _WebBoothCompanyDialog({super.key, required this.ctrl, required this.tapPosition, required this.containerSize});
 
   @override
   Widget build(BuildContext context) {
-    final booth = widget.ctrl.selectedBooth.value;
+    final booth = ctrl.selectedBooth.value;
     if (booth == null) return const SizedBox.shrink();
-    final company     = widget.ctrl.companyForBooth(booth);
+    final company = ctrl.companyForBooth(booth);
     final accentColor = company?.color ?? AppColors.darkPrimary;
 
-    double left = widget.tapPosition.dx - _w / 2;
-    double top  = widget.tapPosition.dy - _h - 18;
-    if (top < 8) top = widget.tapPosition.dy + 18;
-    left = left.clamp(8.0, (widget.containerSize.width  - _w - 8).clamp(8.0, double.infinity));
-    top  = top .clamp(8.0, (widget.containerSize.height - _h - 8).clamp(8.0, double.infinity));
+    double left = tapPosition.dx - _w / 2;
+    double top = tapPosition.dy - _h - 18;
+    if (top < 8) top = tapPosition.dy + 18;
+    left = left.clamp(8.0, (containerSize.width - _w - 8).clamp(8.0, double.infinity));
+    top = top.clamp(8.0, (containerSize.height - _h - 8).clamp(8.0, double.infinity));
 
-    return AnimatedBuilder(
-      animation: Listenable.merge([_scale, _shakeCtrl]),
-      builder: (_, child) => Positioned(
-        left: left + _shakeX,
-        top: top,
-        child: Transform.scale(
-          scale: _scale.value,
-          alignment: Alignment.bottomCenter,
-          child: child,
-        ),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOutExpo,
+      builder: (_, scale, child) => Positioned(
+        left: left, top: top,
+        child: Transform.scale(scale: scale, alignment: Alignment.bottomCenter, child: child),
       ),
-      child: _CompanyCard(
-        booth: booth,
-        company: company,
-        accentColor: accentColor,
-        onClose: widget.ctrl.clearSelection,
-      ),
+      child: _CompanyCard(booth: booth, company: company, accentColor: accentColor, onClose: ctrl.clearSelection),
     );
   }
 }
@@ -346,17 +252,12 @@ class _CompanyCard extends StatelessWidget {
   final Color accentColor;
   final VoidCallback onClose;
 
-  const _CompanyCard({
-    required this.booth,
-    required this.company,
-    required this.accentColor,
-    required this.onClose,
-  });
+  const _CompanyCard({required this.booth, required this.company, required this.accentColor, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
-    final name     = company?.name     ?? 'شركة محجوزة';
-    final email    = company?.email    ?? '—';
+    final name = company?.name ?? 'شركة محجوزة';
+    final email = company?.email ?? '—';
     final initials = company?.initials ?? 'ش';
 
     return Container(
@@ -366,23 +267,18 @@ class _CompanyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: accentColor.withOpacity(0.45), width: 1.6),
         boxShadow: [
-          BoxShadow(color: accentColor.withOpacity(0.5),  blurRadius: 20, spreadRadius: 2),
-          BoxShadow(color: accentColor.withOpacity(0.2),  blurRadius: 48, spreadRadius: 6),
+          BoxShadow(color: accentColor.withOpacity(0.5), blurRadius: 20, spreadRadius: 2),
+          BoxShadow(color: accentColor.withOpacity(0.2), blurRadius: 48, spreadRadius: 6),
           BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 18, offset: const Offset(0, 8)),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.fromLTRB(14, 14, 12, 12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [accentColor.withOpacity(0.18), accentColor.withOpacity(0.04)],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
+              gradient: LinearGradient(colors: [accentColor.withOpacity(0.18), accentColor.withOpacity(0.04)], begin: Alignment.topRight, end: Alignment.bottomLeft),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
             child: Row(
@@ -390,10 +286,7 @@ class _CompanyCard extends StatelessWidget {
                 Container(
                   width: 44, height: 44,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [accentColor, accentColor.withOpacity(0.65)],
-                      begin: Alignment.topLeft, end: Alignment.bottomRight,
-                    ),
+                    gradient: LinearGradient(colors: [accentColor, accentColor.withOpacity(0.65)], begin: Alignment.topLeft, end: Alignment.bottomRight),
                     shape: BoxShape.circle,
                     boxShadow: [BoxShadow(color: accentColor.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
@@ -410,20 +303,16 @@ class _CompanyCard extends StatelessWidget {
                         children: [
                           Icon(Icons.email_outlined, size: 11, color: accentColor),
                           const SizedBox(width: 4),
-                          Flexible(child: Text(email, style: TextStyle(fontSize: 11, color: Colors.white60), overflow: TextOverflow.ellipsis)),
+                          Flexible(child: Text(email, style: const TextStyle(fontSize: 11, color: Colors.white60), overflow: TextOverflow.ellipsis)),
                         ],
                       ),
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: onClose,
-                  child: Icon(Icons.close_rounded, size: 18, color: Colors.white38),
-                ),
+                GestureDetector(onTap: onClose, child: const Icon(Icons.close_rounded, size: 18, color: Colors.white38)),
               ],
             ),
           ),
-          // Chips
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Row(
@@ -434,7 +323,6 @@ class _CompanyCard extends StatelessWidget {
               ],
             ),
           ),
-          // Reserved banner
           Container(
             margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
             padding: const EdgeInsets.symmetric(vertical: 7),
@@ -448,8 +336,7 @@ class _CompanyCard extends StatelessWidget {
               children: [
                 Icon(Icons.verified_rounded, size: 13, color: accentColor),
                 const SizedBox(width: 5),
-                Text('الجناح محجوز من قِبَل هذه الشركة',
-                    style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
+                Text('الجناح محجوز من قِبَل هذه الشركة', style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -462,10 +349,7 @@ class _CompanyCard extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        decoration: BoxDecoration(
-          color: accent.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-        ),
+        decoration: BoxDecoration(color: accent.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -488,7 +372,7 @@ class _WebBoothInfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final booth = ctrl.selectedBooth.value!;
-    final hall  = ctrl.hallForBooth(booth);
+    final hall = ctrl.hallForBooth(booth);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 280),
@@ -503,27 +387,19 @@ class _WebBoothInfoPanel extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Icon
           Container(
             width: 48, height: 48,
-            decoration: BoxDecoration(
-              color: (hall?.color ?? AppColors.darkPrimary).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(Icons.store_mall_directory_rounded,
-                color: hall?.color ?? AppColors.darkPrimary, size: 24),
+            decoration: BoxDecoration(color: (hall?.color ?? AppColors.darkPrimary).withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+            child: Icon(Icons.store_mall_directory_rounded, color: hall?.color ?? AppColors.darkPrimary, size: 24),
           ),
           const SizedBox(width: 14),
-          // Booth info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('الجناح ${booth.number}',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: WebTheme.text)),
-                Text(booth.hallName,
-                    style: TextStyle(fontSize: 12, color: hall?.color ?? AppColors.grey)),
+                Text('الجناح ${booth.number}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: WebTheme.text)),
+                Text(booth.hallName, style: TextStyle(fontSize: 12, color: hall?.color ?? AppColors.grey)),
                 const SizedBox(height: 6),
                 Row(
                   children: [
@@ -538,7 +414,6 @@ class _WebBoothInfoPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 20),
-          // Price + Book button
           Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -552,28 +427,17 @@ class _WebBoothInfoPanel extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   final boothModel = BoothModel(
-                    id:             booth.id,
-                    number:         booth.number,
-                    exhibitionName: booth.hallName,
-                    imageUrl:       'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
-                    area:           booth.area,
-                    status:         'pending',
-                    price:          booth.price,
-                    endDate:        '2026-07-20',
-                    location:       '${booth.hallName} - صف ${booth.row + 1}',
-                    amenities:      booth.amenities,
-                    isFavorite:     false,
+                    id: booth.id, number: booth.number, exhibitionName: booth.hallName,
+                    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+                    area: booth.area, status: 'pending', price: booth.price, endDate: '2026-07-20',
+                    location: '${booth.hallName} - صف ${booth.row + 1}', amenities: booth.amenities, isFavorite: false,
                   );
                   WebNavController.to.openBooth(boothModel);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: AppColors.favoriteGradient,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text('حجز الجناح',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
+                  child: const Text('حجز الجناح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                 ),
               ),
             ],
@@ -585,10 +449,7 @@ class _WebBoothInfoPanel extends StatelessWidget {
 
   Widget _chip(IconData icon, String label) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: WebTheme.border,
-          borderRadius: BorderRadius.circular(6),
-        ),
+        decoration: BoxDecoration(color: WebTheme.border, borderRadius: BorderRadius.circular(6)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

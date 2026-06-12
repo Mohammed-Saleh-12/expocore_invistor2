@@ -19,7 +19,16 @@ import '../controller/Home/profile_company_controller.dart';
 import '../controller/Home/booking_controller.dart';
 import '../controller/Home/booth_map_controller.dart';
 import '../controller/Home/booth_management_controller.dart';
+import '../controller/Home/splash_controller.dart';
+import '../controller/Home/onboarding_controller.dart';
+import '../controller/Home/qr_scanner_controller.dart';
+import '../controller/Home/booth_detail_controller.dart';
+import '../controller/Home/exhibition_detail_controller.dart';
+import '../controller/Home/exhibition_billboard_controller.dart';
+import '../controller/Home/event_billboard_controller.dart';
 import '../web/controllers/web_auth_controller.dart';
+import '../web/controllers/web_billboard_controller.dart';
+import '../web/controllers/web_scanner_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -52,7 +61,19 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => SettingsController(),         fenix: true);
     Get.lazyPut(() => ProfileCompanyController(),   fenix: true);
     Get.lazyPut(() => BookingController(),          fenix: true);
-    Get.lazyPut(() => BoothMapController(),         fenix: true);
-    Get.lazyPut(() => BoothManagementController(),  fenix: true);
+    Get.lazyPut(() => BoothMapController(),            fenix: true);
+    Get.lazyPut(() => BoothManagementController(),     fenix: true);
+    Get.lazyPut(() => SplashController(),              fenix: true);
+    Get.lazyPut(() => OnboardingController(),           fenix: true);
+    Get.lazyPut(() => QrScannerController(),            fenix: true);
+    Get.lazyPut(() => BoothDetailController(),          fenix: true);
+    Get.lazyPut(() => ExhibitionDetailController(),     fenix: true);
+    Get.lazyPut(() => ExhibitionBillboardController(),  fenix: true);
+    Get.lazyPut(() => EventBillboardController(),       fenix: true);
+
+    if (GetPlatform.isWeb) {
+      Get.lazyPut(() => WebBillboardController(),  fenix: true);
+      Get.lazyPut(() => WebScannerController(),    fenix: true);
+    }
   }
 }

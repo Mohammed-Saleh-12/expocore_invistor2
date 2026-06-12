@@ -32,6 +32,7 @@ class EventsController extends GetxController {
   final isCreating   = false.obs;
   final isBooking    = false.obs;
   final status       = StatusRequest.none.obs;
+  final stepIndex    = 0.obs;
 
   // ── Create-event form ─────────────────────────────────────────────────
   final nameCtrl            = TextEditingController();
