@@ -164,7 +164,11 @@ class BoothCard extends StatelessWidget {
                     if (_isApproved)
                       _ApprovedButtons(onManage: onManage, onReport: onReport)
                     else
-                      _PendingButtons(onManage: onManage, onViewMap: onViewMap),
+                      _PendingButtons(
+                        onManage: onManage,
+                        onViewMap: onViewMap,
+                        onReport: onReport,
+                      ),
                   ],
                 ),
               ),
@@ -224,8 +228,13 @@ class _ApprovedButtons extends StatelessWidget {
 class _PendingButtons extends StatelessWidget {
   final VoidCallback onManage;
   final VoidCallback? onViewMap;
+  final VoidCallback? onReport;
 
-  const _PendingButtons({required this.onManage, this.onViewMap});
+  const _PendingButtons({
+    required this.onManage,
+    this.onViewMap,
+    this.onReport,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -258,20 +267,28 @@ class _PendingButtons extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.map_outlined,
-                    size: 11,
-                    color: AppColors.darkPrimary,
-                  ),
+                  Icon(Icons.map_outlined, size: 11, color: AppColors.darkPrimary),
                   SizedBox(width: 3),
                   Text(
                     'على الخريطة',
-                    style: TextStyle(
-                      color: AppColors.darkPrimary,
-                      fontSize: 10,
-                    ),
+                    style: TextStyle(color: AppColors.darkPrimary, fontSize: 10),
                   ),
                 ],
+              ),
+            ),
+          )
+        else if (onReport != null)
+          GestureDetector(
+            onTap: onReport,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.darkPrimary),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: const Text(
+                'التقرير',
+                style: TextStyle(color: AppColors.darkPrimary, fontSize: 11),
               ),
             ),
           ),

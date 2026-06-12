@@ -212,11 +212,19 @@ class _BoothCard extends StatelessWidget {
                           c.buildBoothReport(booth),
                         ),
                       )
-                    : _btn(
-                        label: 'خريطة 3D',
-                        filled: false,
-                        onTap: () => WebNavController.to.openMap(),
-                      ),
+                    : booth.status == 'ended'
+                        ? _btn(
+                            label: 'التقرير',
+                            filled: false,
+                            onTap: () => WebNavController.to.openReport(
+                              c.buildBoothReport(booth),
+                            ),
+                          )
+                        : _btn(
+                            label: 'خريطة 3D',
+                            filled: false,
+                            onTap: () => WebNavController.to.openMap(),
+                          ),
               ),
             ],
           ),

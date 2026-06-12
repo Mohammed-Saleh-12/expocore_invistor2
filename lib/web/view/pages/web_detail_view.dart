@@ -540,22 +540,19 @@ class _BoothDetail extends StatelessWidget {
       _chips('الخدمات', b.amenities),
     ],
     actions: [
-      if (b.status == 'active' && report != null)
+      if (b.status == 'ended' && report != null)
         _actionBtn(
           'عرض التقرير',
           filled: false,
           onTap: () => WebNavController.to.openReport(report!),
         ),
-      if (b.status == 'active' && report != null) const SizedBox(width: 12),
       _actionBtn(
-        'حفظ',
+        'تواصل مع الإدارة',
         filled: true,
         onTap: () {
-          Get.snackbar(
-            'تم',
-            'تم تحديث بيانات الجناح',
-            snackPosition: SnackPosition.BOTTOM,
-          );
+          Get.find<MessagesController>()
+              .openConversationForExhibitionName(b.exhibitionName);
+          WebNavController.to.select(6);
         },
       ),
     ],

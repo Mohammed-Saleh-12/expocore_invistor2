@@ -72,16 +72,17 @@ class BoothsView extends GetView<BoothController> {
                 itemBuilder: (_, i) {
                   final b = controller.filtered[i];
                   final isApproved = b.status == 'active';
+                  final isEnded    = b.status == 'ended';
                   return BoothCard(
                     booth: b,
                     onManage: () => isApproved
                         ? Get.toNamed(AppRoutes.BOOTH_MANAGEMENT, arguments: b)
                         : Get.toNamed(AppRoutes.BOOTH_DETAIL, arguments: b),
                     onFavorite: () => controller.toggleFavorite(b),
-                    onReport: isApproved
+                    onReport: (isApproved || isEnded)
                         ? () => controller.openBoothReport(b)
                         : null,
-                    onViewMap: !isApproved
+                    onViewMap: (!isApproved && !isEnded)
                         ? () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)
                         : null,
                   );
