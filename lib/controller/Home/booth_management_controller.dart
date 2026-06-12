@@ -33,7 +33,17 @@ class BoothManagementController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    booth = Get.arguments as BoothModel? ?? DummyData.myBooths.first;
+    if (Get.arguments is BoothModel) {
+      booth = Get.arguments as BoothModel;
+      _loadBoothProfile();
+      _loadBoothEvents();
+    } else {
+      booth = DummyData.myBooths.first;
+    }
+  }
+
+  void webInit(BoothModel b) {
+    booth = b;
     _loadBoothProfile();
     _loadBoothEvents();
   }

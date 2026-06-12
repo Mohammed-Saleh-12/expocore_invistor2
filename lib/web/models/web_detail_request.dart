@@ -1,17 +1,14 @@
-// ════════════════════════════════════════════════════════════
-//  MODEL  —  WebDetailRequest
-//  يصف الصفحة الداخلية المطلوب عرضها داخل منطقة المحتوى
-// ════════════════════════════════════════════════════════════
 enum WebDetailType {
   exhibition, booth, event, report,
   createEvent, ticketRequests, sponsorship, scanner,
   notifications, sponsorEvent, map,
+  boothManagement, bookingRequest, bookingDetail,
 }
 
 class WebDetailRequest {
   final WebDetailType type;
-  final Object?       data;       // الموديل المرتبط (معرض/جناح/...)
-  final Object?       extra;      // بيانات إضافية اختيارية
+  final Object?       data;
+  final Object?       extra;
 
   const WebDetailRequest(this.type, {this.data, this.extra});
 }

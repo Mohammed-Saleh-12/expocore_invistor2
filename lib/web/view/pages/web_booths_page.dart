@@ -192,25 +192,32 @@ class _BoothCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _btn(
-                  label: 'إدارة',
+                  label: _approved ? 'إدارة' : 'تفاصيل',
                   filled: true,
-                  onTap: () => WebNavController.to.openBooth(
-                    booth,
-                    report: c.buildBoothReport(booth),
-                  ),
+                  onTap: () => _approved
+                      ? WebNavController.to.openBoothManagement(booth)
+                      : WebNavController.to.openBooth(
+                          booth,
+                          report: c.buildBoothReport(booth),
+                        ),
                 ),
               ),
               const SizedBox(width: 10),
-              if (_approved)
-                Expanded(
-                  child: _btn(
-                    label: 'التقرير',
-                    filled: false,
-                    onTap: () => WebNavController.to.openReport(
-                      c.buildBoothReport(booth),
-                    ),
-                  ),
-                ),
+              Expanded(
+                child: _approved
+                    ? _btn(
+                        label: 'التقرير',
+                        filled: false,
+                        onTap: () => WebNavController.to.openReport(
+                          c.buildBoothReport(booth),
+                        ),
+                      )
+                    : _btn(
+                        label: 'خريطة 3D',
+                        filled: false,
+                        onTap: () => WebNavController.to.openMap(),
+                      ),
+              ),
             ],
           ),
         ],

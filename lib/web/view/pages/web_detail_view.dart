@@ -23,6 +23,9 @@ import 'web_scanner_page.dart';
 import 'web_notifications_page.dart';
 import 'web_sponsor_event_page.dart';
 import 'web_map_page.dart';
+import 'web_booth_management_page.dart';
+import 'web_booking_request_page.dart';
+import 'web_booking_detail_page.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDetailView  —  موجّه الصفحات الداخلية (يعرض الصفحة المناسبة)
@@ -63,6 +66,12 @@ class WebDetailView extends StatelessWidget {
         );
       case WebDetailType.map:
         return const WebMapPage();
+      case WebDetailType.boothManagement:
+        return WebBoothManagementPage(booth: request.data as BoothModel);
+      case WebDetailType.bookingRequest:
+        return WebBookingRequestPage(booth: request.data as BoothModel);
+      case WebDetailType.bookingDetail:
+        return WebBookingDetailPage(booth: request.data as BoothModel);
     }
   }
 }
