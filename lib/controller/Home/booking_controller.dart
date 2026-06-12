@@ -47,7 +47,7 @@ class BookingController extends GetxController {
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
-      Get.back();
+      if (Get.key?.currentState?.canPop() ?? false) Get.back();
       Get.snackbar('تم الإرسال', 'طلبك قيد المراجعة ⏳',
           snackPosition: SnackPosition.BOTTOM);
     } else {
