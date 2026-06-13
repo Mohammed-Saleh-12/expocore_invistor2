@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../view/widget/Home/expocore_logo.dart';
 import '../../models/web_section.dart';
 
 // ════════════════════════════════════════════════════════════
-//  WebSidebar  —  الشريط الجانبي للموقع
+//  WebSidebar  —  الشريط الجانبي للموقع (RTL/LTR aware)
 // ════════════════════════════════════════════════════════════
 class WebSidebar extends StatelessWidget {
   final List<WebSection> sections;
@@ -23,11 +24,14 @@ class WebSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       width: 260,
       decoration: BoxDecoration(
         color: WebTheme.surface,
-        border: Border(left: BorderSide(color: WebTheme.border)),
+        border: isRtl
+            ? Border(left: BorderSide(color: WebTheme.border))
+            : Border(right: BorderSide(color: WebTheme.border)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +45,7 @@ class WebSidebar extends StatelessWidget {
                 const SizedBox(width: 12),
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2),
                     children: [
                       TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
                       TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
@@ -80,8 +84,10 @@ class WebSidebar extends StatelessWidget {
                   children: [
                     Icon(Icons.logout_rounded, color: AppColors.error.withOpacity(0.9), size: 20),
                     const SizedBox(width: 12),
-                    Text('تسجيل الخروج',
-                        style: TextStyle(color: AppColors.error.withOpacity(0.9), fontSize: 14, fontWeight: FontWeight.w600)),
+                    Text(
+                      'settings_logout'.tr,
+                      style: TextStyle(color: AppColors.error.withOpacity(0.9), fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
                   ],
                 ),
               ),
@@ -123,7 +129,7 @@ class _NavItem extends StatelessWidget {
                   color: active ? WebTheme.onGradient : AppColors.grey, size: 21),
               const SizedBox(width: 13),
               Text(
-                section.label,
+                section.label.tr,
                 style: TextStyle(
                   color: active ? WebTheme.onGradient : AppColors.grey,
                   fontSize: 14.5,

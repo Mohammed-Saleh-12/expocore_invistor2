@@ -17,16 +17,16 @@ class WebNavController extends GetxController {
   final selected    = 0.obs;
   final messagesTab = 0.obs;
 
-  final sections = const <WebSection>[
-    WebSection(icon: Icons.dashboard_rounded,         label: 'الرئيسية'),
-    WebSection(icon: Icons.storefront_rounded,        label: 'المعارض'),
-    WebSection(icon: Icons.grid_view_rounded,         label: 'أجنحتي'),
-    WebSection(icon: Icons.event_rounded,             label: 'الفعاليات'),
-    WebSection(icon: Icons.workspace_premium_rounded, label: 'رعاياتي'),
-    WebSection(icon: Icons.bar_chart_rounded,         label: 'التقارير'),
-    WebSection(icon: Icons.chat_bubble_rounded,       label: 'الرسائل'),
-    WebSection(icon: Icons.favorite_rounded,          label: 'المفضلة'),
-    WebSection(icon: Icons.settings_rounded,          label: 'الإعدادات'),
+  static const sections = <WebSection>[
+    WebSection(icon: Icons.dashboard_rounded,         label: 'nav_home'),
+    WebSection(icon: Icons.storefront_rounded,        label: 'nav_exhibitions'),
+    WebSection(icon: Icons.grid_view_rounded,         label: 'nav_my_booths'),
+    WebSection(icon: Icons.event_rounded,             label: 'nav_events'),
+    WebSection(icon: Icons.workspace_premium_rounded, label: 'nav_sponsorships'),
+    WebSection(icon: Icons.bar_chart_rounded,         label: 'nav_reports'),
+    WebSection(icon: Icons.chat_bubble_rounded,       label: 'nav_messages'),
+    WebSection(icon: Icons.favorite_rounded,          label: 'nav_favorites'),
+    WebSection(icon: Icons.settings_rounded,          label: 'nav_settings'),
   ];
 
   final detail = Rxn<WebDetailRequest>();
@@ -35,8 +35,6 @@ class WebNavController extends GetxController {
     detail.value = null;
     selected.value = index;
   }
-
-  // ── فتح الصفحات الداخلية ─────────────────────────────────
 
   void openExhibition(ExhibitionModel e) =>
       detail.value = WebDetailRequest(WebDetailType.exhibition, data: e);
@@ -86,21 +84,21 @@ class WebNavController extends GetxController {
 
   String get currentTitle {
     switch (detail.value?.type) {
-      case WebDetailType.exhibition:      return 'تفاصيل المعرض';
-      case WebDetailType.booth:           return 'تفاصيل الجناح';
-      case WebDetailType.boothManagement: return 'إدارة الجناح';
-      case WebDetailType.bookingRequest:  return 'طلب حجز جناح';
-      case WebDetailType.bookingDetail:   return 'تفاصيل الحجز';
-      case WebDetailType.event:           return 'تفاصيل الفعالية';
-      case WebDetailType.report:          return 'التقرير';
-      case WebDetailType.createEvent:     return 'نشر فعالية';
-      case WebDetailType.ticketRequests:  return 'طلبات التذاكر';
-      case WebDetailType.sponsorship:     return 'تفاصيل الرعاية';
-      case WebDetailType.scanner:         return 'مسح QR / باركود';
-      case WebDetailType.notifications:   return 'الإشعارات';
-      case WebDetailType.sponsorEvent:    return 'رعاية الفعالية';
-      case WebDetailType.map:             return 'خريطة المعرض 3D';
-      case null:                          return current.label;
+      case WebDetailType.exhibition:      return 'detail_exhibition'.tr;
+      case WebDetailType.booth:           return 'detail_booth'.tr;
+      case WebDetailType.boothManagement: return 'detail_booth_management'.tr;
+      case WebDetailType.bookingRequest:  return 'detail_booking_request'.tr;
+      case WebDetailType.bookingDetail:   return 'detail_booking_detail'.tr;
+      case WebDetailType.event:           return 'detail_event'.tr;
+      case WebDetailType.report:          return 'detail_report'.tr;
+      case WebDetailType.createEvent:     return 'detail_create_event'.tr;
+      case WebDetailType.ticketRequests:  return 'detail_ticket_requests'.tr;
+      case WebDetailType.sponsorship:     return 'detail_sponsorship'.tr;
+      case WebDetailType.scanner:         return 'detail_scanner'.tr;
+      case WebDetailType.notifications:   return 'detail_notifications'.tr;
+      case WebDetailType.sponsorEvent:    return 'detail_sponsor_event'.tr;
+      case WebDetailType.map:             return 'detail_map'.tr;
+      case null:                          return current.label.tr;
     }
   }
 }

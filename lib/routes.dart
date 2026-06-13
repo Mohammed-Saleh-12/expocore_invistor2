@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'bindings/initialbindings.dart';
 import 'core/constant/routes.dart';
 import 'view/screen/Home/splash_view.dart';
+import 'view/screen/Home/language_picker_view.dart';
 import 'view/screen/Home/onboarding_view.dart';
 import 'view/screen/auth/login_view.dart';
 import 'view/screen/auth/register_view.dart';
@@ -41,6 +42,7 @@ import 'view/screen/Home/qr_scanner_view.dart';
 class AppPages {
   static final routes = [
     GetPage(name: AppRoutes.SPLASH,             page: () => const SplashView(),              binding: InitialBindings()),
+    GetPage(name: AppRoutes.LANGUAGE_PICKER,    page: () => const LanguagePickerView()),
     GetPage(name: AppRoutes.ONBOARDING,         page: () => const OnboardingView()),
     GetPage(name: AppRoutes.LOGIN,              page: () => const LoginView()),
     GetPage(name: AppRoutes.REGISTER,           page: () => const RegisterView()),

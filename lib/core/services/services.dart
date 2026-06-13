@@ -12,6 +12,7 @@ class Services extends GetxService {
   static const _kTheme      = 'theme_mode';
   static const _kLang       = 'lang';
   static const _kOnboard    = 'onboarding_done';
+  static const _kLangChosen = 'lang_chosen';
   static const _kCompany    = 'company_name';
   static const _kUserId     = 'user_id';
   static const _kUserEmail  = 'user_email';
@@ -41,9 +42,10 @@ class Services extends GetxService {
   }
 
   // ── Preferences getters ───────────────────────────────────
-  bool   get isDarkMode  => _prefs.getBool(_kTheme)    ?? true;
-  String get lang        => _prefs.getString(_kLang)   ?? 'ar';
-  bool   get onboardDone => _prefs.getBool(_kOnboard)  ?? false;
+  bool   get isDarkMode  => _prefs.getBool(_kTheme)      ?? true;
+  String get lang        => _prefs.getString(_kLang)     ?? 'ar';
+  bool   get onboardDone => _prefs.getBool(_kOnboard)    ?? false;
+  bool   get langChosen  => _prefs.getBool(_kLangChosen) ?? false;
 
   // ── Auth setters ─────────────────────────────────────────
   Future<void> saveToken(String t) => _prefs.setString(_kToken, t);
@@ -73,9 +75,10 @@ class Services extends GetxService {
   Future<void> saveCompany(String name) => _prefs.setString(_kCompany, name);
 
   // ── Preferences setters ───────────────────────────────────
-  Future<void> saveTheme(bool isDark) => _prefs.setBool(_kTheme, isDark);
-  Future<void> saveLang(String l)     => _prefs.setString(_kLang, l);
-  Future<void> setOnboardDone()       => _prefs.setBool(_kOnboard, true);
+  Future<void> saveTheme(bool isDark)  => _prefs.setBool(_kTheme, isDark);
+  Future<void> saveLang(String l)      => _prefs.setString(_kLang, l);
+  Future<void> setOnboardDone()        => _prefs.setBool(_kOnboard, true);
+  Future<void> setLangChosen()         => _prefs.setBool(_kLangChosen, true);
 
   // ── Session clear (logout) ────────────────────────────────
   Future<void> clearSession() async {

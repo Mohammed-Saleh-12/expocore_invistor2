@@ -1,6 +1,7 @@
 class AppRoutes {
-  static const String SPLASH = '/splash';
-  static const String ONBOARDING = '/onboarding';
+  static const String SPLASH          = '/splash';
+  static const String LANGUAGE_PICKER = '/language-picker';
+  static const String ONBOARDING      = '/onboarding';
   static const String LOGIN = '/login';
   static const String REGISTER = '/register';
   static const String FORGOT_PW  = '/forgot-password';

@@ -85,7 +85,7 @@ class _WebHome extends StatelessWidget {
         body: Row(
           children: [
             Obx(() => WebSidebar(
-                  sections: nav.sections,
+                  sections: WebNavController.sections,
                   selected: nav.selected.value,
                   onSelect: nav.select,
                   onLogout: auth.logout,

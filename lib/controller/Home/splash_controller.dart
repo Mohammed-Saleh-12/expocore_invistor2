@@ -84,7 +84,9 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
 
   void navigate() {
     final svc = Get.find<Services>();
-    if (svc.isSessionValid) {
+    if (!svc.langChosen) {
+      Get.offAllNamed(AppRoutes.LANGUAGE_PICKER);
+    } else if (svc.isSessionValid) {
       Get.offAllNamed(AppRoutes.DASHBOARD);
     } else if (svc.onboardDone) {
       Get.offAllNamed(AppRoutes.LOGIN);

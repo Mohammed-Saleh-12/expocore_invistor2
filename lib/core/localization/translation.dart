@@ -5,11 +5,43 @@ class MyTranslation extends Translations {
   Map<String, Map<String, String>> get keys => {
     'ar_SA': {
         // ── Navigation ───────────────────────────────────────────────────
-      'nav_home':        'الرئيسية',
-      'nav_exhibitions': 'المعارض',
-      'nav_my_booths':   'أجنحتي',
-      'nav_favorites':   'المفضلة',
-      'nav_more':        'المزيد',
+      'nav_home':          'الرئيسية',
+      'nav_exhibitions':   'المعارض',
+      'nav_my_booths':     'أجنحتي',
+      'nav_favorites':     'المفضلة',
+      'nav_more':          'المزيد',
+      'nav_events':        'الفعاليات',
+      'nav_sponsorships':  'رعاياتي',
+      'nav_reports':       'التقارير',
+      'nav_messages':      'الرسائل',
+      'nav_settings':      'الإعدادات',
+
+      // ── Web detail titles ─────────────────────────────────────────────
+      'detail_exhibition':       'تفاصيل المعرض',
+      'detail_booth':            'تفاصيل الجناح',
+      'detail_booth_management': 'إدارة الجناح',
+      'detail_booking_request':  'طلب حجز جناح',
+      'detail_booking_detail':   'تفاصيل الحجز',
+      'detail_event':            'تفاصيل الفعالية',
+      'detail_report':           'التقرير',
+      'detail_create_event':     'نشر فعالية',
+      'detail_ticket_requests':  'طلبات التذاكر',
+      'detail_sponsorship':      'تفاصيل الرعاية',
+      'detail_scanner':          'مسح QR / باركود',
+      'detail_notifications':    'الإشعارات',
+      'detail_sponsor_event':    'رعاية الفعالية',
+      'detail_map':              'خريطة المعرض 3D',
+
+      // ── Topbar ────────────────────────────────────────────────────────
+      'topbar_search_hint': 'ابحث في المعارض...',
+      'topbar_guest':       'زائر',
+
+      // ── Language Picker ───────────────────────────────────────────────
+      'lang_pick_title':    'اختر لغتك',
+      'lang_pick_subtitle': 'يمكنك تغيير اللغة لاحقاً من الإعدادات',
+      'lang_arabic':        'العربية',
+      'lang_english':       'English',
+      'lang_pick_continue': 'متابعة',
 
       // ── Common actions ───────────────────────────────────────────────
       'btn_cancel':   'إلغاء',
@@ -287,11 +319,43 @@ class MyTranslation extends Translations {
     },
     'en_US': {
       // ── Navigation ───────────────────────────────────────────────────
-      'nav_home':        'Home',
-      'nav_exhibitions': 'Exhibitions',
-      'nav_my_booths':   'My Booths',
-      'nav_favorites':   'Favorites',
-      'nav_more':        'More',
+      'nav_home':          'Home',
+      'nav_exhibitions':   'Exhibitions',
+      'nav_my_booths':     'My Booths',
+      'nav_favorites':     'Favorites',
+      'nav_more':          'More',
+      'nav_events':        'Events',
+      'nav_sponsorships':  'My Sponsorships',
+      'nav_reports':       'Reports',
+      'nav_messages':      'Messages',
+      'nav_settings':      'Settings',
+
+      // ── Web detail titles ─────────────────────────────────────────────
+      'detail_exhibition':       'Exhibition Details',
+      'detail_booth':            'Booth Details',
+      'detail_booth_management': 'Booth Management',
+      'detail_booking_request':  'Booth Booking Request',
+      'detail_booking_detail':   'Booking Details',
+      'detail_event':            'Event Details',
+      'detail_report':           'Report',
+      'detail_create_event':     'Publish Event',
+      'detail_ticket_requests':  'Ticket Requests',
+      'detail_sponsorship':      'Sponsorship Details',
+      'detail_scanner':          'QR / Barcode Scanner',
+      'detail_notifications':    'Notifications',
+      'detail_sponsor_event':    'Sponsor Event',
+      'detail_map':              '3D Exhibition Map',
+
+      // ── Topbar ────────────────────────────────────────────────────────
+      'topbar_search_hint': 'Search exhibitions...',
+      'topbar_guest':       'Guest',
+
+      // ── Language Picker ───────────────────────────────────────────────
+      'lang_pick_title':    'Choose Your Language',
+      'lang_pick_subtitle': 'You can change the language later in Settings',
+      'lang_arabic':        'العربية',
+      'lang_english':       'English',
+      'lang_pick_continue': 'Continue',
 
       // ── Common actions ───────────────────────────────────────────────
       'btn_cancel':   'Cancel',
