@@ -17,71 +17,117 @@ class WebReportsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = Get.find<ReportsController>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const WebSectionHeader(title: 'التقارير', subtitle: 'تقارير الأداء والتحليلات'),
-          const SizedBox(height: 20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Fixed header + filters + date bar ─────────────
+        Container(
+          color: WebTheme.bg,
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const WebSectionHeader(
+                title: 'التقارير',
+                subtitle: 'تقارير الأداء والتحليلات',
+              ),
+              const SizedBox(height: 20),
 
-          // ── Type filters ─────────────────────────────────
-          Obx(() => Wrap(
-                spacing: 8, runSpacing: 8,
-                children: c.typeFilters.map((t) {
-                  final active = c.selectedType.value == t;
-                  return GestureDetector(
-                    onTap: () => c.filterByType(t),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      decoration: BoxDecoration(
-                        gradient: active ? AppColors.favoriteGradient : null,
-                        color: active ? null : WebTheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(t,
-                          style: TextStyle(
-                            color: active ? WebTheme.text : AppColors.grey,
-                            fontSize: 13,
-                            fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-                          )),
-                    ),
-                  );
-                }).toList(),
-              )),
-          const SizedBox(height: 16),
+              // ── Type filters ────────────────────────────
+              Obx(() => Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: c.typeFilters.map((t) {
+                      final active = c.selectedType.value == t;
+                      return GestureDetector(
+                        onTap: () => c.filterByType(t),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 9),
+                          decoration: BoxDecoration(
+                            gradient: active
+                                ? AppColors.favoriteGradient
+                                : null,
+                            color:
+                                active ? null : WebTheme.surface,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            t,
+                            style: TextStyle(
+                              color: active
+                                  ? WebTheme.text
+                                  : AppColors.grey,
+                              fontSize: 13,
+                              fontWeight: active
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  )),
+              const SizedBox(height: 12),
 
-          // ── Date range bar ───────────────────────────────
-          Obx(() => Row(
-                children: [
-                  Expanded(child: _dateBox(context, c, 'من', c.dateFrom.value, (d) => c.dateFrom.value = d)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _dateBox(context, c, 'إلى', c.dateTo.value, (d) => c.dateTo.value = d)),
-                ],
-              )),
-          const SizedBox(height: 24),
+              // ── Date range bar ──────────────────────────
+              Obx(() => Row(
+                    children: [
+                      Expanded(
+                          child: _dateBox(context, c, 'من',
+                              c.dateFrom.value,
+                              (d) => c.dateFrom.value = d)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                          child: _dateBox(context, c, 'إلى',
+                              c.dateTo.value,
+                              (d) => c.dateTo.value = d)),
+                    ],
+                  )),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
 
-          // ── Reports list ─────────────────────────────────
-          Obx(() {
-            final list = c.filtered.toList();
-            if (list.isEmpty) {
-              return Container(
-                width: double.infinity, padding: const EdgeInsets.all(60), alignment: Alignment.center,
-                child: Column(children: [
-                  Icon(Icons.bar_chart_rounded, size: 56, color: AppColors.grey.withOpacity(0.5)),
-                  const SizedBox(height: 12),
-                  Text('لا توجد تقارير', style: TextStyle(color: AppColors.grey)),
-                ]),
+        // ── Scrollable report rows ─────────────────────────
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
+            child: Obx(() {
+              final list = c.filtered.toList();
+              if (list.isEmpty) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(60),
+                  alignment: Alignment.center,
+                  child: Column(children: [
+                    Icon(Icons.bar_chart_rounded,
+                        size: 56,
+                        color: AppColors.grey.withOpacity(0.5)),
+                    const SizedBox(height: 12),
+                    Text('لا توجد تقارير',
+                        style: TextStyle(color: AppColors.grey)),
+                  ]),
+                );
+              }
+              return Column(
+                children:
+                    list.map((r) => _ReportRow(report: r, c: c)).toList(),
               );
-            }
-            return Column(children: list.map((r) => _ReportRow(report: r, c: c)).toList());
-          }),
-        ],
-      ),
+            }),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _dateBox(BuildContext context, ReportsController c, String label, DateTime? value, ValueChanged<DateTime> onPick) =>
+  Widget _dateBox(
+    BuildContext context,
+    ReportsController c,
+    String label,
+    DateTime? value,
+    ValueChanged<DateTime> onPick,
+  ) =>
       GestureDetector(
         onTap: () async {
           final picked = await showDatePicker(
@@ -93,13 +139,25 @@ class WebReportsPage extends StatelessWidget {
           if (picked != null) onPick(picked);
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(color: WebTheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: WebTheme.border)),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: WebTheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: WebTheme.border),
+          ),
           child: Row(children: [
-            Icon(Icons.calendar_today_outlined, color: AppColors.darkPrimary, size: 18),
+            Icon(Icons.calendar_today_outlined,
+                color: AppColors.darkPrimary, size: 18),
             const SizedBox(width: 10),
-            Text(value == null ? label : c.formatDate(value),
-                style: TextStyle(color: value == null ? AppColors.grey : WebTheme.text, fontSize: 13)),
+            Text(
+              value == null ? label : c.formatDate(value),
+              style: TextStyle(
+                color:
+                    value == null ? AppColors.grey : WebTheme.text,
+                fontSize: 13,
+              ),
+            ),
           ]),
         ),
       );
@@ -115,65 +173,98 @@ class _ReportRow extends StatelessWidget {
     return GestureDetector(
       onTap: () => WebNavController.to.openReport(report),
       child: Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: WebTheme.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 50, height: 50,
-            decoration: BoxDecoration(
-              color: AppColors.darkPrimary.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: WebTheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: WebTheme.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppColors.darkPrimary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.description_outlined,
+                  color: AppColors.darkPrimary, size: 24),
             ),
-            child: Icon(Icons.description_outlined, color: AppColors.darkPrimary, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    report.title,
+                    style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${report.boothName} • ${report.period} • ${report.createdAt}',
+                    style:
+                        TextStyle(color: AppColors.grey, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(report.title,
-                    style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text('${report.boothName} • ${report.period} • ${report.createdAt}',
-                    style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                Text(
+                  report.mainValue.toInt().toString(),
+                  style: TextStyle(
+                    color: WebTheme.text,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(report.mainLabel,
+                    style:
+                        TextStyle(color: AppColors.grey, fontSize: 11)),
               ],
             ),
-          ),
-          // KPI
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(report.mainValue.toInt().toString(),
-                  style: TextStyle(color: WebTheme.text, fontSize: 18, fontWeight: FontWeight.w900)),
-              Text(report.mainLabel, style: TextStyle(color: AppColors.grey, fontSize: 11)),
-            ],
-          ),
-          const SizedBox(width: 20),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
+            const SizedBox(width: 20),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '+${report.trend}%',
+                style: TextStyle(
+                  color: AppColors.success,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
-            child: Text('+${report.trend}%',
-                style: TextStyle(color: AppColors.success, fontSize: 12, fontWeight: FontWeight.w700)),
-          ),
-          const SizedBox(width: 16),
-          // Download
-          Obx(() => IconButton(
-                onPressed: c.isDownloading.value ? null : () => c.downloadReport(report.id),
-                icon: c.isDownloading.value
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.darkPrimary))
-                    : Icon(Icons.download_rounded, color: AppColors.darkPrimary),
-              )),
-        ],
-      ),
+            const SizedBox(width: 16),
+            Obx(() => IconButton(
+                  onPressed: c.isDownloading.value
+                      ? null
+                      : () => c.downloadReport(report.id),
+                  icon: c.isDownloading.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.darkPrimary),
+                        )
+                      : Icon(Icons.download_rounded,
+                          color: AppColors.darkPrimary),
+                )),
+          ],
+        ),
       ),
     );
   }

@@ -8,6 +8,8 @@ import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../widgets/web_exhibition_card.dart';
 import '../widgets/web_billboard.dart';
+import '../widgets/web_event_billboard.dart';
+import '../widgets/web_section_header.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDashboardPage  —  لوحة التحكم (مطابقة لنسخة الجوال)
@@ -20,91 +22,139 @@ class WebDashboardPage extends StatelessWidget {
     final c = Get.find<DashboardController>();
     final events = Get.find<EventsController>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-
-          // ── Ads billboard (carousel) ─────────────────────
-          Obx(() {
-            final ads = c.featuredExhibitions.toList();
-            if (ads.isEmpty) return const SizedBox.shrink();
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 28),
-              child: WebBillboard(items: ads),
-            );
-          }),
-
-          // ── Performance summary (+ period) ───────────────
-          _performanceSection(c),
-          const SizedBox(height: 32),
-
-          // ── Quick actions ────────────────────────────────
-          _sectionTitle('الإجراءات السريعة'),
-          const SizedBox(height: 16),
-          _quickActions(),
-          const SizedBox(height: 32),
-
-          // ── Latest exhibitions ───────────────────────────
-          _sectionTitleWithAction(
-            'أحدث المعارض',
-            onAll: () => WebNavController.to.select(1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Fixed page title ──────────────────────────────
+        Container(
+          color: WebTheme.bg,
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
+          child: const WebSectionHeader(
+            title: 'لوحة التحكم',
+            subtitle: 'نظرة عامة على أداء حساباتك',
           ),
-          const SizedBox(height: 16),
-          Obx(() {
-            final list = c.featuredExhibitions.toList();
-            if (list.isEmpty) return _emptyHint('لا توجد معارض حالياً');
-            return Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              children: list
-                  .map(
-                    (e) => SizedBox(
-                      width: 280,
-                      child: WebExhibitionCard(exhibition: e),
+        ),
+
+        // ── Scrollable content ────────────────────────────
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 20, 28, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Exhibitions billboard ─────────────────
+                Obx(() {
+                  final ads = c.featuredExhibitions.toList();
+                  if (ads.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _sectionTitle('المعارض المميّزة'),
+                        const SizedBox(height: 14),
+                        WebBillboard(items: ads),
+                      ],
                     ),
-                  )
-                  .toList(),
-            );
-          }),
-          const SizedBox(height: 32),
+                  );
+                }),
 
-          // ── Upcoming sponsor events ──────────────────────
-          _sectionTitleWithAction(
-            'فعاليات المعارض القادمة',
-            onAll: () => WebNavController.to.select(4),
+                // ── Events billboard ──────────────────────
+                Obx(() {
+                  final evs =
+                      events.exhibitionSponsorEvents.toList();
+                  if (evs.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 28, bottom: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _sectionTitleWithAction(
+                          'فعاليات المعارض الإعلانية',
+                          onAll: () => WebNavController.to.select(4),
+                        ),
+                        const SizedBox(height: 14),
+                        WebEventBillboard(events: evs),
+                      ],
+                    ),
+                  );
+                }),
+
+                const SizedBox(height: 28),
+
+                // ── Performance summary (+ period) ────────
+                _performanceSection(c),
+                const SizedBox(height: 32),
+
+                // ── Quick actions ─────────────────────────
+                _sectionTitle('الإجراءات السريعة'),
+                const SizedBox(height: 16),
+                _quickActions(),
+                const SizedBox(height: 32),
+
+                // ── Latest exhibitions ────────────────────
+                _sectionTitleWithAction(
+                  'أحدث المعارض',
+                  onAll: () => WebNavController.to.select(1),
+                ),
+                const SizedBox(height: 16),
+                Obx(() {
+                  final list = c.featuredExhibitions.toList();
+                  if (list.isEmpty)
+                    return _emptyHint('لا توجد معارض حالياً');
+                  return Wrap(
+                    spacing: 20,
+                    runSpacing: 20,
+                    children: list
+                        .map(
+                          (e) => SizedBox(
+                            width: 280,
+                            child: WebExhibitionCard(exhibition: e),
+                          ),
+                        )
+                        .toList(),
+                  );
+                }),
+                const SizedBox(height: 32),
+
+                // ── Upcoming sponsor events ───────────────
+                _sectionTitleWithAction(
+                  'فعالياتي القادمة',
+                  onAll: () => WebNavController.to.select(4),
+                ),
+                const SizedBox(height: 16),
+                Obx(() {
+                  final list = events.myExhibitionSponsorEvents;
+                  if (list.isEmpty)
+                    return _emptyHint(
+                        'لا توجد فعاليات في معارضك المشترك بها');
+                  return Column(
+                    children: list
+                        .take(4)
+                        .map((e) => _SponsorEventTile(event: e))
+                        .toList(),
+                  );
+                }),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          Obx(() {
-            final list = events.myExhibitionSponsorEvents;
-            if (list.isEmpty)
-              return _emptyHint('لا توجد فعاليات في معارضك المشترك بها');
-            return Column(
-              children: list
-                  .take(4)
-                  .map((e) => _SponsorEventTile(event: e))
-                  .toList(),
-            );
-          }),
-          const SizedBox(height: 20),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  // ── Performance section ───────────────────────────────────
+  // ── Performance section ────────────────────────────────────
   Widget _performanceSection(DashboardController c) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
         children: [
           Expanded(child: _sectionTitle('ملخص الأداء')),
-          // period dropdown
           Obx(
             () => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: WebTheme.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -121,9 +171,11 @@ class WebDashboardPage extends StatelessWidget {
                 ),
                 style: TextStyle(color: WebTheme.text, fontSize: 13),
                 items: c.periods
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .map((p) =>
+                        DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (v) => c.changePeriod(v ?? c.selectedPeriod.value),
+                onChanged: (v) =>
+                    c.changePeriod(v ?? c.selectedPeriod.value),
               ),
             ),
           ),
@@ -173,7 +225,8 @@ class WebDashboardPage extends StatelessWidget {
               crossAxisSpacing: 18,
               mainAxisSpacing: 18,
               childAspectRatio: 2.4,
-              children: cards.map((d) => _StatCard(data: d)).toList(),
+              children:
+                  cards.map((d) => _StatCard(data: d)).toList(),
             );
           },
         );
@@ -181,7 +234,7 @@ class WebDashboardPage extends StatelessWidget {
     ],
   );
 
-  // ── Quick actions ─────────────────────────────────────────
+  // ── Quick actions ──────────────────────────────────────────
   Widget _quickActions() {
     final actions = [
       (
@@ -194,7 +247,8 @@ class WebDashboardPage extends StatelessWidget {
         WebNavController.to.openScanner,
       ),
       (
-        _QA(Icons.add_circle_outline, 'نشر فعالية', AppColors.darkSecondary),
+        _QA(
+            Icons.add_circle_outline, 'نشر فعالية', AppColors.darkSecondary),
         WebNavController.to.openCreateEvent,
       ),
       (
@@ -202,7 +256,8 @@ class WebDashboardPage extends StatelessWidget {
         () => WebNavController.to.select(3),
       ),
       (
-        _QA(Icons.workspace_premium_outlined, 'رعاياتي', AppColors.orange),
+        _QA(
+            Icons.workspace_premium_outlined, 'رعاياتي', AppColors.orange),
         () => WebNavController.to.select(4),
       ),
       (
@@ -210,7 +265,8 @@ class WebDashboardPage extends StatelessWidget {
         () => WebNavController.to.select(5),
       ),
       (
-        _QA(Icons.message, 'التواصل', const Color.fromARGB(255, 192, 31, 255)),
+        _QA(Icons.message, 'التواصل',
+            const Color.fromARGB(255, 192, 31, 255)),
         () => WebNavController.to.select(6),
       ),
     ];
@@ -223,7 +279,7 @@ class WebDashboardPage extends StatelessWidget {
     );
   }
 
-  // ── Section titles ────────────────────────────────────────
+  // ── Section titles ─────────────────────────────────────────
   Widget _sectionTitle(String t) => Row(
     children: [
       Container(
@@ -246,7 +302,8 @@ class WebDashboardPage extends StatelessWidget {
     ],
   );
 
-  Widget _sectionTitleWithAction(String t, {required VoidCallback onAll}) =>
+  Widget _sectionTitleWithAction(String t,
+          {required VoidCallback onAll}) =>
       Row(
         children: [
           Expanded(child: _sectionTitle(t)),
@@ -276,7 +333,7 @@ class WebDashboardPage extends StatelessWidget {
   );
 }
 
-// ── Quick action model + button ─────────────────────────────
+// ── Quick action model + button ──────────────────────────────
 class _QA {
   final IconData icon;
   final String label;
@@ -296,7 +353,8 @@ class _QuickActionBtn extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 150,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
+        padding:
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
         decoration: BoxDecoration(
           color: WebTheme.surface,
           borderRadius: BorderRadius.circular(16),
@@ -309,7 +367,8 @@ class _QuickActionBtn extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 gradient: qa.gradient ? AppColors.favoriteGradient : null,
-                color: qa.gradient ? null : qa.color.withOpacity(0.15),
+                color:
+                    qa.gradient ? null : qa.color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -334,7 +393,7 @@ class _QuickActionBtn extends StatelessWidget {
   }
 }
 
-// ── Sponsor event tile ──────────────────────────────────────
+// ── Sponsor event tile ────────────────────────────────────────
 class _SponsorEventTile extends StatelessWidget {
   final ExhibitionSponsorEvent event;
   const _SponsorEventTile({required this.event});
@@ -384,20 +443,23 @@ class _SponsorEventTile extends StatelessWidget {
                     '${event.exhibitionName} • ${event.date} • ${event.place}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColors.grey, fontSize: 12),
+                    style:
+                        TextStyle(color: AppColors.grey, fontSize: 12),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: AppColors.darkPrimary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 event.type,
-                style: TextStyle(color: AppColors.darkPink, fontSize: 11),
+                style:
+                    TextStyle(color: AppColors.darkPink, fontSize: 11),
               ),
             ),
           ],
@@ -407,7 +469,7 @@ class _SponsorEventTile extends StatelessWidget {
   }
 }
 
-// ── Stat data + card ────────────────────────────────────────
+// ── Stat data + card ──────────────────────────────────────────
 class _StatData {
   final String label, value, trend;
   final IconData icon;
@@ -456,14 +518,16 @@ class _StatCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   data.label,
-                  style: TextStyle(color: AppColors.grey, fontSize: 12),
+                  style:
+                      TextStyle(color: AppColors.grey, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.success.withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),

@@ -18,86 +18,94 @@ class WebBoothsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = Get.find<BoothController>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Fixed header + filters ────────────────────────
+        Container(
+          color: WebTheme.bg,
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: WebSectionHeader(
-                  title: 'أجنحتي',
-                  subtitle: 'إدارة الأجنحة المحجوزة وتقاريرها',
+              WebSectionHeader(
+                title: 'أجنحتي',
+                subtitle: 'إدارة الأجنحة المحجوزة وتقاريرها',
+              ),
+              const SizedBox(height: 20),
+              // ── Status filters ──────────────────────────
+              Obx(
+                () => Wrap(
+                  spacing: 8,
+                  children: c.filters.map((f) {
+                    final active = c.statusFilter.value == f;
+                    return GestureDetector(
+                      onTap: () => c.applyFilter(f),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient:
+                              active ? AppColors.favoriteGradient : null,
+                          color: active ? null : WebTheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          f,
+                          style: TextStyle(
+                            color: active
+                                ? WebTheme.text
+                                : AppColors.grey,
+                            fontSize: 13,
+                            fontWeight: active
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ),
+        ),
 
-          const SizedBox(height: 20),
-
-          // ── Status filters ───────────────────────────────
-          Obx(
-            () => Wrap(
-              spacing: 8,
-              children: c.filters.map((f) {
-                final active = c.statusFilter.value == f;
-                return GestureDetector(
-                  onTap: () => c.applyFilter(f),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 9,
+        // ── Scrollable booths grid ─────────────────────────
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
+            child: Obx(() {
+              final list = c.filtered.toList();
+              if (list.isEmpty) return _empty();
+              return LayoutBuilder(
+                builder: (context, cons) {
+                  final cols = cons.maxWidth > 1100
+                      ? 3
+                      : (cons.maxWidth > 700 ? 2 : 1);
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: list.length,
+                    gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: cols,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 1.5,
                     ),
-                    decoration: BoxDecoration(
-                      gradient: active ? AppColors.favoriteGradient : null,
-                      color: active ? null : WebTheme.surface,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      f,
-                      style: TextStyle(
-                        color: active ? WebTheme.text : AppColors.grey,
-                        fontSize: 13,
-                        fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+                    itemBuilder: (_, i) =>
+                        _BoothCard(booth: list[i], c: c),
+                  );
+                },
+              );
+            }),
           ),
-          const SizedBox(height: 24),
-
-          // ── Booths grid ──────────────────────────────────
-          Obx(() {
-            final list = c.filtered.toList();
-            if (list.isEmpty) {
-              return _empty();
-            }
-            return LayoutBuilder(
-              builder: (context, cons) {
-                final cols = cons.maxWidth > 1100
-                    ? 3
-                    : (cons.maxWidth > 700 ? 2 : 1);
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: list.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: cols,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemBuilder: (_, i) => _BoothCard(booth: list[i], c: c),
-                );
-              },
-            );
-          }),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -119,7 +127,7 @@ class WebBoothsPage extends StatelessWidget {
   );
 }
 
-// ── Booth card ──────────────────────────────────────────────
+// ── Booth card ───────────────────────────────────────────────
 class _BoothCard extends StatelessWidget {
   final BoothModel booth;
   final BoothController c;
@@ -171,7 +179,8 @@ class _BoothCard extends StatelessWidget {
                       booth.exhibitionName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.grey, fontSize: 12),
+                      style:
+                          TextStyle(color: AppColors.grey, fontSize: 12),
                     ),
                   ],
                 ),
@@ -182,9 +191,11 @@ class _BoothCard extends StatelessWidget {
           const Spacer(),
           Row(
             children: [
-              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
+              _info(Icons.straighten_rounded,
+                  '${booth.area.toInt()} م²'),
               const SizedBox(width: 16),
-              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
+              _info(Icons.payments_outlined,
+                  '${booth.price.toInt()} ر.س'),
             ],
           ),
           const SizedBox(height: 14),
@@ -216,14 +227,16 @@ class _BoothCard extends StatelessWidget {
                         ? _btn(
                             label: 'التقرير',
                             filled: false,
-                            onTap: () => WebNavController.to.openReport(
+                            onTap: () =>
+                                WebNavController.to.openReport(
                               c.buildBoothReport(booth),
                             ),
                           )
                         : _btn(
                             label: 'خريطة 3D',
                             filled: false,
-                            onTap: () => WebNavController.to.openMap(),
+                            onTap: () =>
+                                WebNavController.to.openMap(),
                           ),
               ),
             ],
@@ -254,7 +267,8 @@ class _BoothCard extends StatelessWidget {
         gradient: filled ? AppColors.favoriteGradient : null,
         border: filled
             ? null
-            : Border.all(color: AppColors.darkPrimary.withOpacity(0.5)),
+            : Border.all(
+                color: AppColors.darkPrimary.withOpacity(0.5)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
