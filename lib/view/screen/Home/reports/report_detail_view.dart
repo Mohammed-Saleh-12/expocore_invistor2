@@ -62,12 +62,12 @@ class ReportDetailView extends GetView<ReportsController> {
             _insights(isDark, content),
             const SizedBox(height: 24),
             CustomButton(
-              label: 'تصدير PDF (طباعة)',
+              label: 'report_export_pdf'.tr,
               onTap: () => controller.exportToPdf(report),
             ),
             const SizedBox(height: 10),
             Obx(() => CustomButton(
-                  label: 'تنزيل Excel',
+                  label: 'report_download_excel'.tr,
                   isOutlined: true,
                   isLoading: controller.isDownloading.value,
                   onTap: () => controller.downloadReport(report.id, format: 'excel'),
@@ -110,7 +110,7 @@ class ReportDetailView extends GetView<ReportsController> {
                 ]),
               ),
               const Spacer(),
-              Text('أُنشئ: ${r.createdAt}',
+              Text('${'report_created_prefix'.tr} ${r.createdAt}',
                   style: const TextStyle(fontSize: 11, color: AppColors.grey)),
             ]),
             const SizedBox(height: 10),
@@ -121,7 +121,7 @@ class ReportDetailView extends GetView<ReportsController> {
             Text('${r.boothName} • ${r.exhibitionName}',
                 style:
                     const TextStyle(fontSize: 12, color: AppColors.grey)),
-            Text('الفترة: ${r.period}',
+            Text('${'report_period_prefix'.tr} ${r.period}',
                 style:
                     const TextStyle(fontSize: 12, color: AppColors.grey)),
           ],
@@ -209,9 +209,9 @@ class ReportDetailView extends GetView<ReportsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('البيانات التفصيلية',
+            Text('report_detailed_data'.tr,
                 style:
-                    TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
             Table(
               border: TableBorder.all(
@@ -264,8 +264,8 @@ class ReportDetailView extends GetView<ReportsController> {
             Row(children: [
               Icon(Icons.lightbulb_outline, color: AppColors.darkSecondary),
               const SizedBox(width: 6),
-              const Text('رؤى وتوصيات',
-                  style: TextStyle(
+              Text('report_insights_title'.tr,
+                  style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.w700)),
             ]),
             const SizedBox(height: 10),

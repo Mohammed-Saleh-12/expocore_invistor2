@@ -51,7 +51,7 @@ class EventsController extends GetxController {
 
   Future<void> pickImages() async {
     if (pickedImages.length >= _maxImages) {
-      _warn('الحد الأقصى $_maxImages صور'); return;
+      _warn('event_max_images_warn'.trParams({'count': '$_maxImages'})); return;
     }
     final remaining = _maxImages - pickedImages.length;
     final picked = await _picker.pickMultiImage(imageQuality: 80);
@@ -194,13 +194,13 @@ class EventsController extends GetxController {
   Future<bool> submitEvent() async {
     if (formKey.currentState != null && !formKey.currentState!.validate()) return false;
     if (selectedType.value.isEmpty) {
-      _warn('يرجى اختيار نوع الفعالية'); return false;
+      _warn('event_type_required'.tr); return false;
     }
     if (selectedExhibitionName.value.isEmpty) {
-      _warn('يرجى اختيار المعرض'); return false;
+      _warn('event_exhibition_required'.tr); return false;
     }
     if (selectedBooth.value == null) {
-      _warn('يرجى اختيار الجناح'); return false;
+      _warn('event_booth_required'.tr); return false;
     }
 
     isCreating.value = true;
@@ -238,13 +238,13 @@ class EventsController extends GetxController {
       await _loadMyEvents();
       _resetCreateForm();
       success = true;
-      Get.snackbar('تم النشر', 'تم نشر الفعالية بنجاح',
+      Get.snackbar('event_published_title'.tr, 'event_published_msg'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFF4CAF50),
           colorText: const Color(0xFFFFFFFF));
     } else {
       status.value = StatusRequest.failure;
-      _warn(result['message'] ?? 'فشل نشر الفعالية');
+      _warn(result['message'] ?? 'event_publish_fail_msg'.tr);
     }
     isCreating.value = false;
     return success;
@@ -273,7 +273,8 @@ class EventsController extends GetxController {
       requiresBooking: false,
     );
     myEvents.insert(0, ev);
-    Get.snackbar('تم النشر', 'تم نشر الفعالية "$name" بنجاح',
+    Get.snackbar('event_published_title'.tr,
+        'sponsorship_booked_msg'.trParams({'name': name}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF));
@@ -288,7 +289,7 @@ class EventsController extends GetxController {
   // ── حجز الرعاية (مشترك ويب/جوال — نفس الـ API، بدون تنقّل) ────────────
   Future<bool> submitSponsorship(ExhibitionSponsorEvent event) async {
     if (selectedSponsorDuration.value == null) {
-      _warn('يرجى اختيار مدة المشاركة'); return false;
+      _warn('event_sponsor_duration_required'.tr); return false;
     }
     isBooking.value = true;
 
@@ -327,7 +328,8 @@ class EventsController extends GetxController {
 
     isBooking.value = false;
     selectedSponsorDuration.value = null;
-    Get.snackbar('تم الحجز', 'تم إرسال طلب الرعاية للفعالية "${event.name}"',
+    Get.snackbar('sponsorship_booked_title'.tr,
+        'sponsorship_booked_msg'.trParams({'name': event.name}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF));
@@ -358,7 +360,8 @@ class EventsController extends GetxController {
       req.qrCodeData   = '${req.ticketNumber}-2026';
     }
     ticketRequests.refresh();
-    Get.snackbar('تم القبول', 'تم قبول طلب ${req.requesterName} وتوليد تذكرة QR',
+    Get.snackbar('ticket_approved_title'.tr,
+        'ticket_approved_msg'.trParams({'name': req.requesterName}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50),
         colorText: const Color(0xFFFFFFFF));
@@ -371,7 +374,8 @@ class EventsController extends GetxController {
     );
     req.status = 'rejected';
     ticketRequests.refresh();
-    Get.snackbar('تم الرفض', 'تم رفض طلب ${req.requesterName}',
+    Get.snackbar('ticket_rejected_title'.tr,
+        'ticket_rejected_msg'.trParams({'name': req.requesterName}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFE53935),
         colorText: const Color(0xFFFFFFFF));
@@ -398,7 +402,8 @@ class EventsController extends GetxController {
       'rejected': 'مرفوض', 'active': 'نشط', 'ended': 'منتهٍ',
       'upcoming': 'قادم',
     };
-    return map[s] ?? s;
+    final arabic = map[s] ?? s;
+    return arabic.tr;
   }
 
   Color statusColor(String s) {
@@ -409,7 +414,7 @@ class EventsController extends GetxController {
     }
   }
 
-  void _warn(String msg) => Get.snackbar('تنبيه', msg,
+  void _warn(String msg) => Get.snackbar('snack_warning'.tr, msg,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: const Color(0xFFF7941D),
       colorText: const Color(0xFFFFFFFF));

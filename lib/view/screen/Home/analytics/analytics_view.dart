@@ -13,7 +13,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'التحليلات', showBack: false, actions: [
+      appBar: CustomAppBar(title: 'analytics_title'.tr, showBack: false, actions: [
         Obx(() => Padding(
           padding: const EdgeInsets.only(left: 8),
           child: DropdownButton<String>(
@@ -21,7 +21,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
             underline: const SizedBox(),
             icon: const Icon(Icons.keyboard_arrow_down, size: 18),
             style: const TextStyle(fontSize: 12, color: AppColors.darkPrimary),
-            items: controller.periods.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+            items: controller.periods.map((p) => DropdownMenuItem(value: p, child: Text(p.tr))).toList(),
             onChanged: (v) => controller.changePeriod(v ?? ''),
           ),
         )),
@@ -32,25 +32,25 @@ class AnalyticsView extends GetView<AnalyticsController> {
           SizedBox(
             height: 120,
             child: ListView(scrollDirection: Axis.horizontal, children: [
-              SizedBox(width: 160, child: StatsCard(label: 'إجمالي الزيارات', value: _fmt(controller.totalVisits.value), icon: Icons.people_outline, iconColor: AppColors.darkPrimary, trend: controller.visitsTrend.value)),
+              SizedBox(width: 160, child: StatsCard(label: 'analytics_total_visits'.tr, value: _fmt(controller.totalVisits.value), icon: Icons.people_outline, iconColor: AppColors.darkPrimary, trend: controller.visitsTrend.value)),
               const SizedBox(width: 10),
-              SizedBox(width: 160, child: StatsCard(label: 'مشاهدات المنتجات', value: _fmt(controller.productViews.value), icon: Icons.visibility_outlined, iconColor: AppColors.darkSecondary, trend: controller.viewsTrend.value)),
+              SizedBox(width: 160, child: StatsCard(label: 'analytics_product_views'.tr, value: _fmt(controller.productViews.value), icon: Icons.visibility_outlined, iconColor: AppColors.darkSecondary, trend: controller.viewsTrend.value)),
               const SizedBox(width: 10),
-              SizedBox(width: 160, child: StatsCard(label: 'المشاركات', value: '${controller.eventParticipants}', icon: Icons.event_outlined, iconColor: AppColors.success, trend: controller.eventsTrend.value)),
+              SizedBox(width: 160, child: StatsCard(label: 'analytics_participants'.tr, value: '${controller.eventParticipants}', icon: Icons.event_outlined, iconColor: AppColors.success, trend: controller.eventsTrend.value)),
               const SizedBox(width: 10),
-              SizedBox(width: 160, child: StatsCard(label: 'إجمالي التفاعل', value: _fmt(controller.totalEngagement.value), icon: Icons.trending_up, iconColor: AppColors.orange, trend: controller.engagementTrend.value)),
+              SizedBox(width: 160, child: StatsCard(label: 'analytics_total_engagement'.tr, value: _fmt(controller.totalEngagement.value), icon: Icons.trending_up, iconColor: AppColors.orange, trend: controller.engagementTrend.value)),
             ]),
           ),
           const SizedBox(height: 24),
-          _chartCard(context, 'اهتمام الزوار', _visitorsChart()),
+          _chartCard(context, 'analytics_visitors_chart'.tr, _visitorsChart()),
           const SizedBox(height: 16),
-          _chartCard(context, 'أداء الفعاليات', _eventsChart()),
+          _chartCard(context, 'analytics_events_chart'.tr, _eventsChart()),
           const SizedBox(height: 16),
           _demographicsCard(context),
           const SizedBox(height: 16),
           _recommendationsCard(context),
           const SizedBox(height: 24),
-          CustomButton(label: 'تنزيل التقرير التحليلي', onTap: controller.goToReports),
+          CustomButton(label: 'analytics_download_report'.tr, onTap: controller.goToReports),
           const SizedBox(height: 20),
         ])),
       ),
@@ -85,7 +85,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
         rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, getTitlesWidget: (v, _) {
-          final days = ['أح', 'إث', 'ث', 'أر', 'خ', 'ج', 'س'];
+          final days = ['أح'.tr, 'إث'.tr, 'ث'.tr, 'أر'.tr, 'خ'.tr, 'ج'.tr, 'س'.tr];
           if (v.toInt() < days.length) return Text(days[v.toInt()], style: const TextStyle(fontSize: 10, color: AppColors.grey));
           return const SizedBox();
         }, reservedSize: 20)),
@@ -115,7 +115,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
         rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, getTitlesWidget: (v, _) {
-          final labels = ['ورشة', 'عرض', 'B2B', 'مسابقة'];
+          final labels = ['ورشة'.tr, 'عرض'.tr, 'B2B', 'مسابقة'.tr];
           if (v.toInt() < labels.length) return Text(labels[v.toInt()], style: const TextStyle(fontSize: 10, color: AppColors.grey));
           return const SizedBox();
         }, reservedSize: 20)),
@@ -139,7 +139,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('التوزيع العمري', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        Text('analytics_age_distribution'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 14),
         ...items.map((d) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -170,7 +170,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Icon(Icons.lightbulb_outline, color: AppColors.darkSecondary, size: 20), const SizedBox(width: 6), const Text('توصيات ذكية', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700))]),
+        Row(children: [Icon(Icons.lightbulb_outline, color: AppColors.darkSecondary, size: 20), const SizedBox(width: 6), Text('analytics_smart_recs'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700))]),
         const SizedBox(height: 12),
         ...recs.map((r) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),

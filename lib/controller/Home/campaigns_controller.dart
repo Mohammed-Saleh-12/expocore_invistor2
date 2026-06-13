@@ -61,11 +61,11 @@ class CampaignsController extends GetxController {
       status.value = StatusRequest.success;
       await _loadCampaigns();
       Get.back();
-      Get.snackbar('نجاح', 'تم إنشاء الحملة بنجاح',
+      Get.snackbar('success'.tr, 'campaign_created_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('خطأ', result['message'] ?? 'فشل إنشاء الحملة',
+      Get.snackbar('error'.tr, result['message'] ?? 'campaign_create_fail_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -74,9 +74,9 @@ class CampaignsController extends GetxController {
     final result = await _crud.deleteData(AppLink.campaignDetail(id));
     if (result['status'] == true) {
       campaigns.removeWhere((c) => c.id == id);
-      Get.snackbar('تم الحذف', 'تم حذف الحملة', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('campaign_deleted_title'.tr, 'campaign_deleted_msg'.tr, snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar('خطأ', result['message'] ?? 'فشل الحذف', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('error'.tr, result['message'] ?? 'campaign_delete_fail_msg'.tr, snackPosition: SnackPosition.BOTTOM);
     }
   }
 

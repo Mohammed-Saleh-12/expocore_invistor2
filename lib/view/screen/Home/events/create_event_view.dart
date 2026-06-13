@@ -15,7 +15,7 @@ class CreateEventView extends GetView<EventsController> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'نشر فعالية جديدة في الجناح'),
+      appBar: CustomAppBar(title: 'create_event_title'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -24,21 +24,21 @@ class CreateEventView extends GetView<EventsController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Basic info ─────────────────────────────────────────
-              _sectionHeader('المعلومات الأساسية'),
+              _sectionHeader('event_section_basic'.tr),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: controller.nameCtrl,
-                hint: 'اسم الفعالية',
+                hint: 'event_name_hint'.tr,
                 prefixIcon: Icons.event_outlined,
-                validator: (v) => v!.isEmpty ? 'مطلوب' : null,
+                validator: (v) => v!.isEmpty ? 'required'.tr : null,
               ),
               const SizedBox(height: 12),
               Obx(() => DropdownButtonFormField<String>(
                     value: controller.selectedType.value.isEmpty
                         ? null
                         : controller.selectedType.value,
-                    hint: const Text('نوع الفعالية',
-                        style: TextStyle(color: AppColors.grey)),
+                    hint: Text('event_type_hint'.tr,
+                        style: const TextStyle(color: AppColors.grey)),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: isDark
@@ -52,7 +52,7 @@ class CreateEventView extends GetView<EventsController> {
                     ),
                     items: controller.eventTypes
                         .map((t) => DropdownMenuItem(
-                            value: t, child: Text(t)))
+                            value: t, child: Text(t.tr)))
                         .toList(),
                     onChanged: (v) =>
                         controller.selectedType.value = v ?? '',
@@ -60,15 +60,15 @@ class CreateEventView extends GetView<EventsController> {
               const SizedBox(height: 20),
 
               // ── Exhibition & Booth selection ────────────────────────
-              _sectionHeader('اختيار المعرض والجناح'),
+              _sectionHeader('event_section_exhibition'.tr),
               const SizedBox(height: 12),
               // Step 1: pick exhibition
               Obx(() => DropdownButtonFormField<String>(
                     value: controller.selectedExhibitionName.value.isEmpty
                         ? null
                         : controller.selectedExhibitionName.value,
-                    hint: const Text('اختر المعرض',
-                        style: TextStyle(color: AppColors.grey)),
+                    hint: Text('event_select_exhibition'.tr,
+                        style: const TextStyle(color: AppColors.grey)),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: isDark
@@ -102,8 +102,8 @@ class CreateEventView extends GetView<EventsController> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<BoothModel>(
                       value: controller.selectedBooth.value,
-                      hint: const Text('اختر الجناح',
-                          style: TextStyle(color: AppColors.grey)),
+                      hint: Text('event_select_booth'.tr,
+                          style: const TextStyle(color: AppColors.grey)),
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: isDark
@@ -121,7 +121,7 @@ class CreateEventView extends GetView<EventsController> {
                           .map((b) => DropdownMenuItem<BoothModel>(
                                 value: b,
                                 child: Text(
-                                  'جناح ${b.number} — ${b.location}',
+                                  '${'event_booth_prefix'.tr} ${b.number} — ${b.location}',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ))
@@ -156,12 +156,12 @@ class CreateEventView extends GetView<EventsController> {
                             crossAxisAlignment:
                                 CrossAxisAlignment.start,
                             children: [
-                              const Text('الموقع المختار',
-                                  style: TextStyle(
+                              Text('event_selected_location'.tr,
+                                  style: const TextStyle(
                                       fontSize: 11,
                                       color: AppColors.grey)),
                               Text(
-                                'جناح ${booth.number} — ${controller.selectedExhibitionName.value}',
+                                '${'event_booth_prefix'.tr} ${booth.number} — ${controller.selectedExhibitionName.value}',
                                 style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600),
@@ -179,16 +179,16 @@ class CreateEventView extends GetView<EventsController> {
               const SizedBox(height: 20),
 
               // ── Date & time ────────────────────────────────────────
-              _sectionHeader('التاريخ والوقت'),
+              _sectionHeader('event_section_datetime'.tr),
               const SizedBox(height: 12),
               Row(children: [
                 Expanded(
-                    child: _datePicker(context, isDark, 'التاريخ',
+                    child: _datePicker(context, isDark, 'event_date_label'.tr,
                         Icons.calendar_today_outlined,
                         isDate: true)),
                 const SizedBox(width: 12),
                 Expanded(
-                    child: _datePicker(context, isDark, 'الوقت',
+                    child: _datePicker(context, isDark, 'event_time_label'.tr,
                         Icons.access_time_outlined,
                         isDate: false)),
               ]),
@@ -197,7 +197,7 @@ class CreateEventView extends GetView<EventsController> {
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _fieldLabel('مدة الفعالية (أيام)'),
+                      _fieldLabel('event_duration_label'.tr),
                       const SizedBox(height: 6),
                       Row(
                         children: List.generate(5, (i) {
@@ -257,31 +257,31 @@ class CreateEventView extends GetView<EventsController> {
               const SizedBox(height: 20),
 
               // ── Description ────────────────────────────────────────
-              _sectionHeader('نبذة عن الفعالية'),
+              _sectionHeader('event_section_about'.tr),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: controller.descCtrl,
-                hint: 'وصف تفصيلي للفعالية وأهدافها',
+                hint: 'event_desc_hint'.tr,
                 maxLines: 4,
                 prefixIcon: Icons.description_outlined,
-                validator: (v) => v!.isEmpty ? 'مطلوب' : null,
+                validator: (v) => v!.isEmpty ? 'required'.tr : null,
               ),
               const SizedBox(height: 20),
 
               // ── Media ──────────────────────────────────────────────
-              _sectionHeader('الصور والفيديو'),
+              _sectionHeader('event_section_media'.tr),
               const SizedBox(height: 12),
               _buildImagePicker(isDark),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: controller.videoPromoCtrl,
-                hint: 'رابط الفيديو الترويجي (اختياري)',
+                hint: 'event_video_hint'.tr,
                 prefixIcon: Icons.play_circle_outline,
               ),
               const SizedBox(height: 20),
 
               // ── Seats / Registration ────────────────────────────────
-              _sectionHeader('التسجيل والتذاكر'),
+              _sectionHeader('event_section_tickets'.tr),
               const SizedBox(height: 14),
               _ticketTypeSelector(isDark),
               const SizedBox(height: 14),
@@ -289,7 +289,7 @@ class CreateEventView extends GetView<EventsController> {
               const SizedBox(height: 28),
 
               Obx(() => CustomButton(
-                    label: 'نشر الفعالية',
+                    label: 'event_publish_btn'.tr,
                     onTap: controller.createEvent,
                     isLoading: controller.isCreating.value,
                   )),
@@ -390,22 +390,22 @@ class CreateEventView extends GetView<EventsController> {
       _TicketOption(
         type: 'general',
         icon: Icons.people_outline,
-        label: 'دعوة عامة',
-        sublabel: 'مفتوح للجميع',
+        label: 'event_ticket_general'.tr,
+        sublabel: 'event_ticket_general_sub'.tr,
         color: AppColors.darkPrimary,
       ),
       _TicketOption(
         type: 'free_limited',
         icon: Icons.confirmation_number_outlined,
-        label: 'تذاكر حرة',
-        sublabel: 'مجاني — عدد محدود',
+        label: 'event_ticket_free_limited'.tr,
+        sublabel: 'event_ticket_free_limited_sub'.tr,
         color: AppColors.darkSecondary,
       ),
       _TicketOption(
         type: 'paid',
         icon: Icons.payments_outlined,
-        label: 'تذاكر مدفوعة',
-        sublabel: 'بسعر محدد',
+        label: 'event_ticket_paid'.tr,
+        sublabel: 'event_ticket_paid_sub'.tr,
         color: AppColors.darkAccent,
       ),
     ];
@@ -483,24 +483,24 @@ class CreateEventView extends GetView<EventsController> {
           children: [
             _freeLimitedBanner(isDark),
             const SizedBox(height: 14),
-            _fieldLabel('الحد الأقصى للمسجلين'),
+            _fieldLabel('event_max_registrants_label'.tr),
             const SizedBox(height: 8),
             CustomTextField(
               controller: controller.freeLimitCtrl,
-              hint: 'مثال: 100',
+              hint: 'event_ticket_limit_hint'.tr,
               keyboard: TextInputType.number,
               prefixIcon: Icons.groups_outlined,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'أدخل العدد';
+                if (v == null || v.isEmpty) return 'event_enter_count'.tr;
                 final n = int.tryParse(v);
-                if (n == null || n < 1) return 'عدد غير صحيح';
+                if (n == null || n < 1) return 'event_invalid_count'.tr;
                 return null;
               },
             ),
             const SizedBox(height: 10),
             _fieldNote(
               Icons.info_outline_rounded,
-              'سيُغلق التسجيل تلقائياً عند اكتمال العدد المحدد',
+              'event_auto_close_note'.tr,
               AppColors.darkSecondary,
             ),
           ],
@@ -513,23 +513,23 @@ class CreateEventView extends GetView<EventsController> {
           children: [
             CustomTextField(
               controller: controller.seatsCtrl,
-              hint: 'إجمالي المقاعد المتاحة',
+              hint: 'event_total_seats_hint'.tr,
               keyboard: TextInputType.number,
               prefixIcon: Icons.event_seat_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'مطلوب' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'required'.tr : null,
             ),
             const SizedBox(height: 12),
             CustomTextField(
               controller: controller.ticketPriceCtrl,
-              hint: 'سعر التذكرة (بالريال)',
+              hint: 'event_ticket_price_hint'.tr,
               keyboard: TextInputType.number,
               prefixIcon: Icons.payments_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'مطلوب' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'required'.tr : null,
             ),
             const SizedBox(height: 10),
             _fieldNote(
               Icons.lock_outline_rounded,
-              'يجب على الحضور الدفع للحصول على تذكرة دخول',
+              'event_paid_note'.tr,
               AppColors.darkAccent,
             ),
           ],
@@ -542,14 +542,14 @@ class CreateEventView extends GetView<EventsController> {
           children: [
             CustomTextField(
               controller: controller.maxCtrl,
-              hint: 'الحد الأقصى للمشاركين (اختياري)',
+              hint: 'event_max_optional_hint'.tr,
               keyboard: TextInputType.number,
               prefixIcon: Icons.people_outline,
             ),
             const SizedBox(height: 10),
             _fieldNote(
               Icons.public_rounded,
-              'الفعالية مفتوحة للجميع بدون حجز مسبق',
+              'event_open_note'.tr,
               AppColors.darkPrimary,
             ),
           ],
@@ -578,18 +578,18 @@ class CreateEventView extends GetView<EventsController> {
               child: const Icon(Icons.confirmation_number_outlined, color: AppColors.darkSecondary, size: 20),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'تذاكر مجانية — محدودة العدد',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.darkSecondary),
+                    'event_free_limited_banner_title'.tr,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.darkSecondary),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'الدخول مجاني لأول N مسجّل فقط',
-                    style: TextStyle(fontSize: 11, color: AppColors.grey),
+                    'event_free_limited_banner_sub'.tr,
+                    style: const TextStyle(fontSize: 11, color: AppColors.grey),
                   ),
                 ],
               ),

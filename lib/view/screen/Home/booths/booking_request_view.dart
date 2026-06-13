@@ -16,13 +16,13 @@ class BookingRequestView extends GetView<BookingController> {
     final booth = Get.arguments as BoothModel? ?? DummyData.myBooths.first;
     controller.setBooth(booth);
     return Scaffold(
-      appBar: const CustomAppBar(title: 'طلب حجز جناح'),
+      appBar: CustomAppBar(title: 'booking_request_title'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _boothSummary(context, booth),
           const SizedBox(height: 20),
-          const Text('مدة المشاركة', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+          Text('booking_duration_label'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
           Obx(() => Row(children: List.generate(5, (i) {
             final d = i + 1;
@@ -41,27 +41,27 @@ class BookingRequestView extends GetView<BookingController> {
                 ),
                 child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text('$d', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: active ? Colors.white : null)),
-                  Text('يوم', style: TextStyle(fontSize: 9, color: active ? Colors.white70 : AppColors.grey)),
+                  Text('booking_day'.tr, style: TextStyle(fontSize: 9, color: active ? Colors.white70 : AppColors.grey)),
                 ]),
               ),
             );
           }))),
           const SizedBox(height: 20),
-          const Text('خدمات إضافية', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+          Text('booking_extra_services'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          _serviceCheck('إعلانات على الشاشات', controller.screenService, Icons.tv_outlined),
-          _serviceCheck('تجهيزات وأثاث', controller.setupService, Icons.chair_outlined),
-          _serviceCheck('أمن خاص', controller.securitySvc, Icons.security_outlined),
-          _serviceCheck('خدمة تنظيف', controller.cleaningService, Icons.cleaning_services_outlined),
+          _serviceCheck('booking_screen_ads'.tr, controller.screenService, Icons.tv_outlined),
+          _serviceCheck('booking_setup'.tr, controller.setupService, Icons.chair_outlined),
+          _serviceCheck('booking_security'.tr, controller.securitySvc, Icons.security_outlined),
+          _serviceCheck('booking_cleaning'.tr, controller.cleaningService, Icons.cleaning_services_outlined),
           const SizedBox(height: 20),
-          const Text('ملاحظات للإدارة (اختياري)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+          Text('booking_notes_label'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
-          CustomTextField(controller: controller.notesCtrl, hint: 'أضف أي ملاحظات أو متطلبات خاصة...', maxLines: 3),
+          CustomTextField(controller: controller.notesCtrl, hint: 'booking_notes_hint'.tr, maxLines: 3),
           const SizedBox(height: 20),
           _costSummary(context, booth),
           const SizedBox(height: 24),
           Obx(() => CustomButton(
-            label: 'إرسال طلب الحجز',
+            label: 'booking_submit_btn'.tr,
             onTap: controller.submitBooking,
             isLoading: controller.isSubmitting.value,
           )),
@@ -89,9 +89,9 @@ class BookingRequestView extends GetView<BookingController> {
         ),
         const SizedBox(width: 12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('جناح ${booth.number}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          Text('${'event_booth_prefix'.tr} ${booth.number}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           Text(booth.exhibitionName, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
-          Text('${booth.price.toInt()} ريال / معرض', style: const TextStyle(fontSize: 13, color: AppColors.orange, fontWeight: FontWeight.w600)),
+          Text('${booth.price.toInt()} ${'booking_per_exhibition'.tr}', style: const TextStyle(fontSize: 13, color: AppColors.orange, fontWeight: FontWeight.w600)),
         ]),
       ]),
     );
@@ -117,16 +117,16 @@ class BookingRequestView extends GetView<BookingController> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('ملخص التكلفة', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        Text('booking_cost_summary'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
         const Divider(height: 16),
-        _costRow('الإيجار الأساسي', '${(booth.price * controller.duration.value).toInt()} ريال'),
-        if (controller.screenService.value) _costRow('إعلانات الشاشات', '500 ريال'),
-        if (controller.setupService.value)  _costRow('تجهيزات وأثاث', '800 ريال'),
-        if (controller.securitySvc.value)   _costRow('أمن خاص', '300 ريال'),
-        if (controller.cleaningService.value) _costRow('خدمة تنظيف', '200 ريال'),
+        _costRow('booking_base_rent'.tr, '${(booth.price * controller.duration.value).toInt()} ريال'),
+        if (controller.screenService.value) _costRow('booking_screen_ads_price'.tr, '500 ريال'),
+        if (controller.setupService.value)  _costRow('booking_setup_price'.tr, '800 ريال'),
+        if (controller.securitySvc.value)   _costRow('booking_security_price'.tr, '300 ريال'),
+        if (controller.cleaningService.value) _costRow('booking_cleaning_price'.tr, '200 ريال'),
         const Divider(height: 16),
         Row(children: [
-          const Text('الإجمالي', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          Text('booking_total'.tr, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           const Spacer(),
           Text('${controller.total.toInt()} ريال', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.orange)),
         ]),

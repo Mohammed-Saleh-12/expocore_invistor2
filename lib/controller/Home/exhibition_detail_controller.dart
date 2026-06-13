@@ -38,9 +38,9 @@ class ExhibitionDetailController extends GetxController
   }
 
   String statusLabel(String s) {
-    if (s == 'active') return 'جارٍ';
-    if (s == 'upcoming') return 'قادم';
-    return 'منته';
+    if (s == 'active') return 'جارٍ'.tr;
+    if (s == 'upcoming') return 'قادم'.tr;
+    return 'منته'.tr;
   }
 
   @override

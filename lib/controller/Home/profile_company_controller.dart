@@ -29,11 +29,11 @@ class ProfileCompanyController extends GetxController {
       final x = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 85,
-        requestFullMetadata: false, // مهم لتجنّب مشاكل الويب
+        requestFullMetadata: false,
       );
       if (x != null) profileImage.value = x;
     } catch (e) {
-      Get.snackbar('تعذّر اختيار الصورة', 'تأكد من السماح بالوصول للملفات',
+      Get.snackbar('pick_image_error'.tr, 'pick_image_error_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -108,11 +108,11 @@ class ProfileCompanyController extends GetxController {
       await Get.find<Services>().saveCompany(nameCtrl.text.trim());
       status.value   = StatusRequest.success;
       isEditing.value = false;
-      Get.snackbar('نجاح', 'تم حفظ التغييرات بنجاح',
+      Get.snackbar('success'.tr, 'profile_saved_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('خطأ', result['message'] ?? 'فشل الحفظ',
+      Get.snackbar('error'.tr, result['message'] ?? 'profile_save_fail_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
     isSaving.value = false;

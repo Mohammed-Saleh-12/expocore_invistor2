@@ -48,11 +48,11 @@ class BookingController extends GetxController {
     if (result['status'] == true) {
       status.value = StatusRequest.success;
       if (Get.key?.currentState?.canPop() ?? false) Get.back();
-      Get.snackbar('تم الإرسال', 'طلبك قيد المراجعة ⏳',
+      Get.snackbar('booking_submitted_title'.tr, 'booking_submitted_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('خطأ', result['message'] ?? 'فشل إرسال الطلب',
+      Get.snackbar('error'.tr, result['message'] ?? 'booking_failed_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
     isSubmitting.value = false;
@@ -61,10 +61,10 @@ class BookingController extends GetxController {
   Future<void> cancelBooking(int bookingId) async {
     final result = await _crud.patchData(AppLink.cancelBooking(bookingId), {});
     if (result['status'] == true) {
-      Get.snackbar('تم الإلغاء', 'تم إلغاء الحجز بنجاح',
+      Get.snackbar('booking_cancelled_title'.tr, 'booking_cancelled_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar('خطأ', result['message'] ?? 'فشل إلغاء الحجز',
+      Get.snackbar('error'.tr, result['message'] ?? 'booking_cancel_fail_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }

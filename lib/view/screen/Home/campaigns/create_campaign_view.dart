@@ -12,31 +12,31 @@ class CreateCampaignView extends GetView<CampaignsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'إنشاء حملة جديدة'),
+      appBar: CustomAppBar(title: 'campaign_create_title'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: controller.formKey,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            CustomTextField(controller: controller.titleCtrl, hint: 'عنوان الحملة', prefixIcon: Icons.title,
-              validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+            CustomTextField(controller: controller.titleCtrl, hint: 'campaign_title_hint'.tr, prefixIcon: Icons.title,
+              validator: (v) => v!.isEmpty ? 'required'.tr : null),
             const SizedBox(height: 14),
             Obx(() => DropdownButtonFormField<String>(
               value: controller.selectedType.value.isEmpty ? null : controller.selectedType.value,
-              hint: const Text('نوع الحملة', style: TextStyle(color: AppColors.grey)),
+              hint: Text('campaign_type_hint'.tr, style: const TextStyle(color: AppColors.grey)),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkCard : AppColors.lightCard,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
-              items: controller.campaignTypes.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 13)))).toList(),
+              items: controller.campaignTypes.map((t) => DropdownMenuItem(value: t, child: Text(t.tr, style: const TextStyle(fontSize: 13)))).toList(),
               onChanged: (v) => controller.selectedType.value = v ?? '',
             )),
             const SizedBox(height: 14),
-            CustomTextField(controller: controller.descCtrl, hint: 'وصف الحملة', maxLines: 3),
+            CustomTextField(controller: controller.descCtrl, hint: 'campaign_desc_hint'.tr, maxLines: 3),
             const SizedBox(height: 14),
-            const Text('الميزانية (ريال)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.grey)),
+            Text('campaign_budget_label'.tr, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.grey)),
             const SizedBox(height: 6),
             CustomTextField(controller: controller.budgetCtrl, hint: '0', keyboard: TextInputType.number, prefixIcon: Icons.monetization_on_outlined),
             const SizedBox(height: 14),
@@ -44,7 +44,7 @@ class CreateCampaignView extends GetView<CampaignsController> {
             const SizedBox(height: 14),
             _mediaUpload(context),
             const SizedBox(height: 24),
-            Obx(() => CustomButton(label: 'نشر الحملة', onTap: controller.createCampaign, isLoading: controller.isCreating.value)),
+            Obx(() => CustomButton(label: 'campaign_publish_btn'.tr, onTap: controller.createCampaign, isLoading: controller.isCreating.value)),
             const SizedBox(height: 20),
           ]),
         ),
@@ -56,7 +56,7 @@ class CreateCampaignView extends GetView<CampaignsController> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(children: [
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('تاريخ البدء', style: TextStyle(fontSize: 12, color: AppColors.grey)),
+        Text('campaign_start_date'.tr, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.all(12),
@@ -69,7 +69,7 @@ class CreateCampaignView extends GetView<CampaignsController> {
       ])),
       const SizedBox(width: 12),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('تاريخ الانتهاء', style: TextStyle(fontSize: 12, color: AppColors.grey)),
+        Text('campaign_end_date'.tr, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.all(12),
@@ -97,7 +97,7 @@ class CreateCampaignView extends GetView<CampaignsController> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.upload_file_outlined, size: 36, color: AppColors.darkPrimary.withOpacity(0.6)),
           const SizedBox(height: 8),
-          const Text('رفع الصور والمقاطع', style: TextStyle(fontSize: 13, color: AppColors.grey)),
+          Text('campaign_media_upload'.tr, style: const TextStyle(fontSize: 13, color: AppColors.grey)),
         ]),
       ),
     );

@@ -23,7 +23,7 @@ class QrScannerView extends StatelessWidget {
                 children: [
                   _CircleBtn(icon: Icons.arrow_back_ios_new_rounded, onTap: Get.back),
                   const Spacer(),
-                  const Text('مسح QR / باركود', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                  Text('qr_title'.tr, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                   const Spacer(),
                   _CircleBtn(
                     icon: ctrl.torchOn.value ? Icons.flash_on_rounded : Icons.flash_off_rounded,
@@ -43,17 +43,17 @@ class QrScannerView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
-                  child: const Text('وجّه الكاميرا نحو رمز QR أو الباركود', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                  child: Text('qr_instruction'.tr, style: const TextStyle(color: Colors.white70, fontSize: 13)),
                 ),
                 const SizedBox(height: 16),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _TypeChip(label: 'QR Code', icon: Icons.qr_code_2_rounded),
-                    SizedBox(width: 8),
-                    _TypeChip(label: 'Barcode', icon: Icons.barcode_reader),
-                    SizedBox(width: 8),
-                    _TypeChip(label: 'تذكرة', icon: Icons.confirmation_number_outlined),
+                    const _TypeChip(label: 'QR Code', icon: Icons.qr_code_2_rounded),
+                    const SizedBox(width: 8),
+                    const _TypeChip(label: 'Barcode', icon: Icons.barcode_reader),
+                    const SizedBox(width: 8),
+                    _TypeChip(label: 'qr_ticket_label'.tr, icon: Icons.confirmation_number_outlined),
                   ],
                 ),
               ],
@@ -226,7 +226,7 @@ class _ResultSheet extends StatelessWidget {
             child: const Icon(Icons.check_rounded, color: Colors.white, size: 32),
           ),
           const SizedBox(height: 16),
-          const Text('تم المسح بنجاح', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+          Text('qr_scan_success'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 8),
           Container(
             width: double.infinity, padding: const EdgeInsets.all(16),
@@ -241,7 +241,7 @@ class _ResultSheet extends StatelessWidget {
                   onPressed: onScanAgain,
                   style: OutlinedButton.styleFrom(side: BorderSide(color: AppColors.darkPrimary.withOpacity(0.5)), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
-                  label: const Text('مسح آخر'),
+                  label: Text('qr_scan_again'.tr),
                 ),
               ),
               const SizedBox(width: 12),
@@ -250,7 +250,7 @@ class _ResultSheet extends StatelessWidget {
                   onPressed: onClose,
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), backgroundColor: AppColors.darkPrimary, foregroundColor: Colors.white),
                   icon: const Icon(Icons.close_rounded, size: 18),
-                  label: const Text('إغلاق'),
+                  label: Text('close'.tr),
                 ),
               ),
             ],

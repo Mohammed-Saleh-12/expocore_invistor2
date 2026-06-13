@@ -86,7 +86,8 @@ class FavoritesController extends GetxController {
     favoriteExhibitions.remove(e);
     e.isFavorite = false;
     _crud.deleteData(AppLink.favoriteExhibition(e.id));
-    Get.snackbar('تمت الإزالة', 'تمت إزالة "${e.name}" من المفضلة',
+    Get.snackbar('fav_removed_title'.tr,
+        'fav_removed_item_msg'.trParams({'name': e.name}),
         snackPosition: SnackPosition.BOTTOM);
   }
 
@@ -94,7 +95,8 @@ class FavoritesController extends GetxController {
     favoriteEvents.remove(e);
     e.isFavorite = false;
     _crud.deleteData(AppLink.favoriteEvent(e.id));
-    Get.snackbar('تمت الإزالة', 'تمت إزالة "${e.name}" من المفضلة',
+    Get.snackbar('fav_removed_title'.tr,
+        'fav_removed_item_msg'.trParams({'name': e.name}),
         snackPosition: SnackPosition.BOTTOM);
   }
 
@@ -102,7 +104,8 @@ class FavoritesController extends GetxController {
     favoriteBooths.remove(b);
     b.isFavorite = false;
     _crud.deleteData(AppLink.favoriteBooth(b.id));
-    Get.snackbar('تمت الإزالة', 'تمت إزالة "جناح ${b.number}" من المفضلة',
+    Get.snackbar('fav_removed_title'.tr,
+        'fav_removed_booth_msg'.trParams({'number': b.number}),
         snackPosition: SnackPosition.BOTTOM);
   }
 

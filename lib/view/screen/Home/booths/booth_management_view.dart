@@ -32,7 +32,7 @@ class BoothManagementView extends GetView<BoothManagementController> {
                   )
                 : IconButton(
                     icon: const Icon(Icons.save_rounded, color: Colors.white),
-                    tooltip: 'حفظ',
+                    tooltip: 'save'.tr,
                     onPressed: controller.saveProfile,
                   ),
           ),
@@ -55,8 +55,8 @@ class BoothManagementView extends GetView<BoothManagementController> {
             const SizedBox(height: 20),
             _SectionHeader(
               icon: Icons.event_rounded,
-              title: 'فعاليات الجناح',
-              subtitle: 'الفعاليات التي أنشأتها في هذا المعرض',
+              title: 'booth_mgmt_events_title'.tr,
+              subtitle: 'booth_mgmt_events_subtitle'.tr,
               action: TextButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.CREATE_EVENT),
                 icon: const Icon(
@@ -64,9 +64,9 @@ class BoothManagementView extends GetView<BoothManagementController> {
                   size: 16,
                   color: AppColors.darkPrimary,
                 ),
-                label: const Text(
-                  'إضافة فعالية',
-                  style: TextStyle(color: AppColors.darkPrimary, fontSize: 12),
+                label: Text(
+                  'booth_mgmt_add_event'.tr,
+                  style: const TextStyle(color: AppColors.darkPrimary, fontSize: 12),
                 ),
               ),
             ),
@@ -74,7 +74,7 @@ class BoothManagementView extends GetView<BoothManagementController> {
             _BoothEventsList(isDark: isDark),
             const SizedBox(height: 28),
             CustomButton(
-              label: 'حفظ معلومات الشركة',
+              label: 'booth_mgmt_save_btn'.tr,
               onTap: controller.saveProfile,
             ),
           ],
@@ -238,9 +238,9 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                       color: _statusColor(b.status).withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'نشط',
-                      style: TextStyle(
+                    child: Text(
+                      'booth_mgmt_active'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -259,18 +259,18 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                 _statItem(
                   Icons.straighten_rounded,
                   '${b.area.toInt()}م²',
-                  'المساحة',
+                  'booth_mgmt_area_label'.tr,
                 ),
                 _divider(),
-                _statItem(Icons.location_on_outlined, b.location, 'الموقع'),
+                _statItem(Icons.location_on_outlined, b.location, 'booth_mgmt_location_label'.tr),
                 _divider(),
                 _statItem(
                   Icons.monetization_on_outlined,
                   '${b.price.toInt()} ر',
-                  'السعر',
+                  'booth_mgmt_price_label'.tr,
                 ),
                 _divider(),
-                _statItem(Icons.calendar_today_outlined, b.endDate, 'الانتهاء'),
+                _statItem(Icons.calendar_today_outlined, b.endDate, 'booth_mgmt_end_label'.tr),
               ],
             ),
           ),
@@ -394,7 +394,7 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
         TextField(
           controller: controller.companyNatureCtrl,
           decoration: _decoration(
-            'طبيعة الشركة',
+            'booth_mgmt_company_nature'.tr,
             Icons.category_outlined,
             isDark,
           ),
@@ -404,7 +404,7 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
         TextField(
           controller: controller.servicesProductsCtrl,
           decoration: _decoration(
-            'الخدمات أو المنتجات المقدمة',
+            'booth_mgmt_services_products'.tr,
             Icons.inventory_2_outlined,
             isDark,
           ),
@@ -415,7 +415,7 @@ class _CompanyProfileForm extends GetView<BoothManagementController> {
         TextField(
           controller: controller.headquartersCtrl,
           decoration: _decoration(
-            'عنوان المقر الرئيسي',
+            'booth_mgmt_headquarters'.tr,
             Icons.location_city_outlined,
             isDark,
           ),
@@ -448,20 +448,20 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.link_rounded, size: 16, color: AppColors.darkPrimary),
-              SizedBox(width: 8),
+              const Icon(Icons.link_rounded, size: 16, color: AppColors.darkPrimary),
+              const SizedBox(width: 8),
               Text(
-                'روابط التواصل',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                'booth_mgmt_social_links'.tr,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          const Text(
-            'اختر من روابط ملفك الشخصي أو أضف روابط جديدة:',
-            style: TextStyle(fontSize: 11, color: AppColors.grey),
+          Text(
+            'booth_mgmt_link_hint'.tr,
+            style: const TextStyle(fontSize: 11, color: AppColors.grey),
           ),
           const SizedBox(height: 8),
           Obx(
@@ -574,7 +574,7 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
                 child: TextField(
                   controller: controller.newLinkCtrl,
                   decoration: InputDecoration(
-                    hintText: 'أضف رابطاً جديداً...',
+                    hintText: 'booth_mgmt_new_link_hint'.tr,
                     hintStyle: const TextStyle(fontSize: 12),
                     prefixIcon: const Icon(
                       Icons.add_link_rounded,
@@ -640,7 +640,7 @@ class _ImagesSection extends GetView<BoothManagementController> {
       children: [
         _ImageGrid(
           isDark: isDark,
-          title: 'صور منتجات الشركة',
+          title: 'booth_mgmt_product_images'.tr,
           icon: Icons.inventory_2_outlined,
           images: controller.productImages,
           onAdd: controller.addProductImage,
@@ -648,7 +648,7 @@ class _ImagesSection extends GetView<BoothManagementController> {
         const SizedBox(height: 12),
         _ImageGrid(
           isDark: isDark,
-          title: 'صور المشاركة في المعرض',
+          title: 'booth_mgmt_booth_images'.tr,
           icon: Icons.photo_library_outlined,
           images: controller.boothImages,
           onAdd: controller.addBoothImage,

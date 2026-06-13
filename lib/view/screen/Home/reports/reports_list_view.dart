@@ -14,14 +14,14 @@ class ReportsListView extends GetView<ReportsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'التقارير والتحليلات',
+        title: 'reports_analytics_title'.tr,
         actions: [
           // Clear date filter badge / button
           Obx(() => controller.hasDateFilter
               ? IconButton(
                   icon: const Icon(Icons.filter_alt_off_rounded,
                       color: AppColors.darkSecondary),
-                  tooltip: 'مسح فلتر التاريخ',
+                  tooltip: 'reports_clear_date_tooltip'.tr,
                   onPressed: controller.clearDateFilter,
                 )
               : const SizedBox.shrink()),
@@ -55,7 +55,7 @@ class ReportsListView extends GetView<ReportsController> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          f,
+                          f.tr,
                           style: TextStyle(
                             fontSize: 12,
                             color: active ? Colors.white : AppColors.grey,
@@ -77,7 +77,7 @@ class ReportsListView extends GetView<ReportsController> {
           Expanded(
             child: Obx(() {
               if (controller.filtered.isEmpty) {
-                return const EmptyWidget(message: 'لا توجد تقارير');
+                return EmptyWidget(message: 'reports_no_reports'.tr);
               }
               return ListView.builder(
                 itemCount: controller.filtered.length,
@@ -145,7 +145,7 @@ class _DateRangeBar extends StatelessWidget {
                           : AppColors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    'فلتر التاريخ',
+                    'reports_date_filter'.tr,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -158,9 +158,9 @@ class _DateRangeBar extends StatelessWidget {
                   if (controller.hasDateFilter)
                     GestureDetector(
                       onTap: controller.clearDateFilter,
-                      child: const Text(
-                        'مسح',
-                        style: TextStyle(
+                      child: Text(
+                        'reports_clear'.tr,
+                        style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.darkSecondary,
                           fontWeight: FontWeight.w600,
@@ -180,7 +180,7 @@ class _DateRangeBar extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _DatePickerTile(
-                      label: 'من',
+                      label: 'reports_date_from'.tr,
                       value: from,
                       controller: controller,
                       onPick: (picked) => controller.filterByDate(
@@ -198,7 +198,7 @@ class _DateRangeBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: _DatePickerTile(
-                      label: 'إلى',
+                      label: 'reports_date_to'.tr,
                       value: to,
                       controller: controller,
                       onPick: (picked) => controller.filterByDate(
@@ -293,7 +293,7 @@ class _DatePickerTile extends StatelessWidget {
                   Text(
                     hasValue
                         ? controller.formatDate(value)
-                        : 'اختر تاريخاً',
+                        : 'reports_pick_date'.tr,
                     style: TextStyle(
                       fontSize: 12,
                       color: hasValue

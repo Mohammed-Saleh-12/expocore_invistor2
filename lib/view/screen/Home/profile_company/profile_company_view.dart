@@ -15,7 +15,7 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'الملف التعريفي',
+        title: 'profile_title'.tr,
         actions: [
           Obx(
             () => IconButton(
@@ -36,12 +36,12 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _sectionCard(context, isDark, 'نبذة عن الشركة', [
+                  _sectionCard(context, isDark, 'profile_section_about'.tr, [
                     Obx(
                       () => controller.isEditing.value
                           ? CustomTextField(
                               controller: controller.bioCtrl,
-                              hint: 'نبذة عن الشركة',
+                              hint: 'profile_bio_hint'.tr,
                               maxLines: 4,
                             )
                           : Text(
@@ -55,32 +55,32 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                     ),
                   ]),
                   const SizedBox(height: 14),
-                  _sectionCard(context, isDark, 'بيانات الاتصال', [
+                  _sectionCard(context, isDark, 'profile_section_contact'.tr, [
                     Obx(
                       () => controller.isEditing.value
                           ? Column(
                               children: [
                                 CustomTextField(
                                   controller: controller.locationCtrl,
-                                  hint: 'مقر الشركة ',
+                                  hint: 'profile_location_hint'.tr,
                                   prefixIcon: Icons.location_on_outlined,
                                 ),
                                 const SizedBox(height: 10),
                                 CustomTextField(
                                   controller: controller.emailCtrl,
-                                  hint: 'البريد الإلكتروني',
+                                  hint: 'profile_email_hint'.tr,
                                   prefixIcon: Icons.email_outlined,
                                 ),
                                 const SizedBox(height: 10),
                                 CustomTextField(
                                   controller: controller.phoneCtrl,
-                                  hint: 'رقم الجوال',
+                                  hint: 'profile_phone_hint'.tr,
                                   prefixIcon: Icons.phone_outlined,
                                 ),
                                 const SizedBox(height: 10),
                                 CustomTextField(
                                   controller: controller.websiteCtrl,
-                                  hint: 'الموقع الإلكتروني',
+                                  hint: 'profile_website_hint'.tr,
                                   prefixIcon: Icons.language_outlined,
                                 ),
                               ],
@@ -112,7 +112,7 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                     ),
                   ]),
                   const SizedBox(height: 14),
-                  _sectionCard(context, isDark, 'التواصل الاجتماعي', [
+                  _sectionCard(context, isDark, 'profile_section_social'.tr, [
                     Obx(() => controller.isEditing.value
                         ? Column(
                             children: [
@@ -149,7 +149,7 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                   Obx(
                     () => controller.isEditing.value
                         ? CustomButton(
-                            label: 'حفظ التغييرات',
+                            label: 'profile_save_btn'.tr,
                             onTap: controller.saveChanges,
                             isLoading: controller.isSaving.value,
                           )
@@ -195,9 +195,9 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 4),
-        const Text(
-          'شركة تقنية رائدة',
-          style: TextStyle(fontSize: 13, color: AppColors.grey),
+        Text(
+          'profile_company_type'.tr,
+          style: const TextStyle(fontSize: 13, color: AppColors.grey),
         ),
       ],
     ),

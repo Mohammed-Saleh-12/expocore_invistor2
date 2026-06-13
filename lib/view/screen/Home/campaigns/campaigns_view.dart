@@ -10,21 +10,21 @@ class CampaignsView extends GetView<CampaignsController> {
   const CampaignsView({super.key});
 
   Color _statusColor(String s) => s == 'active' ? AppColors.success : s == 'pending' ? AppColors.info : AppColors.grey;
-  String _statusLabel(String s) => s == 'active' ? 'نشطة' : s == 'pending' ? 'معلقة' : 'منتهية';
+  String _statusLabel(String s) => (s == 'active' ? 'نشطة' : s == 'pending' ? 'معلقة' : 'منتهية').tr;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: CustomAppBar(title: 'الحملات الإعلانية', showBack: false, actions: [
+      appBar: CustomAppBar(title: 'nav_campaigns'.tr, showBack: false, actions: [
         TextButton.icon(
           onPressed: () => Get.toNamed(AppRoutes.CREATE_CAMPAIGN),
           icon: const Icon(Icons.add, size: 18, color: AppColors.darkPrimary),
-          label: const Text('حملة جديدة', style: TextStyle(color: AppColors.darkPrimary, fontSize: 13)),
+          label: Text('campaigns_new'.tr, style: const TextStyle(color: AppColors.darkPrimary, fontSize: 13)),
         ),
       ]),
       body: Obx(() {
-        if (controller.campaigns.isEmpty) return EmptyWidget(message: 'لا توجد حملات', buttonLabel: 'إنشاء حملة', onAction: () => Get.toNamed(AppRoutes.CREATE_CAMPAIGN));
+        if (controller.campaigns.isEmpty) return EmptyWidget(message: 'campaigns_empty'.tr, buttonLabel: 'campaigns_new'.tr, onAction: () => Get.toNamed(AppRoutes.CREATE_CAMPAIGN));
         return ListView.builder(
           padding: const EdgeInsets.all(8),
           itemCount: controller.campaigns.length,

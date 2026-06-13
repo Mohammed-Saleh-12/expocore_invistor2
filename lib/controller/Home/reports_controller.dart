@@ -147,12 +147,12 @@ class ReportsController extends GetxController {
       }
 
       safeSnackbar(
-        'تم',
-        format == 'excel' ? 'جارٍ تنزيل ملف Excel…' : 'جارٍ فتح نافذة الطباعة…',
+        'snack_done'.tr,
+        format == 'excel' ? 'report_downloading_excel'.tr : 'report_downloading_pdf'.tr,
         duration: const Duration(seconds: 3),
       );
     } catch (_) {
-      safeSnackbar('خطأ', 'تعذّر التنزيل — حاول مرة أخرى');
+      safeSnackbar('error'.tr, 'report_download_error'.tr);
     } finally {
       isDownloading.value    = false;
       downloadProgress.value = 1.0;

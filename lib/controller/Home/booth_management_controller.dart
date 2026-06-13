@@ -134,7 +134,7 @@ class BoothManagementController extends GetxController {
     if (result['status'] == true) {
       status.value = StatusRequest.success;
       Get.snackbar(
-        'تم الحفظ', 'تم حفظ معلومات الشركة بنجاح',
+        'booth_saved_title'.tr, 'booth_saved_msg'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
         colorText: Colors.white,
@@ -143,7 +143,7 @@ class BoothManagementController extends GetxController {
       );
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('خطأ', result['message'] ?? 'فشل الحفظ',
+      Get.snackbar('error'.tr, result['message'] ?? 'booth_save_fail_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
     isSaving.value = false;
