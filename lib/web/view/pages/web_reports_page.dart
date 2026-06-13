@@ -248,21 +248,47 @@ class _ReportRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            Obx(() => IconButton(
-                  onPressed: c.isDownloading.value
-                      ? null
-                      : () => c.downloadReport(report.id),
-                  icon: c.isDownloading.value
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.darkPrimary),
-                        )
-                      : Icon(Icons.download_rounded,
-                          color: AppColors.darkPrimary),
-                )),
+            Obx(() => c.isDownloading.value
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: AppColors.darkPrimary),
+                  )
+                : PopupMenuButton<String>(
+                    icon: Icon(Icons.download_rounded,
+                        color: AppColors.darkPrimary),
+                    tooltip: 'تنزيل التقرير',
+                    color: WebTheme.surface,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    onSelected: (fmt) => c.downloadReport(report.id,
+                        format: fmt),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: 'pdf',
+                        child: Row(children: [
+                          Icon(Icons.picture_as_pdf_rounded,
+                              color: AppColors.error, size: 18),
+                          const SizedBox(width: 10),
+                          Text('طباعة / PDF',
+                              style: TextStyle(
+                                  color: WebTheme.text, fontSize: 13)),
+                        ]),
+                      ),
+                      PopupMenuItem(
+                        value: 'excel',
+                        child: Row(children: [
+                          Icon(Icons.table_chart_rounded,
+                              color: AppColors.success, size: 18),
+                          const SizedBox(width: 10),
+                          Text('تنزيل Excel',
+                              style: TextStyle(
+                                  color: WebTheme.text, fontSize: 13)),
+                        ]),
+                      ),
+                    ],
+                  )),
           ],
         ),
       ),

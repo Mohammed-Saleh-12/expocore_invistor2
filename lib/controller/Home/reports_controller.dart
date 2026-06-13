@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../core/services/pdf_export_service.dart';
+import '../../core/services/download_service.dart';
 import '../../core/utils/report_type_helper.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
@@ -72,13 +73,11 @@ class ReportsController extends GetxController {
   void applyFilters() {
     Iterable<ReportModel> list = reports;
 
-    // Type filter
     if (selectedType.value != 'الكل') {
       final mapped = typeMap[selectedType.value] ?? 'all';
       list = list.where((r) => r.type == mapped);
     }
 
-    // Date-from filter — keep reports whose creation date >= dateFrom
     if (dateFrom.value != null) {
       final from = DateTime(
         dateFrom.value!.year,
@@ -91,7 +90,6 @@ class ReportsController extends GetxController {
       });
     }
 
-    // Date-to filter — keep reports whose creation date <= dateTo
     if (dateTo.value != null) {
       final to = DateTime(
         dateTo.value!.year,
@@ -108,31 +106,62 @@ class ReportsController extends GetxController {
     filtered.value = list.toList();
   }
 
-  // ── Export to PDF via window.print() ─────────────────────
+  // ── Export to PDF via window.print() (web) / share (mobile) ─
   void exportToPdf(ReportModel r) {
     final content = ReportTypeHelper.of(r);
     PdfExportService.printReport(r, content);
   }
 
-  Future<void> downloadReport(String reportId, {String format = 'pdf'}) async {
+  // ── Download report (PDF = client-side, Excel = server-side) ─
+  Future<void> downloadReport(
+    String reportId, {
+    String format = 'pdf',
+  }) async {
+    if (isDownloading.value) return;
     isDownloading.value    = true;
-    downloadProgress.value = 0;
+    downloadProgress.value = 0.0;
 
-    final url    = AppLink.reportDownload(reportId, format);
-    final result = await _crud.getData(url);
+    try {
+      if (format == 'pdf') {
+        // ── Client-side PDF: generate HTML and open print dialog
+        final model = _findReport(reportId);
+        if (model != null) {
+          final content = ReportTypeHelper.of(model);
+          PdfExportService.printReport(model, content);
+        } else {
+          // Model not loaded yet — fall back to server download
+          await DownloadService.downloadUrl(
+              AppLink.reportDownload(reportId, format));
+        }
+      } else {
+        // ── Server-side Excel: trigger native browser/OS download
+        final url = AppLink.reportDownload(reportId, format);
+        await DownloadService.downloadUrl(url);
+      }
 
-    for (int i = 1; i <= 10; i++) {
-      await Future.delayed(const Duration(milliseconds: 150));
-      downloadProgress.value = i / 10;
-    }
-    isDownloading.value = false;
+      // Animate progress bar
+      for (int i = 1; i <= 10; i++) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        downloadProgress.value = i / 10;
+      }
 
-    if (result['status'] == true) {
-      Get.snackbar('نجاح', 'تم تنزيل التقرير بصيغة ${format.toUpperCase()}',
-          snackPosition: SnackPosition.BOTTOM);
-    } else {
-      Get.snackbar('تنزيل', 'تم تنزيل التقرير بصيغة ${format.toUpperCase()}',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'تم',
+        format == 'excel'
+            ? 'جارٍ تنزيل ملف Excel…'
+            : 'جارٍ فتح نافذة الطباعة…',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+    } catch (_) {
+      Get.snackbar(
+        'خطأ',
+        'تعذّر التنزيل — حاول مرة أخرى',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isDownloading.value    = false;
+      downloadProgress.value = 1.0;
     }
   }
 
@@ -147,13 +176,20 @@ class ReportsController extends GetxController {
   Future<void> refresh() => _loadReports();
 
   // ── Helpers ───────────────────────────────────────────────
+  ReportModel? _findReport(String id) {
+    try {
+      return reports.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return selectedReport.value?.id == id ? selectedReport.value : null;
+    }
+  }
+
   List _asList(dynamic data) {
     if (data is List) return data;
     if (data is Map && data['data'] is List) return data['data'];
     return [];
   }
 
-  /// Try to parse ISO-style date strings like "2026-01-15"
   DateTime? _parseDate(String raw) {
     try { return DateTime.parse(raw.trim()); } catch (_) { return null; }
   }

@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 import '../utils/report_type_helper.dart';
 import '../../data/model/report/report_model.dart';
 
+// ════════════════════════════════════════════════════════════
+//  PdfExportService  —  web implementation
+//  Generates a fully-styled HTML document, opens it in a new
+//  browser tab, and auto-triggers window.print() so the user
+//  can "Save as PDF" from the browser's print dialog.
+// ════════════════════════════════════════════════════════════
 class PdfExportService {
   PdfExportService._();
 
   static void printReport(ReportModel r, ReportTypeContent c) {
     final htmlContent = _buildHtml(r, c);
-    final bytes = utf8.encode(htmlContent);
-    final blob = html.Blob([bytes], 'text/html; charset=utf-8');
-    final url = html.Url.createObjectUrlFromBlob(blob);
+    final bytes  = utf8.encode(htmlContent);
+    final blob   = html.Blob([bytes], 'text/html; charset=utf-8');
+    final url    = html.Url.createObjectUrlFromBlob(blob);
 
     final anchor = html.AnchorElement(href: url)
       ..target = '_blank'
@@ -24,48 +30,40 @@ class PdfExportService {
     );
   }
 
+  // ── HTML builder ──────────────────────────────────────────
   static String _buildHtml(ReportModel r, ReportTypeContent c) {
-    final accent = _hex(c.accentColor);
-    final accentLight = _hex(
-      c.accentColor.withOpacity(0.12),
-    ); // for table header tint
+    final accent      = _hex(c.accentColor);
+    final accentLight = _hex(c.accentColor.withOpacity(0.12));
 
-    final kpiHtml = c.kpis
-        .map(
-          (kpi) =>
-              '''
+    final kpiHtml = c.kpis.map((kpi) => '''
       <div class="kpi-box">
         <div class="kpi-value" style="color:${_hex(kpi.color)}">${kpi.value}</div>
-        <div class="kpi-label">${kpi.label}</div>
+        <div class="kpi-label">${_esc(kpi.label)}</div>
         ${kpi.trend.isNotEmpty ? '<div class="kpi-trend">${_esc(kpi.trend)}</div>' : ''}
-      </div>''',
-        )
-        .join('');
+      </div>''').join('');
 
     final tableHeaderHtml = c.tableHeaders
         .map((h) => '<th>${_esc(h)}</th>')
         .join('');
-    final tableBodyHtml = c.tableRows
-        .map(
-          (row) =>
-              '<tr>${row.map((cell) => '<td>${_esc(cell)}</td>').join('')}</tr>',
-        )
+    final tableBodyHtml   = c.tableRows
+        .map((row) =>
+            '<tr>${row.map((cell) => '<td>${_esc(cell)}</td>').join('')}</tr>')
         .join('');
 
-    final insightsHtml = c.insights
-        .map(
-          (t) =>
-              '''
+    final insightsHtml = c.insights.map((t) => '''
         <div class="insight">
           <span class="bulb">💡</span>
           <span class="insight-text">${_esc(t)}</span>
-        </div>''',
-        )
-        .join('');
+        </div>''').join('');
 
-    final chartHtml = r.sparklineData.length >= 2
+    // SVG chart — just the raw <svg> element (no section wrapper here)
+    final svgHtml = r.sparklineData.length >= 2
         ? _svgChart(r.sparklineData, accent)
         : '';
+
+    final now = DateTime.now();
+    final dateStr =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
     return '''<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -140,7 +138,7 @@ class PdfExportService {
   .kpi-label{font-size:11px;color:#777;margin-top:5px;line-height:1.4}
   .kpi-trend{font-size:11px;color:#4CAF50;font-weight:700;margin-top:5px}
 
-  /* ── Chart section ──────────────────────────────────── */
+  /* ── Sections ───────────────────────────────────────── */
   .section{
     border:1.5px solid #e8e8f0;border-radius:12px;
     padding:20px;margin-bottom:22px;overflow:hidden
@@ -160,9 +158,9 @@ class PdfExportService {
 
   /* ── Footer ─────────────────────────────────────────── */
   .footer{
-    margin-top:28px;padding-top:18px;border-top:1.5px solid #e8e8f0;
+    padding:18px 36px;border-top:1.5px solid #e8e8f0;
     display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
-    font-size:11px;color:#aaa
+    font-size:11px;color:#aaa;background:#fafafa
   }
 
   /* ── Print button ───────────────────────────────────── */
@@ -197,23 +195,24 @@ class PdfExportService {
     <span class="trend-pill">&#x25B2; ${r.trend.toStringAsFixed(1)}% نمو</span>
   </div>
 
+  <!-- ── Body ── -->
   <div class="body">
 
-    <!-- ── Description ── -->
+    <!-- Description -->
     <div class="description">${_esc(r.description)}</div>
 
-    <!-- ── KPIs ── -->
+    <!-- KPIs -->
     <div class="sec-title">المؤشرات الرئيسية</div>
     <div class="kpis">$kpiHtml</div>
 
-    <!-- ── Chart ── -->
-    ${chartHtml.isNotEmpty ? '''
+    <!-- Chart (only when data is available) -->
+    ${svgHtml.isNotEmpty ? '''
     <div class="section">
       <div class="sec-title">${_esc(c.chartTitle)}</div>
-      $chartHtml
+      $svgHtml
     </div>''' : ''}
 
-    <!-- ── Table ── -->
+    <!-- Data table -->
     <div class="section">
       <div class="sec-title">البيانات التفصيلية</div>
       <table>
@@ -222,13 +221,28 @@ class PdfExportService {
       </table>
     </div>
 
-    <!-- ── Insights ── -->
+    <!-- Insights -->
     <div class="section">
       <div class="sec-title">رؤى وتوصيات</div>
       $insightsHtml
-    </div>''';
+    </div>
+
+  </div><!-- /.body -->
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    <span>EXPOCORE Investor Platform</span>
+    <span>${_esc(r.title)}</span>
+    <span>تاريخ التصدير: $dateStr</span>
+  </div>
+
+</div><!-- /.page -->
+
+</body>
+</html>''';
   }
 
+  // ── Helpers ───────────────────────────────────────────────
   static String _hex(Color color) =>
       '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
 
@@ -239,21 +253,26 @@ class PdfExportService {
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#39;');
 
+  // Returns only the <svg> element — the caller wraps it in .section
   static String _svgChart(List<double> data, String accent) {
-    final values = data.join(',');
-    return '''
-    <div class="section">
-      <div class="sec-title">مخطط الأداء</div>
-      <svg viewBox="0 0 500 180" width="100%" height="220" role="img" aria-label="Sparkline chart">
-        <defs>
-          <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="$accent" stop-opacity="0.9" />
-            <stop offset="100%" stop-color="$accent" stop-opacity="0.1" />
-          </linearGradient>
-        </defs>
-        <path d="M10,160 C150,10 350,10 490,160" fill="none" stroke="$accent" stroke-width="4" stroke-linecap="round" />
-        <polygon points="10,160 490,160 490,160" fill="url(#gradient)" opacity="0.35" />
-      </svg>
-    </div>''';
+    return '''<svg viewBox="0 0 500 140" width="100%" height="180"
+        role="img" aria-label="Sparkline chart">
+      <defs>
+        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="$accent" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="$accent" stop-opacity="0.08"/>
+        </linearGradient>
+      </defs>
+      <!-- grid lines -->
+      <line x1="10" y1="40"  x2="490" y2="40"  stroke="#e0e0ee" stroke-width="1"/>
+      <line x1="10" y1="80"  x2="490" y2="80"  stroke="#e0e0ee" stroke-width="1"/>
+      <line x1="10" y1="120" x2="490" y2="120" stroke="#e0e0ee" stroke-width="1"/>
+      <!-- trend line (cubic) -->
+      <path d="M10,120 C160,20 340,20 490,120"
+            fill="none" stroke="$accent" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- fill -->
+      <path d="M10,120 C160,20 340,20 490,120 L490,135 L10,135 Z"
+            fill="url(#chartGrad)"/>
+    </svg>''';
   }
 }
