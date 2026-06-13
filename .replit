@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "flutter pub get && flutter build web --profile && node serve.js"
+args = "node serve.js"
 waitForPort = 5000
 
 [[ports]]
