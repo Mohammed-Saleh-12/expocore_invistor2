@@ -3,6 +3,7 @@ import 'package:dio/dio.dart' as dio_pkg;
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/services.dart';
+import '../utils/safe_snackbar.dart';
 
 // ════════════════════════════════════════════════════════════
 //  DownloadService  —  mobile/stub implementation
@@ -43,17 +44,9 @@ class DownloadService {
         text: 'تصدير التقرير من منصة ExpoCore',
       );
     } on dio_pkg.DioException catch (e) {
-      Get.snackbar(
-        'خطأ في التنزيل',
-        e.message ?? 'تعذّر الاتصال بالخادم',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      safeSnackbar('خطأ في التنزيل', e.message ?? 'تعذّر الاتصال بالخادم');
     } catch (e) {
-      Get.snackbar(
-        'خطأ',
-        'تعذّر تنزيل التقرير. تأكد من الاتصال.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      safeSnackbar('خطأ', 'تعذّر تنزيل التقرير. تأكد من الاتصال.');
     }
   }
 

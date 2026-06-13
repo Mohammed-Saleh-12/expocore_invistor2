@@ -4,6 +4,7 @@ import '../../core/class/crud.dart';
 import '../../core/services/pdf_export_service.dart';
 import '../../core/services/download_service.dart';
 import '../../core/utils/report_type_helper.dart';
+import '../../core/utils/safe_snackbar.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../linkapi.dart';
@@ -145,20 +146,13 @@ class ReportsController extends GetxController {
         downloadProgress.value = i / 10;
       }
 
-      Get.snackbar(
+      safeSnackbar(
         'تم',
-        format == 'excel'
-            ? 'جارٍ تنزيل ملف Excel…'
-            : 'جارٍ فتح نافذة الطباعة…',
-        snackPosition: SnackPosition.BOTTOM,
+        format == 'excel' ? 'جارٍ تنزيل ملف Excel…' : 'جارٍ فتح نافذة الطباعة…',
         duration: const Duration(seconds: 3),
       );
     } catch (_) {
-      Get.snackbar(
-        'خطأ',
-        'تعذّر التنزيل — حاول مرة أخرى',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      safeSnackbar('خطأ', 'تعذّر التنزيل — حاول مرة أخرى');
     } finally {
       isDownloading.value    = false;
       downloadProgress.value = 1.0;

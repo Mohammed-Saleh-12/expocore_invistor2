@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import '../utils/report_type_helper.dart';
+import '../utils/safe_snackbar.dart';
 import '../../data/model/report/report_model.dart';
 
 // ════════════════════════════════════════════════════════════
@@ -33,11 +33,7 @@ class PdfExportService {
       );
     } catch (e) {
       debugPrint('Mobile report share failed: $e');
-      Get.snackbar(
-        'تصدير التقرير',
-        'تعذّر المشاركة — يرجى المحاولة لاحقاً',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      safeSnackbar('تصدير التقرير', 'تعذّر المشاركة — يرجى المحاولة لاحقاً');
     }
   }
 
