@@ -27,9 +27,9 @@ class WebReportsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const WebSectionHeader(
-                title: 'التقارير',
-                subtitle: 'تقارير الأداء والتحليلات',
+              WebSectionHeader(
+                title: 'reports_title'.tr,
+                subtitle: 'reports_subtitle'.tr,
               ),
               const SizedBox(height: 20),
 
@@ -74,12 +74,12 @@ class WebReportsPage extends StatelessWidget {
               Obx(() => Row(
                     children: [
                       Expanded(
-                          child: _dateBox(context, c, 'من',
+                          child: _dateBox(context, c, 'reports_date_from'.tr,
                               c.dateFrom.value,
                               (d) => c.dateFrom.value = d)),
                       const SizedBox(width: 12),
                       Expanded(
-                          child: _dateBox(context, c, 'إلى',
+                          child: _dateBox(context, c, 'reports_date_to'.tr,
                               c.dateTo.value,
                               (d) => c.dateTo.value = d)),
                     ],
@@ -105,7 +105,7 @@ class WebReportsPage extends StatelessWidget {
                         size: 56,
                         color: AppColors.grey.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    Text('لا توجد تقارير',
+                    Text('reports_no_reports'.tr,
                         style: TextStyle(color: AppColors.grey)),
                   ]),
                 );
@@ -258,7 +258,7 @@ class _ReportRow extends StatelessWidget {
                 : PopupMenuButton<String>(
                     icon: Icon(Icons.download_rounded,
                         color: AppColors.darkPrimary),
-                    tooltip: 'تنزيل التقرير',
+                    tooltip: 'reports_download_btn'.tr,
                     color: WebTheme.surface,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -271,7 +271,7 @@ class _ReportRow extends StatelessWidget {
                           Icon(Icons.picture_as_pdf_rounded,
                               color: AppColors.error, size: 18),
                           const SizedBox(width: 10),
-                          Text('طباعة / PDF',
+                          Text('reports_format_pdf'.tr,
                               style: TextStyle(
                                   color: WebTheme.text, fontSize: 13)),
                         ]),
@@ -282,7 +282,7 @@ class _ReportRow extends StatelessWidget {
                           Icon(Icons.table_chart_rounded,
                               color: AppColors.success, size: 18),
                           const SizedBox(width: 10),
-                          Text('تنزيل Excel',
+                          Text('reports_format_excel'.tr,
                               style: TextStyle(
                                   color: WebTheme.text, fontSize: 13)),
                         ]),

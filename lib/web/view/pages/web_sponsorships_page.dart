@@ -25,9 +25,9 @@ class WebSponsorshipsPage extends StatelessWidget {
         Container(
           color: WebTheme.bg,
           padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
-          child: const WebSectionHeader(
-            title: 'رعاياتي',
-            subtitle: 'الفعاليات التي ترعاها في المعارض',
+          child: WebSectionHeader(
+            title: 'sponsorships_title'.tr,
+            subtitle: 'sponsorships_header_subtitle'.tr,
           ),
         ),
 
@@ -56,10 +56,10 @@ class WebSponsorshipsPage extends StatelessWidget {
                         size: 56,
                         color: AppColors.grey.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    Text('لا توجد رعايات حتى الآن',
+                    Text('no_sponsorships'.tr,
                         style: TextStyle(color: AppColors.grey)),
                     const SizedBox(height: 6),
-                    Text('تصفّح فعاليات المعارض وقدّم طلب رعاية',
+                    Text('browse_events_hint'.tr,
                         style: TextStyle(
                             color: AppColors.grey, fontSize: 12)),
                   ]),

@@ -18,23 +18,23 @@ class BoothMap3dView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-      appBar: const CustomAppBar(title: 'خريطة المعرض 3D'),
+      appBar: CustomAppBar(title: 'map_3d_title'.tr),
       body: Obx(() {
         if (ctrl.isLoading.value) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(color: AppColors.darkPrimary),
-                SizedBox(height: 16),
-                Text('جارٍ تحميل خريطة المعرض...', style: TextStyle(color: AppColors.grey)),
+                const CircularProgressIndicator(color: AppColors.darkPrimary),
+                const SizedBox(height: 16),
+                Text('map_loading'.tr, style: const TextStyle(color: AppColors.grey)),
               ],
             ),
           );
         }
 
         final mapModel = ctrl.mapData.value;
-        if (mapModel == null) return const Center(child: Text('تعذّر تحميل الخريطة'));
+        if (mapModel == null) return Center(child: Text('map_load_error'.tr));
 
         return Column(
           children: [
@@ -103,7 +103,7 @@ class _MapHeader extends StatelessWidget {
               IconButton(
                 onPressed: ctrl.resetView,
                 icon: const Icon(Icons.center_focus_strong_rounded, color: AppColors.darkPrimary, size: 22),
-                tooltip: 'إعادة ضبط العرض',
+                tooltip: 'map_reset_view'.tr,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
@@ -125,10 +125,10 @@ class _LegendRow extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _item(AppColors.info, 'متاح', isDark),
-          _item(const Color(0xFF3A3650), 'محجوز', isDark),
-          _item(AppColors.darkPrimary, 'مختار', isDark),
-          _item(const Color(0xFF4CAF50), 'مدخل', isDark),
+          _item(AppColors.info, 'map_legend_available'.tr, isDark),
+          _item(const Color(0xFF3A3650), 'map_legend_booked'.tr, isDark),
+          _item(AppColors.darkPrimary, 'map_legend_selected'.tr, isDark),
+          _item(const Color(0xFF4CAF50), 'map_legend_entrance'.tr, isDark),
         ],
       );
 
@@ -290,7 +290,7 @@ class _DialogCard extends StatelessWidget {
               children: [
                 Icon(Icons.verified_rounded, size: 13, color: accentColor),
                 const SizedBox(width: 5),
-                Text('الجناح محجوز من قِبَل هذه الشركة', style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
+                Text('map_booth_booked_by'.tr, style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -408,7 +408,7 @@ class _BoothInfoPanel extends StatelessWidget {
                     '${booth.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ريال',
                     style: const TextStyle(color: AppColors.orange, fontWeight: FontWeight.w800, fontSize: 15),
                   ),
-                  const Text('للمعرض كاملاً', style: TextStyle(color: AppColors.grey, fontSize: 10)),
+                  Text('full_exhibition_duration'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 10)),
                 ],
               ),
             ],
@@ -434,7 +434,7 @@ class _BoothInfoPanel extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: ctrl.clearSelection,
                   icon: const Icon(Icons.close_rounded, size: 16),
-                  label: const Text('إلغاء'),
+                  label: Text('btn_cancel'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.grey, side: const BorderSide(color: AppColors.grey),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -443,7 +443,7 @@ class _BoothInfoPanel extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(flex: 2, child: CustomButton(label: 'احجز هذا الجناح', onTap: ctrl.proceedToBooking)),
+              Expanded(flex: 2, child: CustomButton(label: 'booth_book_btn'.tr, onTap: ctrl.proceedToBooking)),
             ],
           ),
         ],

@@ -40,11 +40,11 @@ class WebTicketRequestsPage extends StatelessWidget {
                     child: Icon(Icons.arrow_forward_rounded, color: WebTheme.text, size: 20),
                   ),
                   const SizedBox(width: 10),
-                  Text('رجوع', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+                  Text('btn_back'.tr, style: TextStyle(color: AppColors.grey, fontSize: 14)),
                 ]),
               ),
               const SizedBox(height: 20),
-              Text('طلبات تذاكر: ${event.name}',
+              Text('${'ticket_requests_title'.tr}: ${event.name}',
                   style: TextStyle(color: WebTheme.text, fontSize: 24, fontWeight: FontWeight.w900)),
               const SizedBox(height: 20),
               Obx(() {
@@ -53,7 +53,7 @@ class WebTicketRequestsPage extends StatelessWidget {
                   return Container(
                     width: double.infinity, padding: const EdgeInsets.all(50), alignment: Alignment.center,
                     decoration: BoxDecoration(color: WebTheme.surface, borderRadius: BorderRadius.circular(16)),
-                    child: Text('لا توجد طلبات', style: TextStyle(color: AppColors.grey)),
+                    child: Text('no_requests'.tr, style: TextStyle(color: AppColors.grey)),
                   );
                 }
                 return Column(children: all.map((r) => _RequestCard(req: r, c: c)).toList());
@@ -126,7 +126,7 @@ class _RequestCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('تذكرة QR', style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w700)),
+                      Text('ticket_qr'.tr, style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
                       Text(req.ticketNumber ?? '',
                           style: TextStyle(color: AppColors.success, fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'monospace')),
@@ -152,7 +152,7 @@ class _RequestCard extends StatelessWidget {
                       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                         Icon(Icons.check, color: WebTheme.text, size: 16),
                         SizedBox(width: 6),
-                        Text('قبول وتوليد QR', style: TextStyle(color: WebTheme.text, fontWeight: FontWeight.w700, fontSize: 13)),
+                        Text('btn_accept_qr'.tr, style: TextStyle(color: WebTheme.text, fontWeight: FontWeight.w700, fontSize: 13)),
                       ]),
                     ),
                   ),
@@ -166,7 +166,7 @@ class _RequestCard extends StatelessWidget {
                       border: Border.all(color: AppColors.error.withOpacity(0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('رفض', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w700, fontSize: 13)),
+                    child: Text('btn_reject'.tr, style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w700, fontSize: 13)),
                   ),
                 ),
               ],
@@ -185,9 +185,9 @@ class _RequestCard extends StatelessWidget {
 
   Widget _statusChip(String s) {
     final map = {
-      'approved': ('مقبول', AppColors.success),
-      'rejected': ('مرفوض', AppColors.error),
-      'pending':  ('قيد المراجعة', AppColors.orange),
+      'approved': ('status_approved'.tr, AppColors.success),
+      'rejected': ('مرفوض'.tr, AppColors.error),
+      'pending':  ('قيد المراجعة'.tr, AppColors.orange),
     };
     final (label, color) = map[s] ?? ('—', AppColors.grey);
     return Container(

@@ -39,14 +39,14 @@ class WebCreateEventPage extends StatelessWidget {
                       const SizedBox(height: 28),
 
                       // ── المعلومات الأساسية ───────────────
-                      _section('المعلومات الأساسية'),
+                      _section('event_section_basic'.tr),
                       const SizedBox(height: 14),
-                      _field(c.nameCtrl, 'اسم الفعالية', Icons.event_outlined,
-                          validator: (v) => (v == null || v.isEmpty) ? 'مطلوب' : null),
+                      _field(c.nameCtrl, 'event_name_hint'.tr, Icons.event_outlined,
+                          validator: (v) => (v == null || v.isEmpty) ? 'field_required'.tr : null),
                       const SizedBox(height: 14),
                       Obx(() => _dropdown(
                             value: c.selectedType.value,
-                            hint: 'نوع الفعالية',
+                            hint: 'event_type_hint'.tr,
                             icon: Icons.category_outlined,
                             items: c.eventTypes,
                             onChanged: (v) => c.selectedType.value = v ?? '',
@@ -54,11 +54,11 @@ class WebCreateEventPage extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // ── المعرض والجناح ───────────────────
-                      _section('اختيار المعرض والجناح'),
+                      _section('event_section_exhibition'.tr),
                       const SizedBox(height: 14),
                       Obx(() => _dropdown(
                             value: c.selectedExhibitionName.value,
-                            hint: 'اختر المعرض',
+                            hint: 'event_select_exhibition'.tr,
                             icon: Icons.store_outlined,
                             items: c.myExhibitionNames,
                             onChanged: (v) {
@@ -73,7 +73,7 @@ class WebCreateEventPage extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 14),
                           child: DropdownButtonFormField<BoothModel>(
                             value: c.selectedBooth.value,
-                            hint: Text('اختر الجناح', style: TextStyle(color: AppColors.grey)),
+                            hint: Text('event_select_booth'.tr, style: TextStyle(color: AppColors.grey)),
                             dropdownColor: WebTheme.surfaceAlt,
                             style: TextStyle(color: WebTheme.text),
                             decoration: _dec(Icons.grid_view_rounded),
@@ -88,21 +88,21 @@ class WebCreateEventPage extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // ── التاريخ والوقت والمدة ────────────
-                      _section('التاريخ والوقت'),
+                      _section('event_section_datetime'.tr),
                       const SizedBox(height: 14),
                       Row(
                         children: [
                           Expanded(child: Obx(() => _pickerBox(
-                                context, 'التاريخ', Icons.calendar_today_outlined,
+                                context, 'event_date_hint'.tr, Icons.calendar_today_outlined,
                                 c.selectedDate.value, isDate: true, c: c))),
                           const SizedBox(width: 14),
                           Expanded(child: Obx(() => _pickerBox(
-                                context, 'الوقت', Icons.access_time_outlined,
+                                context, 'event_time_hint'.tr, Icons.access_time_outlined,
                                 c.selectedTime.value, isDate: false, c: c))),
                         ],
                       ),
                       const SizedBox(height: 14),
-                      _fieldLabel('مدة الفعالية (أيام)'),
+                      _fieldLabel('event_duration_label'.tr),
                       const SizedBox(height: 8),
                       Obx(() => Row(
                             children: List.generate(5, (i) {
@@ -130,22 +130,22 @@ class WebCreateEventPage extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // ── الوصف ────────────────────────────
-                      _section('نبذة عن الفعالية'),
+                      _section('event_section_desc'.tr),
                       const SizedBox(height: 14),
-                      _field(c.descCtrl, 'وصف تفصيلي للفعالية وأهدافها', Icons.description_outlined,
-                          maxLines: 4, validator: (v) => (v == null || v.isEmpty) ? 'مطلوب' : null),
+                      _field(c.descCtrl, 'event_desc_hint'.tr, Icons.description_outlined,
+                          maxLines: 4, validator: (v) => (v == null || v.isEmpty) ? 'field_required'.tr : null),
                       const SizedBox(height: 24),
 
                       // ── الصور والفيديو ───────────────────
-                      _section('الصور والفيديو'),
+                      _section('event_section_media'.tr),
                       const SizedBox(height: 14),
                       _mediaPicker(c),
                       const SizedBox(height: 12),
-                      _field(c.videoPromoCtrl, 'رابط الفيديو الترويجي (اختياري)', Icons.play_circle_outline),
+                      _field(c.videoPromoCtrl, 'event_video_hint'.tr, Icons.play_circle_outline),
                       const SizedBox(height: 24),
 
                       // ── التذاكر ──────────────────────────
-                      _section('التسجيل والتذاكر'),
+                      _section('event_section_tickets'.tr),
                       const SizedBox(height: 14),
                       _ticketTypeSelector(c),
                       const SizedBox(height: 14),
@@ -165,7 +165,7 @@ class WebCreateEventPage extends StatelessWidget {
                                   decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(12)),
                                   child: c.isCreating.value
                                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                      : Text('نشر الفعالية', style: TextStyle(color: WebTheme.text, fontWeight: FontWeight.w700, fontSize: 15)),
+                                      : Text('event_publish_btn'.tr, style: TextStyle(color: WebTheme.text, fontWeight: FontWeight.w700, fontSize: 15)),
                                 ),
                               )),
                         ],
@@ -189,9 +189,9 @@ class WebCreateEventPage extends StatelessWidget {
   // ── Ticket type selector (general/free_limited/paid) ──────
   Widget _ticketTypeSelector(EventsController c) {
     final opts = [
-      ('general',      Icons.people_outline,            'دعوة عامة',   'مفتوح للجميع',  AppColors.darkPrimary),
-      ('free_limited', Icons.confirmation_number_outlined, 'تذاكر حرة', 'مجاني — محدود', AppColors.darkSecondary),
-      ('paid',         Icons.payments_outlined,         'مدفوعة',      'بسعر محدد',     AppColors.darkAccent),
+      ('general',      Icons.people_outline,            'event_type_general'.tr,      'event_type_general_sub'.tr,   AppColors.darkPrimary),
+      ('free_limited', Icons.confirmation_number_outlined, 'event_type_free'.tr, 'event_type_free_sub'.tr, AppColors.darkSecondary),
+      ('paid',         Icons.payments_outlined,         'event_type_paid'.tr,         'event_type_paid_sub'.tr,      AppColors.darkAccent),
     ];
     return Obx(() => Row(
           children: opts.asMap().entries.map((e) {
@@ -230,21 +230,21 @@ class WebCreateEventPage extends StatelessWidget {
     switch (c.ticketType.value) {
       case 'free_limited':
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _field(c.freeLimitCtrl, 'الحد الأقصى للمسجلين (مثال: 100)', Icons.groups_outlined, keyboard: TextInputType.number),
+          _field(c.freeLimitCtrl, 'event_free_limit_hint'.tr, Icons.groups_outlined, keyboard: TextInputType.number),
           const SizedBox(height: 8),
-          _note(Icons.info_outline_rounded, 'سيُغلق التسجيل تلقائياً عند اكتمال العدد', AppColors.darkSecondary),
+          _note(Icons.info_outline_rounded, 'event_free_limit_note'.tr, AppColors.darkSecondary),
         ]);
       case 'paid':
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _field(c.seatsCtrl, 'إجمالي المقاعد المتاحة', Icons.event_seat_outlined, keyboard: TextInputType.number),
+          _field(c.seatsCtrl, 'event_seats_hint'.tr, Icons.event_seat_outlined, keyboard: TextInputType.number),
           const SizedBox(height: 12),
-          _field(c.ticketPriceCtrl, 'سعر التذكرة (ر.س)', Icons.payments_outlined, keyboard: TextInputType.number),
+          _field(c.ticketPriceCtrl, 'event_ticket_price_hint'.tr, Icons.payments_outlined, keyboard: TextInputType.number),
         ]);
       default:
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _field(c.maxCtrl, 'الحد الأقصى للمشاركين (اختياري)', Icons.people_outline, keyboard: TextInputType.number),
+          _field(c.maxCtrl, 'event_max_participants_hint'.tr, Icons.people_outline, keyboard: TextInputType.number),
           const SizedBox(height: 8),
-          _note(Icons.public_rounded, 'الفعالية مفتوحة للجميع بدون حجز', AppColors.darkPrimary),
+          _note(Icons.public_rounded, 'event_general_note'.tr, AppColors.darkPrimary),
         ]);
     }
   }
@@ -305,7 +305,7 @@ class WebCreateEventPage extends StatelessWidget {
                         children: [
                           Icon(Icons.add_photo_alternate_outlined, color: AppColors.darkPrimary, size: 26),
                           SizedBox(height: 4),
-                          Text('إضافة', style: TextStyle(color: AppColors.darkPrimary, fontSize: 11)),
+                          Text('event_add_image'.tr, style: TextStyle(color: AppColors.darkPrimary, fontSize: 11)),
                         ],
                       ),
                     ),
@@ -326,14 +326,14 @@ class WebCreateEventPage extends StatelessWidget {
             child: Icon(Icons.arrow_forward_rounded, color: WebTheme.text, size: 20),
           ),
           const SizedBox(width: 10),
-          Text('رجوع', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+          Text('btn_back'.tr, style: TextStyle(color: AppColors.grey, fontSize: 14)),
         ]),
       );
 
   Widget _title() => Row(children: [
         Container(width: 50, height: 50, decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(14)), child: Icon(Icons.add_rounded, color: WebTheme.text, size: 26)),
         const SizedBox(width: 14),
-        Text('نشر فعالية جديدة', style: TextStyle(color: WebTheme.text, fontSize: 22, fontWeight: FontWeight.w900)),
+        Text('event_create_title'.tr, style: TextStyle(color: WebTheme.text, fontSize: 22, fontWeight: FontWeight.w900)),
       ]);
 
   Widget _cancelBtn() => GestureDetector(
@@ -341,7 +341,7 @@ class WebCreateEventPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
           decoration: BoxDecoration(border: Border.all(color: AppColors.grey.withOpacity(0.4)), borderRadius: BorderRadius.circular(12)),
-          child: Text('إلغاء', style: TextStyle(color: AppColors.grey, fontWeight: FontWeight.w700)),
+          child: Text('btn_cancel'.tr, style: TextStyle(color: AppColors.grey, fontWeight: FontWeight.w700)),
         ),
       );
 

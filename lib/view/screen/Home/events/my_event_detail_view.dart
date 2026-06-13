@@ -149,7 +149,7 @@ class MyEventDetailView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _sectionTitle('تفاصيل الفعالية'),
+                          _sectionTitle('event_section_details'.tr),
                           _detailRow(Icons.location_on_outlined, 'الموقع',
                               event.place.isNotEmpty
                                   ? event.place
@@ -184,7 +184,7 @@ class MyEventDetailView extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                _sectionTitle('إدارة التذاكر'),
+                                _sectionTitle('ticket_management'.tr),
                                 const Spacer(),
                                 // QR Scanner button
                                 ElevatedButton.icon(
@@ -200,8 +200,8 @@ class MyEventDetailView extends StatelessWidget {
                                   ),
                                   icon: const Icon(Icons.qr_code_scanner,
                                       color: Colors.white, size: 16),
-                                  label: const Text('مسح QR',
-                                      style: TextStyle(
+                                  label: Text('btn_scan_qr'.tr,
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12)),
                                 ),
@@ -210,19 +210,19 @@ class MyEventDetailView extends StatelessWidget {
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                _ticketStat(context, 'إجمالي المقاعد',
+                                _ticketStat(context, 'total_seats'.tr,
                                     '${event.totalSeats}',
                                     AppColors.info),
                                 const SizedBox(width: 10),
-                                _ticketStat(context, 'المحجوزة',
+                                _ticketStat(context, 'booked_seats'.tr,
                                     '${event.bookedSeats}',
                                     AppColors.info),
                                 const SizedBox(width: 10),
-                                _ticketStat(context, 'المتبقية',
+                                _ticketStat(context, 'remaining_seats'.tr,
                                     '$seatsRemaining',
                                     AppColors.success),
                                 const SizedBox(width: 10),
-                                _ticketStat(context, 'حضروا',
+                                _ticketStat(context, 'attended'.tr,
                                     '${event.scannedCount}',
                                     AppColors.success),
                               ],
@@ -236,8 +236,8 @@ class MyEventDetailView extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text('نسبة الإشغال',
-                                        style: TextStyle(
+                                    Text('occupancy_rate'.tr,
+                                        style: const TextStyle(
                                             fontSize: 12,
                                             color: AppColors.grey)),
                                     Text(
@@ -265,11 +265,11 @@ class MyEventDetailView extends StatelessWidget {
                             // Ticket price
                             if (event.ticketPrice > 0)
                               _detailRow(Icons.payments_outlined,
-                                  'سعر التذكرة',
+                                  'event_ticket_price_hint'.tr,
                                   '${event.ticketPrice.toStringAsFixed(0)} ﷼'),
                             if (event.ticketPrice == 0)
                               _detailRow(Icons.card_giftcard_outlined,
-                                  'نوع الدخول', 'دعوة عامة مجانية'),
+                                  'entry_type'.tr, 'free_general_invite'.tr),
                             const SizedBox(height: 12),
                             // Manage ticket requests button
                             SizedBox(
@@ -297,8 +297,8 @@ class MyEventDetailView extends StatelessWidget {
                                       size: 18),
                                   label: Text(
                                     pending > 0
-                                        ? 'إدارة طلبات التذاكر ($pending طلب معلّق)'
-                                        : 'إدارة طلبات التذاكر',
+                                        ? '${'ticket_management'.tr} ($pending)'
+                                        : 'ticket_management'.tr,
                                     style: const TextStyle(
                                         color: AppColors.darkPrimary,
                                         fontWeight: FontWeight.w600),
@@ -315,7 +315,7 @@ class MyEventDetailView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _sectionTitle('معلومات التسجيل'),
+                            _sectionTitle('registration_info'.tr),
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
@@ -331,8 +331,8 @@ class MyEventDetailView extends StatelessWidget {
                                   const SizedBox(width: 10),
                                   Text(
                                     event.isGeneralInvitation
-                                        ? 'دعوة عامة — دخول حر للجميع'
-                                        : 'تسجيل في الموقع',
+                                        ? 'general_invite_desc'.tr
+                                        : 'onsite_registration'.tr,
                                     style: const TextStyle(
                                         fontSize: 13,
                                         color: AppColors.darkPrimary,
@@ -343,7 +343,7 @@ class MyEventDetailView extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             _detailRow(Icons.people_outline,
-                                'المشاركون',
+                                'participants'.tr,
                                 '${event.registeredCount} / ${event.maxParticipants}'),
                           ],
                         )),
@@ -357,25 +357,25 @@ class MyEventDetailView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _sectionTitle('تحليلات الفعالية'),
+                            _sectionTitle('event_analytics'.tr),
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                _analyticsTile(context, 'إجمالي الحضور',
+                                _analyticsTile(context, 'total_attendance'.tr,
                                     '${event.dailyAttendees.fold(0, (a, b) => a + b)}',
                                     Icons.people_outline,
                                     AppColors.darkPrimary),
                                 const SizedBox(width: 12),
                                 _analyticsTile(
                                     context,
-                                    'مسحوا التذكرة',
+                                    'scanned_tickets'.tr,
                                     '${event.scannedCount}',
                                     Icons.qr_code_scanner,
                                     AppColors.darkSecondary),
                               ],
                             ),
                             const SizedBox(height: 16),
-                            _sectionTitle('الحضور اليومي'),
+                            _sectionTitle('daily_attendance'.tr),
                             ...List.generate(
                                 event.dailyAttendees.length,
                                 (i) => _dailyBar(
@@ -388,17 +388,17 @@ class MyEventDetailView extends StatelessWidget {
                               const SizedBox(height: 14),
                               const Divider(height: 1),
                               const SizedBox(height: 14),
-                              _sectionTitle('مقارنة التذاكر'),
+                              _sectionTitle('ticket_comparison'.tr),
                               _comparisonBar(
                                   context,
-                                  'التذاكر المباعة',
+                                  'sold_tickets_label'.tr,
                                   event.soldTickets,
                                   event.totalSeats,
                                   AppColors.darkPrimary),
                               const SizedBox(height: 8),
                               _comparisonBar(
                                   context,
-                                  'الحضور الفعلي',
+                                  'actual_attendance'.tr,
                                   event.scannedCount,
                                   event.totalSeats,
                                   AppColors.darkSecondary),
@@ -437,12 +437,12 @@ class MyEventDetailView extends StatelessWidget {
                   color: AppColors.darkPrimary, size: 48),
             ),
             const SizedBox(height: 16),
-            const Text('ماسح QR التذاكر',
-                style: TextStyle(
+            Text('qr_scanner_title'.tr,
+                style: const TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            const Text(
-              'سيتم ربط هذه الميزة بكاميرا الجهاز عند الاتصال بالباكند.\nيتم التحقق من صحة التذكرة عبر الكود المرسل.',
+            Text(
+              'qr_scanner_note'.tr,
               style: TextStyle(
                   fontSize: 13,
                   color: AppColors.grey,
@@ -457,8 +457,8 @@ class MyEventDetailView extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('حسناً',
-                  style: TextStyle(color: Colors.white)),
+              child: Text('btn_ok'.tr,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -488,7 +488,7 @@ class MyEventDetailView extends StatelessWidget {
         : started
             ? AppColors.darkSecondary
             : AppColors.darkPrimary;
-    final label = ended ? 'انتهت' : started ? 'جارٍ الآن' : 'قادمة';
+    final label = ended ? 'status_ended_f'.tr : started ? 'status_ongoing'.tr : 'status_upcoming_f'.tr;
     final progress = event.totalEventDays > 0
         ? event.currentDay / event.totalEventDays
         : 0.0;

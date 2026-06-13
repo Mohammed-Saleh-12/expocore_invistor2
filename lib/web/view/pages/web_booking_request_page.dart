@@ -56,11 +56,11 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
               _backBar(),
               const SizedBox(height: 20),
               Text(
-                'طلب حجز جناح',
+                'booking_page_title'.tr,
                 style: TextStyle(color: WebTheme.text, fontSize: 24, fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 4),
-              Text('أكمل البيانات لإرسال طلب الحجز', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+              Text('booking_request_hint'.tr, style: TextStyle(color: AppColors.grey, fontSize: 14)),
               const SizedBox(height: 20),
               _boothSummary(),
               const SizedBox(height: 20),
@@ -97,7 +97,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
               child: Icon(Icons.arrow_forward_rounded, color: WebTheme.text, size: 20),
             ),
             const SizedBox(width: 10),
-            Text('رجوع', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+            Text('btn_back'.tr, style: TextStyle(color: AppColors.grey, fontSize: 14)),
           ],
         ),
       );
@@ -135,8 +135,8 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                 Text('${widget.booth.price.toInt()} ريال',
                     style: const TextStyle(
                         color: AppColors.orange, fontSize: 16, fontWeight: FontWeight.w800)),
-                const Text('للمعرض كاملاً',
-                    style: TextStyle(color: AppColors.grey, fontSize: 11)),
+                Text('full_exhibition_duration'.tr,
+                    style: const TextStyle(color: AppColors.grey, fontSize: 11)),
               ],
             ),
           ],
@@ -165,7 +165,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                   child: const Icon(Icons.calendar_today_rounded, size: 18, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
-                Text('مدة المشاركة', style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
+                Text('booking_duration_label'.tr, style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
               ],
             ),
             const SizedBox(height: 16),
@@ -239,7 +239,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                   child: const Icon(Icons.room_service_rounded, size: 18, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
-                Text('خدمات إضافية', style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
+                Text('booking_services_label'.tr, style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
               ],
             ),
             const SizedBox(height: 14),
@@ -349,7 +349,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                   child: const Icon(Icons.note_alt_outlined, size: 18, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
-                Text('ملاحظات للإدارة (اختياري)',
+                Text('booking_notes_label'.tr,
                     style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
               ],
             ),
@@ -359,7 +359,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
               maxLines: 4,
               style: TextStyle(fontSize: 13, color: WebTheme.text),
               decoration: InputDecoration(
-                hintText: 'أضف أي ملاحظات أو متطلبات خاصة...',
+                hintText: 'booking_notes_hint'.tr,
                 hintStyle: const TextStyle(fontSize: 12, color: AppColors.grey),
                 filled: true,
                 fillColor: WebTheme.surfaceAlt,
@@ -385,19 +385,19 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ملخص التكلفة',
+            Text('booking_cost_summary'.tr,
                 style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
             Divider(color: WebTheme.border, height: 20),
-            _costRow('الإيجار الأساسي',
+            _costRow('booking_base_rent'.tr,
                 '${(widget.booth.price * c.duration.value).toInt()} ر.س'),
-            if (c.screenService.value) _costRow('إعلانات الشاشات', '500 ر.س'),
-            if (c.setupService.value) _costRow('تجهيزات وأثاث', '800 ر.س'),
-            if (c.securitySvc.value) _costRow('أمن خاص', '300 ر.س'),
-            if (c.cleaningService.value) _costRow('خدمة تنظيف', '200 ر.س'),
+            if (c.screenService.value) _costRow('booking_service_screens'.tr, '500 ر.س'),
+            if (c.setupService.value) _costRow('booking_service_setup'.tr, '800 ر.س'),
+            if (c.securitySvc.value) _costRow('booking_service_security'.tr, '300 ر.س'),
+            if (c.cleaningService.value) _costRow('booking_service_cleaning'.tr, '200 ر.س'),
             Divider(color: WebTheme.border, height: 20),
             Row(
               children: [
-                Text('الإجمالي',
+                Text('total_cost'.tr,
                     style: TextStyle(color: WebTheme.text, fontSize: 16, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 Text(
@@ -439,9 +439,9 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                   height: 22,
                   child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                 )
-              : const Text(
-                  'إرسال طلب الحجز',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+              : Text(
+                  'booking_submit'.tr,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
                 ),
         ),
       ));

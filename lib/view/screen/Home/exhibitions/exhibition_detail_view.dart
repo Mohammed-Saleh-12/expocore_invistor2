@@ -105,7 +105,7 @@ class ExhibitionDetailView extends StatelessWidget {
                       children: [
                         const Icon(Icons.grid_view, color: AppColors.success, size: 22),
                         const SizedBox(width: 10),
-                        Text('${exhibition.availableBooths} جناح متاح للحجز',
+                        Text('${'exhibition_available_booths_detail'.tr} ${exhibition.availableBooths}',
                             style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w600, fontSize: 15)),
                       ],
                     ),
@@ -113,7 +113,7 @@ class ExhibitionDetailView extends StatelessWidget {
                   const SizedBox(height: 20),
                   TabBar(
                     controller: ctrl.tabCtrl,
-                    tabs: const [Tab(text: 'تفاصيل المعرض'), Tab(text: 'فعاليات المعرض')],
+                    tabs: [Tab(text: 'exhibition_tab_details'.tr), Tab(text: 'exhibition_tab_events'.tr)],
                     labelColor: AppColors.darkPrimary,
                     indicatorColor: AppColors.darkPrimary,
                     unselectedLabelColor: AppColors.grey,
@@ -126,7 +126,7 @@ class ExhibitionDetailView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 50),
-                  CustomButton(label: 'استعراض الأجنحة وحجز', onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)),
+                  CustomButton(label: 'btn_browse_book_booths'.tr, onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity, height: 52,
@@ -151,7 +151,7 @@ class ExhibitionDetailView extends StatelessWidget {
   }
 
   Color _statusColor(String s) => s == 'active' ? AppColors.success : s == 'upcoming' ? AppColors.info : AppColors.grey;
-  String _statusLabel(String s) => s == 'active' ? 'جارٍ' : s == 'upcoming' ? 'قادم' : 'منته';
+  String _statusLabel(String s) => s == 'active' ? 'status_ongoing'.tr : s == 'upcoming' ? 'status_upcoming_f'.tr : 'status_ended_f'.tr;
 
   Widget _infoRow(IconData icon, String text) => Row(
         children: [
@@ -164,12 +164,12 @@ class ExhibitionDetailView extends StatelessWidget {
   Widget _servicesTab() => ListView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         children: [
-          _serviceItem(Icons.wifi, 'واي فاي مجاني'),
-          _serviceItem(Icons.local_parking, 'موقف سيارات مجاني'),
-          _serviceItem(Icons.security, 'أمن وحراسة على مدار الساعة'),
-          _serviceItem(Icons.restaurant, 'منطقة طعام ومقاهي'),
-          _serviceItem(Icons.settings_input_component, 'دعم تقني وكهربائي'),
-          _serviceItem(Icons.person, 'استقبال وخدمة عملاء'),
+          _serviceItem(Icons.wifi, 'service_wifi'.tr),
+          _serviceItem(Icons.local_parking, 'service_parking'.tr),
+          _serviceItem(Icons.security, 'service_security'.tr),
+          _serviceItem(Icons.restaurant, 'service_food'.tr),
+          _serviceItem(Icons.settings_input_component, 'service_tech'.tr),
+          _serviceItem(Icons.person, 'service_reception'.tr),
         ],
       );
 
@@ -183,10 +183,10 @@ class ExhibitionDetailView extends StatelessWidget {
   Widget _eventsTab(BuildContext context, EventsController eventsCtrl, ExhibitionModel exhibition) {
     final events = eventsCtrl.exhibitionSponsorEvents.where((e) => e.exhibitionId == exhibition.id).toList();
     if (events.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Text('لا توجد فعاليات إعلانية لهذا المعرض حالياً', style: TextStyle(color: AppColors.grey, fontSize: 14), textAlign: TextAlign.center),
+          padding: const EdgeInsets.all(32),
+          child: Text('no_ad_events'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 14), textAlign: TextAlign.center),
         ),
       );
     }

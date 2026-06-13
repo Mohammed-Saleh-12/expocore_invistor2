@@ -23,9 +23,9 @@ class WebMessagesPage extends StatelessWidget {
           // ── Segment toggle (حالة التبويب في الكنترولر) ──
           Obx(() => Row(
                 children: [
-                  _seg(nav, 'رسائل الإدارة', 0),
+                  _seg(nav, 'messages_admin'.tr, 0),
                   const SizedBox(width: 10),
-                  _seg(nav, 'رسائل الزوار', 1),
+                  _seg(nav, 'messages_visitors'.tr, 1),
                 ],
               )),
           const SizedBox(height: 20),
@@ -185,7 +185,7 @@ class _TwoPane extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.all(18),
-                  child: Text('المحادثات', style: TextStyle(color: WebTheme.text, fontSize: 18, fontWeight: FontWeight.w800)),
+                  child: Text('messages_conversations'.tr, style: TextStyle(color: WebTheme.text, fontSize: 18, fontWeight: FontWeight.w800)),
                 ),
                 const Divider(color: Color(0x18FFFFFF), height: 1),
                 Expanded(child: listBuilder()),
@@ -313,7 +313,7 @@ class _ChatBody extends StatelessWidget {
                 style: TextStyle(color: WebTheme.text),
                 onSubmitted: (_) => onSend(),
                 decoration: InputDecoration(
-                  hintText: 'اكتب رسالة...',
+                  hintText: 'messages_type_hint'.tr,
                   hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
                   filled: true,
                   fillColor: WebTheme.surfaceAlt,
@@ -342,7 +342,7 @@ class _EmptyList extends StatelessWidget {
   const _EmptyList();
   @override
   Widget build(BuildContext context) =>
-      Center(child: Text('لا توجد محادثات', style: TextStyle(color: AppColors.grey)));
+      Center(child: Text('messages_no_conversations'.tr, style: TextStyle(color: AppColors.grey)));
 }
 
 class _NoChat extends StatelessWidget {
@@ -354,7 +354,7 @@ class _NoChat extends StatelessWidget {
           children: [
             Icon(Icons.chat_bubble_outline_rounded, size: 56, color: AppColors.grey.withOpacity(0.5)),
             const SizedBox(height: 12),
-            Text('اختر محادثة لعرضها', style: TextStyle(color: AppColors.grey)),
+            Text('messages_select_chat'.tr, style: TextStyle(color: AppColors.grey)),
           ],
         ),
       );

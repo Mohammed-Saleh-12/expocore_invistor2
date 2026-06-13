@@ -18,13 +18,13 @@ class WebMapPage extends StatelessWidget {
 
     return Obx(() {
       if (ctrl.isLoading.value) {
-        return const Center(
+        return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(color: AppColors.darkPrimary),
-              SizedBox(height: 16),
-              Text('جارٍ تحميل خريطة المعرض...', style: TextStyle(color: AppColors.grey, fontSize: 15)),
+              const CircularProgressIndicator(color: AppColors.darkPrimary),
+              const SizedBox(height: 16),
+              Text('map_loading'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 15)),
             ],
           ),
         );
@@ -32,7 +32,7 @@ class WebMapPage extends StatelessWidget {
 
       final mapModel = ctrl.mapData.value;
       if (mapModel == null) {
-        return const Center(child: Text('تعذّر تحميل الخريطة', style: TextStyle(color: AppColors.grey)));
+        return Center(child: Text('map_load_error'.tr, style: const TextStyle(color: AppColors.grey)));
       }
 
       return Column(
@@ -100,12 +100,12 @@ class _WebMapHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(mapModel.exhibitionName, style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w800)),
-                    Text('استعرض الأجنحة — اضغط على أي جناح لعرض تفاصيله', style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                    Text('map_interaction_hint'.tr, style: TextStyle(color: AppColors.grey, fontSize: 12)),
                   ],
                 ),
               ),
               Tooltip(
-                message: 'إعادة ضبط العرض',
+                message: 'map_reset_view'.tr,
                 child: InkWell(
                   onTap: ctrl.resetView,
                   borderRadius: BorderRadius.circular(8),
@@ -146,7 +146,7 @@ class _WebLegendRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(color: WebTheme.border, borderRadius: BorderRadius.circular(6)),
-          child: const Text('السحب: تحريك   •   التكبير: عجلة الفأرة / قرصة', style: TextStyle(color: AppColors.grey, fontSize: 11)),
+          child: Text('map_controls_hint'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 11)),
         ),
       ],
     );
@@ -336,7 +336,7 @@ class _CompanyCard extends StatelessWidget {
               children: [
                 Icon(Icons.verified_rounded, size: 13, color: accentColor),
                 const SizedBox(width: 5),
-                Text('الجناح محجوز من قِبَل هذه الشركة', style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
+                Text('map_booth_booked_by'.tr, style: TextStyle(fontSize: 11, color: accentColor, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -422,7 +422,7 @@ class _WebBoothInfoPanel extends StatelessWidget {
                 '${booth.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ريال',
                 style: const TextStyle(color: AppColors.orange, fontWeight: FontWeight.w800, fontSize: 16),
               ),
-              const Text('للمعرض كاملاً', style: TextStyle(color: AppColors.grey, fontSize: 10)),
+              Text('full_exhibition_duration'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 10)),
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
@@ -437,7 +437,7 @@ class _WebBoothInfoPanel extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
-                  child: const Text('احجز هذا الجناح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  child: Text('booth_book_btn'.tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                 ),
               ),
             ],

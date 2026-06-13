@@ -19,7 +19,7 @@ class TicketRequestsView extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: CustomAppBar(
-          title: 'طلبات تذاكر: ${event.name}',
+          title: '${'ticket_requests_title'.tr}: ${event.name}',
           actions: [
             Padding(
               padding: const EdgeInsets.only(left: 8),
@@ -45,11 +45,11 @@ class TicketRequestsView extends StatelessWidget {
         ),
         body: Column(
           children: [
-            const TabBar(
+            TabBar(
               tabs: [
-                Tab(text: 'معلّقة'),
-                Tab(text: 'مقبولة'),
-                Tab(text: 'مرفوضة'),
+                Tab(text: 'tab_pending'.tr),
+                Tab(text: 'tab_approved'.tr),
+                Tab(text: 'tab_rejected'.tr),
               ],
               labelColor: AppColors.darkPrimary,
               indicatorColor: AppColors.darkPrimary,
@@ -84,7 +84,7 @@ class TicketRequestsView extends StatelessWidget {
       List<TicketRequestModel> requests, EventsController ctrl,
       {bool showActions = false, bool showQr = false}) {
     if (requests.isEmpty) {
-      return const EmptyWidget(message: 'لا توجد طلبات');
+      return EmptyWidget(message: 'no_requests'.tr);
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -183,8 +183,8 @@ class _RequestCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('تذكرة QR',
-                          style: TextStyle(
+                      Text('ticket_qr'.tr,
+                          style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
@@ -205,8 +205,8 @@ class _RequestCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
-                        'تم إرسال التذكرة للزائر\nيُحفظ رمز QR في قاعدة البيانات',
+                      Text(
+                        'ticket_sent_note'.tr,
                         style: TextStyle(
                             fontSize: 11,
                             color: AppColors.grey,
@@ -238,8 +238,8 @@ class _RequestCard extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.close,
                         color: AppColors.error, size: 16),
-                    label: const Text('رفض',
-                        style: TextStyle(
+                    label: Text('btn_reject'.tr,
+                        style: const TextStyle(
                             color: AppColors.error,
                             fontWeight: FontWeight.w600)),
                   ),
@@ -259,8 +259,8 @@ class _RequestCard extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.check,
                         color: Colors.white, size: 16),
-                    label: const Text('قبول وتوليد QR',
-                        style: TextStyle(
+                    label: Text('btn_accept_qr'.tr,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600)),
                   ),
@@ -279,15 +279,15 @@ class _RequestCard extends StatelessWidget {
     switch (status) {
       case 'approved':
         color = AppColors.success;
-        label = 'مقبول';
+        label = 'status_approved'.tr;
         break;
       case 'rejected':
         color = AppColors.error;
-        label = 'مرفوض';
+        label = 'tab_rejected'.tr;
         break;
       default:
         color = AppColors.orange;
-        label = 'معلّق';
+        label = 'tab_pending'.tr;
     }
     return Container(
       padding:
