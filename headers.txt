@@ -1,0 +1,15 @@
+HTTP/1.1 404 Not Found
+Date: Sun, 14 Jun 2026 09:35:24 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+CF-Ray: a0b85844bf245255-MXP
+CF-Cache-Status: HIT
+Age: 3538
+Last-Modified: Sat, 11 Oct 2025 00:20:51 GMT
+x-amz-error-code: NoSuchKey
+x-amz-error-detail-Key: maven2/com/google/mlkit/barcode-scanning/17.3.0/barcode-scanning-17.3.0.pom
+x-amz-error-message: The specified key does not exist.
+Server: cloudflare
+alt-svc: h3=":443"; ma=86400
+
