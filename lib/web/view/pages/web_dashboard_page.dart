@@ -10,6 +10,7 @@ import '../widgets/web_exhibition_card.dart';
 import '../widgets/web_billboard.dart';
 import '../widgets/web_event_billboard.dart';
 import '../widgets/web_section_header.dart';
+import '../../../view/widget/Home/sponsor_event_card.dart';
 
 class WebDashboardPage extends StatelessWidget {
   const WebDashboardPage({super.key});
@@ -110,10 +111,21 @@ class WebDashboardPage extends StatelessWidget {
                   final list = events.myExhibitionSponsorEvents;
                   if (list.isEmpty)
                     return _emptyHint('لا توجد فعاليات في معارضك المشترك بها');
-                  return Column(
+                  return Wrap(
+                    spacing: 20,
+                    runSpacing: 20,
                     children: list
                         .take(4)
-                        .map((e) => _SponsorEventTile(event: e))
+                        .map(
+                          (e) => SizedBox(
+                            width: 300,
+                            child: SponsorEventCard(
+                              event: e,
+                              onTap: () =>
+                                  WebNavController.to.openSponsorEvent(e),
+                            ),
+                          ),
+                        )
                         .toList(),
                   );
                 }),
@@ -356,79 +368,6 @@ class _QuickActionBtn extends StatelessWidget {
                 color: WebTheme.text,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Sponsor event tile ────────────────────────────────────────
-class _SponsorEventTile extends StatelessWidget {
-  final ExhibitionSponsorEvent event;
-  const _SponsorEventTile({required this.event});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => WebNavController.to.openSponsorEvent(event),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: WebTheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: WebTheme.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: AppColors.favoriteGradient,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.campaign_rounded,
-                color: WebTheme.text,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.name,
-                    style: TextStyle(
-                      color: WebTheme.text,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${event.exhibitionName} • ${event.date} • ${event.place}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: AppColors.darkPrimary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                event.type,
-                style: TextStyle(color: AppColors.darkPink, fontSize: 11),
               ),
             ),
           ],
