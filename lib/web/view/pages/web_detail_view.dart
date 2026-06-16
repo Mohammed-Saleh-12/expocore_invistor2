@@ -529,37 +529,48 @@ class _BoothDetail extends StatelessWidget {
   const _BoothDetail({required this.b, this.report});
 
   @override
-  Widget build(BuildContext context) => _DetailScaffold(
-    title: 'جناح ${b.number}',
-    imageUrl: b.imageUrl,
-    badge: WebStatusChip(status: b.status),
-    children: [
-      _infoRow(Icons.storefront_rounded, 'المعرض', b.exhibitionName),
-      _infoRow(Icons.location_on_outlined, 'الموقع', b.location),
-      _infoRow(Icons.straighten_rounded, 'المساحة', '${b.area.toInt()} م²'),
-      _infoRow(Icons.payments_outlined, 'السعر', '${b.price.toInt()} ر.س'),
-      _infoRow(Icons.event_outlined, 'ينتهي في', b.endDate),
-      const SizedBox(height: 16),
-      _chips('الخدمات', b.amenities),
-    ],
-    actions: [
-      if (b.status == 'ended' && report != null)
+  Widget build(BuildContext context) {
+    final fav = Get.find<FavoritesController>();
+    return _DetailScaffold(
+      title: 'جناح ${b.number}',
+      imageUrl: b.imageUrl,
+      badge: WebStatusChip(status: b.status),
+      children: [
+        _infoRow(Icons.storefront_rounded, 'المعرض', b.exhibitionName),
+        _infoRow(Icons.location_on_outlined, 'الموقع', b.location),
+        _infoRow(Icons.straighten_rounded, 'المساحة', '${b.area.toInt()} م²'),
+        _infoRow(Icons.payments_outlined, 'السعر', '${b.price.toInt()} ر.س'),
+        _infoRow(Icons.event_outlined, 'ينتهي في', b.endDate),
+        const SizedBox(height: 16),
+        _chips('الخدمات', b.amenities),
+      ],
+      actions: [
+        if (b.status == 'ended' && report != null)
+          _actionBtn(
+            'عرض التقرير',
+            filled: false,
+            onTap: () => WebNavController.to.openReport(report!),
+          ),
+        Obx(() {
+          final isFav = fav.isBoothFavorited(b.id);
+          return _actionBtn(
+            isFav ? '♥ في المفضلة' : '♡ أضف للمفضلة',
+            filled: false,
+            onTap: () => fav.toggleFavoriteBooth(b),
+          );
+        }),
         _actionBtn(
-          'عرض التقرير',
-          filled: false,
-          onTap: () => WebNavController.to.openReport(report!),
+          'تواصل مع الإدارة',
+          filled: true,
+          onTap: () {
+            Get.find<MessagesController>()
+                .prepareConversationForExhibition(b.exhibitionName);
+            WebNavController.to.select(6);
+          },
         ),
-      _actionBtn(
-        'تواصل مع الإدارة',
-        filled: true,
-        onTap: () {
-          Get.find<MessagesController>()
-              .prepareConversationForExhibition(b.exhibitionName);
-          WebNavController.to.select(6);
-        },
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
 // ════════════════════════════════════════════════════════════

@@ -6,7 +6,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../../view/widget/Home/sponsorship_bottom_sheet.dart';
 import '../widgets/web_section_header.dart';
-import '../../controllers/web_nav_controller.dart';
 
 class WebExhibitionEventsPage extends StatelessWidget {
   const WebExhibitionEventsPage({super.key});
@@ -59,6 +58,7 @@ class WebExhibitionEventsPage extends StatelessWidget {
                 children: list
                     .map((e) => _ExhibitionEventCard(
                           event: e,
+                          ctrl: c,
                           onTap: () => _showSheet(context, e, c),
                         ))
                     .toList(),
@@ -85,7 +85,9 @@ class WebExhibitionEventsPage extends StatelessWidget {
 class _ExhibitionEventCard extends StatelessWidget {
   final ExhibitionSponsorEvent event;
   final VoidCallback onTap;
-  const _ExhibitionEventCard({required this.event, required this.onTap});
+  final EventsController ctrl;
+  const _ExhibitionEventCard(
+      {required this.event, required this.onTap, required this.ctrl});
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +146,18 @@ class _ExhibitionEventCard extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            Obx(() {
+              ctrl.exhibitionSponsorEvents.length;
+              return GestureDetector(
+                onTap: () => ctrl.toggleSponsorFavorite(event),
+                child: Icon(
+                  event.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: event.isFavorite ? AppColors.error : AppColors.grey,
+                  size: 22,
+                ),
+              );
+            }),
             const SizedBox(width: 12),
             Container(
               padding:

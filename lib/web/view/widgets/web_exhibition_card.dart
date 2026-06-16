@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
+import '../../../controller/Home/favorites_controller.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
 import '../../controllers/web_nav_controller.dart';
 
@@ -57,6 +58,28 @@ class WebExhibitionCard extends StatelessWidget {
                           decoration: BoxDecoration(color: _statusColor.withOpacity(0.9), borderRadius: BorderRadius.circular(8)),
                           child: Text(e.statusLabel, style: TextStyle(color: WebTheme.text, fontSize: 11, fontWeight: FontWeight.w700)),
                         ),
+                      ),
+                      Positioned(
+                        top: 10, left: 10,
+                        child: Obx(() {
+                          final fav = Get.find<FavoritesController>();
+                          final isFav = fav.isExhibitionFavorited(e.id);
+                          return GestureDetector(
+                            onTap: onFavorite ?? () => fav.toggleFavoriteExhibition(exhibition),
+                            child: Container(
+                              width: 34, height: 34,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.45),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: isFav ? AppColors.error : Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   ),
