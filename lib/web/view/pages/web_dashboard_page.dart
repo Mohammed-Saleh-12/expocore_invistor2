@@ -93,7 +93,7 @@ class WebDashboardPage extends StatelessWidget {
                       children: [
                         _sectionTitleWithAction(
                           'فعاليات المعارض الإعلانية',
-                          onAll: () => WebNavController.to.select(4),
+                          onAll: () => WebNavController.to.openExhibitionEvents(),
                         ),
                         const SizedBox(height: 14),
                         WebEventBillboard(events: evs),
