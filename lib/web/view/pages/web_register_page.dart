@@ -8,11 +8,6 @@ import '../../controllers/web_auth_controller.dart';
 import '../../models/web_theme.dart';
 import '../widgets/web_fade_in.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebRegisterPage  —  View فقط (MVC)
-//  لا تحتوي على أي منطق أو تنسيق بين الكنترولرات
-//  كل ذلك موجود في WebAuthController و RegisterController
-// ════════════════════════════════════════════════════════════
 class WebRegisterPage extends StatelessWidget {
   const WebRegisterPage({super.key});
 

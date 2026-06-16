@@ -8,9 +8,6 @@ import '../widgets/web_section_header.dart';
 import '../widgets/web_status_chip.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebSponsorshipsPage  —  رعاياتي (مطابقة لـ my_sponsorships)
-// ════════════════════════════════════════════════════════════
 class WebSponsorshipsPage extends StatelessWidget {
   const WebSponsorshipsPage({super.key});
 
@@ -21,7 +18,6 @@ class WebSponsorshipsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Fixed header ──────────────────────────────────
         Container(
           color: WebTheme.bg,
           padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
@@ -31,7 +27,6 @@ class WebSponsorshipsPage extends StatelessWidget {
           ),
         ),
 
-        // ── Scrollable sponsorships list ───────────────────
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),

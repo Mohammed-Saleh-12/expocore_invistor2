@@ -16,29 +16,21 @@ void main() {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // ── Flutter framework error handler ──────────────────────
-      // Catches errors thrown during widget build/layout/painting.
       FlutterError.onError = (FlutterErrorDetails details) {
         if (_isOverlayNullError(details.exception)) {
-          // Snackbar called before overlay was ready — harmless, skip.
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
           return;
         }
-        // Everything else: show the nice error widget instead of red screen.
         FlutterError.presentError(details);
       };
-
-      // ── Platform dispatcher error handler (web async errors) ─
       PlatformDispatcher.instance.onError = (error, stack) {
         if (_isOverlayNullError(error)) {
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
-          return true; // handled
+          return true; 
         }
         debugPrint('[ExpoCore] Uncaught error: $error');
-        return false; // let the default handler deal with it
+        return false; 
       };
-
-      // ── Custom error widget (no red screen) ──────────────────
       ErrorWidget.builder = (FlutterErrorDetails details) => Material(
         color: const Color(0xFF1D1A39),
         child: Center(
@@ -73,13 +65,11 @@ void main() {
           ),
         ),
       );
-
       final services = await Get.putAsync(() => Services().init());
       appLang.value = services.lang;
       runApp(ExpoCore(isDark: services.isDarkMode));
     },
     (error, stack) {
-      // ── Zone-level error catch (unhandled async exceptions) ───
       if (_isOverlayNullError(error)) {
         debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
         return;
@@ -88,11 +78,6 @@ void main() {
     },
   );
 }
-
-/// Returns true when the error is a GetX snackbar overlay-not-ready crash.
-/// The snackbar calls `overlayState!.insertAll(...)` — if the overlay hasn't
-/// mounted yet, Dart throws a Null-check error.  We silence it because the
-/// UI is still functional; the snackbar simply wasn't shown.
 bool _isOverlayNullError(Object error) {
   if (error is! TypeError && error.runtimeType.toString() != '_TypeError') {
     return false;
@@ -104,9 +89,6 @@ bool _isOverlayNullError(Object error) {
           msg.contains('snackbar'));
 }
 
-// ════════════════════════════════════════════════════════════
-//  ExpoCore  —  Root widget
-// ════════════════════════════════════════════════════════════
 class ExpoCore extends StatelessWidget {
   final bool isDark;
   const ExpoCore({super.key, required this.isDark});

@@ -495,14 +495,6 @@ class MyTranslation extends Translations {
 
       // ── Campaign create view ──────────────────────────────────────────
       'campaign_create_title':    'إنشاء حملة جديدة',
-      'campaign_title_hint':      'عنوان الحملة',
-      'campaign_type_hint':       'نوع الحملة',
-      'campaign_desc_hint':       'وصف الحملة',
-      'campaign_budget_label':    'الميزانية (ريال)',
-      'campaign_publish_btn':     'نشر الحملة',
-      'campaign_start_date':      'تاريخ البدء',
-      'campaign_end_date':        'تاريخ الانتهاء',
-      'campaign_media_upload':    'رفع الصور والمقاطع',
 
       // ── Campaign controller snackbars ─────────────────────────────────
       'campaign_created_msg':     'تم إنشاء الحملة بنجاح',
@@ -663,7 +655,6 @@ class MyTranslation extends Translations {
       // ── New booking/report/map/event keys ────────────────────────────
       'booking_page_title':           'طلب حجز جناح',
       'booking_services_label':       'خدمات إضافية',
-      'booking_notes_hint':           'أضف أي ملاحظات أو متطلبات خاصة...',
       'booking_service_screens':      'إعلانات الشاشات',
       'booking_service_setup':        'تجهيزات وأثاث',
       'booking_service_security':     'أمن خاص',
@@ -1172,13 +1163,6 @@ class MyTranslation extends Translations {
 
       // ── Campaign create view ──────────────────────────────────────────
       'campaign_create_title':    'Create New Campaign',
-      'campaign_title_hint':      'Campaign title',
-      'campaign_type_hint':       'Campaign type',
-      'campaign_desc_hint':       'Campaign description',
-      'campaign_budget_label':    'Budget (SAR)',
-      'campaign_publish_btn':     'Publish Campaign',
-      'campaign_start_date':      'Start Date',
-      'campaign_end_date':        'End Date',
       'campaign_media_upload':    'Upload images & videos',
 
       // ── Campaign controller snackbars ─────────────────────────────────
@@ -1330,7 +1314,6 @@ class MyTranslation extends Translations {
       // ── New booking/report/map/event keys ────────────────────────────
       'booking_page_title':           'Booth Booking Request',
       'booking_services_label':       'Additional Services',
-      'booking_notes_hint':           'Add any notes or special requirements...',
       'booking_service_screens':      'Screen Ads',
       'booking_service_setup':        'Setup & Furniture',
       'booking_service_security':     'Private Security',

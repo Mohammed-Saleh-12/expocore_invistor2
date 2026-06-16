@@ -7,9 +7,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../core/services/services.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebTopbar  —  الشريط العلوي (RTL/LTR aware)
-// ════════════════════════════════════════════════════════════
 class WebTopbar extends StatelessWidget {
   const WebTopbar({super.key});
 
@@ -18,7 +15,6 @@ class WebTopbar extends StatelessWidget {
     final notif = _notifCtrl();
 
     return Obx(() {
-      // Depend on appLang so topbar rebuilds on language change
       appLang.value;
 
       String company = 'topbar_guest'.tr;
@@ -36,40 +32,7 @@ class WebTopbar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Search → navigates to exhibitions section
-            GestureDetector(
-              onTap: () => WebNavController.to.select(1),
-              child: Container(
-                width: 300,
-                height: 42,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: WebTheme.surfaceAlt,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: WebTheme.border),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      size: 18,
-                      color: AppColors.grey.withOpacity(0.7),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'topbar_search_hint'.tr,
-                      style: TextStyle(
-                        color: AppColors.grey.withOpacity(0.6),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
             const Spacer(),
-            // Notifications
             Material(
               color: Colors.transparent,
               child: InkWell(
@@ -116,7 +79,6 @@ class WebTopbar extends StatelessWidget {
             ),
             const SizedBox(width: 10),
 
-            // Profile → navigates to settings
             GestureDetector(
               onTap: () => WebNavController.to.select(8),
               child: Container(

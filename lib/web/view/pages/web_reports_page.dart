@@ -7,9 +7,6 @@ import '../../../data/model/report/report_model.dart';
 import '../widgets/web_section_header.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebReportsPage  —  التقارير
-// ════════════════════════════════════════════════════════════
 class WebReportsPage extends StatelessWidget {
   const WebReportsPage({super.key});
 
@@ -20,7 +17,6 @@ class WebReportsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Fixed header + filters + date bar ─────────────
         Container(
           color: WebTheme.bg,
           padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
@@ -33,7 +29,6 @@ class WebReportsPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── Type filters ────────────────────────────
               Obx(() => Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -70,7 +65,6 @@ class WebReportsPage extends StatelessWidget {
                   )),
               const SizedBox(height: 12),
 
-              // ── Date range bar ──────────────────────────
               Obx(() => Row(
                     children: [
                       Expanded(
@@ -89,7 +83,6 @@ class WebReportsPage extends StatelessWidget {
           ),
         ),
 
-        // ── Scrollable report rows ─────────────────────────
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),

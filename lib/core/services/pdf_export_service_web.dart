@@ -5,12 +5,6 @@ import 'package:flutter/material.dart';
 import '../utils/report_type_helper.dart';
 import '../../data/model/report/report_model.dart';
 
-// ════════════════════════════════════════════════════════════
-//  PdfExportService  —  web implementation
-//  Generates a fully-styled HTML document, opens it in a new
-//  browser tab, and auto-triggers window.print() so the user
-//  can "Save as PDF" from the browser's print dialog.
-// ════════════════════════════════════════════════════════════
 class PdfExportService {
   PdfExportService._();
 

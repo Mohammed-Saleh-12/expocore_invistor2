@@ -4,9 +4,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/sponsorship_booking_model.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebSponsorshipDetailPage  —  تفاصيل الرعاية (مطابقة للتطبيق)
-// ════════════════════════════════════════════════════════════
 class WebSponsorshipDetailPage extends StatelessWidget {
   final SponsorshipBookingModel booking;
   const WebSponsorshipDetailPage({super.key, required this.booking});

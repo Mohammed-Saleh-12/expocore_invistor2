@@ -6,9 +6,7 @@ import '../../../controller/Home/visitor_messages_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebMessagesPage  —  الرسائل (الإدارة / الزوار)
-// ════════════════════════════════════════════════════════════
+
 class WebMessagesPage extends StatelessWidget {
   const WebMessagesPage({super.key});
 
@@ -20,7 +18,6 @@ class WebMessagesPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Segment toggle (حالة التبويب في الكنترولر) ──
           Obx(() => Row(
                 children: [
                   _seg(nav, 'messages_admin'.tr, 0),
@@ -60,9 +57,6 @@ class WebMessagesPage extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════
-//  Admin (exhibition) messages
-// ════════════════════════════════════════════════════════════
 class _AdminMessages extends StatelessWidget {
   const _AdminMessages();
 
@@ -107,9 +101,6 @@ class _AdminMessages extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════
-//  Visitor messages
-// ════════════════════════════════════════════════════════════
 class _VisitorMessages extends StatelessWidget {
   const _VisitorMessages();
 
@@ -159,9 +150,6 @@ class _VisitorMessages extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════
-//  Shared two-pane layout
-// ════════════════════════════════════════════════════════════
 class _TwoPane extends StatelessWidget {
   final Widget Function() listBuilder;
   final Widget Function() chatBuilder;

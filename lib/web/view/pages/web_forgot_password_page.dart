@@ -8,11 +8,6 @@ import '../../controllers/web_auth_controller.dart';
 import '../../models/web_theme.dart';
 import '../widgets/web_fade_in.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebForgotPasswordPage  —  View فقط (MVC)
-//  لا تحتوي على أي منطق — كل ذلك في ForgotPasswordController
-//  و WebAuthController
-// ════════════════════════════════════════════════════════════
 class WebForgotPasswordPage extends StatelessWidget {
   const WebForgotPasswordPage({super.key});
 
@@ -202,7 +197,6 @@ class _ForgotForm extends StatelessWidget {
           ),
           const SizedBox(height: 28),
 
-          // ── Submit button ─────────────────────────────────
           Obx(() => SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -214,7 +208,6 @@ class _ForgotForm extends StatelessWidget {
               )),
           const SizedBox(height: 20),
 
-          // ── Back to login ─────────────────────────────────
           Center(
             child: GestureDetector(
               onTap: WebAuthController.to.goToLogin,
@@ -257,7 +250,6 @@ class _SentPanel extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 20),
-        // ── Success icon ──────────────────────────────────
         Container(
           width: 90,
           height: 90,
@@ -307,7 +299,6 @@ class _SentPanel extends StatelessWidget {
   }
 }
 
-// ── Gradient button (shared with login/register pages) ───────
 class _GradientButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;

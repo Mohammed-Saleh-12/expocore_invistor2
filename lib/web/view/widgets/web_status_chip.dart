@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/appcolors.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebStatusChip  —  شارة حالة موحّدة
-// ════════════════════════════════════════════════════════════
 class WebStatusChip extends StatelessWidget {
   final String status;
   const WebStatusChip({super.key, required this.status});

@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/web/models/web_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
@@ -136,7 +137,6 @@ class DashboardView extends GetView<DashboardController> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Events billboard (داخل Obx ليظهر بعد التحميل)
                     Obx(
                       () => EventBillboard(
                         key: ValueKey(
@@ -217,9 +217,26 @@ class DashboardView extends GetView<DashboardController> {
       children: [
         Row(
           children: [
-            const Text(
-              'ملخص الأداء',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            Row(
+              children: [
+                Container(
+                  width: 5,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.favoriteGradient,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'ملخص الأداء',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: WebTheme.text,
+                  ),
+                ),
+              ],
             ),
             const Spacer(),
             Obx(
@@ -338,11 +355,28 @@ class DashboardView extends GetView<DashboardController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'الإجراءات السريعة',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Row(
+            children: [
+              Container(
+                width: 5,
+                height: 22,
+                decoration: BoxDecoration(
+                  gradient: AppColors.favoriteGradient,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'الإجراءات السريعة',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: WebTheme.text,
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 12),
@@ -416,9 +450,26 @@ class DashboardView extends GetView<DashboardController> {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     child: Row(
       children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        Row(
+          children: [
+            Container(
+              width: 5,
+              height: 22,
+              decoration: BoxDecoration(
+                gradient: AppColors.favoriteGradient,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: WebTheme.text,
+              ),
+            ),
+          ],
         ),
         const Spacer(),
         GestureDetector(

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebSectionHeader  —  عنوان صفحة موحّد
-// ════════════════════════════════════════════════════════════
 class WebSectionHeader extends StatelessWidget {
   final String  title;
   final String? subtitle;

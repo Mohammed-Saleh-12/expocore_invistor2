@@ -6,9 +6,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebSponsorEventPage  —  رعاية فعالية معرض (اختيار مدة + حجز)
-// ════════════════════════════════════════════════════════════
 class WebSponsorEventPage extends StatelessWidget {
   final ExhibitionSponsorEvent event;
   const WebSponsorEventPage({super.key, required this.event});
@@ -16,7 +13,6 @@ class WebSponsorEventPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.find<EventsController>();
-    // إعادة الضبط عند فتح الصفحة
     c.selectedSponsorDuration.value = null;
 
     return SingleChildScrollView(
@@ -36,7 +32,6 @@ class WebSponsorEventPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       children: [
                         Container(
@@ -67,7 +62,6 @@ class WebSponsorEventPage extends StatelessWidget {
                     _row(Icons.location_on_outlined, 'المكان', event.place),
                     const SizedBox(height: 24),
 
-                    // Duration options
                     _section('اختر مدة الرعاية'),
                     const SizedBox(height: 12),
                     if (event.durationOptions.isEmpty)
@@ -112,7 +106,6 @@ class WebSponsorEventPage extends StatelessWidget {
                           )),
                     const SizedBox(height: 24),
 
-                    // Company info
                     _section('بيانات الشركة'),
                     const SizedBox(height: 12),
                     _field(c.companyNameCtrl, 'اسم الشركة', Icons.business_outlined),
@@ -124,7 +117,6 @@ class WebSponsorEventPage extends StatelessWidget {
                     _field(c.productNamesCtrl, 'المنتجات/الخدمات المعروضة', Icons.inventory_2_outlined),
                     const SizedBox(height: 28),
 
-                    // Book button
                     Obx(() => SizedBox(
                           width: double.infinity,
                           child: GestureDetector(

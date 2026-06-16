@@ -1,9 +1,6 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// ════════════════════════════════════════════════════════════
-//  Services  —  persistent session & preferences manager
-// ════════════════════════════════════════════════════════════
 class Services extends GetxService {
   late SharedPreferences _prefs;
 

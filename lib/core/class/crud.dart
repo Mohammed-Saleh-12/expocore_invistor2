@@ -4,11 +4,7 @@ import 'package:get/get.dart' hide Response;
 import '../constant/app_env.dart';
 import '../services/services.dart';
 
-// ════════════════════════════════════════════════════════════
-//  Crud  —  central HTTP client
-//  • Dio with interceptors (auth, logging, error, 401 logout)
-//  • All methods return Map<String, dynamic> for compatibility
-// ════════════════════════════════════════════════════════════
+
 class Crud {
   late final dio.Dio _dio;
 

@@ -7,9 +7,6 @@ import '../../../data/model/event/event_model.dart';
 import '../../../data/model/event/ticket_request_model.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebTicketRequestsPage  —  طلبات التذاكر (قبول/رفض + QR)
-// ════════════════════════════════════════════════════════════
 class WebTicketRequestsPage extends StatelessWidget {
   final EventModel event;
   const WebTicketRequestsPage({super.key, required this.event});

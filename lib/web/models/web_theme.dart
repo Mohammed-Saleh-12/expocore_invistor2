@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/services/services.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebTheme  —  ألوان تفاعلية لنسخة الويب (دارك/لايت)
-//  تُقرأ داخل شجرة ملفوفة بـ Obx فتتبدّل كاملة عند التغيير
-// ════════════════════════════════════════════════════════════
 class WebTheme {
   static final isDark = true.obs;
 

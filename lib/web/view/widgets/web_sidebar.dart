@@ -5,9 +5,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../view/widget/Home/expocore_logo.dart';
 import '../../models/web_section.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebSidebar  —  الشريط الجانبي للموقع (RTL/LTR aware)
-// ════════════════════════════════════════════════════════════
 class WebSidebar extends StatelessWidget {
   final List<WebSection> sections;
   final int              selected;

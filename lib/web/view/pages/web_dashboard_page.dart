@@ -11,9 +11,6 @@ import '../widgets/web_billboard.dart';
 import '../widgets/web_event_billboard.dart';
 import '../widgets/web_section_header.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebDashboardPage  —  لوحة التحكم (مطابقة لنسخة الجوال)
-// ════════════════════════════════════════════════════════════
 class WebDashboardPage extends StatelessWidget {
   const WebDashboardPage({super.key});
 
@@ -25,16 +22,6 @@ class WebDashboardPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Fixed page title ──────────────────────────────
-        Container(
-          color: WebTheme.bg,
-          padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
-          child: const WebSectionHeader(
-            title: 'لوحة التحكم',
-            subtitle: 'نظرة عامة على أداء حساباتك',
-          ),
-        ),
-
         // ── Scrollable content ────────────────────────────
         Expanded(
           child: SingleChildScrollView(
@@ -54,27 +41,6 @@ class WebDashboardPage extends StatelessWidget {
                         _sectionTitle('المعارض المميّزة'),
                         const SizedBox(height: 14),
                         WebBillboard(items: ads),
-                      ],
-                    ),
-                  );
-                }),
-
-                // ── Events billboard ──────────────────────
-                Obx(() {
-                  final evs =
-                      events.exhibitionSponsorEvents.toList();
-                  if (evs.isEmpty) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 28, bottom: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _sectionTitleWithAction(
-                          'فعاليات المعارض الإعلانية',
-                          onAll: () => WebNavController.to.select(4),
-                        ),
-                        const SizedBox(height: 14),
-                        WebEventBillboard(events: evs),
                       ],
                     ),
                   );
@@ -100,8 +66,7 @@ class WebDashboardPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Obx(() {
                   final list = c.featuredExhibitions.toList();
-                  if (list.isEmpty)
-                    return _emptyHint('لا توجد معارض حالياً');
+                  if (list.isEmpty) return _emptyHint('لا توجد معارض حالياً');
                   return Wrap(
                     spacing: 20,
                     runSpacing: 20,
@@ -116,18 +81,35 @@ class WebDashboardPage extends StatelessWidget {
                   );
                 }),
                 const SizedBox(height: 32),
-
+                // ── Events billboard ──────────────────────
+                Obx(() {
+                  final evs = events.exhibitionSponsorEvents.toList();
+                  if (evs.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 28, bottom: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _sectionTitleWithAction(
+                          'فعاليات المعارض الإعلانية',
+                          onAll: () => WebNavController.to.select(4),
+                        ),
+                        const SizedBox(height: 14),
+                        WebEventBillboard(events: evs),
+                      ],
+                    ),
+                  );
+                }),
                 // ── Upcoming sponsor events ───────────────
                 _sectionTitleWithAction(
-                  'فعالياتي القادمة',
+                  'فعاليات المعارض القادمة',
                   onAll: () => WebNavController.to.select(4),
                 ),
                 const SizedBox(height: 16),
                 Obx(() {
                   final list = events.myExhibitionSponsorEvents;
                   if (list.isEmpty)
-                    return _emptyHint(
-                        'لا توجد فعاليات في معارضك المشترك بها');
+                    return _emptyHint('لا توجد فعاليات في معارضك المشترك بها');
                   return Column(
                     children: list
                         .take(4)
@@ -153,8 +135,7 @@ class WebDashboardPage extends StatelessWidget {
           Expanded(child: _sectionTitle('ملخص الأداء')),
           Obx(
             () => Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: WebTheme.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -171,11 +152,9 @@ class WebDashboardPage extends StatelessWidget {
                 ),
                 style: TextStyle(color: WebTheme.text, fontSize: 13),
                 items: c.periods
-                    .map((p) =>
-                        DropdownMenuItem(value: p, child: Text(p)))
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (v) =>
-                    c.changePeriod(v ?? c.selectedPeriod.value),
+                onChanged: (v) => c.changePeriod(v ?? c.selectedPeriod.value),
               ),
             ),
           ),
@@ -225,8 +204,7 @@ class WebDashboardPage extends StatelessWidget {
               crossAxisSpacing: 18,
               mainAxisSpacing: 18,
               childAspectRatio: 2.4,
-              children:
-                  cards.map((d) => _StatCard(data: d)).toList(),
+              children: cards.map((d) => _StatCard(data: d)).toList(),
             );
           },
         );
@@ -247,8 +225,7 @@ class WebDashboardPage extends StatelessWidget {
         WebNavController.to.openScanner,
       ),
       (
-        _QA(
-            Icons.add_circle_outline, 'نشر فعالية', AppColors.darkSecondary),
+        _QA(Icons.add_circle_outline, 'نشر فعالية', AppColors.darkSecondary),
         WebNavController.to.openCreateEvent,
       ),
       (
@@ -256,8 +233,7 @@ class WebDashboardPage extends StatelessWidget {
         () => WebNavController.to.select(3),
       ),
       (
-        _QA(
-            Icons.workspace_premium_outlined, 'رعاياتي', AppColors.orange),
+        _QA(Icons.workspace_premium_outlined, 'رعاياتي', AppColors.orange),
         () => WebNavController.to.select(4),
       ),
       (
@@ -265,8 +241,7 @@ class WebDashboardPage extends StatelessWidget {
         () => WebNavController.to.select(5),
       ),
       (
-        _QA(Icons.message, 'التواصل',
-            const Color.fromARGB(255, 192, 31, 255)),
+        _QA(Icons.message, 'التواصل', const Color.fromARGB(255, 192, 31, 255)),
         () => WebNavController.to.select(6),
       ),
     ];
@@ -302,8 +277,7 @@ class WebDashboardPage extends StatelessWidget {
     ],
   );
 
-  Widget _sectionTitleWithAction(String t,
-          {required VoidCallback onAll}) =>
+  Widget _sectionTitleWithAction(String t, {required VoidCallback onAll}) =>
       Row(
         children: [
           Expanded(child: _sectionTitle(t)),
@@ -353,8 +327,7 @@ class _QuickActionBtn extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 150,
-        padding:
-            const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
         decoration: BoxDecoration(
           color: WebTheme.surface,
           borderRadius: BorderRadius.circular(16),
@@ -367,8 +340,7 @@ class _QuickActionBtn extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 gradient: qa.gradient ? AppColors.favoriteGradient : null,
-                color:
-                    qa.gradient ? null : qa.color.withOpacity(0.15),
+                color: qa.gradient ? null : qa.color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -443,23 +415,20 @@ class _SponsorEventTile extends StatelessWidget {
                     '${event.exhibitionName} • ${event.date} • ${event.place}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        TextStyle(color: AppColors.grey, fontSize: 12),
+                    style: TextStyle(color: AppColors.grey, fontSize: 12),
                   ),
                 ],
               ),
             ),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: AppColors.darkPrimary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 event.type,
-                style:
-                    TextStyle(color: AppColors.darkPink, fontSize: 11),
+                style: TextStyle(color: AppColors.darkPink, fontSize: 11),
               ),
             ),
           ],
@@ -518,16 +487,14 @@ class _StatCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   data.label,
-                  style:
-                      TextStyle(color: AppColors.grey, fontSize: 12),
+                  style: TextStyle(color: AppColors.grey, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.success.withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),

@@ -3,10 +3,6 @@ import 'package:get/get.dart';
 import '../../../controller/Home/exhibitions_controller.dart';
 import '../../../core/constant/appcolors.dart';
 
-// ════════════════════════════════════════════════════════════
-//  ExhibitionsFilterSheet  —  bottom sheet لفلترة المعارض
-//  حسب: الحالة + النوع (القطاع) + البلد
-// ════════════════════════════════════════════════════════════
 class ExhibitionsFilterSheet extends StatelessWidget {
   const ExhibitionsFilterSheet({super.key});
 

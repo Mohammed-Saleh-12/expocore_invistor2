@@ -6,9 +6,6 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/notification/notification_model.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebNotificationsPage  —  الإشعارات (صفحة كاملة)
-// ════════════════════════════════════════════════════════════
 class WebNotificationsPage extends StatelessWidget {
   const WebNotificationsPage({super.key});
 
@@ -28,7 +25,6 @@ class WebNotificationsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back + mark all
               Row(
                 children: [
                   GestureDetector(

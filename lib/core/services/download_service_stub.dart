@@ -5,11 +5,6 @@ import 'package:share_plus/share_plus.dart';
 import '../services/services.dart';
 import '../utils/safe_snackbar.dart';
 
-// ════════════════════════════════════════════════════════════
-//  DownloadService  —  mobile/stub implementation
-//  Downloads binary bytes from server with Dio, saves to the
-//  system temp directory, then shares via share_plus.
-// ════════════════════════════════════════════════════════════
 class DownloadService {
   DownloadService._();
 

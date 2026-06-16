@@ -3,11 +3,6 @@ import 'dart:html' as html;
 import 'package:get/get.dart';
 import '../services/services.dart';
 
-// ════════════════════════════════════════════════════════════
-//  DownloadService  —  web implementation
-//  Triggers a browser-native file download by clicking a
-//  hidden <a download> element pointing at the server URL.
-// ════════════════════════════════════════════════════════════
 class DownloadService {
   DownloadService._();
 
@@ -28,7 +23,6 @@ class DownloadService {
         () => anchor.remove(),
       );
     } catch (_) {
-      // Fallback: open in new tab
       try {
         html.window.open(url, '_blank');
       } catch (_) {}

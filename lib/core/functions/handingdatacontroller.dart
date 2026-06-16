@@ -1,8 +1,5 @@
 import '../class/StatusRequest.dart';
 
-// ════════════════════════════════════════════════════════════
-//  handlingData  —  maps API result map → StatusRequest
-// ════════════════════════════════════════════════════════════
 StatusRequest handlingData(dynamic response) {
   if (response == null) return StatusRequest.serverFailure;
   if (response is! Map)  return StatusRequest.serverFailure;

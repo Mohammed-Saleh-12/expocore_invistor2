@@ -166,9 +166,6 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════
-//  Active filters strip (removable chips)
-// ════════════════════════════════════════════════════════════
 class _ActiveFilters extends StatelessWidget {
   final ExhibitionsController controller;
   const _ActiveFilters({required this.controller});

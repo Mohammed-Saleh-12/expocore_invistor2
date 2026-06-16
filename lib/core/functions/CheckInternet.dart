@@ -1,11 +1,6 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-// ════════════════════════════════════════════════════════════
-//  checkInternet  —  two-layer check:
-//    1. connectivity_plus (fast — checks interface)
-//    2. DNS lookup        (true — confirms real access)
-// ════════════════════════════════════════════════════════════
 Future<bool> checkInternet() async {
   try {
     // Layer 1: quick interface check
