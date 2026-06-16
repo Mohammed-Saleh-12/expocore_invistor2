@@ -3,6 +3,7 @@ enum WebDetailType {
   createEvent, ticketRequests, sponsorship, scanner,
   notifications, sponsorEvent, map,
   boothManagement, bookingRequest, bookingDetail,
+  exhibitionEvents,
 }
 
 class WebDetailRequest {

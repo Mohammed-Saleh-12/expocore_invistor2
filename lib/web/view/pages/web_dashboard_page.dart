@@ -104,7 +104,7 @@ class WebDashboardPage extends StatelessWidget {
                 // ── Upcoming sponsor events ───────────────
                 _sectionTitleWithAction(
                   'فعاليات المعارض القادمة',
-                  onAll: () => WebNavController.to.select(4),
+                  onAll: () => WebNavController.to.openExhibitionEvents(),
                 ),
                 const SizedBox(height: 16),
                 Obx(() {
