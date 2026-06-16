@@ -69,7 +69,6 @@ class WebExhibitionsPage extends StatelessWidget {
                           width: 300,
                           child: WebExhibitionCard(
                             exhibition: e,
-                            onFavorite: () => c.toggleFavorite(e),
                           ),
                         )).toList(),
                       ),
