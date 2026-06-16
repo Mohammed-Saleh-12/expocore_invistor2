@@ -123,6 +123,8 @@ class WebDashboardPage extends StatelessWidget {
                               event: e,
                               onTap: () =>
                                   WebNavController.to.openSponsorEvent(e),
+                              onFavorite: () =>
+                                  events.toggleSponsorFavorite(e),
                             ),
                           ),
                         )

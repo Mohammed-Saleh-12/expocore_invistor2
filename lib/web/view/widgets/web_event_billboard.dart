@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
@@ -186,6 +187,35 @@ class _EventSlide extends StatelessWidget {
                         stops: [0.2, 1.0],
                       ),
                     ),
+                  ),
+                  // ── Favorite button (top-right, below badge) ─
+                  Positioned(
+                    top: 54,
+                    right: 16,
+                    child: Obx(() {
+                      final eventsCtrl = Get.find<EventsController>();
+                      eventsCtrl.exhibitionSponsorEvents.length;
+                      return GestureDetector(
+                        onTap: () => eventsCtrl.toggleSponsorFavorite(event),
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.50),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            event.isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: event.isFavorite
+                                ? AppColors.error
+                                : Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      );
+                    }),
                   ),
                   // ── Type badge (top-right) ────────────────
                   Positioned(
