@@ -2,12 +2,6 @@
 
 All requests are made to:
 
-| Environment | Base URL |
-|---|---|
-| **Dev** | `https://api-dev.expocore.app/api/v1` |
-| **Staging** | `https://api-staging.expocore.app/api/v1` |
-| **Production** | `https://api.expocore.app/api/v1` |
-
 ### Authentication Header
 Every request (except login / register / forgot-password / reset-password) must include:
 ```
@@ -564,12 +558,3 @@ PATCH /investor/notifications/read-all
 Body: empty `{}`
 
 ---
-
-## Notes for the Backend
-
-- All JSON responses should follow a consistent envelope:
-  - **Success:** `{ "status": true, "data": <payload> }`
-  - **Error:** `{ "status": false, "message": "<human-readable error in Arabic or English>" }`
-- A **401** response will automatically log the user out on the mobile app. Return 401 only for expired/invalid tokens.
-- Timeouts are set to **30 seconds** for all requests.
-- File download endpoints (§15.2) are fetched with the same `Authorization: Bearer <token>` header and return raw bytes — no JSON envelope needed.
