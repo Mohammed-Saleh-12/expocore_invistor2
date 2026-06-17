@@ -68,9 +68,9 @@ class WebDetailView extends StatelessWidget {
       case WebDetailType.map:
         return const WebMapPage();
       case WebDetailType.boothManagement:
-        return WebBoothManagementPage(booth: request.data as BoothModel);
+        return const WebBoothManagementPage();
       case WebDetailType.bookingRequest:
-        return WebBookingRequestPage(booth: request.data as BoothModel);
+        return const WebBookingRequestPage();
       case WebDetailType.bookingDetail:
         return WebBookingDetailPage(booth: request.data as BoothModel);
       case WebDetailType.exhibitionEvents:

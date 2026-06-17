@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/web_section.dart';
 import '../models/web_detail_request.dart';
+import '../../controller/Home/booth_management_controller.dart';
+import '../../controller/Home/booking_controller.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/event_model.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
@@ -42,11 +44,21 @@ class WebNavController extends GetxController {
   void openBooth(BoothModel b, {ReportModel? report}) =>
       detail.value = WebDetailRequest(WebDetailType.booth, data: b, extra: report);
 
-  void openBoothManagement(BoothModel b) =>
-      detail.value = WebDetailRequest(WebDetailType.boothManagement, data: b);
+  void openBoothManagement(BoothModel b) {
+    final c = Get.isRegistered<BoothManagementController>()
+        ? Get.find<BoothManagementController>()
+        : Get.put(BoothManagementController());
+    c.webInit(b);
+    detail.value = WebDetailRequest(WebDetailType.boothManagement, data: b);
+  }
 
-  void openBookingRequest(BoothModel b) =>
-      detail.value = WebDetailRequest(WebDetailType.bookingRequest, data: b);
+  void openBookingRequest(BoothModel b) {
+    final c = Get.isRegistered<BookingController>()
+        ? Get.find<BookingController>()
+        : Get.put(BookingController());
+    c.resetForWeb(b, closeDetail);
+    detail.value = WebDetailRequest(WebDetailType.bookingRequest, data: b);
+  }
 
   void openBookingDetail(BoothModel b) =>
       detail.value = WebDetailRequest(WebDetailType.bookingDetail, data: b);

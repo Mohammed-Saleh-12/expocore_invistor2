@@ -10,12 +10,14 @@ class BookingController extends GetxController {
   final booth           = Rx<BoothModel?>(null);
   final notesCtrl       = TextEditingController();
   final duration        = 1.obs;
-  final status        = StatusRequest.none.obs;
-  final isSubmitting  = false.obs;
+  final status          = StatusRequest.none.obs;
+  final isSubmitting    = false.obs;
   final screenService   = false.obs;
   final setupService    = false.obs;
   final securitySvc     = false.obs;
   final cleaningService = false.obs;
+
+  VoidCallback? _onWebSuccess;
 
   double get total {
     final base   = (booth.value?.price ?? 0) * duration.value;
@@ -27,6 +29,18 @@ class BookingController extends GetxController {
   }
 
   void setBooth(BoothModel b) => booth.value = b;
+
+  void resetForWeb(BoothModel b, VoidCallback onSuccess) {
+    booth.value           = b;
+    duration.value        = 1;
+    screenService.value   = false;
+    setupService.value    = false;
+    securitySvc.value     = false;
+    cleaningService.value = false;
+    status.value          = StatusRequest.none;
+    notesCtrl.clear();
+    _onWebSuccess         = onSuccess;
+  }
 
   Future<void> submitBooking() async {
     final b = booth.value;
@@ -48,6 +62,10 @@ class BookingController extends GetxController {
     if (result['status'] == true) {
       status.value = StatusRequest.success;
       if (Get.key?.currentState?.canPop() ?? false) Get.back();
+      Future.delayed(const Duration(milliseconds: 400), () {
+        _onWebSuccess?.call();
+        _onWebSuccess = null;
+      });
       Get.snackbar('booking_submitted_title'.tr, 'booking_submitted_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } else {
