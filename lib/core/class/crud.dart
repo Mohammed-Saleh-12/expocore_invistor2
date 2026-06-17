@@ -1,31 +1,32 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
-import 'package:dio/dio.dart' as dio;
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import '../constant/app_env.dart';
 import '../services/services.dart';
 
-
 class Crud {
-  late final dio.Dio _dio;
+  // ── Build headers with token ───────────────────────────────
+  Map<String, String> _headers({bool multipart = false}) {
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      if (!multipart) 'Content-Type': 'application/json',
+    };
+    try {
+      final token = Get.find<Services>().token;
+      if (token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    } catch (_) {}
+    return headers;
+  }
 
-  Crud() {
-    _dio = dio.Dio(
-      dio.BaseOptions(
-        baseUrl:        AppEnv.baseUrl,
-        connectTimeout: AppEnv.connectTimeout,
-        receiveTimeout: AppEnv.receiveTimeout,
-        sendTimeout:    AppEnv.sendTimeout,
-        headers: {
-          'Accept':       'application/json',
-          'Content-Type': 'application/json',
-        },
-      ),
+  Uri _uri(String url, [Map<String, dynamic>? params]) {
+    final uri = Uri.parse(url);
+    if (params == null || params.isEmpty) return uri;
+    return uri.replace(
+      queryParameters: params.map((k, v) => MapEntry(k, v.toString())),
     );
-    _dio.interceptors.addAll([
-      _AuthInterceptor(),
-      if (AppEnv.logEnabled) _LogInterceptor(),
-      _ErrorInterceptor(),
-    ]);
   }
 
   // ── GET ───────────────────────────────────────────────────
@@ -34,10 +35,11 @@ class Crud {
     Map<String, dynamic>? params,
   }) async {
     try {
-      final res = await _dio.get(url, queryParameters: params);
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      if (AppEnv.logEnabled) dev.log('→ GET $url', name: 'API');
+      final res = await http
+          .get(_uri(url, params), headers: _headers())
+          .timeout(AppEnv.receiveTimeout);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
@@ -49,10 +51,11 @@ class Crud {
     Map<String, dynamic> data,
   ) async {
     try {
-      final res = await _dio.post(url, data: data);
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      if (AppEnv.logEnabled) dev.log('→ POST $url', name: 'API');
+      final res = await http
+          .post(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .timeout(AppEnv.sendTimeout);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
@@ -64,10 +67,11 @@ class Crud {
     Map<String, dynamic> data,
   ) async {
     try {
-      final res = await _dio.put(url, data: data);
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      if (AppEnv.logEnabled) dev.log('→ PUT $url', name: 'API');
+      final res = await http
+          .put(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .timeout(AppEnv.sendTimeout);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
@@ -79,10 +83,11 @@ class Crud {
     Map<String, dynamic> data,
   ) async {
     try {
-      final res = await _dio.patch(url, data: data);
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      if (AppEnv.logEnabled) dev.log('→ PATCH $url', name: 'API');
+      final res = await http
+          .patch(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .timeout(AppEnv.sendTimeout);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
@@ -91,10 +96,11 @@ class Crud {
   // ── DELETE ────────────────────────────────────────────────
   Future<Map<String, dynamic>> deleteData(String url) async {
     try {
-      final res = await _dio.delete(url);
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      if (AppEnv.logEnabled) dev.log('→ DELETE $url', name: 'API');
+      final res = await http
+          .delete(_uri(url), headers: _headers())
+          .timeout(AppEnv.receiveTimeout);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
@@ -107,76 +113,65 @@ class Crud {
     List<MapEntry<String, String>> filePaths = const [],
   }) async {
     try {
-      final form = dio.FormData.fromMap(fields);
+      if (AppEnv.logEnabled) dev.log('→ UPLOAD $url', name: 'API');
+      final req = http.MultipartRequest('POST', _uri(url))
+        ..headers.addAll(_headers(multipart: true));
+      fields.forEach((k, v) => req.fields[k] = v.toString());
       for (final entry in filePaths) {
-        form.files.add(MapEntry(
-          entry.key,
-          await dio.MultipartFile.fromFile(entry.value),
-        ));
+        req.files.add(
+          await http.MultipartFile.fromPath(entry.key, entry.value),
+        );
       }
-      final res = await _dio.post(
-        url,
-        data: form,
-        options: dio.Options(contentType: 'multipart/form-data'),
-      );
-      return _ok(res.data);
-    } on dio.DioException catch (e) {
-      return _err(e);
+      final streamed = await req.send().timeout(AppEnv.sendTimeout);
+      final res = await http.Response.fromStream(streamed);
+      return _handle(res);
     } catch (e) {
       return _unexpected(e);
     }
   }
 
-  // ── Response helpers ──────────────────────────────────────
-  Map<String, dynamic> _ok(dynamic data) =>
-      {'status': true, 'data': data, 'code': 200};
-
-  Map<String, dynamic> _err(dio.DioException e) {
-    final code = e.response?.statusCode ?? 0;
-    String msg  = 'حدث خطأ في الاتصال';
-    try {
-      final d = e.response?.data;
-      if (d is Map) msg = d['message']?.toString() ?? msg;
-    } catch (_) {}
-    return {'status': false, 'code': code, 'message': msg};
-  }
-
-  Map<String, dynamic> _unexpected(Object e) =>
-      {'status': false, 'code': 0, 'message': e.toString()};
-}
-
-// ════════════════════════════════════════════════════════════
-//  _AuthInterceptor  —  injects Bearer token on every request
-//                       auto-logout on 401
-// ════════════════════════════════════════════════════════════
-class _AuthInterceptor extends dio.Interceptor {
-  @override
-  void onRequest(
-      dio.RequestOptions options, dio.RequestInterceptorHandler handler) {
-    try {
-      final token = Get.find<Services>().token;
-      if (token.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $token';
-      }
-    } catch (_) {}
-    handler.next(options);
-  }
-
-  @override
-  void onError(dio.DioException err, dio.ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401) {
+  // ── Response handler ──────────────────────────────────────
+  Map<String, dynamic> _handle(http.Response res) {
+    if (AppEnv.logEnabled) {
+      dev.log('← ${res.statusCode} ${res.request?.url}', name: 'API');
+    }
+    if (res.statusCode == 401) {
       _handleUnauthorized();
     }
-    handler.next(err);
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      dynamic body;
+      try {
+        body = jsonDecode(res.body);
+      } catch (_) {
+        body = res.body;
+      }
+      return {'status': true, 'data': body, 'code': res.statusCode};
+    }
+    String msg = 'حدث خطأ في الاتصال';
+    try {
+      final d = jsonDecode(res.body);
+      if (d is Map) msg = d['message']?.toString() ?? msg;
+    } catch (_) {}
+    return {'status': false, 'code': res.statusCode, 'message': msg};
+  }
+
+  Map<String, dynamic> _unexpected(Object e) {
+    String msg = e.toString();
+    if (msg.contains('TimeoutException') || msg.contains('timeout')) {
+      msg = 'انتهت مهلة الاتصال بالخادم';
+    } else if (msg.contains('SocketException') ||
+        msg.contains('Connection refused') ||
+        msg.contains('Failed host lookup')) {
+      msg = 'تعذّر الاتصال — تحقق من الإنترنت';
+    }
+    return {'status': false, 'code': 0, 'message': msg};
   }
 
   void _handleUnauthorized() {
     try {
       Get.find<Services>().clearSession();
     } catch (_) {}
-    // على الويب تتولى WebAuthController إدارة حالة الجلسة — لا نستخدم مسارات GetX
     if (GetPlatform.isWeb) return;
-    // إعادة توجيه للوجين — يُنفَّذ مرة واحدة فقط
     if (Get.currentRoute != '/login') {
       Get.offAllNamed('/login');
       Get.snackbar(
@@ -185,73 +180,5 @@ class _AuthInterceptor extends dio.Interceptor {
         snackPosition: SnackPosition.BOTTOM,
       );
     }
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-//  _LogInterceptor  —  dev-only request/response logger
-// ════════════════════════════════════════════════════════════
-class _LogInterceptor extends dio.Interceptor {
-  @override
-  void onRequest(
-      dio.RequestOptions options, dio.RequestInterceptorHandler handler) {
-    dev.log(
-      '→ ${options.method} ${options.path}',
-      name: 'API',
-    );
-    if (options.data != null) {
-      dev.log('  body: ${options.data}', name: 'API');
-    }
-    handler.next(options);
-  }
-
-  @override
-  void onResponse(
-      dio.Response response, dio.ResponseInterceptorHandler handler) {
-    dev.log(
-      '← ${response.statusCode} ${response.requestOptions.path}',
-      name: 'API',
-    );
-    handler.next(response);
-  }
-
-  @override
-  void onError(dio.DioException err, dio.ErrorInterceptorHandler handler) {
-    dev.log(
-      '✗ ${err.response?.statusCode ?? "?"} ${err.requestOptions.path} — ${err.message}',
-      name: 'API',
-      error: err,
-    );
-    handler.next(err);
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-//  _ErrorInterceptor  —  maps DioException types to readable msgs
-// ════════════════════════════════════════════════════════════
-class _ErrorInterceptor extends dio.Interceptor {
-  static const _msgs = {
-    dio.DioExceptionType.connectionTimeout: 'انتهت مهلة الاتصال بالخادم',
-    dio.DioExceptionType.receiveTimeout:    'استغرق الخادم وقتاً طويلاً للرد',
-    dio.DioExceptionType.sendTimeout:       'فشل إرسال البيانات',
-    dio.DioExceptionType.connectionError:   'تعذّر الاتصال — تحقق من الإنترنت',
-    dio.DioExceptionType.cancel:            'تم إلغاء الطلب',
-  };
-
-  @override
-  void onError(dio.DioException err, dio.ErrorInterceptorHandler handler) {
-    final mapped = _msgs[err.type];
-    if (mapped != null && err.response == null) {
-      handler.reject(
-        dio.DioException(
-          requestOptions: err.requestOptions,
-          type:           err.type,
-          error:          mapped,
-          response:       err.response,
-        ),
-      );
-      return;
-    }
-    handler.next(err);
   }
 }
