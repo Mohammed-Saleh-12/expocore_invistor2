@@ -49,12 +49,12 @@ class WebNotificationsPage extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.darkPrimary.withOpacity(0.15),
+                        color: WebTheme.primary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+                        border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                       ),
                       child: Text('تعليم الكل كمقروء',
-                          style: TextStyle(color: AppColors.darkPink, fontSize: 13, fontWeight: FontWeight.w600)),
+                          style: TextStyle(color: WebTheme.pink, fontSize: 13, fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ],
@@ -70,7 +70,7 @@ class WebNotificationsPage extends StatelessWidget {
               Obx(() {
                 final list = c.notifications.toList();
                 if (c.isLoading.value) {
-                  return Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: AppColors.darkPrimary)));
+                  return Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: WebTheme.primary)));
                 }
                 if (list.isEmpty) {
                   return Container(
@@ -117,17 +117,17 @@ class _NotifCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: n.isRead ? WebTheme.surface : AppColors.darkPrimary.withOpacity(0.12),
+          color: n.isRead ? WebTheme.surface : WebTheme.primary.withOpacity(0.12),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: n.isRead ? WebTheme.border : AppColors.darkPrimary.withOpacity(0.3)),
+          border: Border.all(color: n.isRead ? WebTheme.border : WebTheme.primary.withOpacity(0.3)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 46, height: 46,
-              decoration: BoxDecoration(color: AppColors.darkPrimary.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
-              child: Icon(_icon, color: AppColors.darkPrimary, size: 22),
+              decoration: BoxDecoration(color: WebTheme.primary.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+              child: Icon(_icon, color: WebTheme.primary, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -145,7 +145,7 @@ class _NotifCard extends StatelessWidget {
             if (!n.isRead)
               Container(
                 width: 10, height: 10, margin: const EdgeInsets.only(top: 4),
-                decoration: BoxDecoration(color: AppColors.darkSecondary, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: WebTheme.secondary, shape: BoxShape.circle),
               ),
           ],
         ),

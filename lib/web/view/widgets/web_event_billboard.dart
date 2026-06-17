@@ -153,7 +153,7 @@ class _EventSlide extends StatelessWidget {
               borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.darkBg,
+                  color: WebTheme.bg,
                   blurRadius: hover.value ? 28 : 16,
                   offset: const Offset(0, 10),
                 ),
@@ -169,7 +169,7 @@ class _EventSlide extends StatelessWidget {
                     event.exhibitionImageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
-                      color: AppColors.darkSurface,
+                      color: WebTheme.surfaceAlt,
                       child: const Icon(
                         Icons.image,
                         size: 72,
@@ -229,8 +229,8 @@ class _EventSlide extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
-                            AppColors.darkPrimary,
-                            AppColors.darkSecondary,
+                            WebTheme.primary,
+                            WebTheme.secondary,
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -255,7 +255,7 @@ class _EventSlide extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.darkPrimary.withOpacity(0.85),
+                        color: WebTheme.primary.withOpacity(0.85),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(

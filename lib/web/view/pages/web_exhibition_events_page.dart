@@ -35,7 +35,7 @@ class WebExhibitionEventsPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(40),
                     child: CircularProgressIndicator(
-                        color: AppColors.darkPrimary),
+                        color: WebTheme.primary),
                   ),
                 );
               }

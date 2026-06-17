@@ -68,8 +68,8 @@ class _LoginBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(top: -80, left: -60, child: _blob(300, AppColors.darkPrimary.withOpacity(0.25))),
-          Positioned(bottom: -60, right: -40, child: _blob(240, AppColors.darkSecondary.withOpacity(0.2))),
+          Positioned(top: -80, left: -60, child: _blob(300, WebTheme.primary.withOpacity(0.25))),
+          Positioned(bottom: -60, right: -40, child: _blob(240, WebTheme.secondary.withOpacity(0.2))),
           Padding(
             padding: const EdgeInsets.all(60),
             child: Column(
@@ -81,9 +81,9 @@ class _LoginBrand extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.darkCard,
+                        color: WebTheme.surface,
                         borderRadius: BorderRadius.circular(22),
-                        boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 30)],
+                        boxShadow: [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 30)],
                       ),
                       child: const ExpocoreLogo(size: 56),
                     ),
@@ -92,8 +92,8 @@ class _LoginBrand extends StatelessWidget {
                       text: const TextSpan(
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
                         children: [
-                          TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
-                          TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
+                          TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
+                          TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),
                         ],
                       ),
                     ),
@@ -195,9 +195,9 @@ class _LoginForm extends StatelessWidget {
               onTap: WebAuthController.to.goToForgotPassword,
               child: Text(
                 'login_forgot'.tr,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.darkPrimary,
+                  color: WebTheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -219,10 +219,10 @@ class _LoginForm extends StatelessWidget {
           Center(
             child: TextButton.icon(
               onPressed: c.fillDemo,
-              icon: const Icon(Icons.play_circle_outline_rounded, color: AppColors.darkPrimary, size: 18),
+              icon: Icon(Icons.play_circle_outline_rounded, color: WebTheme.primary, size: 18),
               label: Text(
                 'login_demo'.tr,
-                style: const TextStyle(color: AppColors.darkPink, fontSize: 13, fontWeight: FontWeight.w600),
+                style: TextStyle(color: WebTheme.pink, fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -240,9 +240,9 @@ class _LoginForm extends StatelessWidget {
                   onTap: WebAuthController.to.goToRegister,
                   child: Text(
                     'register_title'.tr,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.darkPrimary,
+                      color: WebTheme.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -284,7 +284,7 @@ class _LoginForm extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+            borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
           ),
         ),
       );
@@ -306,7 +306,7 @@ class _GradientButton extends StatelessWidget {
           gradient: AppColors.favoriteGradient,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
           ],
         ),
         alignment: Alignment.center,

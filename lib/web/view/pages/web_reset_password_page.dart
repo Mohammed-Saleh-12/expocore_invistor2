@@ -74,8 +74,8 @@ class _ResetBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(top: -80, left: -60, child: _blob(300, AppColors.darkPrimary.withOpacity(0.25))),
-          Positioned(bottom: -60, right: -40, child: _blob(240, AppColors.darkSecondary.withOpacity(0.2))),
+          Positioned(top: -80, left: -60, child: _blob(300, WebTheme.primary.withOpacity(0.25))),
+          Positioned(bottom: -60, right: -40, child: _blob(240, WebTheme.secondary.withOpacity(0.2))),
           Padding(
             padding: const EdgeInsets.all(60),
             child: Column(
@@ -87,9 +87,9 @@ class _ResetBrand extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.darkCard,
+                        color: WebTheme.surface,
                         borderRadius: BorderRadius.circular(22),
-                        boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 30)],
+                        boxShadow: [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 30)],
                       ),
                       child: const ExpocoreLogo(size: 56),
                     ),
@@ -98,8 +98,8 @@ class _ResetBrand extends StatelessWidget {
                       text: const TextSpan(
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
                         children: [
-                          TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
-                          TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
+                          TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
+                          TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),
                         ],
                       ),
                     ),
@@ -165,7 +165,7 @@ class _ResetForm extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: AppColors.favoriteGradient,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 20)],
+              boxShadow: [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 20)],
             ),
             child: const Icon(Icons.lock_open_rounded, color: Colors.white, size: 28),
           ),
@@ -262,13 +262,13 @@ class _ResetForm extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.arrow_back_rounded, color: AppColors.darkPrimary, size: 16),
+                  Icon(Icons.arrow_back_rounded, color: WebTheme.primary, size: 16),
                   const SizedBox(width: 6),
                   Text(
                     'forgot_back_login'.tr,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.darkPrimary,
+                      color: WebTheme.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -322,7 +322,7 @@ class _ResetForm extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+            borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -400,7 +400,7 @@ class _GradientButton extends StatelessWidget {
           gradient: AppColors.favoriteGradient,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
           ],
         ),
         alignment: Alignment.center,

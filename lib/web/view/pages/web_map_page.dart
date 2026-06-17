@@ -22,7 +22,7 @@ class WebMapPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(color: AppColors.darkPrimary),
+              const CircularProgressIndicator(color: WebTheme.primary),
               const SizedBox(height: 16),
               Text('map_loading'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 15)),
             ],
@@ -112,11 +112,11 @@ class _WebMapHeader extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.darkPrimary.withOpacity(0.12),
+                      color: WebTheme.primary.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+                      border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                     ),
-                    child: const Icon(Icons.center_focus_strong_rounded, color: AppColors.darkPrimary, size: 18),
+                    child: Icon(Icons.center_focus_strong_rounded, color: WebTheme.primary, size: 18),
                   ),
                 ),
               ),
@@ -139,7 +139,7 @@ class _WebLegendRow extends StatelessWidget {
         const SizedBox(width: 20),
         _item(const Color(0xFF3A3650), 'محجوز'),
         const SizedBox(width: 20),
-        _item(AppColors.darkPrimary, 'مختار'),
+        _item(WebTheme.primary, 'مختار'),
         const SizedBox(width: 20),
         _item(const Color(0xFF4CAF50), 'مدخل'),
         const Spacer(),
@@ -225,7 +225,7 @@ class _WebBoothCompanyDialog extends StatelessWidget {
     final booth = ctrl.selectedBooth.value;
     if (booth == null) return const SizedBox.shrink();
     final company = ctrl.companyForBooth(booth);
-    final accentColor = company?.color ?? AppColors.darkPrimary;
+    final accentColor = company?.color ?? WebTheme.primary;
 
     double left = tapPosition.dx - _w / 2;
     double top = tapPosition.dy - _h - 18;
@@ -389,8 +389,8 @@ class _WebBoothInfoPanel extends StatelessWidget {
         children: [
           Container(
             width: 48, height: 48,
-            decoration: BoxDecoration(color: (hall?.color ?? AppColors.darkPrimary).withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
-            child: Icon(Icons.store_mall_directory_rounded, color: hall?.color ?? AppColors.darkPrimary, size: 24),
+            decoration: BoxDecoration(color: (hall?.color ?? WebTheme.primary).withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+            child: Icon(Icons.store_mall_directory_rounded, color: hall?.color ?? WebTheme.primary, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(

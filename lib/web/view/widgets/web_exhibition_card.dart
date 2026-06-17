@@ -36,9 +36,9 @@ class WebExhibitionCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: WebTheme.surface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: hover.value ? AppColors.darkPrimary.withOpacity(0.5) : WebTheme.border),
+                border: Border.all(color: hover.value ? WebTheme.primary.withOpacity(0.5) : WebTheme.border),
                 boxShadow: hover.value
-                    ? [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.3), blurRadius: 24, offset: const Offset(0, 12))]
+                    ? [BoxShadow(color: WebTheme.primary.withOpacity(0.3), blurRadius: 24, offset: const Offset(0, 12))]
                     : [BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12, offset: const Offset(0, 6))],
               ),
               child: Column(
@@ -49,7 +49,7 @@ class WebExhibitionCard extends StatelessWidget {
                       ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                         child: Image.network(e.imageUrl, height: 170, width: double.infinity, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(height: 170, color: AppColors.darkSurface, child: const Icon(Icons.image, size: 48, color: AppColors.grey))),
+                            errorBuilder: (_, __, ___) => Container(height: 170, color: WebTheme.surfaceAlt, child: const Icon(Icons.image, size: 48, color: AppColors.grey))),
                       ),
                       Positioned(
                         top: 12, right: 12,
@@ -99,8 +99,8 @@ class WebExhibitionCard extends StatelessWidget {
                           spacing: 6, runSpacing: 6,
                           children: e.sectors.take(3).map((s) => Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: AppColors.darkPrimary.withOpacity(0.15), borderRadius: BorderRadius.circular(6)),
-                            child: Text(s, style: const TextStyle(color: AppColors.darkPink, fontSize: 10)),
+                            decoration: BoxDecoration(color: WebTheme.primary.withOpacity(0.15), borderRadius: BorderRadius.circular(6)),
+                            child: Text(s, style: TextStyle(color: WebTheme.pink, fontSize: 10)),
                           )).toList(),
                         ),
                         const SizedBox(height: 12),
@@ -108,12 +108,12 @@ class WebExhibitionCard extends StatelessWidget {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(color: AppColors.darkSecondary.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+                              decoration: BoxDecoration(color: WebTheme.secondary.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
                               child: Text('${e.availableBooths} جناح متاح',
-                                  style: const TextStyle(color: AppColors.darkSecondary, fontSize: 11, fontWeight: FontWeight.w600)),
+                                  style: TextStyle(color: WebTheme.secondary, fontSize: 11, fontWeight: FontWeight.w600)),
                             ),
                             const Spacer(),
-                            Icon(Icons.arrow_forward_rounded, color: hover.value ? AppColors.darkPrimary : AppColors.grey, size: 20),
+                            Icon(Icons.arrow_forward_rounded, color: hover.value ? WebTheme.primary : AppColors.grey, size: 20),
                           ],
                         ),
                       ],

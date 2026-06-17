@@ -161,7 +161,7 @@ class WebDashboardPage extends StatelessWidget {
                 dropdownColor: WebTheme.surfaceAlt,
                 icon: Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.darkPrimary,
+                  color: WebTheme.primary,
                   size: 20,
                 ),
                 style: TextStyle(color: WebTheme.text, fontSize: 13),
@@ -181,28 +181,28 @@ class WebDashboardPage extends StatelessWidget {
             'إجمالي الحجوزات',
             '${c.totalBookings.value}',
             Icons.bookmark_rounded,
-            AppColors.darkPrimary,
+            WebTheme.primary,
             '+8.5%',
           ),
           _StatData(
             'الأجنحة النشطة',
             '${c.activeBooths.value}',
             Icons.grid_view_rounded,
-            AppColors.darkSecondary,
+            WebTheme.secondary,
             '+12%',
           ),
           _StatData(
             'الفعاليات المنشورة',
             '${c.publishedEvents.value}',
             Icons.event_rounded,
-            AppColors.darkAccent,
+            WebTheme.accent,
             '+22%',
           ),
           _StatData(
             'إجمالي التفاعل',
             c.formatEngagement(c.totalEngagement.value),
             Icons.trending_up_rounded,
-            AppColors.darkPink,
+            WebTheme.pink,
             '+15.7%',
           ),
         ];
@@ -233,17 +233,17 @@ class WebDashboardPage extends StatelessWidget {
         _QA(
           Icons.qr_code_scanner_rounded,
           'مسح QR',
-          AppColors.darkAccent,
+          WebTheme.accent,
           gradient: false,
         ),
         WebNavController.to.openScanner,
       ),
       (
-        _QA(Icons.add_circle_outline, 'نشر فعالية', AppColors.darkSecondary),
+        _QA(Icons.add_circle_outline, 'نشر فعالية', WebTheme.secondary),
         WebNavController.to.openCreateEvent,
       ),
       (
-        _QA(Icons.event_note, 'فعالياتي', AppColors.darkPrimary),
+        _QA(Icons.event_note, 'فعالياتي', WebTheme.primary),
         () => WebNavController.to.select(3),
       ),
       (
@@ -300,7 +300,7 @@ class WebDashboardPage extends StatelessWidget {
             child: Text(
               'عرض الكل',
               style: TextStyle(
-                color: AppColors.darkPrimary,
+                color: WebTheme.primary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

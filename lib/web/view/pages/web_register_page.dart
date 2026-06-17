@@ -67,8 +67,8 @@ class _RegisterBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(top: -80, left: -60, child: _blob(300, AppColors.darkPrimary.withOpacity(0.25))),
-          Positioned(bottom: -60, right: -40, child: _blob(240, AppColors.darkSecondary.withOpacity(0.2))),
+          Positioned(top: -80, left: -60, child: _blob(300, WebTheme.primary.withOpacity(0.25))),
+          Positioned(bottom: -60, right: -40, child: _blob(240, WebTheme.secondary.withOpacity(0.2))),
           Padding(
             padding: const EdgeInsets.all(60),
             child: Column(
@@ -80,9 +80,9 @@ class _RegisterBrand extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.darkCard,
+                        color: WebTheme.surface,
                         borderRadius: BorderRadius.circular(22),
-                        boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 30)],
+                        boxShadow: [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 30)],
                       ),
                       child: const ExpocoreLogo(size: 56),
                     ),
@@ -91,8 +91,8 @@ class _RegisterBrand extends StatelessWidget {
                       text: const TextSpan(
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
                         children: [
-                          TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
-                          TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
+                          TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
+                          TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),
                         ],
                       ),
                     ),
@@ -253,9 +253,9 @@ class _RegisterForm extends StatelessWidget {
                     Text('أوافق على ', style: TextStyle(fontSize: 13, color: AppColors.grey)),
                     Text(
                       'register_terms'.tr,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.darkPrimary,
+                        color: WebTheme.primary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -276,7 +276,7 @@ class _RegisterForm extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.darkPrimary.withOpacity(0.4),
+                          color: WebTheme.primary.withOpacity(0.4),
                           blurRadius: 16,
                           offset: const Offset(0, 6),
                         ),
@@ -308,9 +308,9 @@ class _RegisterForm extends StatelessWidget {
                   onTap: WebAuthController.to.goToLogin,
                   child: Text(
                     'login_title'.tr,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.darkPrimary,
+                      color: WebTheme.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -357,7 +357,7 @@ class _RegisterForm extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+          borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       );

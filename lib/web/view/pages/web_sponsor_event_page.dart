@@ -97,7 +97,7 @@ class WebSponsorEventPage extends StatelessWidget {
                                         ),
                                       ),
                                       Text('${opt.price.toInt()} ر.س',
-                                          style: TextStyle(color: sel ? WebTheme.text : AppColors.darkAccent, fontSize: 16, fontWeight: FontWeight.w800)),
+                                          style: TextStyle(color: sel ? WebTheme.text : WebTheme.accent, fontSize: 16, fontWeight: FontWeight.w800)),
                                     ],
                                   ),
                                 ),
@@ -173,7 +173,7 @@ class WebSponsorEventPage extends StatelessWidget {
   Widget _row(IconData icon, String label, String value) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
         child: Row(children: [
-          Icon(icon, size: 19, color: AppColors.darkPrimary),
+          Icon(icon, size: 19, color: WebTheme.primary),
           const SizedBox(width: 12),
           Text('$label: ', style: TextStyle(color: AppColors.grey, fontSize: 14)),
           Expanded(child: Text(value, style: TextStyle(color: WebTheme.text, fontSize: 14, fontWeight: FontWeight.w600))),

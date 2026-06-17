@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../core/constant/appcolors.dart';
 import '../../core/services/services.dart';
 
 class WebTheme {
@@ -24,6 +25,12 @@ class WebTheme {
   static Color get text       => isDark.value ? Colors.white : const Color(0xFF1D1A39);
   static Color get text70     => text.withOpacity(0.7);
   static Color get border     => isDark.value ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.08);
+
+  // ── ألوان العلامة التجارية ────────────────────────────────
+  static Color get primary    => isDark.value ? AppColors.darkPrimary   : AppColors.lightPrimary;
+  static Color get secondary  => isDark.value ? AppColors.darkSecondary : AppColors.lightSecondary;
+  static Color get accent     => isDark.value ? AppColors.darkAccent    : AppColors.lightAccent;
+  static Color get pink       => isDark.value ? AppColors.darkPink      : AppColors.lightSecondary;
 
   /// لون ثابت للنص فوق التدرجات (أبيض دائماً)
   static const Color onGradient = Colors.white;

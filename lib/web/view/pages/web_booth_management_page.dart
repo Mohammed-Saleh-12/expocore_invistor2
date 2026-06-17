@@ -207,7 +207,7 @@ class _BoothHeaderCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     height: 180,
-                    color: AppColors.darkSurface,
+                    color: WebTheme.surfaceAlt,
                     child: const Icon(
                       Icons.store,
                       size: 48,
@@ -285,7 +285,7 @@ class _BoothHeaderCard extends StatelessWidget {
 
   Widget _stat(IconData icon, String val, String label) => Column(
     children: [
-      Icon(icon, size: 16, color: AppColors.darkPrimary),
+      Icon(icon, size: 16, color: WebTheme.primary),
       const SizedBox(height: 4),
       Text(
         val,
@@ -370,7 +370,7 @@ class _CompanyFormCard extends StatelessWidget {
     style: TextStyle(fontSize: 13, color: WebTheme.text),
     decoration: InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, size: 18, color: AppColors.darkPrimary),
+      prefixIcon: Icon(icon, size: 18, color: WebTheme.primary),
       filled: true,
       fillColor: WebTheme.surfaceAlt,
       labelStyle: const TextStyle(fontSize: 13, color: AppColors.grey),
@@ -384,7 +384,7 @@ class _CompanyFormCard extends StatelessWidget {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+        borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     ),
@@ -422,12 +422,12 @@ class _SocialLinksCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isAdded
-                          ? AppColors.darkPrimary.withOpacity(0.15)
+                          ? WebTheme.primary.withOpacity(0.15)
                           : WebTheme.surfaceAlt,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isAdded
-                            ? AppColors.darkPrimary
+                            ? WebTheme.primary
                             : AppColors.grey.withOpacity(0.3),
                       ),
                     ),
@@ -438,7 +438,7 @@ class _SocialLinksCard extends StatelessWidget {
                           isAdded ? Icons.check_rounded : Icons.add_rounded,
                           size: 13,
                           color: isAdded
-                              ? AppColors.darkPrimary
+                              ? WebTheme.primary
                               : AppColors.grey,
                         ),
                         const SizedBox(width: 5),
@@ -447,7 +447,7 @@ class _SocialLinksCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: isAdded
-                                ? AppColors.darkPrimary
+                                ? WebTheme.primary
                                 : AppColors.grey,
                           ),
                         ),
@@ -474,23 +474,23 @@ class _SocialLinksCard extends StatelessWidget {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.darkPrimary.withOpacity(0.07),
+                        color: WebTheme.primary.withOpacity(0.07),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.link_rounded,
                             size: 14,
-                            color: AppColors.darkPrimary,
+                            color: WebTheme.primary,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               l,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.darkPrimary,
+                                color: WebTheme.primary,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -620,16 +620,16 @@ class _ImagesCard extends StatelessWidget {
                 width: 100,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.darkPrimary.withOpacity(0.08),
+                  color: WebTheme.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.darkPrimary.withOpacity(0.3),
+                    color: WebTheme.primary.withOpacity(0.3),
                     style: BorderStyle.solid,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add_photo_alternate_outlined,
-                  color: AppColors.darkPrimary,
+                  color: WebTheme.primary,
                   size: 28,
                 ),
               ),
@@ -746,14 +746,14 @@ class _BoothEventsCard extends StatelessWidget {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.darkPrimary.withOpacity(0.12),
+                          color: WebTheme.primary.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           '${e.registeredCount} مسجّل',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.darkPrimary,
+                            color: WebTheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

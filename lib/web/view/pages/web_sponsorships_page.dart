@@ -37,7 +37,7 @@ class WebSponsorshipsPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(40),
                     child: CircularProgressIndicator(
-                        color: AppColors.darkPrimary),
+                        color: WebTheme.primary),
                   ),
                 );
               }
@@ -143,7 +143,7 @@ class _SponsorshipCard extends StatelessWidget {
                 Text(
                   '${booking.price.toInt()} ر.س',
                   style: TextStyle(
-                    color: AppColors.darkAccent,
+                    color: WebTheme.accent,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),

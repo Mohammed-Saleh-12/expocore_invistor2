@@ -85,8 +85,8 @@ class _RequestCard extends StatelessWidget {
             children: [
               Container(
                 width: 44, height: 44,
-                decoration: BoxDecoration(color: AppColors.darkPrimary.withOpacity(0.15), shape: BoxShape.circle),
-                child: Icon(Icons.person_outline, color: AppColors.darkPrimary, size: 22),
+                decoration: BoxDecoration(color: WebTheme.primary.withOpacity(0.15), shape: BoxShape.circle),
+                child: Icon(Icons.person_outline, color: WebTheme.primary, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(

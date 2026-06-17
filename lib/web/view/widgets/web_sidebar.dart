@@ -44,8 +44,8 @@ class WebSidebar extends StatelessWidget {
                   text: TextSpan(
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2),
                     children: [
-                      TextSpan(text: 'EXPO', style: TextStyle(color: AppColors.darkSecondary)),
-                      TextSpan(text: 'CORE', style: TextStyle(color: AppColors.darkAccent)),
+                      TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
+                      TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),
                     ],
                   ),
                 ),
@@ -117,7 +117,7 @@ class _NavItem extends StatelessWidget {
             gradient: active ? AppColors.favoriteGradient : null,
             borderRadius: BorderRadius.circular(12),
             boxShadow: active
-                ? [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 14, offset: const Offset(0, 4))]
+                ? [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 14, offset: const Offset(0, 4))]
                 : null,
           ),
           child: Row(

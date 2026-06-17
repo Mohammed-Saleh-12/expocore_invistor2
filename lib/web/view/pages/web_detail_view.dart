@@ -159,7 +159,7 @@ class _DetailScaffold extends StatelessWidget {
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             height: 260,
-                            color: AppColors.darkSurface,
+                            color: WebTheme.surfaceAlt,
                             child: Icon(
                               Icons.image,
                               color: AppColors.grey,
@@ -217,7 +217,7 @@ Widget _infoRow(IconData icon, String label, String value) => Padding(
   padding: const EdgeInsets.symmetric(vertical: 9),
   child: Row(
     children: [
-      Icon(icon, size: 20, color: AppColors.darkPrimary),
+      Icon(icon, size: 20, color: WebTheme.primary),
       const SizedBox(width: 12),
       Text('$label: ', style: TextStyle(color: AppColors.grey, fontSize: 14)),
       Expanded(
@@ -263,12 +263,12 @@ Widget _chips(String label, List<String> items) => Column(
             (s) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.darkPrimary.withOpacity(0.15),
+                color: WebTheme.primary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 s,
-                style: TextStyle(color: AppColors.darkPink, fontSize: 12),
+                style: TextStyle(color: WebTheme.pink, fontSize: 12),
               ),
             ),
           )
@@ -289,13 +289,13 @@ Widget _actionBtn(
       gradient: filled ? AppColors.favoriteGradient : null,
       border: filled
           ? null
-          : Border.all(color: AppColors.darkPrimary.withOpacity(0.5)),
+          : Border.all(color: WebTheme.primary.withOpacity(0.5)),
       borderRadius: BorderRadius.circular(12),
     ),
     child: Text(
       label,
       style: TextStyle(
-        color: filled ? WebTheme.text : AppColors.darkPrimary,
+        color: filled ? WebTheme.text : WebTheme.primary,
         fontSize: 14,
         fontWeight: FontWeight.w700,
       ),
@@ -359,7 +359,7 @@ class _ExhibitionDetail extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
               children: [
-                Icon(s.$1, size: 20, color: AppColors.darkPrimary),
+                Icon(s.$1, size: 20, color: WebTheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   s.$2,
@@ -508,7 +508,7 @@ class _SponsorEventRow extends StatelessWidget {
                 onPressed: () => ctrl.toggleSponsorFavorite(event),
                 icon: Icon(
                   event.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: AppColors.darkSecondary,
+                  color: WebTheme.secondary,
                   size: 20,
                 ),
               );
@@ -588,13 +588,13 @@ class _EventDetail extends StatelessWidget {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: AppColors.darkPrimary.withOpacity(0.15),
+          color: WebTheme.primary.withOpacity(0.15),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           e.type,
           style: TextStyle(
-            color: AppColors.darkPink,
+            color: WebTheme.pink,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
@@ -840,7 +840,7 @@ class _ReportDetail extends StatelessWidget {
               children: [
                 Icon(
                   Icons.lightbulb_outline_rounded,
-                  color: AppColors.darkAccent,
+                  color: WebTheme.accent,
                   size: 18,
                 ),
                 const SizedBox(width: 10),
@@ -880,7 +880,7 @@ class _ReportDetail extends StatelessWidget {
   TableRow _webTableRow(List<String> cells, {bool isHeader = false}) =>
       TableRow(
         decoration: isHeader
-            ? BoxDecoration(color: AppColors.darkPrimary.withOpacity(0.15))
+            ? BoxDecoration(color: WebTheme.primary.withOpacity(0.15))
             : null,
         children: cells
             .map(
@@ -894,7 +894,7 @@ class _ReportDetail extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isHeader ? FontWeight.w700 : FontWeight.w400,
-                    color: isHeader ? AppColors.darkPrimary : WebTheme.text,
+                    color: isHeader ? WebTheme.primary : WebTheme.text,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -937,8 +937,8 @@ class _SparklinePainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppColors.darkPrimary.withOpacity(0.4),
-            AppColors.darkPrimary.withOpacity(0.0),
+            WebTheme.primary.withOpacity(0.4),
+            WebTheme.primary.withOpacity(0.0),
           ],
         ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
     );
@@ -948,7 +948,7 @@ class _SparklinePainter extends CustomPainter {
       path,
       Paint()
         ..shader = const LinearGradient(
-          colors: [AppColors.darkPrimary, AppColors.darkSecondary],
+          colors: [WebTheme.primary, WebTheme.secondary],
         ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke
@@ -958,7 +958,7 @@ class _SparklinePainter extends CustomPainter {
 
     // dots
     for (var i = 0; i < data.length; i++) {
-      canvas.drawCircle(pt(i), 3, Paint()..color = AppColors.darkSecondary);
+      canvas.drawCircle(pt(i), 3, Paint()..color = WebTheme.secondary);
     }
   }
 

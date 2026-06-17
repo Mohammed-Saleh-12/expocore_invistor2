@@ -189,9 +189,9 @@ class WebCreateEventPage extends StatelessWidget {
   // ── Ticket type selector (general/free_limited/paid) ──────
   Widget _ticketTypeSelector(EventsController c) {
     final opts = [
-      ('general',      Icons.people_outline,            'event_type_general'.tr,      'event_type_general_sub'.tr,   AppColors.darkPrimary),
-      ('free_limited', Icons.confirmation_number_outlined, 'event_type_free'.tr, 'event_type_free_sub'.tr, AppColors.darkSecondary),
-      ('paid',         Icons.payments_outlined,         'event_type_paid'.tr,         'event_type_paid_sub'.tr,      AppColors.darkAccent),
+      ('general',      Icons.people_outline,            'event_type_general'.tr,      'event_type_general_sub'.tr,   WebTheme.primary),
+      ('free_limited', Icons.confirmation_number_outlined, 'event_type_free'.tr, 'event_type_free_sub'.tr, WebTheme.secondary),
+      ('paid',         Icons.payments_outlined,         'event_type_paid'.tr,         'event_type_paid_sub'.tr,      WebTheme.accent),
     ];
     return Obx(() => Row(
           children: opts.asMap().entries.map((e) {
@@ -232,7 +232,7 @@ class WebCreateEventPage extends StatelessWidget {
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _field(c.freeLimitCtrl, 'event_free_limit_hint'.tr, Icons.groups_outlined, keyboard: TextInputType.number),
           const SizedBox(height: 8),
-          _note(Icons.info_outline_rounded, 'event_free_limit_note'.tr, AppColors.darkSecondary),
+          _note(Icons.info_outline_rounded, 'event_free_limit_note'.tr, WebTheme.secondary),
         ]);
       case 'paid':
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -244,7 +244,7 @@ class WebCreateEventPage extends StatelessWidget {
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _field(c.maxCtrl, 'event_max_participants_hint'.tr, Icons.people_outline, keyboard: TextInputType.number),
           const SizedBox(height: 8),
-          _note(Icons.public_rounded, 'event_general_note'.tr, AppColors.darkPrimary),
+          _note(Icons.public_rounded, 'event_general_note'.tr, WebTheme.primary),
         ]);
     }
   }
@@ -257,7 +257,7 @@ class WebCreateEventPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('$count/6 صور', style: TextStyle(color: count > 0 ? AppColors.darkPrimary : AppColors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
+                Text('$count/6 صور', style: TextStyle(color: count > 0 ? WebTheme.primary : AppColors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 10),
@@ -270,7 +270,7 @@ class WebCreateEventPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: WebTheme.surfaceAlt,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+                    border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                   ),
                   child: Stack(
                     children: [
@@ -298,14 +298,14 @@ class WebCreateEventPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: WebTheme.surfaceAlt,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.4), width: 1.5),
+                        border: Border.all(color: WebTheme.primary.withOpacity(0.4), width: 1.5),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_photo_alternate_outlined, color: AppColors.darkPrimary, size: 26),
+                          Icon(Icons.add_photo_alternate_outlined, color: WebTheme.primary, size: 26),
                           SizedBox(height: 4),
-                          Text('event_add_image'.tr, style: TextStyle(color: AppColors.darkPrimary, fontSize: 11)),
+                          Text('event_add_image'.tr, style: TextStyle(color: WebTheme.primary, fontSize: 11)),
                         ],
                       ),
                     ),

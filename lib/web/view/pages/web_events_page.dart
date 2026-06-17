@@ -51,7 +51,7 @@ class WebEventsPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(40),
           child: CircularProgressIndicator(
-              color: AppColors.darkPrimary),
+              color: WebTheme.primary),
         ),
       );
     }
@@ -131,13 +131,13 @@ class _EventCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.darkPrimary.withOpacity(0.15),
+                    color: WebTheme.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     event.type,
                     style: TextStyle(
-                      color: AppColors.darkPink,
+                      color: WebTheme.pink,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -186,7 +186,7 @@ class _EventCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AppColors.darkSecondary.withOpacity(0.15),
+                        color: WebTheme.secondary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -195,7 +195,7 @@ class _EventCard extends StatelessWidget {
                             Icon(
                               Icons.confirmation_number_outlined,
                               size: 13,
-                              color: AppColors.darkSecondary,
+                              color: WebTheme.secondary,
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -203,7 +203,7 @@ class _EventCard extends StatelessWidget {
                                   ? '$pending طلب'
                                   : 'التذاكر',
                               style: TextStyle(
-                                color: AppColors.darkSecondary,
+                                color: WebTheme.secondary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),

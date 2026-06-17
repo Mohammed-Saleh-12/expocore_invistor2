@@ -107,7 +107,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
         decoration: BoxDecoration(
           color: WebTheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+          border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
         ),
         child: Row(
           children: [
@@ -277,15 +277,15 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: val.value ? AppColors.darkPrimary.withOpacity(0.12) : WebTheme.surfaceAlt,
+            color: val.value ? WebTheme.primary.withOpacity(0.12) : WebTheme.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: val.value ? AppColors.darkPrimary : WebTheme.border,
+              color: val.value ? WebTheme.primary : WebTheme.border,
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: val.value ? AppColors.darkPrimary : AppColors.grey),
+              Icon(icon, size: 20, color: val.value ? WebTheme.primary : AppColors.grey),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -366,7 +366,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+                  borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.all(14),
               ),
@@ -380,7 +380,7 @@ class _WebBookingRequestPageState extends State<WebBookingRequestPage> {
         decoration: BoxDecoration(
           color: WebTheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+          border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

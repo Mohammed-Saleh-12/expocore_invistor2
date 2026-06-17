@@ -57,7 +57,7 @@ class WebTopbar extends StatelessWidget {
                                 minHeight: 18,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.darkSecondary,
+                                color: WebTheme.secondary,
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
@@ -91,7 +91,7 @@ class WebTopbar extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: AppColors.darkPrimary,
+                      backgroundColor: WebTheme.primary,
                       child: Text(
                         company.isNotEmpty ? company[0].toUpperCase() : '?',
                         style: TextStyle(

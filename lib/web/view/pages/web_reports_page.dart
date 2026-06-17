@@ -141,7 +141,7 @@ class WebReportsPage extends StatelessWidget {
           ),
           child: Row(children: [
             Icon(Icons.calendar_today_outlined,
-                color: AppColors.darkPrimary, size: 18),
+                color: WebTheme.primary, size: 18),
             const SizedBox(width: 10),
             Text(
               value == null ? label : c.formatDate(value),
@@ -179,11 +179,11 @@ class _ReportRow extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: AppColors.darkPrimary.withOpacity(0.15),
+                color: WebTheme.primary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(Icons.description_outlined,
-                  color: AppColors.darkPrimary, size: 24),
+                  color: WebTheme.primary, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -246,11 +246,11 @@ class _ReportRow extends StatelessWidget {
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2, color: AppColors.darkPrimary),
+                        strokeWidth: 2, color: WebTheme.primary),
                   )
                 : PopupMenuButton<String>(
                     icon: Icon(Icons.download_rounded,
-                        color: AppColors.darkPrimary),
+                        color: WebTheme.primary),
                     tooltip: 'reports_download_btn'.tr,
                     color: WebTheme.surface,
                     shape: RoundedRectangleBorder(

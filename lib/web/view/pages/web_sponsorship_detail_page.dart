@@ -52,9 +52,9 @@ class WebSponsorshipDetailPage extends StatelessWidget {
               _card('تحليلات الأداء', [
                 Row(
                   children: [
-                    _statTile('الحضور الفعلي', '${booking.totalAttendees}', Icons.how_to_reg_outlined, AppColors.darkSecondary),
+                    _statTile('الحضور الفعلي', '${booking.totalAttendees}', Icons.how_to_reg_outlined, WebTheme.secondary),
                     const SizedBox(width: 14),
-                    _statTile('إجمالي الزوار', '${booking.totalVisitors}', Icons.groups_outlined, AppColors.darkPrimary),
+                    _statTile('إجمالي الزوار', '${booking.totalVisitors}', Icons.groups_outlined, WebTheme.primary),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -131,7 +131,7 @@ class WebSponsorshipDetailPage extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 10,
-              backgroundColor: AppColors.darkBg,
+              backgroundColor: WebTheme.bg,
               valueColor: const AlwaysStoppedAnimation(AppColors.success),
             ),
           ),
@@ -168,8 +168,8 @@ class WebSponsorshipDetailPage extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: ratio,
                       minHeight: 12,
-                      backgroundColor: AppColors.darkBg,
-                      valueColor: const AlwaysStoppedAnimation(AppColors.darkPrimary),
+                      backgroundColor: WebTheme.bg,
+                      valueColor: const AlwaysStoppedAnimation(WebTheme.primary),
                     ),
                   ),
                 ),
@@ -218,7 +218,7 @@ class WebSponsorshipDetailPage extends StatelessWidget {
   Widget _row(IconData icon, String label, String value) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(children: [
-          Icon(icon, size: 19, color: AppColors.darkPrimary),
+          Icon(icon, size: 19, color: WebTheme.primary),
           const SizedBox(width: 12),
           Text('$label: ', style: TextStyle(color: AppColors.grey, fontSize: 14)),
           Expanded(child: Text(value, style: TextStyle(color: WebTheme.text, fontSize: 14, fontWeight: FontWeight.w600))),

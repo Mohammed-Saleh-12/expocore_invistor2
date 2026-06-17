@@ -153,12 +153,12 @@ class _BoothCard extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: AppColors.darkPrimary.withOpacity(0.15),
+                  color: WebTheme.primary.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.storefront_rounded,
-                  color: AppColors.darkPrimary,
+                  color: WebTheme.primary,
                   size: 24,
                 ),
               ),
@@ -268,13 +268,13 @@ class _BoothCard extends StatelessWidget {
         border: filled
             ? null
             : Border.all(
-                color: AppColors.darkPrimary.withOpacity(0.5)),
+                color: WebTheme.primary.withOpacity(0.5)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: filled ? WebTheme.text : AppColors.darkPrimary,
+          color: filled ? WebTheme.text : WebTheme.primary,
           fontSize: 13,
           fontWeight: FontWeight.w700,
         ),

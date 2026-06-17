@@ -114,7 +114,7 @@ class WebScannerPage extends StatelessWidget {
                           height: 220,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: AppColors.darkPrimary,
+                              color: WebTheme.primary,
                               width: 3,
                             ),
                             borderRadius: BorderRadius.circular(20),
@@ -132,7 +132,7 @@ class WebScannerPage extends StatelessWidget {
                               height: 44,
                               decoration: BoxDecoration(
                                 color: ctrl.torch.value
-                                    ? AppColors.darkAccent
+                                    ? WebTheme.accent
                                     : Colors.black54,
                                 shape: BoxShape.circle,
                               ),
@@ -189,8 +189,8 @@ class WebScannerPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       SelectableText(
                         result,
-                        style: const TextStyle(
-                          color: AppColors.darkPink,
+                        style: TextStyle(
+                          color: WebTheme.pink,
                           fontSize: 14,
                         ),
                       ),

@@ -135,7 +135,7 @@ class _AdCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.darkBg,
+                  color: WebTheme.bg,
                   blurRadius: hover.value ? 28 : 16,
                   offset: const Offset(0, 10),
                 ),
@@ -150,7 +150,7 @@ class _AdCard extends StatelessWidget {
                     e.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        Container(color: AppColors.darkSurface),
+                        Container(color: WebTheme.surfaceAlt),
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -158,9 +158,9 @@ class _AdCard extends StatelessWidget {
                         begin: Alignment.centerRight,
                         end: Alignment.centerLeft,
                         colors: [
-                          AppColors.darkBg.withOpacity(0.92),
-                          AppColors.darkBg.withOpacity(0.55),
-                          AppColors.darkBg.withOpacity(0.15),
+                          WebTheme.bg.withOpacity(0.92),
+                          WebTheme.bg.withOpacity(0.55),
+                          WebTheme.bg.withOpacity(0.15),
                         ],
                       ),
                     ),
@@ -180,8 +180,8 @@ class _AdCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                AppColors.darkPrimary,
-                                AppColors.darkSecondary,
+                                WebTheme.primary,
+                                WebTheme.secondary,
                               ],
                             ),
                             borderRadius: BorderRadius.circular(20),
@@ -260,10 +260,10 @@ class _AdCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_back_rounded,
                                 size: 16,
-                                color: AppColors.darkPrimary,
+                                color: WebTheme.primary,
                               ),
                             ],
                           ),

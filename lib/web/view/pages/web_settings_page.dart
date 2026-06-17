@@ -262,7 +262,7 @@ class WebSettingsPage extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 6),
     child: Row(
       children: [
-        Icon(icon, color: AppColors.darkPrimary, size: 22),
+        Icon(icon, color: WebTheme.primary, size: 22),
         const SizedBox(width: 14),
         Expanded(
           child: Text(
@@ -273,8 +273,8 @@ class WebSettingsPage extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: AppColors.darkPrimary,
-          activeTrackColor: AppColors.darkPrimary.withOpacity(0.5),
+          activeColor: WebTheme.primary,
+          activeTrackColor: WebTheme.primary.withOpacity(0.5),
         ),
       ],
     ),

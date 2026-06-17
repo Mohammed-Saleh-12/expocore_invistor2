@@ -48,7 +48,7 @@ class WebExhibitionsPage extends StatelessWidget {
                   child: Obx(() {
                     final list = c.filtered.toList();
                     if (c.isLoading.value) {
-                      return Center(child: CircularProgressIndicator(color: AppColors.darkPrimary));
+                      return Center(child: CircularProgressIndicator(color: WebTheme.primary));
                     }
                     if (list.isEmpty) {
                       return Center(
@@ -103,14 +103,14 @@ class _FiltersPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.tune_rounded, color: AppColors.darkPrimary, size: 20),
+              Icon(Icons.tune_rounded, color: WebTheme.primary, size: 20),
               const SizedBox(width: 8),
               Text('تصفية', style: TextStyle(color: WebTheme.text, fontSize: 17, fontWeight: FontWeight.w800)),
               const Spacer(),
               Obx(() => c.activeFilterCount > 0
                   ? GestureDetector(
                       onTap: c.clearFilters,
-                      child: Text('مسح', style: TextStyle(color: AppColors.darkPrimary, fontSize: 12)),
+                      child: Text('مسح', style: TextStyle(color: WebTheme.primary, fontSize: 12)),
                     )
                   : const SizedBox.shrink()),
             ],

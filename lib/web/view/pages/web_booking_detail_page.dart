@@ -168,16 +168,16 @@ class WebBookingDetailPage extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                     decoration: BoxDecoration(
-                      color: AppColors.darkPrimary.withOpacity(0.1),
+                      color: WebTheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+                      border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                     ),
                     child: const Row(
                       children: [
-                        Icon(Icons.receipt_outlined, size: 16, color: AppColors.darkPrimary),
+                        Icon(Icons.receipt_outlined, size: 16, color: WebTheme.primary),
                         SizedBox(width: 6),
                         Text('تنزيل الفاتورة',
-                            style: TextStyle(fontSize: 12, color: AppColors.darkPrimary, fontWeight: FontWeight.w600)),
+                            style: TextStyle(fontSize: 12, color: WebTheme.primary, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -230,13 +230,13 @@ class WebBookingDetailPage extends StatelessWidget {
                   .map((s) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppColors.darkPrimary.withOpacity(0.12),
+                          color: WebTheme.primary.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
+                          border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                         ),
                         child: Text(s,
-                            style: const TextStyle(
-                                fontSize: 12, color: AppColors.darkPrimary, fontWeight: FontWeight.w600)),
+                            style: TextStyle(
+                                fontSize: 12, color: WebTheme.primary, fontWeight: FontWeight.w600)),
                       ))
                   .toList(),
             ),
@@ -274,7 +274,7 @@ class WebBookingDetailPage extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => Get.back(),
-                    child: const Text('تراجع', style: TextStyle(color: AppColors.darkPrimary))),
+                    child: const Text('تراجع', style: TextStyle(color: WebTheme.primary))),
                 TextButton(
                     onPressed: () {
                       Get.back();
@@ -317,7 +317,7 @@ class WebBookingDetailPage extends StatelessWidget {
             border: filled
                 ? null
                 : Border.all(
-                    color: danger ? AppColors.error.withOpacity(0.5) : AppColors.darkPrimary.withOpacity(0.4)),
+                    color: danger ? AppColors.error.withOpacity(0.5) : WebTheme.primary.withOpacity(0.4)),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -327,7 +327,7 @@ class WebBookingDetailPage extends StatelessWidget {
                   size: 18,
                   color: filled
                       ? Colors.white
-                      : (danger ? AppColors.error : AppColors.darkPrimary)),
+                      : (danger ? AppColors.error : WebTheme.primary)),
               const SizedBox(width: 8),
               Text(label,
                   style: TextStyle(
@@ -335,7 +335,7 @@ class WebBookingDetailPage extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: filled
                         ? Colors.white
-                        : (danger ? AppColors.error : AppColors.darkPrimary),
+                        : (danger ? AppColors.error : WebTheme.primary),
                   )),
             ],
           ),

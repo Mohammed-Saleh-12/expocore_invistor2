@@ -214,7 +214,7 @@ class _ConvTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        color: active ? AppColors.darkPrimary.withOpacity(0.12) : null,
+        color: active ? WebTheme.primary.withOpacity(0.12) : null,
         child: Row(
           children: [
             CircleAvatar(
@@ -237,7 +237,7 @@ class _ConvTile extends StatelessWidget {
             if (unread > 0)
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: AppColors.darkSecondary, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: WebTheme.secondary, shape: BoxShape.circle),
                 child: Text('$unread', style: TextStyle(color: WebTheme.text, fontSize: 10, fontWeight: FontWeight.w700)),
               ),
           ],

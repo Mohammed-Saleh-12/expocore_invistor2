@@ -176,14 +176,14 @@ class WebFavoritesPage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: AppColors.darkPrimary.withOpacity(
+                                      color: WebTheme.primary.withOpacity(
                                         0.15,
                                       ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
                                       Icons.storefront_rounded,
-                                      color: AppColors.darkPrimary,
+                                      color: WebTheme.primary,
                                       size: 22,
                                     ),
                                   ),
@@ -251,13 +251,13 @@ class WebFavoritesPage extends StatelessWidget {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
-          color: AppColors.darkPrimary.withOpacity(0.2),
+          color: WebTheme.primary.withOpacity(0.2),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
           '$count',
           style: TextStyle(
-            color: AppColors.darkPink,
+            color: WebTheme.pink,
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),
