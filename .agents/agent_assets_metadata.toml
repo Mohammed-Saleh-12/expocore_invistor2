@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "2_LRB5YpfqQZQZ6QjKl5d"
+uri = "file://api_requests.md"
+type = "text"
+title = "ExpoCore Backend API Reference"
