@@ -947,7 +947,7 @@ class _SparklinePainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           colors: [WebTheme.primary, WebTheme.secondary],
         ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
         ..strokeWidth = 3

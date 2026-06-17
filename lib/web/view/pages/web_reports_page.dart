@@ -242,7 +242,7 @@ class _ReportRow extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Obx(() => c.isDownloading.value
-                ? const SizedBox(
+                ? SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(

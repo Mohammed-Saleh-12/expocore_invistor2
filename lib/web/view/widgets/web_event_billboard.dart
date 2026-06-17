@@ -5,6 +5,7 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../../controllers/web_billboard_controller.dart';
+import '../../models/web_theme.dart';
 
 class WebEventBillboard extends StatelessWidget {
   final List<ExhibitionSponsorEvent> events;
@@ -227,7 +228,7 @@ class _EventSlide extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           colors: [
                             WebTheme.primary,
                             WebTheme.secondary,

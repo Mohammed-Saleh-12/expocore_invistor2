@@ -178,7 +178,7 @@ class _AdCard extends StatelessWidget {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               colors: [
                                 WebTheme.primary,
                                 WebTheme.secondary,

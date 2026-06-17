@@ -172,10 +172,10 @@ class WebBookingDetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.receipt_outlined, size: 16, color: WebTheme.primary),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text('تنزيل الفاتورة',
                             style: TextStyle(fontSize: 12, color: WebTheme.primary, fontWeight: FontWeight.w600)),
                       ],
@@ -274,7 +274,7 @@ class WebBookingDetailPage extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => Get.back(),
-                    child: const Text('تراجع', style: TextStyle(color: WebTheme.primary))),
+                    child: Text('تراجع', style: TextStyle(color: WebTheme.primary))),
                 TextButton(
                     onPressed: () {
                       Get.back();

@@ -22,7 +22,7 @@ class WebMapPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(color: WebTheme.primary),
+              CircularProgressIndicator(color: WebTheme.primary),
               const SizedBox(height: 16),
               Text('map_loading'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 15)),
             ],

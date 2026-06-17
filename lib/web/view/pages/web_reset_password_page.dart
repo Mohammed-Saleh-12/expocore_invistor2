@@ -95,8 +95,8 @@ class _ResetBrand extends StatelessWidget {
                     ),
                     const SizedBox(width: 16),
                     RichText(
-                      text: const TextSpan(
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
                         children: [
                           TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
                           TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),

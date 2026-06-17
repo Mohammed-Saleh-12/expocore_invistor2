@@ -169,7 +169,7 @@ class WebSponsorshipDetailPage extends StatelessWidget {
                       value: ratio,
                       minHeight: 12,
                       backgroundColor: WebTheme.bg,
-                      valueColor: const AlwaysStoppedAnimation(WebTheme.primary),
+                      valueColor: AlwaysStoppedAnimation(WebTheme.primary),
                     ),
                   ),
                 ),
