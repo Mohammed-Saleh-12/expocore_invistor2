@@ -8,9 +8,6 @@ import '../../widget/Home/custom_button.dart';
 import '../../widget/Home/custom_text_field.dart';
 import '../../widget/Home/expocore_logo.dart';
 
-// ════════════════════════════════════════════════════════════
-//  RegisterView
-// ════════════════════════════════════════════════════════════
 class RegisterView extends GetView<RegisterController> {
   const RegisterView({super.key});
 

@@ -14,9 +14,6 @@ class PdfExportService {
     final blob   = html.Blob([bytes], 'text/html; charset=utf-8');
     final url    = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor = html.AnchorElement(href: url)
-      ..target = '_blank'
-      ..click();
 
     Future.delayed(
       const Duration(seconds: 60),

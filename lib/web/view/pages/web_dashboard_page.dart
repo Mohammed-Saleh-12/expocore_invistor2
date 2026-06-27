@@ -4,12 +4,10 @@ import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
-import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../widgets/web_exhibition_card.dart';
 import '../widgets/web_billboard.dart';
 import '../widgets/web_event_billboard.dart';
-import '../widgets/web_section_header.dart';
 import '../../../view/widget/Home/sponsor_event_card.dart';
 
 class WebDashboardPage extends StatelessWidget {

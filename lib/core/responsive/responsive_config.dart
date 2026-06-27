@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-// ════════════════════════════════════════════════════════════
-//  ResponsiveConfig  —  breakpoints & helpers
-//  ⚠️  يُستخدم فقط لطبقة الويب/التابلت — لا يمسّ شاشات الجوال
-// ════════════════════════════════════════════════════════════
 class ResponsiveConfig {
   ResponsiveConfig._();
 

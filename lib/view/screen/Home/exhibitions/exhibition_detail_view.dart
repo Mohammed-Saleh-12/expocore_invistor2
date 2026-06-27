@@ -6,7 +6,6 @@ import '../../../../core/constant/routes.dart';
 import '../../../../controller/Home/events_controller.dart';
 import '../../../../controller/Home/exhibition_detail_controller.dart';
 import '../../../../data/model/exhibition/exhibition_model.dart';
-import '../../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../../widget/Home/favorite_button.dart';
 import '../../../widget/Home/custom_button.dart';
 import '../../../widget/Home/sponsor_event_card.dart';

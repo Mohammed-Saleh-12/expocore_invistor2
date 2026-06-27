@@ -61,7 +61,7 @@ class BookingController extends GetxController {
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
-      if (Get.key?.currentState?.canPop() ?? false) Get.back();
+      if (Get.key.currentState?.canPop() ?? false) Get.back();
       Future.delayed(const Duration(milliseconds: 400), () {
         _onWebSuccess?.call();
         _onWebSuccess = null;

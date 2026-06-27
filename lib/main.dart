@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:expocore_invistor2/core/constant/app_globals.dart';
 import 'package:expocore_invistor2/core/constant/app_theme.dart';
+import 'package:expocore_invistor2/core/functions/fcmConfig.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,12 +12,18 @@ import 'core/localization/translation.dart';
 import 'routes.dart';
 import 'core/services/services.dart';
 import 'core/responsive/web_shell.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      await initFCM();
       FlutterError.onError = (FlutterErrorDetails details) {
         if (_isOverlayNullError(details.exception)) {
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
@@ -26,10 +34,10 @@ void main() {
       PlatformDispatcher.instance.onError = (error, stack) {
         if (_isOverlayNullError(error)) {
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
-          return true; 
+          return true;
         }
         debugPrint('[ExpoCore] Uncaught error: $error');
-        return false; 
+        return false;
       };
       ErrorWidget.builder = (FlutterErrorDetails details) => Material(
         color: const Color(0xFF1D1A39),
@@ -67,6 +75,7 @@ void main() {
       );
       final services = await Get.putAsync(() => Services().init());
       appLang.value = services.lang;
+
       runApp(ExpoCore(isDark: services.isDarkMode));
     },
     (error, stack) {
@@ -78,6 +87,7 @@ void main() {
     },
   );
 }
+
 bool _isOverlayNullError(Object error) {
   if (error is! TypeError && error.runtimeType.toString() != '_TypeError') {
     return false;

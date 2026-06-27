@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "940238627133",
+    "firebase_url": "https://expocore-57f9f-default-rtdb.firebaseio.com",
+    "project_id": "expocore-57f9f",
+    "storage_bucket": "expocore-57f9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940238627133:android:9822115b3e161866e7e554",
+        "android_client_info": {
+          "package_name": "com.example.expocore_invistor2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940238627133-n4l9dr9o6s08t51c67k7mqbgt90iraug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7TBQBXDiXZGFEj9qHj6e2Q6W9GABuuCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940238627133-n4l9dr9o6s08t51c67k7mqbgt90iraug.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "940238627133-04mjl7aevq594itc0globgho7i199na3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.expocoreVisitor"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940238627133:android:cb948231509e3d44e7e554",
+        "android_client_info": {
+          "package_name": "com.example.expocore_visitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940238627133-n4l9dr9o6s08t51c67k7mqbgt90iraug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7TBQBXDiXZGFEj9qHj6e2Q6W9GABuuCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940238627133-n4l9dr9o6s08t51c67k7mqbgt90iraug.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "940238627133-04mjl7aevq594itc0globgho7i199na3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.expocoreVisitor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
