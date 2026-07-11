@@ -22,8 +22,14 @@ void main() {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-      await initFCM();
+      if (!kIsWeb) {
+        FirebaseMessaging.onBackgroundMessage(
+          firebaseMessagingBackgroundHandler,
+        );
+      }
+      try {
+        await initFCM();
+      } catch (_) {}
       FlutterError.onError = (FlutterErrorDetails details) {
         if (_isOverlayNullError(details.exception)) {
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');
