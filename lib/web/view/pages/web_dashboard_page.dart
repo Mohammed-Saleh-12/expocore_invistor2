@@ -8,7 +8,7 @@ import '../../controllers/web_nav_controller.dart';
 import '../widgets/web_exhibition_card.dart';
 import '../widgets/web_billboard.dart';
 import '../widgets/web_event_billboard.dart';
-import '../../../view/widget/Home/sponsor_event_card.dart';
+import '../widgets/web_sponsor_event_card.dart';
 
 class WebDashboardPage extends StatelessWidget {
   const WebDashboardPage({super.key});
@@ -116,14 +116,8 @@ class WebDashboardPage extends StatelessWidget {
                         .take(4)
                         .map(
                           (e) => SizedBox(
-                            width: 300,
-                            child: SponsorEventCard(
-                              event: e,
-                              onTap: () =>
-                                  WebNavController.to.openSponsorEvent(e),
-                              onFavorite: () =>
-                                  events.toggleSponsorFavorite(e),
-                            ),
+                            width: 280,
+                            child: WebSponsorEventCard(event: e),
                           ),
                         )
                         .toList(),
