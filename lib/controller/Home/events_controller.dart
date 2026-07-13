@@ -14,6 +14,14 @@ import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../linkapi.dart';
 
+class ProductItem {
+  final TextEditingController nameCtrl;
+  XFile?     xFile;
+  Uint8List? imageBytes;
+  ProductItem() : nameCtrl = TextEditingController();
+  void dispose() => nameCtrl.dispose();
+}
+
 class EventsController extends GetxController {
   final _crud = Crud();
 
@@ -84,8 +92,33 @@ class EventsController extends GetxController {
   final companyNameCtrl  = TextEditingController();
   final companyWebCtrl   = TextEditingController();
   final companyPhoneCtrl = TextEditingController();
-  final productNamesCtrl = TextEditingController();
   final sponsorFormKey   = GlobalKey<FormState>();
+
+  // ── Product items (image + name each) ────────────────────────────────
+  final productItems = <ProductItem>[].obs;
+
+  void addProductItem() {
+    if (productItems.length >= 10) return;
+    productItems.add(ProductItem());
+  }
+
+  void removeProductItem(int i) {
+    if (i < productItems.length) {
+      productItems[i].dispose();
+      productItems.removeAt(i);
+    }
+  }
+
+  Future<void> pickProductImage(int i) async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+    productItems[i].xFile = picked;
+    productItems[i].imageBytes = await picked.readAsBytes();
+    productItems.refresh();
+  }
 
   // ── Sponsorship media (cross-platform XFile) ──────────────────────────
   final logoXFile      = Rxn<XFile>();
@@ -151,6 +184,8 @@ class EventsController extends GetxController {
     logoXFile.value = null; _logoBytes.value = null;
     adXFiles.clear(); _adBytes.clear();
     posterXFiles.clear(); _posterBytes.clear();
+    for (final p in productItems) p.dispose();
+    productItems.clear();
   }
 
   final eventTypes = [
@@ -370,7 +405,7 @@ class EventsController extends GetxController {
       'company_name':           companyNameCtrl.text.trim(),
       'company_website':        companyWebCtrl.text.trim(),
       'company_phone':          companyPhoneCtrl.text.trim(),
-      'product_names':          productNamesCtrl.text.trim(),
+      'product_names': productItems.map((p) => p.nameCtrl.text.trim()).where((n) => n.isNotEmpty).join(', '),
     });
 
     if (result['status'] == true) {
@@ -513,7 +548,7 @@ class EventsController extends GetxController {
     seatsCtrl.dispose(); ticketPriceCtrl.dispose(); videoPromoCtrl.dispose();
     freeLimitCtrl.dispose();
     companyNameCtrl.dispose(); companyWebCtrl.dispose();
-    companyPhoneCtrl.dispose(); productNamesCtrl.dispose();
+    companyPhoneCtrl.dispose();
     _resetSponsorMedia();
     super.onClose();
   }

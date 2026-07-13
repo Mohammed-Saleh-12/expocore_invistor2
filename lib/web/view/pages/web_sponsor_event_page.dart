@@ -238,12 +238,9 @@ class WebSponsorEventPage extends StatelessWidget {
                       Icons.language_outlined,
                     ),
                     const SizedBox(height: 12),
-                    _field(
-                      c.productNamesCtrl,
-                      'أبرز المنتجات / الخدمات المعروضة',
-                      Icons.inventory_2_outlined,
-                      maxLines: 3,
-                    ),
+                    _subLabel('المنتجات / الخدمات المعروضة'),
+                    const SizedBox(height: 8),
+                    _ProductItemsWidget(c: c),
                   ],
                 ),
               ),
@@ -779,4 +776,159 @@ class WebSponsorEventPage extends StatelessWidget {
           ],
         ),
       );
+}
+
+// ── Product items widget (web) ────────────────────────────────────────────
+class _ProductItemsWidget extends StatelessWidget {
+  final EventsController c;
+  const _ProductItemsWidget({required this.c});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final items = c.productItems;
+      return Column(
+        children: [
+          ...items.asMap().entries.map((e) {
+            final idx  = e.key;
+            final item = e.value;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: WebTheme.surfaceAlt,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: WebTheme.border),
+              ),
+              child: Row(
+                children: [
+                  // Image picker square
+                  GestureDetector(
+                    onTap: () => c.pickProductImage(idx),
+                    child: item.imageBytes != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.memory(
+                              item.imageBytes!,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: WebTheme.primary.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: WebTheme.primary.withOpacity(0.35),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: WebTheme.primary,
+                              size: 24,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Name text field
+                  Expanded(
+                    child: TextField(
+                      controller: item.nameCtrl,
+                      style: TextStyle(color: WebTheme.text, fontSize: 13),
+                      decoration: InputDecoration(
+                        hintText: 'اسم المنتج أو الخدمة',
+                        hintStyle: TextStyle(
+                          color: AppColors.grey.withOpacity(0.6),
+                          fontSize: 12,
+                        ),
+                        filled: true,
+                        fillColor: WebTheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: WebTheme.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: WebTheme.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: WebTheme.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Remove button
+                  GestureDetector(
+                    onTap: () => c.removeProductItem(idx),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: AppColors.error,
+                        size: 17,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          // Add product button
+          GestureDetector(
+            onTap: c.addProductItem,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: WebTheme.primary.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: WebTheme.primary.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add_circle_outline,
+                    color: WebTheme.primary,
+                    size: 19,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'إضافة منتج / خدمة',
+                    style: TextStyle(
+                      color: WebTheme.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
 }

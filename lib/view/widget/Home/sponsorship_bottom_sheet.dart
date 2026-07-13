@@ -338,56 +338,171 @@ class _StepBookingForm extends StatelessWidget {
         }),
         const SizedBox(height: 18),
 
-        // 2. Product names
-        _subLabel('أبرز المنتجات / الخدمات'),
+        // 2. Product items (image + name)
+        _subLabel('المنتجات / الخدمات'),
         const SizedBox(height: 8),
-        TextField(
-          controller: ctrl.productNamesCtrl,
-          maxLines: 3,
-          style: TextStyle(
-            fontSize: 13,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
-          decoration: InputDecoration(
-            hintText: 'مثال: منتج A, منتج B, خدمة C',
-            hintStyle: const TextStyle(
-              fontSize: 12,
-              color: AppColors.grey,
-            ),
-            prefixIcon: const Icon(
-              Icons.inventory_2_outlined,
-              color: AppColors.darkPrimary,
-              size: 20,
-            ),
-            filled: true,
-            fillColor: isDark
-                ? AppColors.darkSurface
-                : AppColors.lightSurface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColors.darkPrimary.withOpacity(0.25),
+        Obx(() {
+          final items = ctrl.productItems;
+          return Column(
+            children: [
+              ...items.asMap().entries.map((e) {
+                final idx = e.key;
+                final item = e.value;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.darkSurface
+                        : AppColors.lightSurface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.darkPrimary.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Product image picker
+                      GestureDetector(
+                        onTap: () => ctrl.pickProductImage(idx),
+                        child: item.imageBytes != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.memory(
+                                  item.imageBytes!,
+                                  width: 52,
+                                  height: 52,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Container(
+                                width: 52,
+                                height: 52,
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkPrimary
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.darkPrimary
+                                        .withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  color: AppColors.darkPrimary,
+                                  size: 22,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(width: 10),
+                      // Product name field
+                      Expanded(
+                        child: TextField(
+                          controller: item.nameCtrl,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color:
+                                isDark ? Colors.white : Colors.black87,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'اسم المنتج أو الخدمة',
+                            hintStyle: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.grey,
+                            ),
+                            filled: true,
+                            fillColor: isDark
+                                ? AppColors.darkCard
+                                : Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color:
+                                    AppColors.darkPrimary.withOpacity(0.2),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color:
+                                    AppColors.darkPrimary.withOpacity(0.2),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: AppColors.darkPrimary,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Remove button
+                      GestureDetector(
+                        onTap: () => ctrl.removeProductItem(idx),
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: AppColors.error,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              // Add product button
+              GestureDetector(
+                onTap: ctrl.addProductItem,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkPrimary.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.darkPrimary.withOpacity(0.25),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline,
+                        color: AppColors.darkPrimary,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'إضافة منتج / خدمة',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.darkPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColors.darkPrimary.withOpacity(0.25),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.darkPrimary,
-                width: 1.5,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-          ),
-        ),
+            ],
+          );
+        }),
         const SizedBox(height: 18),
 
         // 3. Ad images
