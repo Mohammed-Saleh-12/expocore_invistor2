@@ -43,11 +43,13 @@ class _WebRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = WebAuthController.to;
     return Obx(() {
-      if (auth.loggedIn.value)           return const _WebHome();
-      if (auth.showResetPassword.value)  return const WebResetPasswordPage();
-      if (auth.showForgotPassword.value) return const WebForgotPasswordPage();
-      if (auth.showRegister.value)       return const WebRegisterPage();
-      return const WebLoginPage();
+      // ملاحظة: بدون `const` هنا كي لا يتخطى Flutter إعادة بناء هذه
+      // الصفحات عند تبديل الثيم (يفسّر بقاء بعض العناصر بالوضع السابق).
+      if (auth.loggedIn.value)           return _WebHome();
+      if (auth.showResetPassword.value)  return WebResetPasswordPage();
+      if (auth.showForgotPassword.value) return WebForgotPasswordPage();
+      if (auth.showRegister.value)       return WebRegisterPage();
+      return WebLoginPage();
     });
   }
 }
@@ -56,20 +58,23 @@ class _WebRoot extends StatelessWidget {
 //  _WebHome  —  الهيكل: شريط جانبي + توب بار + محتوى
 // ════════════════════════════════════════════════════════════
 class _WebHome extends StatelessWidget {
-  const _WebHome();
+  _WebHome();
 
+  // ملاحظة: بدون `const` هنا كي لا يتخطى Flutter إعادة بناء الصفحة
+  // الحالية عند تبديل الثيم — كانت النسخة الثابتة (const) تجعل Flutter
+  // يعتبر الودجت "نفسها" فيتخطى استدعاء build() ويترك ألوان الثيم القديمة.
   Widget _page(int i) {
     switch (i) {
-      case 0: return const WebDashboardPage();
-      case 1: return const WebExhibitionsPage();
-      case 2: return const WebBoothsPage();
-      case 3: return const WebEventsPage();
-      case 4: return const WebSponsorshipsPage();
-      case 5: return const WebReportsPage();
-      case 6: return const WebMessagesPage();
-      case 7: return const WebFavoritesPage();
-      case 8: return const WebSettingsPage();
-      default: return const WebDashboardPage();
+      case 0: return WebDashboardPage();
+      case 1: return WebExhibitionsPage();
+      case 2: return WebBoothsPage();
+      case 3: return WebEventsPage();
+      case 4: return WebSponsorshipsPage();
+      case 5: return WebReportsPage();
+      case 6: return WebMessagesPage();
+      case 7: return WebFavoritesPage();
+      case 8: return WebSettingsPage();
+      default: return WebDashboardPage();
     }
   }
 

@@ -1,3 +1,4 @@
 - [Flutter Web MVC Conventions](flutter-web-mvc.md) — rules for keeping views free of logic in this GetX project
 - [Flutter 3.32.0 dart2js crash workaround](flutter-dart2js-crash.md) — use --profile not --release for web builds; release mode crashes dart2js
 - [Web detail page MVC pattern](web-detail-page-mvc.md) — how StatelessWidget detail pages receive data from WebNavController without constructor params
+- [Web theme toggle staleness](web-theme-toggle-staleness.md) — const web pages skip rebuild on theme change; never `const` the pages dispatched from _WebHome._page()
