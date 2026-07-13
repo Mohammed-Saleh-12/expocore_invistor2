@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
 
@@ -31,8 +32,8 @@ class WebSectionHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(color: WebTheme.text, fontSize: 24, fontWeight: FontWeight.w900)),
+              Obx(() => Text(title,
+                  style: TextStyle(color: WebTheme.text, fontSize: 24, fontWeight: FontWeight.w900))),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
                 Text(subtitle!,

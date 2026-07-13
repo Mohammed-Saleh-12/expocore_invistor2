@@ -272,14 +272,14 @@ class WebDashboardPage extends StatelessWidget {
         ),
       ),
       const SizedBox(width: 10),
-      Text(
+      Obx(() => Text(
         t,
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w800,
           color: WebTheme.text,
         ),
-      ),
+      )),
     ],
   );
 
@@ -289,14 +289,14 @@ class WebDashboardPage extends StatelessWidget {
           Expanded(child: _sectionTitle(t)),
           GestureDetector(
             onTap: onAll,
-            child: Text(
+            child: Obx(() => Text(
               'عرض الكل',
               style: TextStyle(
                 color: WebTheme.primary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
-            ),
+            )),
           ),
         ],
       );
@@ -329,7 +329,7 @@ class _QuickActionBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Obx(() => GestureDetector(
       onTap: onTap,
       child: Container(
         width: 150,
@@ -351,7 +351,7 @@ class _QuickActionBtn extends StatelessWidget {
               ),
               child: Icon(
                 qa.icon,
-                color: qa.gradient ? WebTheme.text : qa.color,
+                color: qa.gradient ? Colors.white : qa.color,
                 size: 24,
               ),
             ),
@@ -367,7 +367,7 @@ class _QuickActionBtn extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -385,7 +385,7 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Obx(() => Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: WebTheme.surface,
@@ -443,6 +443,6 @@ class _StatCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
