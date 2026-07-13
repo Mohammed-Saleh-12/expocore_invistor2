@@ -37,4 +37,4 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["node", "serve.js"]
-build = ["bash", "-c", "flutter build web --release"]
+build = ["bash", "-c", "flutter build web --profile"]
