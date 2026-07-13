@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -84,6 +86,72 @@ class EventsController extends GetxController {
   final companyPhoneCtrl = TextEditingController();
   final productNamesCtrl = TextEditingController();
   final sponsorFormKey   = GlobalKey<FormState>();
+
+  // ── Sponsorship media (cross-platform XFile) ──────────────────────────
+  final logoXFile      = Rxn<XFile>();
+  final adXFiles       = <XFile>[].obs;
+  final posterXFiles   = <XFile>[].obs;
+
+  // Cached bytes for fast redisplay without re-reading
+  final _logoBytes    = Rxn<Uint8List>();
+  final _adBytes      = <Uint8List>[].obs;
+  final _posterBytes  = <Uint8List>[].obs;
+
+  Uint8List? get logoBytes => _logoBytes.value;
+  List<Uint8List> get adBytes => _adBytes;
+  List<Uint8List> get posterBytes => _posterBytes;
+
+  Future<void> pickLogo() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (picked == null) return;
+    logoXFile.value = picked;
+    _logoBytes.value = await picked.readAsBytes();
+  }
+
+  void removeLogo() {
+    logoXFile.value = null;
+    _logoBytes.value = null;
+  }
+
+  Future<void> pickAdImages() async {
+    const max = 6;
+    if (adXFiles.length >= max) { _warn('الحد الأقصى للصور الإعلانية هو $max'); return; }
+    final remaining = max - adXFiles.length;
+    final picked = await _picker.pickMultiImage(imageQuality: 80);
+    if (picked.isEmpty) return;
+    final limited = picked.take(remaining).toList();
+    for (final f in limited) {
+      adXFiles.add(f);
+      _adBytes.add(await f.readAsBytes());
+    }
+  }
+
+  void removeAdFile(int i) {
+    if (i < adXFiles.length) { adXFiles.removeAt(i); _adBytes.removeAt(i); }
+  }
+
+  Future<void> pickPosterImages() async {
+    const max = 4;
+    if (posterXFiles.length >= max) { _warn('الحد الأقصى للملصقات هو $max'); return; }
+    final remaining = max - posterXFiles.length;
+    final picked = await _picker.pickMultiImage(imageQuality: 80);
+    if (picked.isEmpty) return;
+    final limited = picked.take(remaining).toList();
+    for (final f in limited) {
+      posterXFiles.add(f);
+      _posterBytes.add(await f.readAsBytes());
+    }
+  }
+
+  void removePosterFile(int i) {
+    if (i < posterXFiles.length) { posterXFiles.removeAt(i); _posterBytes.removeAt(i); }
+  }
+
+  void _resetSponsorMedia() {
+    logoXFile.value = null; _logoBytes.value = null;
+    adXFiles.clear(); _adBytes.clear();
+    posterXFiles.clear(); _posterBytes.clear();
+  }
 
   final eventTypes = [
     'ورشة عمل', 'عرض مباشر', 'مسابقة', 'ندوة',
@@ -328,6 +396,7 @@ class EventsController extends GetxController {
 
     isBooking.value = false;
     selectedSponsorDuration.value = null;
+    _resetSponsorMedia();
     Get.snackbar('sponsorship_booked_title'.tr,
         'sponsorship_booked_msg'.trParams({'name': event.name}),
         snackPosition: SnackPosition.BOTTOM,
@@ -445,6 +514,7 @@ class EventsController extends GetxController {
     freeLimitCtrl.dispose();
     companyNameCtrl.dispose(); companyWebCtrl.dispose();
     companyPhoneCtrl.dispose(); productNamesCtrl.dispose();
+    _resetSponsorMedia();
     super.onClose();
   }
 }
