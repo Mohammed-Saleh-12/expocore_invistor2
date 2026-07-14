@@ -21,10 +21,10 @@ class ReportsController extends GetxController {
   final isDownloading    = false.obs;
   final downloadProgress = 0.0.obs;
 
-  final typeFilters = ['الكل', 'الزوار', 'الأداء', 'الفعاليات', 'الحملات', 'المقارنة'];
+  final typeFilters = ['الكل', 'الزوار', 'الأداء', 'الفعاليات', 'الرعايات'];
   final typeMap     = {
     'الكل': 'all', 'الزوار': 'visitors', 'الأداء': 'performance',
-    'الفعاليات': 'events', 'الحملات': 'campaigns', 'المقارنة': 'compare',
+    'الفعاليات': 'events', 'الرعايات': 'campaigns',
   };
 
   // ── Derived helpers ───────────────────────────────────────

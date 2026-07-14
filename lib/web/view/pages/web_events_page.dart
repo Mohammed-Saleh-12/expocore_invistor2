@@ -8,9 +8,6 @@ import '../widgets/web_section_header.dart';
 import '../widgets/web_status_chip.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebEventsPage  —  الفعاليات (تبويبات: فعالياتي / الرعايات)
-// ════════════════════════════════════════════════════════════
 class WebEventsPage extends StatelessWidget {
   const WebEventsPage({super.key});
 
@@ -50,59 +47,65 @@ class WebEventsPage extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(40),
-          child: CircularProgressIndicator(
-              color: WebTheme.primary),
+          child: CircularProgressIndicator(color: WebTheme.primary),
         ),
       );
     }
-    if (list.isEmpty)
+    if (list.isEmpty) {
       return _empty(Icons.event_busy_rounded, 'لا توجد فعاليات');
+    }
     return Wrap(
       spacing: 20,
       runSpacing: 20,
       children: list
-          .map((e) => SizedBox(
-                width: 340,
-                child: _EventCard(event: e, c: c),
-              ))
+          .map(
+            (e) => SizedBox(
+              width: 340,
+              child: _EventCard(event: e, c: c),
+            ),
+          )
           .toList(),
     );
   }
 
   Widget _newBtn() => GestureDetector(
-        onTap: WebNavController.to.openCreateEvent,
-        child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: AppColors.favoriteGradient,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.add_rounded, color: WebTheme.text, size: 18),
-            const SizedBox(width: 6),
-            Text(
-              'نشر فعالية',
-              style: TextStyle(
-                color: WebTheme.text,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
+    onTap: WebNavController.to.openCreateEvent,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: AppColors.favoriteGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.add_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 6),
+          Text(
+            'نشر فعالية',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
-          ]),
-        ),
-      );
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _empty(IconData icon, String msg) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(60),
-        alignment: Alignment.center,
-        child: Column(children: [
-          Icon(icon, size: 56, color: AppColors.grey.withOpacity(0.5)),
-          const SizedBox(height: 12),
-          Text(msg, style: TextStyle(color: AppColors.grey)),
-        ]),
-      );
+    width: double.infinity,
+    padding: const EdgeInsets.all(60),
+    alignment: Alignment.center,
+    child: Column(
+      children: [
+        Icon(icon, size: 56, color: AppColors.grey.withOpacity(0.5)),
+        const SizedBox(height: 12),
+        Text(msg, style: TextStyle(color: AppColors.grey)),
+      ],
+    ),
+  );
 }
 
 // ── Event card ───────────────────────────────────────────────
@@ -128,8 +131,10 @@ class _EventCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: WebTheme.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -161,7 +166,7 @@ class _EventCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               event.description,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: AppColors.grey.withOpacity(0.85),
@@ -174,41 +179,43 @@ class _EventCard extends StatelessWidget {
               children: [
                 _info(Icons.calendar_today_outlined, event.date),
                 const SizedBox(width: 14),
-                _info(Icons.people_outline,
-                    '${event.registeredCount}/${event.maxParticipants}'),
+                _info(
+                  Icons.people_outline,
+                  '${event.registeredCount}/${event.maxParticipants}',
+                ),
                 const Spacer(),
                 Obx(() {
                   final pending = c.pendingRequestsCount(event.id);
                   return GestureDetector(
-                    onTap: () =>
-                        WebNavController.to.openTicketRequests(event),
+                    onTap: () => WebNavController.to.openTicketRequests(event),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: WebTheme.secondary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.confirmation_number_outlined,
-                              size: 13,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.confirmation_number_outlined,
+                            size: 13,
+                            color: WebTheme.secondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            pending > 0 ? '$pending طلب' : 'التذاكر',
+                            style: TextStyle(
                               color: WebTheme.secondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              pending > 0
-                                  ? '$pending طلب'
-                                  : 'التذاكر',
-                              style: TextStyle(
-                                color: WebTheme.secondary,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ]),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }),
@@ -221,11 +228,10 @@ class _EventCard extends StatelessWidget {
   }
 
   Widget _info(IconData icon, String text) => Row(
-        children: [
-          Icon(icon, size: 14, color: AppColors.grey),
-          const SizedBox(width: 4),
-          Text(text,
-              style: TextStyle(color: AppColors.grey, fontSize: 12)),
-        ],
-      );
+    children: [
+      Icon(icon, size: 14, color: AppColors.grey),
+      const SizedBox(width: 4),
+      Text(text, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+    ],
+  );
 }

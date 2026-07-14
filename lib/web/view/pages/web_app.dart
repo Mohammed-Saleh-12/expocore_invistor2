@@ -20,9 +20,7 @@ import 'web_settings_page.dart';
 import 'web_sponsorships_page.dart';
 import 'web_detail_view.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebApp  —  جذر نسخة الويب
-// ════════════════════════════════════════════════════════════
+
 class WebApp extends StatelessWidget {
   const WebApp({super.key});
 
@@ -43,8 +41,6 @@ class _WebRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = WebAuthController.to;
     return Obx(() {
-      // ملاحظة: بدون `const` هنا كي لا يتخطى Flutter إعادة بناء هذه
-      // الصفحات عند تبديل الثيم (يفسّر بقاء بعض العناصر بالوضع السابق).
       if (auth.loggedIn.value)           return _WebHome();
       if (auth.showResetPassword.value)  return WebResetPasswordPage();
       if (auth.showForgotPassword.value) return WebForgotPasswordPage();
@@ -54,15 +50,11 @@ class _WebRoot extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════
-//  _WebHome  —  الهيكل: شريط جانبي + توب بار + محتوى
-// ════════════════════════════════════════════════════════════
+
+// _WebHome
 class _WebHome extends StatelessWidget {
   _WebHome();
 
-  // ملاحظة: بدون `const` هنا كي لا يتخطى Flutter إعادة بناء الصفحة
-  // الحالية عند تبديل الثيم — كانت النسخة الثابتة (const) تجعل Flutter
-  // يعتبر الودجت "نفسها" فيتخطى استدعاء build() ويترك ألوان الثيم القديمة.
   Widget _page(int i) {
     switch (i) {
       case 0: return WebDashboardPage();

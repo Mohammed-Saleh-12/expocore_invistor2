@@ -169,7 +169,7 @@ class _AdCard extends StatelessWidget {
                     padding: const EdgeInsets.all(22),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
@@ -179,10 +179,7 @@ class _AdCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                WebTheme.primary,
-                                WebTheme.secondary,
-                              ],
+                              colors: [WebTheme.primary, WebTheme.secondary],
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -195,7 +192,7 @@ class _AdCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 60),
                         Text(
                           e.name,
                           maxLines: 2,
@@ -206,7 +203,6 @@ class _AdCard extends StatelessWidget {
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        const SizedBox(height: 8),
                         Row(
                           children: [
                             const Icon(
@@ -237,36 +233,6 @@ class _AdCard extends StatelessWidget {
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: WebTheme.surface.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'اكتشف المعرض',
-                                style: TextStyle(
-                                  color: WebTheme.text,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Icon(
-                                Icons.arrow_back_rounded,
-                                size: 16,
-                                color: WebTheme.primary,
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),

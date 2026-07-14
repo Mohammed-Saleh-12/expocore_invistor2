@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import '../../../controller/auth/login_controller.dart';
 import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
-import '../../../view/widget/Home/expocore_logo.dart';
-import '../../../view/widget/Home/language_toggle.dart';
 import '../../controllers/web_auth_controller.dart';
 import '../../models/web_theme.dart';
 import '../widgets/web_fade_in.dart';
@@ -68,49 +66,31 @@ class _LoginBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(top: -80, left: -60, child: _blob(300, WebTheme.primary.withOpacity(0.25))),
-          Positioned(bottom: -60, right: -40, child: _blob(240, WebTheme.secondary.withOpacity(0.2))),
           Padding(
-            padding: const EdgeInsets.all(60),
+            padding: const EdgeInsets.only(right: 150),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: WebTheme.surface,
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 30)],
-                      ),
-                      child: const ExpocoreLogo(size: 56),
-                    ),
-                    const SizedBox(width: 16),
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 3),
-                        children: [
-                          TextSpan(text: 'EXPO', style: TextStyle(color: WebTheme.secondary)),
-                          TextSpan(text: 'CORE', style: TextStyle(color: WebTheme.accent)),
-                        ],
-                      ),
-                    ),
-                  ],
+                Image.asset(
+                  WebTheme.isDark.value
+                      ? 'assets/images/logo3.png'
+                      : 'assets/images/logo2.png',
+                  height: 250,
                 ),
-                const SizedBox(height: 40),
+
+                const SizedBox(height: 50),
                 ShaderMask(
-                  shaderCallback: (b) => AppColors.favoriteGradient.createShader(b),
+                  shaderCallback: (b) =>
+                      AppColors.favoriteGradient.createShader(b),
                   child: Text(
                     'login_brand_title'.tr,
-                    style: TextStyle(fontSize: 44, fontWeight: FontWeight.w900, height: 1.25, color: WebTheme.text),
+                    style: TextStyle(
+                      fontSize: 44,
+                      fontWeight: FontWeight.w900,
+                      height: 1.25,
+                      color: WebTheme.text,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'login_brand_desc'.tr,
-                  style: TextStyle(fontSize: 16, height: 1.9, color: AppColors.grey.withOpacity(0.9)),
                 ),
               ],
             ),
@@ -119,16 +99,6 @@ class _LoginBrand extends StatelessWidget {
       ),
     );
   }
-
-  Widget _blob(double s, Color c) => Container(
-        width: s,
-        height: s,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: c,
-          boxShadow: [BoxShadow(color: c, blurRadius: 120, spreadRadius: 40)],
-        ),
-      );
 }
 
 // ── Form side ───────────────────────────────────────────────
@@ -143,16 +113,22 @@ class _LoginForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Align(alignment: Alignment.centerLeft, child: LanguageToggle()),
           const SizedBox(height: 20),
           Text(
             'login_title'.tr,
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: WebTheme.text),
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: WebTheme.text,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'login_enter_data'.tr,
-            style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.85)),
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.grey.withOpacity(0.85),
+            ),
           ),
           const SizedBox(height: 32),
 
@@ -172,21 +148,27 @@ class _LoginForm extends StatelessWidget {
 
           _label('login_password'.tr),
           const SizedBox(height: 8),
-          Obx(() => _field(
-                controller: c.passwordCtrl,
-                hint: '••••••••',
-                icon: Icons.lock_outline_rounded,
-                obscure: c.obscure.value,
-                suffix: IconButton(
-                  onPressed: c.toggleObscure,
-                  icon: Icon(
-                    c.obscure.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: AppColors.grey,
-                    size: 20,
-                  ),
+          Obx(
+            () => _field(
+              controller: c.passwordCtrl,
+              hint: '••••••••',
+              icon: Icons.lock_outline_rounded,
+              obscure: c.obscure.value,
+              suffix: IconButton(
+                onPressed: c.toggleObscure,
+                icon: Icon(
+                  c.obscure.value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: AppColors.grey,
+                  size: 20,
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'login_password_required'.tr : null,
-              )),
+              ),
+              validator: (v) => (v == null || v.isEmpty)
+                  ? 'login_password_required'.tr
+                  : null,
+            ),
+          ),
           const SizedBox(height: 10),
 
           Align(
@@ -205,24 +187,34 @@ class _LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          Obx(() => SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: _GradientButton(
-                  loading: c.status.value == StatusRequest.loading,
-                  onTap: c.login,
-                  label: 'login_btn'.tr,
-                ),
-              )),
+          Obx(
+            () => SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: _GradientButton(
+                loading: c.status.value == StatusRequest.loading,
+                onTap: c.login,
+                label: 'login_btn'.tr,
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
 
           Center(
             child: TextButton.icon(
               onPressed: c.fillDemo,
-              icon: Icon(Icons.play_circle_outline_rounded, color: WebTheme.primary, size: 18),
+              icon: Icon(
+                Icons.play_circle_outline_rounded,
+                color: WebTheme.primary,
+                size: 18,
+              ),
               label: Text(
                 'login_demo'.tr,
-                style: TextStyle(color: WebTheme.pink, fontSize: 13, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: WebTheme.pink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -256,9 +248,13 @@ class _LoginForm extends StatelessWidget {
   }
 
   Widget _label(String t) => Text(
-        t,
-        style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w600),
-      );
+    t,
+    style: TextStyle(
+      color: WebTheme.text,
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    ),
+  );
 
   Widget _field({
     required TextEditingController controller,
@@ -267,27 +263,29 @@ class _LoginForm extends StatelessWidget {
     bool obscure = false,
     Widget? suffix,
     String? Function(String?)? validator,
-  }) =>
-      TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: validator,
-        style: TextStyle(color: WebTheme.text),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
-          prefixIcon: Icon(icon, color: AppColors.grey, size: 20),
-          suffixIcon: suffix,
-          filled: true,
-          fillColor: WebTheme.surfaceAlt,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
-          ),
-        ),
-      );
+  }) => TextFormField(
+    controller: controller,
+    obscureText: obscure,
+    validator: validator,
+    style: TextStyle(color: WebTheme.text),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
+      prefixIcon: Icon(icon, color: AppColors.grey, size: 20),
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: WebTheme.surfaceAlt,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
+      ),
+    ),
+  );
 }
 
 // ── Gradient button ─────────────────────────────────────────
@@ -295,7 +293,11 @@ class _GradientButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;
   final String label;
-  const _GradientButton({required this.loading, required this.onTap, required this.label});
+  const _GradientButton({
+    required this.loading,
+    required this.onTap,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -306,13 +308,31 @@ class _GradientButton extends StatelessWidget {
           gradient: AppColors.favoriteGradient,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(color: WebTheme.primary.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(
+              color: WebTheme.primary.withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         alignment: Alignment.center,
         child: loading
-            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(label, style: TextStyle(color: WebTheme.text, fontSize: 16, fontWeight: FontWeight.w700)),
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                label,
+                style: TextStyle(
+                  color: WebTheme.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }

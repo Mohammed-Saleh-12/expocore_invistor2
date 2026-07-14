@@ -6,7 +6,6 @@ import '../../../controller/Home/visitor_messages_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_nav_controller.dart';
 
-
 class WebMessagesPage extends StatelessWidget {
   const WebMessagesPage({super.key});
 
@@ -18,18 +17,22 @@ class WebMessagesPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(() => Row(
-                children: [
-                  _seg(nav, 'messages_admin'.tr, 0),
-                  const SizedBox(width: 10),
-                  _seg(nav, 'messages_visitors'.tr, 1),
-                ],
-              )),
+          Obx(
+            () => Row(
+              children: [
+                _seg(nav, 'messages_admin'.tr, 0),
+                const SizedBox(width: 10),
+                _seg(nav, 'messages_visitors'.tr, 1),
+              ],
+            ),
+          ),
           const SizedBox(height: 20),
           Expanded(
-            child: Obx(() => nav.messagesTab.value == 0
-                ? const _AdminMessages()
-                : const _VisitorMessages()),
+            child: Obx(
+              () => nav.messagesTab.value == 0
+                  ? const _AdminMessages()
+                  : const _VisitorMessages(),
+            ),
           ),
         ],
       ),
@@ -47,11 +50,14 @@ class WebMessagesPage extends StatelessWidget {
           color: active ? null : WebTheme.surface,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(label,
-            style: TextStyle(
-              color: active ? WebTheme.text : AppColors.grey,
-              fontSize: 14, fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            )),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? Colors.white : AppColors.grey,
+            fontSize: 14,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
@@ -71,15 +77,17 @@ class _AdminMessages extends StatelessWidget {
           itemCount: list.length,
           itemBuilder: (_, i) {
             final conv = list[i];
-            return Obx(() => _ConvTile(
-                  initials: conv.exhibitionInitials,
-                  color: conv.color,
-                  name: conv.exhibitionName,
-                  last: conv.lastMessage,
-                  unread: conv.unreadCount,
-                  active: c.activeConversationId.value == conv.id,
-                  onTap: () => c.openConversation(conv.id),
-                ));
+            return Obx(
+              () => _ConvTile(
+                initials: conv.exhibitionInitials,
+                color: conv.color,
+                name: conv.exhibitionName,
+                last: conv.lastMessage,
+                unread: conv.unreadCount,
+                active: c.activeConversationId.value == conv.id,
+                onTap: () => c.openConversation(conv.id),
+              ),
+            );
           },
         );
       }),
@@ -115,15 +123,17 @@ class _VisitorMessages extends StatelessWidget {
           itemCount: list.length,
           itemBuilder: (_, i) {
             final conv = list[i];
-            return Obx(() => _ConvTile(
-                  initials: conv.visitorInitials,
-                  color: conv.color,
-                  name: conv.visitorName,
-                  last: conv.lastMessage,
-                  unread: conv.unreadCount,
-                  active: c.activeConversationId.value == conv.id,
-                  onTap: () => c.openConversation(conv.id),
-                ));
+            return Obx(
+              () => _ConvTile(
+                initials: conv.visitorInitials,
+                color: conv.color,
+                name: conv.visitorName,
+                last: conv.lastMessage,
+                unread: conv.unreadCount,
+                active: c.activeConversationId.value == conv.id,
+                onTap: () => c.openConversation(conv.id),
+              ),
+            );
           },
         );
       }),
@@ -145,8 +155,11 @@ class _VisitorMessages extends StatelessWidget {
   }
 
   VisitorMessagesController _ctrl() {
-    try { return Get.find<VisitorMessagesController>(); }
-    catch (_) { return Get.put(VisitorMessagesController()); }
+    try {
+      return Get.find<VisitorMessagesController>();
+    } catch (_) {
+      return Get.put(VisitorMessagesController());
+    }
   }
 }
 
@@ -173,7 +186,14 @@ class _TwoPane extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.all(18),
-                  child: Text('messages_conversations'.tr, style: TextStyle(color: WebTheme.text, fontSize: 18, fontWeight: FontWeight.w800)),
+                  child: Text(
+                    'messages_conversations'.tr,
+                    style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
                 const Divider(color: Color(0x18FFFFFF), height: 1),
                 Expanded(child: listBuilder()),
@@ -204,8 +224,13 @@ class _ConvTile extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
   const _ConvTile({
-    required this.initials, required this.color, required this.name,
-    required this.last, required this.unread, required this.active, required this.onTap,
+    required this.initials,
+    required this.color,
+    required this.name,
+    required this.last,
+    required this.unread,
+    required this.active,
+    required this.onTap,
   });
 
   @override
@@ -218,27 +243,57 @@ class _ConvTile extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              radius: 22, backgroundColor: Color(color),
-              child: Text(initials, style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w700)),
+              radius: 22,
+              backgroundColor: Color(color),
+              child: Text(
+                initials,
+                style: TextStyle(
+                  color: WebTheme.text,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: WebTheme.text, fontSize: 14, fontWeight: FontWeight.w700)),
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(last, maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                  Text(
+                    last,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: AppColors.grey, fontSize: 12),
+                  ),
                 ],
               ),
             ),
             if (unread > 0)
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: WebTheme.secondary, shape: BoxShape.circle),
-                child: Text('$unread', style: TextStyle(color: WebTheme.text, fontSize: 10, fontWeight: FontWeight.w700)),
+                decoration: BoxDecoration(
+                  color: WebTheme.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$unread',
+                  style: TextStyle(
+                    color: WebTheme.text,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
           ],
         ),
@@ -255,8 +310,12 @@ class _ChatBody extends StatelessWidget {
   final TextEditingController input;
   final VoidCallback onSend;
   const _ChatBody({
-    required this.initials, required this.color, required this.name,
-    required this.messages, required this.input, required this.onSend,
+    required this.initials,
+    required this.color,
+    required this.name,
+    required this.messages,
+    required this.input,
+    required this.onSend,
   });
 
   @override
@@ -265,61 +324,114 @@ class _ChatBody extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            CircleAvatar(radius: 20, backgroundColor: Color(color),
-                child: Text(initials, style: TextStyle(color: WebTheme.text, fontSize: 12, fontWeight: FontWeight.w700))),
-            const SizedBox(width: 12),
-            Text(name, style: TextStyle(color: WebTheme.text, fontSize: 16, fontWeight: FontWeight.w700)),
-          ]),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Color(color),
+                child: Text(
+                  initials,
+                  style: TextStyle(
+                    color: WebTheme.text,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                name,
+                style: TextStyle(
+                  color: WebTheme.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
         ),
         const Divider(color: Color(0x18FFFFFF), height: 1),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(20),
-            children: messages.map((m) => Align(
-              alignment: m.$2 ? Alignment.centerLeft : Alignment.centerRight,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                constraints: const BoxConstraints(maxWidth: 420),
-                decoration: BoxDecoration(
-                  gradient: m.$2 ? AppColors.favoriteGradient : null,
-                  color: m.$2 ? null : WebTheme.surfaceAlt,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(m.$1, style: TextStyle(color: WebTheme.text, fontSize: 13, height: 1.5)),
-              ),
-            )).toList(),
+            children: messages
+                .map(
+                  (m) => Align(
+                    alignment: m.$2
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      decoration: BoxDecoration(
+                        gradient: m.$2 ? AppColors.favoriteGradient : null,
+                        color: m.$2 ? null : WebTheme.surfaceAlt,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        m.$1,
+                        style: TextStyle(
+                          color: m.$2 ? Colors.white : WebTheme.text,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            Expanded(
-              child: TextField(
-                controller: input,
-                style: TextStyle(color: WebTheme.text),
-                onSubmitted: (_) => onSend(),
-                decoration: InputDecoration(
-                  hintText: 'messages_type_hint'.tr,
-                  hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
-                  filled: true,
-                  fillColor: WebTheme.surfaceAlt,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: input,
+                  style: TextStyle(color: WebTheme.text),
+                  onSubmitted: (_) => onSend(),
+                  decoration: InputDecoration(
+                    hintText: 'messages_type_hint'.tr,
+                    hintStyle: TextStyle(
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
+                    filled: true,
+                    fillColor: WebTheme.surfaceAlt,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: onSend,
-              child: Container(
-                width: 48, height: 48,
-                decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(12)),
-                child: Icon(Icons.send_rounded, color: WebTheme.text, size: 20),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: onSend,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.favoriteGradient,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.send_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ],
     );
@@ -329,21 +441,32 @@ class _ChatBody extends StatelessWidget {
 class _EmptyList extends StatelessWidget {
   const _EmptyList();
   @override
-  Widget build(BuildContext context) =>
-      Center(child: Text('messages_no_conversations'.tr, style: TextStyle(color: AppColors.grey)));
+  Widget build(BuildContext context) => Center(
+    child: Text(
+      'messages_no_conversations'.tr,
+      style: TextStyle(color: AppColors.grey),
+    ),
+  );
 }
 
 class _NoChat extends StatelessWidget {
   const _NoChat();
   @override
   Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.chat_bubble_outline_rounded, size: 56, color: AppColors.grey.withOpacity(0.5)),
-            const SizedBox(height: 12),
-            Text('messages_select_chat'.tr, style: TextStyle(color: AppColors.grey)),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.chat_bubble_outline_rounded,
+          size: 56,
+          color: AppColors.grey.withOpacity(0.5),
         ),
-      );
+        const SizedBox(height: 12),
+        Text(
+          'messages_select_chat'.tr,
+          style: TextStyle(color: AppColors.grey),
+        ),
+      ],
+    ),
+  );
 }

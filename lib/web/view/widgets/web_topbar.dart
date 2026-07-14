@@ -110,12 +110,6 @@ class WebTopbar extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.grey,
-                      size: 18,
-                    ),
                     const SizedBox(width: 4),
                   ],
                 ),

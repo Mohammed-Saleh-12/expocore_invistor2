@@ -36,8 +36,7 @@ class WebSponsorshipsPage extends StatelessWidget {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
-                    child: CircularProgressIndicator(
-                        color: WebTheme.primary),
+                    child: CircularProgressIndicator(color: WebTheme.primary),
                   ),
                 );
               }
@@ -46,18 +45,25 @@ class WebSponsorshipsPage extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(60),
                   alignment: Alignment.center,
-                  child: Column(children: [
-                    Icon(Icons.workspace_premium_outlined,
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.workspace_premium_outlined,
                         size: 56,
-                        color: AppColors.grey.withOpacity(0.5)),
-                    const SizedBox(height: 12),
-                    Text('no_sponsorships'.tr,
-                        style: TextStyle(color: AppColors.grey)),
-                    const SizedBox(height: 6),
-                    Text('browse_events_hint'.tr,
-                        style: TextStyle(
-                            color: AppColors.grey, fontSize: 12)),
-                  ]),
+                        color: AppColors.grey.withOpacity(0.5),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'no_sponsorships'.tr,
+                        style: TextStyle(color: AppColors.grey),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'browse_events_hint'.tr,
+                        style: TextStyle(color: AppColors.grey, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 );
               }
               return Column(
@@ -98,8 +104,11 @@ class _SponsorshipCard extends StatelessWidget {
                 gradient: AppColors.favoriteGradient,
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Icon(Icons.workspace_premium_rounded,
-                  color: WebTheme.text, size: 24),
+              child: Icon(
+                Icons.workspace_premium_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -121,16 +130,19 @@ class _SponsorshipCard extends StatelessWidget {
                     booking.exhibitionName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        TextStyle(color: AppColors.grey, fontSize: 12),
+                    style: TextStyle(color: AppColors.grey, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
-                  Row(children: [
-                    _meta(Icons.timelapse_rounded,
-                        booking.selectedDurationLabel),
-                    const SizedBox(width: 16),
-                    _meta(Icons.calendar_today_outlined, booking.date),
-                  ]),
+                  Row(
+                    children: [
+                      _meta(
+                        Icons.timelapse_rounded,
+                        booking.selectedDurationLabel,
+                      ),
+                      const SizedBox(width: 16),
+                      _meta(Icons.calendar_today_outlined, booking.date),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -156,10 +168,11 @@ class _SponsorshipCard extends StatelessWidget {
     );
   }
 
-  Widget _meta(IconData icon, String text) => Row(children: [
-        Icon(icon, size: 14, color: AppColors.grey),
-        const SizedBox(width: 4),
-        Text(text,
-            style: TextStyle(color: AppColors.grey, fontSize: 12)),
-      ]);
+  Widget _meta(IconData icon, String text) => Row(
+    children: [
+      Icon(icon, size: 14, color: AppColors.grey),
+      const SizedBox(width: 4),
+      Text(text, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+    ],
+  );
 }
