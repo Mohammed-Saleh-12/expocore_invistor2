@@ -10,11 +10,23 @@ class BoothProfileData {
     return await crud.getData(AppLink.boothProfile(boothId));
   }
 
-  Future<Map<String, dynamic>> updateBoothProfile(
-    int boothId,
-    Map<String, dynamic> body,
-  ) async {
-    return await crud.putData(AppLink.boothProfile(boothId), body);
+  Future<Map<String, dynamic>> updateBoothProfile({
+    required int boothId,
+    required String companyNature,
+    required String servicesProducts,
+    required String headquarters,
+    required List<String> socialLinks,
+    required List<String> productImages,
+    required List<String> boothImages,
+  }) async {
+    return await crud.putData(AppLink.boothProfile(boothId), {
+      'company_nature': companyNature,
+      'services_products': servicesProducts,
+      'headquarters': headquarters,
+      'social_links': socialLinks,
+      'product_images': productImages,
+      'booth_images': boothImages,
+    });
   }
 
   Future<Map<String, dynamic>> getBoothEvents(int boothId) async {

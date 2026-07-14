@@ -312,30 +312,30 @@ class EventsController extends GetxController {
     status.value = StatusRequest.loading;
 
     final b = selectedBooth.value!;
-    final result = await _eventsData.createInvestorEvent({
-      'name':                nameCtrl.text.trim(),
-      'type':                selectedType.value,
-      'booth_id':            b.id,
-      'booth_number':        b.number,
-      'exhibition_name':     selectedExhibitionName.value,
-      'date':                selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
-      'time':                selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
-      'max_participants':    int.tryParse(maxCtrl.text) ?? 100,
-      'description':         descCtrl.text.trim(),
-      'requires_booking':    ticketType.value != 'general',
-      'duration_days':       selectedDuration.value,
-      'has_bookable_seats':  ticketType.value == 'paid',
-      'total_seats':         int.tryParse(seatsCtrl.text) ?? 0,
-      'ticket_price':        ticketType.value == 'paid'
-                                 ? (double.tryParse(ticketPriceCtrl.text) ?? 0)
-                                 : 0,
-      'is_general_invitation': ticketType.value == 'general',
-      'ticket_type':         ticketType.value,
-      'free_ticket_limit':   ticketType.value == 'free_limited'
-                                 ? (int.tryParse(freeLimitCtrl.text) ?? 100)
-                                 : 0,
-      'video_promo_url':     videoPromoCtrl.text.trim(),
-    });
+    final result = await _eventsData.createInvestorEvent(
+      name: nameCtrl.text.trim(),
+      type: selectedType.value,
+      boothId: b.id,
+      boothNumber: b.number,
+      exhibitionName: selectedExhibitionName.value,
+      date: selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
+      time: selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
+      maxParticipants: int.tryParse(maxCtrl.text) ?? 100,
+      description: descCtrl.text.trim(),
+      requiresBooking: ticketType.value != 'general',
+      durationDays: selectedDuration.value,
+      hasBookableSeats: ticketType.value == 'paid',
+      totalSeats: int.tryParse(seatsCtrl.text) ?? 0,
+      ticketPrice: ticketType.value == 'paid'
+          ? (double.tryParse(ticketPriceCtrl.text) ?? 0)
+          : 0,
+      isGeneralInvitation: ticketType.value == 'general',
+      ticketType: ticketType.value,
+      freeTicketLimit: ticketType.value == 'free_limited'
+          ? (int.tryParse(freeLimitCtrl.text) ?? 100)
+          : 0,
+      videoPromoUrl: videoPromoCtrl.text.trim(),
+    );
 
     bool success = false;
     if (result['status'] == true) {
@@ -399,16 +399,19 @@ class EventsController extends GetxController {
     isBooking.value = true;
 
     final dur = selectedSponsorDuration.value!;
-    final result = await _eventsData.createSponsorship({
-      'event_id':               event.id,
-      'selected_duration_label': dur.label,
-      'selected_days':          dur.days,
-      'price':                  dur.price,
-      'company_name':           companyNameCtrl.text.trim(),
-      'company_website':        companyWebCtrl.text.trim(),
-      'company_phone':          companyPhoneCtrl.text.trim(),
-      'product_names': productItems.map((p) => p.nameCtrl.text.trim()).where((n) => n.isNotEmpty).join(', '),
-    });
+    final result = await _eventsData.createSponsorship(
+      eventId: event.id,
+      selectedDurationLabel: dur.label,
+      selectedDays: dur.days,
+      price: dur.price,
+      companyName: companyNameCtrl.text.trim(),
+      companyWebsite: companyWebCtrl.text.trim(),
+      companyPhone: companyPhoneCtrl.text.trim(),
+      productNames: productItems
+          .map((p) => p.nameCtrl.text.trim())
+          .where((n) => n.isNotEmpty)
+          .join(', '),
+    );
 
     if (result['status'] == true) {
       await _loadSponsorships();

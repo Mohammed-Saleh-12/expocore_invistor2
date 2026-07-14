@@ -43,17 +43,17 @@ class RegisterController extends GetxController {
     }
     status.value = StatusRequest.loading;
 
-    final result = await _registerData.register({
-      'company_name': companyCtrl.text.trim(),
-      'trade_name': tradeCtrl.text.trim(),
-      'email': emailCtrl.text.trim(),
-      'location': locationCtrl.text.trim(),
-      'phone': phoneCtrl.text.trim(),
-      'website': websiteCtrl.text.trim(),
-      'password': passCtrl.text,
-      'password_confirmation': confirmCtrl.text,
-      'activity_type': activityType.value,
-    });
+    final result = await _registerData.register(
+      companyName: companyCtrl.text.trim(),
+      tradeName: tradeCtrl.text.trim(),
+      email: emailCtrl.text.trim(),
+      location: locationCtrl.text.trim(),
+      phone: phoneCtrl.text.trim(),
+      website: websiteCtrl.text.trim(),
+      password: passCtrl.text,
+      passwordConfirmation: confirmCtrl.text,
+      activityType: activityType.value,
+    );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;

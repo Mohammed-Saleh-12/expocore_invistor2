@@ -10,8 +10,22 @@ class CampaignsData {
     return await crud.getData(AppLink.investorCampaigns);
   }
 
-  Future<Map<String, dynamic>> createCampaign(Map<String, dynamic> body) async {
-    return await crud.postData(AppLink.investorCampaigns, body);
+  Future<Map<String, dynamic>> createCampaign({
+    required String title,
+    required String description,
+    required String type,
+    required double budget,
+    required String startDate,
+    required String endDate,
+  }) async {
+    return await crud.postData(AppLink.investorCampaigns, {
+      'title': title,
+      'description': description,
+      'type': type,
+      'budget': budget,
+      'start_date': startDate,
+      'end_date': endDate,
+    });
   }
 
   Future<Map<String, dynamic>> deleteCampaign(int campaignId) async {

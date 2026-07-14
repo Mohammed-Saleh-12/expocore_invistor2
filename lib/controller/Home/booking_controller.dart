@@ -48,16 +48,16 @@ class BookingController extends GetxController {
     status.value = StatusRequest.loading;
     isSubmitting.value = true;
 
-    final result = await _bookingData.bookBooth({
-      'booth_id':         b.id,
-      'duration_days':    duration.value,
-      'notes':            notesCtrl.text.trim(),
-      'screen_service':   screenService.value,
-      'setup_service':    setupService.value,
-      'security_service': securitySvc.value,
-      'cleaning_service': cleaningService.value,
-      'total_price':      total,
-    });
+    final result = await _bookingData.bookBooth(
+      boothId: b.id,
+      durationDays: duration.value,
+      notes: notesCtrl.text.trim(),
+      screenService: screenService.value,
+      setupService: setupService.value,
+      securityService: securitySvc.value,
+      cleaningService: cleaningService.value,
+      totalPrice: total,
+    );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;

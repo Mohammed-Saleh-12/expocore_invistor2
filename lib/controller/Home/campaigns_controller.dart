@@ -48,14 +48,14 @@ class CampaignsController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     status.value = StatusRequest.loading;
 
-    final result = await _campaignsData.createCampaign({
-      'title':      titleCtrl.text.trim(),
-      'description': descCtrl.text.trim(),
-      'type':       selectedType.value,
-      'budget':     double.tryParse(budgetCtrl.text) ?? 0,
-      'start_date': selectedStart.value,
-      'end_date':   selectedEnd.value,
-    });
+    final result = await _campaignsData.createCampaign(
+      title: titleCtrl.text.trim(),
+      description: descCtrl.text.trim(),
+      type: selectedType.value,
+      budget: double.tryParse(budgetCtrl.text) ?? 0,
+      startDate: selectedStart.value,
+      endDate: selectedEnd.value,
+    );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;

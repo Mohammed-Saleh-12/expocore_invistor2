@@ -10,7 +10,31 @@ class ProfileData {
     return await crud.getData(AppLink.investorProfile);
   }
 
-  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> body) async {
-    return await crud.putData(AppLink.investorProfile, body);
+  Future<Map<String, dynamic>> updateProfile({
+    required String companyName,
+    required String email,
+    required String location,
+    required String phone,
+    required String website,
+    required String bio,
+    required String linkedin,
+    required String twitter,
+    required String instagram,
+    required String facebook,
+  }) async {
+    return await crud.putData(AppLink.investorProfile, {
+      'company_name': companyName,
+      'email': email,
+      'location': location,
+      'phone': phone,
+      'website': website,
+      'bio': bio,
+      'social': {
+        'linkedin': linkedin,
+        'twitter': twitter,
+        'instagram': instagram,
+        'facebook': facebook,
+      },
+    });
   }
 }

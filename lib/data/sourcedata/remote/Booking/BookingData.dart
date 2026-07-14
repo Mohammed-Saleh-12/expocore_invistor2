@@ -6,8 +6,26 @@ class BookingData {
 
   BookingData(this.crud);
 
-  Future<Map<String, dynamic>> bookBooth(Map<String, dynamic> body) async {
-    return await crud.postData(AppLink.bookBooth, body);
+  Future<Map<String, dynamic>> bookBooth({
+    required int boothId,
+    required int durationDays,
+    required String notes,
+    required bool screenService,
+    required bool setupService,
+    required bool securityService,
+    required bool cleaningService,
+    required double totalPrice,
+  }) async {
+    return await crud.postData(AppLink.bookBooth, {
+      'booth_id': boothId,
+      'duration_days': durationDays,
+      'notes': notes,
+      'screen_service': screenService,
+      'setup_service': setupService,
+      'security_service': securityService,
+      'cleaning_service': cleaningService,
+      'total_price': totalPrice,
+    });
   }
 
   Future<Map<String, dynamic>> cancelBooking(int bookingId) async {

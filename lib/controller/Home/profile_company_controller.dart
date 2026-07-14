@@ -89,20 +89,18 @@ class ProfileCompanyController extends GetxController {
     isSaving.value = true;
     status.value   = StatusRequest.loading;
 
-    final result = await _profileData.updateProfile({
-      'company_name': nameCtrl.text.trim(),
-      'email':        emailCtrl.text.trim(),
-      'location':        locationCtrl.text.trim(),
-      'phone':        phoneCtrl.text.trim(),
-      'website':      websiteCtrl.text.trim(),
-      'bio':          bioCtrl.text.trim(),
-      'social': {
-        'linkedin':  linkedinCtrl.text.trim(),
-        'twitter':   twitterCtrl.text.trim(),
-        'instagram': instagramCtrl.text.trim(),
-        'facebook':  facebookCtrl.text.trim(),
-      },
-    });
+    final result = await _profileData.updateProfile(
+      companyName: nameCtrl.text.trim(),
+      email: emailCtrl.text.trim(),
+      location: locationCtrl.text.trim(),
+      phone: phoneCtrl.text.trim(),
+      website: websiteCtrl.text.trim(),
+      bio: bioCtrl.text.trim(),
+      linkedin: linkedinCtrl.text.trim(),
+      twitter: twitterCtrl.text.trim(),
+      instagram: instagramCtrl.text.trim(),
+      facebook: facebookCtrl.text.trim(),
+    );
 
     if (result['status'] == true) {
       await Get.find<Services>().saveCompany(nameCtrl.text.trim());

@@ -119,14 +119,15 @@ class BoothManagementController extends GetxController {
     isSaving.value = true;
     status.value   = StatusRequest.loading;
 
-    final result = await _boothProfileData.updateBoothProfile(booth.id, {
-      'company_nature':    companyNatureCtrl.text.trim(),
-      'services_products': servicesProductsCtrl.text.trim(),
-      'headquarters':      headquartersCtrl.text.trim(),
-      'social_links':      socialLinks.toList(),
-      'product_images':    productImages.toList(),
-      'booth_images':      boothImages.toList(),
-    });
+    final result = await _boothProfileData.updateBoothProfile(
+      boothId: booth.id,
+      companyNature: companyNatureCtrl.text.trim(),
+      servicesProducts: servicesProductsCtrl.text.trim(),
+      headquarters: headquartersCtrl.text.trim(),
+      socialLinks: socialLinks.toList(),
+      productImages: productImages.toList(),
+      boothImages: boothImages.toList(),
+    );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
