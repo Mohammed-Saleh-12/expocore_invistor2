@@ -1,18 +1,16 @@
+import 'package:expocore_invistor2/data/sourcedata/remote/Auth/LoginData.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
-import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
-import '../../linkapi.dart';
 
 // ════════════════════════════════════════════════════════════
 //  LoginController  —  MVC / GetX
 // ════════════════════════════════════════════════════════════
 class LoginController extends GetxController {
   // ── Dependencies ─────────────────────────────────────────
-  final _crud = Crud();
-
+  late final LoginData _loginData;
   // ── Form ─────────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();
@@ -59,11 +57,9 @@ class LoginController extends GetxController {
     }
 
     // ── Real API call ─────────────────────────────────────────
-    final result = await _crud.postData(AppLink.login, {
-      'email':       emailCtrl.text.trim(),
-      'password':    passwordCtrl.text,
-      'remember_me': rememberMe.value,
-    });
+    final result = await _loginData.login( emailCtrl.text.trim(),
+        passwordCtrl.text,
+    );
 
     if (result['status'] == true) {
       final data      = result['data'];
