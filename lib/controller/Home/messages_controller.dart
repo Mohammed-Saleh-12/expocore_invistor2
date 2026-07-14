@@ -4,11 +4,11 @@ import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../data/model/message/conversation_model.dart';
 import '../../data/model/message/message_model.dart';
+import '../../data/sourcedata/remote/Messages/MessagesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class MessagesController extends GetxController {
-  final _crud                = Crud();
+  final MessagesData _messagesData   = MessagesData(Crud());
   final conversations        = <ConversationModel>[].obs;
   final activeConversationId = Rxn<int>();
   final inputCtrl            = TextEditingController();
@@ -24,7 +24,7 @@ class MessagesController extends GetxController {
 
   Future<void> _loadConversations() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorMessages);
+    final result = await _messagesData.getConversations();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       conversations.value =
@@ -36,7 +36,7 @@ class MessagesController extends GetxController {
   }
 
   Future<void> _loadConversationMessages(int convId) async {
-    final result = await _crud.getData(AppLink.conversationDetail(convId));
+    final result = await _messagesData.getConversationDetail(convId);
     if (result['status'] == true) {
       final d    = _body(result['data']);
       final msgs = _asList(d['messages'])
@@ -106,10 +106,10 @@ class MessagesController extends GetxController {
         unreadCount: 0,
       );
       conversations.add(conv);
-      _crud.postData(AppLink.investorMessages, {
-        'exhibition_id':   ex?.id ?? 0,
-        'exhibition_name': exhibitionName,
-      });
+      _messagesData.createConversation(
+        exhibitionId: ex?.id ?? 0,
+        exhibitionName: exhibitionName,
+      );
     }
 
     openConversation(conv.id);
@@ -137,9 +137,7 @@ class MessagesController extends GetxController {
     inputCtrl.clear();
 
     isSending.value = true;
-    final result = await _crud.postData(AppLink.sendMessage(conv.id), {
-      'text': text,
-    });
+    final result = await _messagesData.sendMessage(conv.id, text);
     isSending.value = false;
 
     if (result['status'] != true) {

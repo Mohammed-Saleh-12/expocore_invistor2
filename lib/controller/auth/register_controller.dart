@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Auth/RegisterData.dart';
 
 class RegisterController extends GetxController {
-  final _crud = Crud();
+  final RegisterData _registerData = RegisterData(Crud());
   final companyCtrl = TextEditingController();
   final tradeCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
@@ -43,7 +43,7 @@ class RegisterController extends GetxController {
     }
     status.value = StatusRequest.loading;
 
-    final result = await _crud.postData(AppLink.register, {
+    final result = await _registerData.register({
       'company_name': companyCtrl.text.trim(),
       'trade_name': tradeCtrl.text.trim(),
       'email': emailCtrl.text.trim(),

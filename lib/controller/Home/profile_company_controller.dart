@@ -5,10 +5,10 @@ import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Profile/ProfileData.dart';
 
 class ProfileCompanyController extends GetxController {
-  final _crud       = Crud();
+  final ProfileData _profileData = ProfileData(Crud());
   final nameCtrl    = TextEditingController();
   final emailCtrl   = TextEditingController();
   final locationCtrl   = TextEditingController();
@@ -52,7 +52,7 @@ class ProfileCompanyController extends GetxController {
 
   Future<void> _loadProfile() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorProfile);
+    final result = await _profileData.getProfile();
     if (result['status'] == true) {
       final d = _body(result['data']);
       nameCtrl.text    = d['company_name'] ?? d['name'] ?? '';
@@ -89,7 +89,7 @@ class ProfileCompanyController extends GetxController {
     isSaving.value = true;
     status.value   = StatusRequest.loading;
 
-    final result = await _crud.putData(AppLink.investorProfile, {
+    final result = await _profileData.updateProfile({
       'company_name': nameCtrl.text.trim(),
       'email':        emailCtrl.text.trim(),
       'location':        locationCtrl.text.trim(),

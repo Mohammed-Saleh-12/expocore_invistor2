@@ -3,11 +3,11 @@ import '../../core/class/crud.dart';
 import '../../core/services/services.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/model/event/event_model.dart';
+import '../../data/sourcedata/remote/Dashboard/DashboardData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class DashboardController extends GetxController {
-  final _crud = Crud();
+  final DashboardData _dashboardData = DashboardData(Crud());
 
   final currentIndex   = 0.obs;
   final selectedPeriod = 'هذا الشهر'.obs;
@@ -32,10 +32,7 @@ class DashboardController extends GetxController {
 
   Future<void> _loadDashboard() async {
     isLoading.value = true;
-    final result = await _crud.getData(
-      AppLink.investorDashboard,
-      params: {'period': selectedPeriod.value},
-    );
+    final result = await _dashboardData.getDashboard(selectedPeriod.value);
 
     if (result['status'] == true) {
       final d = _body(result['data']);

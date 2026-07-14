@@ -6,11 +6,12 @@ import '../../core/services/download_service.dart';
 import '../../core/utils/report_type_helper.dart';
 import '../../core/utils/safe_snackbar.dart';
 import '../../data/model/report/report_model.dart';
+import '../../data/sourcedata/remote/Reports/ReportsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../linkapi.dart';
 
 class ReportsController extends GetxController {
-  final _crud            = Crud();
+  final ReportsData _reportsData = ReportsData(Crud());
   final statusRequest    = StatusRequest.none.obs;
   final reports          = <ReportModel>[].obs;
   final filtered         = <ReportModel>[].obs;
@@ -38,7 +39,7 @@ class ReportsController extends GetxController {
 
   Future<void> _loadReports() async {
     statusRequest.value = StatusRequest.loading;
-    final result = await _crud.getData(AppLink.investorReports);
+    final result = await _reportsData.getReports();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       reports.value = list.map((e) => ReportModel.fromJson(e)).toList();

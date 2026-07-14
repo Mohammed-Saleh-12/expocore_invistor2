@@ -4,11 +4,11 @@ import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/event_model.dart';
+import '../../data/sourcedata/remote/Booths/BoothProfileData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class BoothManagementController extends GetxController {
-  final _crud = Crud();
+  final BoothProfileData _boothProfileData = BoothProfileData(Crud());
   late BoothModel booth;
 
   final companyNatureCtrl    = TextEditingController();
@@ -50,7 +50,7 @@ class BoothManagementController extends GetxController {
 
   Future<void> _loadBoothProfile() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.boothProfile(booth.id));
+    final result = await _boothProfileData.getBoothProfile(booth.id);
     if (result['status'] == true) {
       final d = _body(result['data']);
       companyNatureCtrl.text    = d['company_nature'] ?? '';
@@ -77,10 +77,7 @@ class BoothManagementController extends GetxController {
   }
 
   Future<void> _loadBoothEvents() async {
-    final result = await _crud.getData(
-      AppLink.investorEvents,
-      params: {'booth_id': booth.id},
-    );
+    final result = await _boothProfileData.getBoothEvents(booth.id);
     if (result['status'] == true) {
       boothEvents.value = _asList(result['data'])
           .map((e) => EventModel.fromJson(e))
@@ -122,7 +119,7 @@ class BoothManagementController extends GetxController {
     isSaving.value = true;
     status.value   = StatusRequest.loading;
 
-    final result = await _crud.putData(AppLink.boothProfile(booth.id), {
+    final result = await _boothProfileData.updateBoothProfile(booth.id, {
       'company_nature':    companyNatureCtrl.text.trim(),
       'services_products': servicesProductsCtrl.text.trim(),
       'headquarters':      headquartersCtrl.text.trim(),

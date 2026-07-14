@@ -4,10 +4,10 @@ import '../../core/class/crud.dart';
 import '../../core/constant/app_globals.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Auth/LogoutData.dart';
 
 class SettingsController extends GetxController {
-  final _crud                = Crud();
+  final LogoutData _logoutData = LogoutData(Crud());
   final isDark               = true.obs;
   final notificationsEnabled = true.obs;
   final favoritesNotify      = true.obs;
@@ -54,7 +54,7 @@ class SettingsController extends GetxController {
 
     if (confirm == true) {
       isLoggingOut.value = true;
-      await _crud.postData(AppLink.logout, {});
+      await _logoutData.logout();
       await Get.find<Services>().clearSession();
       isLoggingOut.value = false;
       Get.offAllNamed(AppRoutes.LOGIN);

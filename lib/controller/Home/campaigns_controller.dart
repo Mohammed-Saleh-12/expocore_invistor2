@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/campaign/campaign_model.dart';
+import '../../data/sourcedata/remote/Campaigns/CampaignsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class CampaignsController extends GetxController {
-  final _crud      = Crud();
+  final CampaignsData _campaignsData = CampaignsData(Crud());
   final campaigns  = <CampaignModel>[].obs;
   final isLoading  = false.obs;
   final isCreating = false.obs;
@@ -34,7 +34,7 @@ class CampaignsController extends GetxController {
 
   Future<void> _loadCampaigns() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorCampaigns);
+    final result = await _campaignsData.getCampaigns();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       campaigns.value = list.map((e) => CampaignModel.fromJson(e)).toList();
@@ -48,7 +48,7 @@ class CampaignsController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     status.value = StatusRequest.loading;
 
-    final result = await _crud.postData(AppLink.investorCampaigns, {
+    final result = await _campaignsData.createCampaign({
       'title':      titleCtrl.text.trim(),
       'description': descCtrl.text.trim(),
       'type':       selectedType.value,
@@ -71,7 +71,7 @@ class CampaignsController extends GetxController {
   }
 
   Future<void> deleteCampaign(int id) async {
-    final result = await _crud.deleteData(AppLink.campaignDetail(id));
+    final result = await _campaignsData.deleteCampaign(id);
     if (result['status'] == true) {
       campaigns.removeWhere((c) => c.id == id);
       Get.snackbar('campaign_deleted_title'.tr, 'campaign_deleted_msg'.tr, snackPosition: SnackPosition.BOTTOM);

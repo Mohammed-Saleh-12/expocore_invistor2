@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
+import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class ExhibitionsController extends GetxController {
-  final _crud       = Crud();
+  final ExhibitionsData _exhibitionsData = ExhibitionsData(Crud());
   final searchCtrl  = TextEditingController();
   final exhibitions = <ExhibitionModel>[].obs;
   final filtered    = <ExhibitionModel>[].obs;
@@ -27,7 +27,7 @@ class ExhibitionsController extends GetxController {
 
   Future<void> _loadExhibitions() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.exhibitions);
+    final result = await _exhibitionsData.getExhibitions();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       exhibitions.value = list.map((e) => ExhibitionModel.fromJson(e)).toList();
@@ -113,9 +113,9 @@ class ExhibitionsController extends GetxController {
     exhibitions.refresh();
     filtered.refresh();
     if (wasFav) {
-      _crud.deleteData(AppLink.favoriteExhibition(e.id));
+      _exhibitionsData.removeFavorite(e.id);
     } else {
-      _crud.postData(AppLink.favoriteExhibition(e.id), {});
+      _exhibitionsData.addFavorite(e.id);
     }
   }
 

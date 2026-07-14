@@ -3,11 +3,18 @@ import '../../core/class/crud.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
+import '../../data/sourcedata/remote/Events/EventsData.dart';
+import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
+import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
+import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class FavoritesController extends GetxController {
-  final _crud               = Crud();
+  final FavoritesData _favoritesData     = FavoritesData(Crud());
+  final ExhibitionsData _exhibitionsData = ExhibitionsData(Crud());
+  final BoothsData _boothsData           = BoothsData(Crud());
+  final EventsData _eventsData           = EventsData(Crud());
+
   final favoriteExhibitions = <ExhibitionModel>[].obs;
   final favoriteEvents      = <ExhibitionSponsorEvent>[].obs;
   final favoriteBooths      = <BoothModel>[].obs;
@@ -24,7 +31,7 @@ class FavoritesController extends GetxController {
 
   Future<void> _loadFavorites() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorFavorites);
+    final result = await _favoritesData.getFavorites();
     if (result['status'] == true) {
       final d = _body(result['data']);
       favoriteExhibitions.value = _asList(d['exhibitions'])
@@ -58,7 +65,7 @@ class FavoritesController extends GetxController {
     } else {
       exhibition.isFavorite = true;
       favoriteExhibitions.add(exhibition);
-      _crud.postData(AppLink.favoriteExhibition(exhibition.id), {});
+      _exhibitionsData.addFavorite(exhibition.id);
     }
   }
 
@@ -68,7 +75,7 @@ class FavoritesController extends GetxController {
     } else {
       event.isFavorite = true;
       favoriteEvents.add(event);
-      _crud.postData(AppLink.favoriteEvent(event.id), {});
+      _eventsData.addFavoriteEvent(event.id);
     }
   }
 
@@ -78,14 +85,14 @@ class FavoritesController extends GetxController {
     } else {
       booth.isFavorite = true;
       favoriteBooths.add(booth);
-      _crud.postData(AppLink.favoriteBooth(booth.id), {});
+      _boothsData.addFavorite(booth.id);
     }
   }
 
   void removeExhibition(ExhibitionModel e) {
     favoriteExhibitions.remove(e);
     e.isFavorite = false;
-    _crud.deleteData(AppLink.favoriteExhibition(e.id));
+    _exhibitionsData.removeFavorite(e.id);
     Get.snackbar('fav_removed_title'.tr,
         'fav_removed_item_msg'.trParams({'name': e.name}),
         snackPosition: SnackPosition.BOTTOM);
@@ -94,7 +101,7 @@ class FavoritesController extends GetxController {
   void removeEvent(ExhibitionSponsorEvent e) {
     favoriteEvents.remove(e);
     e.isFavorite = false;
-    _crud.deleteData(AppLink.favoriteEvent(e.id));
+    _eventsData.removeFavoriteEvent(e.id);
     Get.snackbar('fav_removed_title'.tr,
         'fav_removed_item_msg'.trParams({'name': e.name}),
         snackPosition: SnackPosition.BOTTOM);
@@ -103,7 +110,7 @@ class FavoritesController extends GetxController {
   void removeBooth(BoothModel b) {
     favoriteBooths.remove(b);
     b.isFavorite = false;
-    _crud.deleteData(AppLink.favoriteBooth(b.id));
+    _boothsData.removeFavorite(b.id);
     Get.snackbar('fav_removed_title'.tr,
         'fav_removed_booth_msg'.trParams({'number': b.number}),
         snackPosition: SnackPosition.BOTTOM);

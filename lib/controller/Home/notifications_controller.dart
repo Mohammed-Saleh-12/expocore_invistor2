@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/notification/notification_model.dart';
+import '../../data/sourcedata/remote/Notifications/NotificationsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class NotificationsController extends GetxController {
-  final _crud         = Crud();
+  final NotificationsData _notificationsData = NotificationsData(Crud());
   final notifications = <NotificationModel>[].obs;
   final isLoading     = false.obs;
 
@@ -19,7 +19,7 @@ class NotificationsController extends GetxController {
 
   Future<void> _loadNotifications() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorNotifications);
+    final result = await _notificationsData.getNotifications();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       notifications.value =
@@ -37,14 +37,14 @@ class NotificationsController extends GetxController {
     notifications[idx] = notifications[idx].copyWith(isRead: true);
     notifications.refresh();
 
-    await _crud.patchData(AppLink.markNotificationRead(id), {});
+    await _notificationsData.markRead(id);
   }
 
   Future<void> markAllRead() async {
     notifications.value =
         notifications.map((n) => n.copyWith(isRead: true)).toList();
 
-    await _crud.patchData(AppLink.markAllNotificationsRead, {});
+    await _notificationsData.markAllRead();
   }
 
   Future<void> refresh() => _loadNotifications();

@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/booth/booth_model.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Booking/BookingData.dart';
 
 class BookingController extends GetxController {
-  final _crud           = Crud();
+  final BookingData _bookingData = BookingData(Crud());
   final booth           = Rx<BoothModel?>(null);
   final notesCtrl       = TextEditingController();
   final duration        = 1.obs;
@@ -48,7 +48,7 @@ class BookingController extends GetxController {
     status.value = StatusRequest.loading;
     isSubmitting.value = true;
 
-    final result = await _crud.postData(AppLink.bookBooth, {
+    final result = await _bookingData.bookBooth({
       'booth_id':         b.id,
       'duration_days':    duration.value,
       'notes':            notesCtrl.text.trim(),
@@ -77,7 +77,7 @@ class BookingController extends GetxController {
   }
 
   Future<void> cancelBooking(int bookingId) async {
-    final result = await _crud.patchData(AppLink.cancelBooking(bookingId), {});
+    final result = await _bookingData.cancelBooking(bookingId);
     if (result['status'] == true) {
       Get.snackbar('booking_cancelled_title'.tr, 'booking_cancelled_msg'.tr,
           snackPosition: SnackPosition.BOTTOM);

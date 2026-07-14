@@ -11,8 +11,9 @@ import '../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../data/model/event/sponsorship_booking_model.dart';
 import '../../data/model/event/ticket_request_model.dart';
 import '../../data/model/booth/booth_model.dart';
+import '../../data/sourcedata/remote/Booths/BoothsData.dart';
+import '../../data/sourcedata/remote/Events/EventsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class ProductItem {
   final TextEditingController nameCtrl;
@@ -23,7 +24,8 @@ class ProductItem {
 }
 
 class EventsController extends GetxController {
-  final _crud = Crud();
+  final EventsData _eventsData = EventsData(Crud());
+  final BoothsData _boothsData = BoothsData(Crud());
 
   // ── Investor's own events ────────────────────────────────────────────
   final myEvents                = <EventModel>[].obs;
@@ -223,7 +225,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadMyEvents() async {
-    final result = await _crud.getData(AppLink.investorEvents);
+    final result = await _eventsData.getInvestorEvents();
     if (result['status'] == true) {
       myEvents.value = _asList(result['data'])
           .map((e) => EventModel.fromJson(e))
@@ -236,7 +238,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadSponsorEvents() async {
-    final result = await _crud.getData(AppLink.exhibitionSponsorEvents);
+    final result = await _eventsData.getSponsorEvents();
     if (result['status'] == true) {
       exhibitionSponsorEvents.value = _asList(result['data'])
           .map((e) => ExhibitionSponsorEvent.fromJson(e))
@@ -247,7 +249,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadSponsorships() async {
-    final result = await _crud.getData(AppLink.investorSponsorships);
+    final result = await _eventsData.getSponsorships();
     if (result['status'] == true) {
       mySponsorshipBookings.value = _asList(result['data'])
           .map((e) => SponsorshipBookingModel.fromJson(e))
@@ -258,7 +260,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadBooths() async {
-    final result = await _crud.getData(AppLink.investorBookings);
+    final result = await _boothsData.getMyBookings();
     if (result['status'] == true) {
       myBooths.value = _asList(result['data'])
           .map((e) => BoothModel.fromJson(e))
@@ -269,7 +271,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadTicketRequests(int eventId) async {
-    final result = await _crud.getData(AppLink.eventTicketRequests(eventId));
+    final result = await _eventsData.getTicketRequests(eventId);
     if (result['status'] == true) {
       ticketRequests[eventId] = _asList(result['data'])
           .map((e) => TicketRequestModel.fromJson(e))
@@ -310,7 +312,7 @@ class EventsController extends GetxController {
     status.value = StatusRequest.loading;
 
     final b = selectedBooth.value!;
-    final result = await _crud.postData(AppLink.investorEvents, {
+    final result = await _eventsData.createInvestorEvent({
       'name':                nameCtrl.text.trim(),
       'type':                selectedType.value,
       'booth_id':            b.id,
@@ -397,7 +399,7 @@ class EventsController extends GetxController {
     isBooking.value = true;
 
     final dur = selectedSponsorDuration.value!;
-    final result = await _crud.postData(AppLink.investorSponsorships, {
+    final result = await _eventsData.createSponsorship({
       'event_id':               event.id,
       'selected_duration_label': dur.label,
       'selected_days':          dur.days,
@@ -449,9 +451,10 @@ class EventsController extends GetxController {
   }
 
   Future<void> approveTicketRequest(TicketRequestModel req) async {
-    final result = await _crud.patchData(
-      AppLink.ticketRequestAction(req.eventId, req.id),
-      {'action': 'approve'},
+    final result = await _eventsData.ticketRequestAction(
+      req.eventId,
+      req.id,
+      'approve',
     );
     if (result['status'] == true) {
       final d = _body(result['data']);
@@ -472,10 +475,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> rejectTicketRequest(TicketRequestModel req) async {
-    await _crud.patchData(
-      AppLink.ticketRequestAction(req.eventId, req.id),
-      {'action': 'reject'},
-    );
+    await _eventsData.ticketRequestAction(req.eventId, req.id, 'reject');
     req.status = 'rejected';
     ticketRequests.refresh();
     Get.snackbar('ticket_rejected_title'.tr,
@@ -494,9 +494,9 @@ class EventsController extends GetxController {
     e.isFavorite = !wasFav;
     exhibitionSponsorEvents.refresh();
     if (wasFav) {
-      _crud.deleteData(AppLink.favoriteEvent(e.id));
+      _eventsData.removeFavoriteEvent(e.id);
     } else {
-      _crud.postData(AppLink.favoriteEvent(e.id), {});
+      _eventsData.addFavoriteEvent(e.id);
     }
   }
 

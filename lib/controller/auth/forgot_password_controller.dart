@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Auth/ForgotPasswordData.dart';
 
 // ════════════════════════════════════════════════════════════
 //  ForgotPasswordController  —  MVC / GetX
@@ -10,7 +10,7 @@ import '../../linkapi.dart';
 // ════════════════════════════════════════════════════════════
 class ForgotPasswordController extends GetxController {
   // ── Dependencies ─────────────────────────────────────────
-  final _crud = Crud();
+  final ForgotPasswordData _forgotPasswordData = ForgotPasswordData(Crud());
 
   // ── Form ─────────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
@@ -25,9 +25,7 @@ class ForgotPasswordController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     status.value = StatusRequest.loading;
 
-    final result = await _crud.postData(AppLink.forgotPassword, {
-      'email': emailCtrl.text.trim(),
-    });
+    final result = await _forgotPasswordData.sendResetLink(emailCtrl.text.trim());
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;

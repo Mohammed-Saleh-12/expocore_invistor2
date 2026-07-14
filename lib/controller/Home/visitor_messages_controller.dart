@@ -4,11 +4,11 @@ import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../data/model/message/visitor_conversation_model.dart';
 import '../../data/model/message/message_model.dart';
+import '../../data/sourcedata/remote/VisitorMessages/VisitorMessagesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class VisitorMessagesController extends GetxController {
-  final _crud                = Crud();
+  final VisitorMessagesData _visitorMessagesData = VisitorMessagesData(Crud());
   final visitorConversations = <VisitorConversationModel>[].obs;
   final activeConversationId = Rxn<int>();
   final inputCtrl            = TextEditingController();
@@ -24,7 +24,7 @@ class VisitorMessagesController extends GetxController {
 
   Future<void> _loadConversations() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorVisitorMessages);
+    final result = await _visitorMessagesData.getConversations();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       visitorConversations.value =
@@ -36,7 +36,7 @@ class VisitorMessagesController extends GetxController {
   }
 
   Future<void> _loadConversationMessages(int convId) async {
-    final result = await _crud.getData(AppLink.visitorConversationDetail(convId));
+    final result = await _visitorMessagesData.getConversationDetail(convId);
     if (result['status'] == true) {
       final d    = _body(result['data']);
       final msgs = _asList(d['messages'])
@@ -123,9 +123,7 @@ class VisitorMessagesController extends GetxController {
     inputCtrl.clear();
 
     isSending.value = true;
-    final result = await _crud.postData(AppLink.sendVisitorMessage(conv.id), {
-      'text': text,
-    });
+    final result = await _visitorMessagesData.sendMessage(conv.id, text);
     isSending.value = false;
 
     if (result['status'] != true) {

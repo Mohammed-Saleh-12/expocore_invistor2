@@ -2,6 +2,7 @@ import 'package:expocore_invistor2/data/sourcedata/remote/Auth/LoginData.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
+import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
 
@@ -10,7 +11,7 @@ import '../../core/services/services.dart';
 // ════════════════════════════════════════════════════════════
 class LoginController extends GetxController {
   // ── Dependencies ─────────────────────────────────────────
-  late final LoginData _loginData;
+  final LoginData _loginData = LoginData(Crud());
   // ── Form ─────────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();

@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Analytics/AnalyticsData.dart';
 
 class AnalyticsController extends GetxController {
-  final _crud = Crud();
+  final AnalyticsData _analyticsData = AnalyticsData(Crud());
 
   final selectedPeriod = 'هذا الشهر'.obs;
   final isLoading      = false.obs;
@@ -31,10 +31,7 @@ class AnalyticsController extends GetxController {
 
   Future<void> _loadAnalytics() async {
     isLoading.value = true;
-    final result = await _crud.getData(
-      AppLink.investorAnalytics,
-      params: {'period': selectedPeriod.value},
-    );
+    final result = await _analyticsData.getAnalytics(selectedPeriod.value);
 
     if (result['status'] == true) {
       final d = _body(result['data']);

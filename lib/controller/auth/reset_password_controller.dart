@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
-import '../../linkapi.dart';
+import '../../data/sourcedata/remote/Auth/ResetPasswordData.dart';
 
 // ════════════════════════════════════════════════════════════
 //  ResetPasswordController  —  MVC / GetX
@@ -16,7 +16,7 @@ import '../../linkapi.dart';
 // ════════════════════════════════════════════════════════════
 class ResetPasswordController extends GetxController {
   // ── Dependencies ─────────────────────────────────────────
-  final _crud = Crud();
+  final ResetPasswordData _resetPasswordData = ResetPasswordData(Crud());
 
   // ── Form ─────────────────────────────────────────────────
   final formKey     = GlobalKey<FormState>();
@@ -50,11 +50,11 @@ class ResetPasswordController extends GetxController {
     }
     status.value = StatusRequest.loading;
 
-    final result = await _crud.postData(AppLink.resetPassword, {
-      'token':                 token.value,
-      'password':              passwordCtrl.text,
-      'password_confirmation': confirmCtrl.text,
-    });
+    final result = await _resetPasswordData.resetPassword(
+      token: token.value,
+      password: passwordCtrl.text,
+      passwordConfirmation: confirmCtrl.text,
+    );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;

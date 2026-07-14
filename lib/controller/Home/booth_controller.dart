@@ -3,11 +3,11 @@ import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/report/report_model.dart';
+import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
-import '../../linkapi.dart';
 
 class BoothController extends GetxController {
-  final _crud        = Crud();
+  final BoothsData _boothsData = BoothsData(Crud());
   final booths       = <BoothModel>[].obs;
   final filtered     = <BoothModel>[].obs;
   final statusFilter = 'الكل'.obs;
@@ -29,7 +29,7 @@ class BoothController extends GetxController {
 
   Future<void> _loadBooths() async {
     isLoading.value = true;
-    final result = await _crud.getData(AppLink.investorBookings);
+    final result = await _boothsData.getMyBookings();
     if (result['status'] == true) {
       final list = _asList(result['data']);
       booths.value = list.map((e) => BoothModel.fromJson(e)).toList();
@@ -57,9 +57,9 @@ class BoothController extends GetxController {
     booths.refresh();
     filtered.refresh();
     if (wasFav) {
-      _crud.deleteData(AppLink.favoriteBooth(b.id));
+      _boothsData.removeFavorite(b.id);
     } else {
-      _crud.postData(AppLink.favoriteBooth(b.id), {});
+      _boothsData.addFavorite(b.id);
     }
   }
 
