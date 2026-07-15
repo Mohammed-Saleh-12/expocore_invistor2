@@ -62,45 +62,15 @@ class WebSidebar extends StatelessWidget {
 
           // ── Publish event ────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: InkWell(
-              onTap: WebNavController.to.openCreateEvent,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 13,
-                ),
-                decoration: BoxDecoration(
-                  gradient: AppColors.favoriteGradient,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: WebTheme.primary.withOpacity(0.35),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.add_circle_outline_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'نشر فعالية',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: _NavItem(
+              section: const WebSection(
+                icon: Icons.add_circle_outline_rounded,
+                label: 'نشر فعالية',
               ),
+              active: false,
+              onTap: WebNavController.to.openCreateEvent,
+              translated: false,
             ),
           ),
 
@@ -148,10 +118,13 @@ class _NavItem extends StatelessWidget {
   final WebSection section;
   final bool active;
   final VoidCallback onTap;
+  /// false → استخدم النص كما هو بدون ترجمة
+  final bool translated;
   const _NavItem({
     required this.section,
     required this.active,
     required this.onTap,
+    this.translated = true,
   });
 
   @override
@@ -186,7 +159,7 @@ class _NavItem extends StatelessWidget {
               ),
               const SizedBox(width: 13),
               Text(
-                section.label.tr,
+                translated ? section.label.tr : section.label,
                 style: TextStyle(
                   color: active ? WebTheme.onGradient : AppColors.grey,
                   fontSize: 14.5,
