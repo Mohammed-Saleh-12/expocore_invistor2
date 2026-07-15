@@ -622,13 +622,16 @@ class _EventDetail extends StatelessWidget {
           '${e.ticketPrice.toInt()} ر.س',
         ),
     ],
-    actions: [
-      _actionBtn(
-        'طلبات التذاكر',
-        filled: true,
-        onTap: () => WebNavController.to.openTicketRequests(e),
-      ),
-    ],
+    // إخفاء زر طلبات التذاكر للفعاليات العامة (none)؛ يظهر للمجانية والمدفوعة
+    actions: e.ticketCategory == 'none'
+        ? []
+        : [
+            _actionBtn(
+              'طلبات التذاكر',
+              filled: true,
+              onTap: () => WebNavController.to.openTicketRequests(e),
+            ),
+          ],
   );
 }
 

@@ -76,10 +76,12 @@ class TicketRequestsView extends StatelessWidget {
                     .toList();
                 return TabBarView(
                   children: [
-                    // Accept/Reject controls only for paid events
-                    _listTab(context, pending, ctrl, showActions: isPaid),
-                    _listTab(context, approved, ctrl, showQr: true),
-                    _listTab(context, rejected, ctrl),
+                    // Accept/Reject controls + status chip only for paid events
+                    _listTab(context, pending, ctrl,
+                        showActions: isPaid, showStatus: isPaid),
+                    _listTab(context, approved, ctrl,
+                        showQr: true, showStatus: isPaid),
+                    _listTab(context, rejected, ctrl, showStatus: isPaid),
                   ],
                 );
               }),
@@ -96,6 +98,7 @@ class TicketRequestsView extends StatelessWidget {
     EventsController ctrl, {
     bool showActions = false,
     bool showQr = false,
+    bool showStatus = true,
   }) {
     if (requests.isEmpty) {
       return EmptyWidget(message: 'no_requests'.tr);
@@ -108,6 +111,7 @@ class TicketRequestsView extends StatelessWidget {
         ctrl: ctrl,
         showActions: showActions,
         showQr: showQr,
+        showStatus: showStatus,
       ),
     );
   }
@@ -118,12 +122,14 @@ class _RequestCard extends StatelessWidget {
   final EventsController ctrl;
   final bool showActions;
   final bool showQr;
+  final bool showStatus;
 
   const _RequestCard({
     required this.request,
     required this.ctrl,
     this.showActions = false,
     this.showQr = false,
+    this.showStatus = true,
   });
 
   @override
@@ -185,7 +191,8 @@ class _RequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              _statusChip(request.status),
+              // chip الحالة مخفي للتذاكر المجانية (لا توجد إدارة قبول/رفض)
+              if (showStatus) _statusChip(request.status),
             ],
           ),
           const SizedBox(height: 10),

@@ -100,7 +100,8 @@ class _RequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              _statusChip(req.status),
+              // chip الحالة لا معنى له للتذاكر المجانية (لا توجد إدارة)
+              if (isPaid) _statusChip(req.status),
             ],
           ),
           const SizedBox(height: 12),
