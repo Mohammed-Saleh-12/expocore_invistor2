@@ -3,9 +3,8 @@ import '../../models/web_theme.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/booth_controller.dart';
 import '../../../core/constant/appcolors.dart';
-import '../../../data/model/booth/booth_model.dart';
 import '../widgets/web_section_header.dart';
-import '../widgets/web_status_chip.dart';
+import '../widgets/web_booth_card.dart';
 import '../../controllers/web_nav_controller.dart';
 
 class WebBoothsPage extends StatelessWidget {
@@ -90,7 +89,27 @@ class WebBoothsPage extends StatelessWidget {
                       mainAxisSpacing: 20,
                       childAspectRatio: 1.5,
                     ),
-                    itemBuilder: (_, i) => _BoothCard(booth: list[i], c: c),
+                    itemBuilder: (_, i) {
+                      final b = list[i];
+                      final approved = b.status == 'active';
+                      return WebBoothCard(
+                        booth: b,
+                        primaryLabel: approved ? 'إدارة' : 'تفاصيل',
+                        onPrimary: () => approved
+                            ? WebNavController.to.openBoothManagement(b)
+                            : WebNavController.to.openBooth(
+                                b,
+                                report: c.buildBoothReport(b),
+                              ),
+                        secondaryLabel:
+                            (approved || b.status == 'ended') ? 'التقرير' : 'خريطة 3D',
+                        onSecondary: () =>
+                            (approved || b.status == 'ended')
+                                ? WebNavController.to
+                                    .openReport(c.buildBoothReport(b))
+                                : WebNavController.to.openMap(),
+                      );
+                    },
                   );
                 },
               );
@@ -119,152 +138,3 @@ class WebBoothsPage extends StatelessWidget {
   );
 }
 
-// ── Booth card ───────────────────────────────────────────────
-class _BoothCard extends StatelessWidget {
-  final BoothModel booth;
-  final BoothController c;
-  const _BoothCard({required this.booth, required this.c});
-
-  bool get _approved => booth.status == 'active';
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: WebTheme.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: WebTheme.primary.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.storefront_rounded,
-                  color: WebTheme.primary,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'جناح ${booth.number}',
-                      style: TextStyle(
-                        color: WebTheme.text,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      booth.exhibitionName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              WebStatusChip(status: booth.status),
-            ],
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
-              const SizedBox(width: 16),
-              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _btn(
-                  label: _approved ? 'إدارة' : 'تفاصيل',
-                  filled: true,
-                  onTap: () => _approved
-                      ? WebNavController.to.openBoothManagement(booth)
-                      : WebNavController.to.openBooth(
-                          booth,
-                          report: c.buildBoothReport(booth),
-                        ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _approved
-                    ? _btn(
-                        label: 'التقرير',
-                        filled: false,
-                        onTap: () => WebNavController.to.openReport(
-                          c.buildBoothReport(booth),
-                        ),
-                      )
-                    : booth.status == 'ended'
-                    ? _btn(
-                        label: 'التقرير',
-                        filled: false,
-                        onTap: () => WebNavController.to.openReport(
-                          c.buildBoothReport(booth),
-                        ),
-                      )
-                    : _btn(
-                        label: 'خريطة 3D',
-                        filled: false,
-                        onTap: () => WebNavController.to.openMap(),
-                      ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _info(IconData icon, String text) => Row(
-    children: [
-      Icon(icon, size: 15, color: AppColors.grey),
-      const SizedBox(width: 4),
-      Text(text, style: TextStyle(color: AppColors.grey, fontSize: 12)),
-    ],
-  );
-
-  Widget _btn({
-    required String label,
-    required bool filled,
-    required VoidCallback onTap,
-  }) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 11),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        gradient: filled ? AppColors.favoriteGradient : null,
-        border: filled
-            ? null
-            : Border.all(color: WebTheme.primary.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: filled ? Colors.white : WebTheme.primary,
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    ),
-  );
-}
