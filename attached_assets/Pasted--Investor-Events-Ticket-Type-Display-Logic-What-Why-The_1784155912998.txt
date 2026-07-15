@@ -1,0 +1,40 @@
+ Investor Events Ticket-Type Display Logic
+What & Why
+The "My Events" page (investor side) currently shows ticket-related UI uniformly for all events. We need to apply conditional display logic based on the event's ticket type:
+
+Free-ticket events (ticketPrice == 0 and hasBookableSeats == true or requiresBooking == true): Show the event, display the booked-ticket count/stats, but NO accept/reject controls.
+Paid-ticket events (ticketPrice > 0): Show the event, display ticket requests with full accept/reject controls.
+General/no-ticket events (isGeneralInvitation == true or requiresBooking == false and no seats): Show the event only; hide all ticket-count stats and ticket-request sections entirely (there are no tickets by design).
+This must be applied consistently across both mobile and web versions.
+
+Done looks like
+On mobile (my_event_detail_view): the ticket-requests navigation button and pending-count badge appear only for paid events; free events show seat/booking stats without a requests button; general events show no ticket-related section at all.
+On mobile (ticket_requests_view): the Accept/Reject action buttons are hidden for free-ticket events; the view still shows the list of who booked but only in read-only mode.
+On web (web_events_page): the "Tickets" button on each event card is hidden for general events; for free events it shows booked count only (no pending-requests chip); for paid events it shows the pending-requests count chip and opens the full requests page.
+On web (web_ticket_requests_page): Accept/Reject buttons are hidden when the event is a free-ticket event; requests are displayed read-only.
+No regressions in other event flows (create, edit, details display).
+Out of scope
+Changing the ticket creation or event publishing flow.
+Modifying backend API calls or data models.
+Booth-booking or sponsorship flows.
+Steps
+Define a helper on EventModel or in a utility — Add a clear computed property or static helper (e.g., eventTicketCategory) that returns one of three values: paid, free, or none based on ticketPrice, hasBookableSeats, requiresBooking, and isGeneralInvitation. This avoids scattering conditional logic across multiple files.
+
+Mobile – my_event_detail_view.dart — Wrap the ticket-stats section (total/booked/remaining/scanned seats and fill-rate bar) so it only renders when the event is paid or free (not none). Wrap the "Ticket Requests" navigation button so it only appears for paid events. For free events keep the seat-count stats visible but remove the requests button.
+
+Mobile – ticket_requests_view.dart — Accept the event object (or its ticket category) via the route arguments already passed. Conditionally render the Accept/Reject buttons only when the event is paid; for free events render the same tabs but each card is read-only (no action buttons).
+
+Web – web_events_page.dart — In the _EventCard widget, conditionally render the "Tickets" action button: hide it completely for none events; for free events show a read-only booked-count label; for paid events keep the existing pending-count chip and navigation to the requests page.
+
+Web – web_ticket_requests_page.dart — Receive the event's ticket category from the navigation argument (already routed through WebNavController). Hide the Accept/Reject buttons for free events; show the card list in read-only mode with status chips only.
+
+Smoke-test all three branches — Verify manually (or via existing widget tests if present) that each ticket-type scenario renders the expected UI on both mobile and web without errors.
+
+Relevant files
+lib/data/model/event/event_model.dart
+lib/view/screen/Home/events/my_event_detail_view.dart
+lib/view/screen/Home/events/ticket_requests_view.dart
+lib/view/screen/Home/events/events_view.dart
+lib/web/view/pages/web_events_page.dart
+lib/web/view/pages/web_ticket_requests_page.dart
+lib/controller/Home/events_controller.dart

@@ -24,6 +24,7 @@ class MyEventDetailView extends StatelessWidget {
     final fillRate = event.totalSeats > 0
         ? event.bookedSeats / event.totalSeats
         : 0.0;
+    final tc = event.ticketCategory; // 'paid' | 'free' | 'none'
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
@@ -170,8 +171,11 @@ class MyEventDetailView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
-                  // Seats / Tickets section
-                  if (event.hasBookableSeats) ...[
+                  // ── Seats / Tickets section ───────────────────
+                  // paid + free → show seat stats & fill-rate bar
+                  // paid only  → show ticket price & requests button
+                  // none       → show general registration info only
+                  if (tc != 'none') ...[
                     _card(
                       isDark,
                       child: Column(
@@ -179,6 +183,7 @@ class MyEventDetailView extends StatelessWidget {
                         children: [
                           _sectionTitle('ticket_management'.tr),
                           const SizedBox(height: 10),
+                          // Seat stats — visible for both paid and free
                           Row(
                             children: [
                               _ticketStat(
@@ -211,7 +216,7 @@ class MyEventDetailView extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          // Fill rate bar
+                          // Fill-rate bar — visible for both paid and free
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -251,66 +256,68 @@ class MyEventDetailView extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          // Ticket price
-                          if (event.ticketPrice > 0)
+                          // Paid: show price — Free: show free-entry label
+                          if (tc == 'paid')
                             _detailRow(
                               Icons.payments_outlined,
                               'event_ticket_price_hint'.tr,
                               '${event.ticketPrice.toStringAsFixed(0)} ﷼',
-                            ),
-                          if (event.ticketPrice == 0)
+                            )
+                          else
                             _detailRow(
                               Icons.card_giftcard_outlined,
                               'entry_type'.tr,
                               'free_general_invite'.tr,
                             ),
-                          const SizedBox(height: 12),
-                          // Manage ticket requests button
-                          SizedBox(
-                            width: double.infinity,
-                            child: Obx(() {
-                              final pending = ctrl.pendingRequestsCount(
-                                event.id,
-                              );
-                              return OutlinedButton.icon(
-                                onPressed: () => Get.toNamed(
-                                  AppRoutes.TICKET_REQUESTS,
-                                  arguments: event,
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
+                          // Requests button — paid events only
+                          if (tc == 'paid') ...[
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Obx(() {
+                                final pending = ctrl.pendingRequestsCount(
+                                  event.id,
+                                );
+                                return OutlinedButton.icon(
+                                  onPressed: () => Get.toNamed(
+                                    AppRoutes.TICKET_REQUESTS,
+                                    arguments: event,
                                   ),
-                                  side: const BorderSide(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    side: const BorderSide(
+                                      color: AppColors.darkPrimary,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.confirmation_num_outlined,
                                     color: AppColors.darkPrimary,
+                                    size: 18,
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                  label: Text(
+                                    pending > 0
+                                        ? '${'ticket_management'.tr} ($pending)'
+                                        : 'ticket_management'.tr,
+                                    style: const TextStyle(
+                                      color: AppColors.darkPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                icon: const Icon(
-                                  Icons.confirmation_num_outlined,
-                                  color: AppColors.darkPrimary,
-                                  size: 18,
-                                ),
-                                label: Text(
-                                  pending > 0
-                                      ? '${'ticket_management'.tr} ($pending)'
-                                      : 'ticket_management'.tr,
-                                  style: const TextStyle(
-                                    color: AppColors.darkPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
+                                );
+                              }),
+                            ),
+                          ],
                         ],
                       ),
                     ),
                     const SizedBox(height: 14),
                   ] else ...[
-                    // General event info (no bookable seats)
+                    // General event — no ticket UI at all
                     _card(
                       isDark,
                       child: Column(

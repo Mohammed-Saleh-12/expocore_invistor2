@@ -14,6 +14,7 @@ class TicketRequestsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final event = Get.arguments as EventModel;
     final ctrl = Get.find<EventsController>();
+    final isPaid = event.ticketCategory == 'paid';
 
     return DefaultTabController(
       length: 3,
@@ -75,7 +76,8 @@ class TicketRequestsView extends StatelessWidget {
                     .toList();
                 return TabBarView(
                   children: [
-                    _listTab(context, pending, ctrl, showActions: true),
+                    // Accept/Reject controls only for paid events
+                    _listTab(context, pending, ctrl, showActions: isPaid),
                     _listTab(context, approved, ctrl, showQr: true),
                     _listTab(context, rejected, ctrl),
                   ],

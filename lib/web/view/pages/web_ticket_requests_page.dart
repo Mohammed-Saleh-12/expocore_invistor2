@@ -53,7 +53,8 @@ class WebTicketRequestsPage extends StatelessWidget {
                     child: Text('no_requests'.tr, style: TextStyle(color: AppColors.grey)),
                   );
                 }
-                return Column(children: all.map((r) => _RequestCard(req: r, c: c)).toList());
+                final isPaid = event.ticketCategory == 'paid';
+                return Column(children: all.map((r) => _RequestCard(req: r, c: c, isPaid: isPaid)).toList());
               }),
             ],
           ),
@@ -66,7 +67,8 @@ class WebTicketRequestsPage extends StatelessWidget {
 class _RequestCard extends StatelessWidget {
   final TicketRequestModel req;
   final EventsController c;
-  const _RequestCard({required this.req, required this.c});
+  final bool isPaid;
+  const _RequestCard({required this.req, required this.c, required this.isPaid});
 
   @override
   Widget build(BuildContext context) {
@@ -134,8 +136,8 @@ class _RequestCard extends StatelessWidget {
             ),
           ],
 
-          // Actions (pending)
-          if (req.status == 'pending') ...[
+          // Actions — paid events only; free events show read-only list
+          if (req.status == 'pending' && isPaid) ...[
             const SizedBox(height: 14),
             Row(
               children: [

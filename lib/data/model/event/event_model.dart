@@ -59,6 +59,16 @@ class EventModel {
     this.scannedCount = 0,
   });
 
+  /// Returns the ticket category that drives conditional UI across all views.
+  /// - 'paid'  → ticketPrice > 0 (accept/reject controls + seat stats)
+  /// - 'free'  → free seats with booking (seat stats, read-only requests list)
+  /// - 'none'  → general invitation or no seats at all (hide all ticket UI)
+  String get ticketCategory {
+    if (ticketPrice > 0) return 'paid';
+    if (hasBookableSeats || requiresBooking) return 'free';
+    return 'none';
+  }
+
   factory EventModel.fromJson(Map<String, dynamic> j) => EventModel(
     id:               j['id'],
     name:             j['name'] ?? '',
