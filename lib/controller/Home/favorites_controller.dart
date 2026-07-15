@@ -18,13 +18,10 @@ class FavoritesController extends GetxController {
   final favoriteExhibitions = <ExhibitionModel>[].obs;
   final favoriteEvents      = <ExhibitionSponsorEvent>[].obs;
   final favoriteBooths      = <BoothModel>[].obs;
-  /// 0 = معارض  |  1 = فعاليات  |  2 = أجنحة
   final selectedTab         = 0.obs;
   final isLoading           = false.obs;
   final sortBy              = 'تاريخ الإضافة'.obs;
   final sortOptions         = ['تاريخ الإضافة', 'الاسم', 'الحالة'];
-
-  void setTab(int i) => selectedTab.value = i;
 
   @override
   void onInit() {
