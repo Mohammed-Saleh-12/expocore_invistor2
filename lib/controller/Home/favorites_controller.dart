@@ -23,6 +23,12 @@ class FavoritesController extends GetxController {
   final sortBy              = 'تاريخ الإضافة'.obs;
   final sortOptions         = ['تاريخ الإضافة', 'الاسم', 'الحالة'];
 
+  // ── Web filter bar ─────────────────────────────────────────
+  static const webFilters = ['الكل', 'معارض', 'فعاليات', 'أجنحة'];
+  final webCategoryFilter  = 'الكل'.obs;
+
+  void setWebFilter(String f) => webCategoryFilter.value = f;
+
   @override
   void onInit() {
     _loadFavorites();

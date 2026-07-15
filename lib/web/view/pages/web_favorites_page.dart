@@ -16,24 +16,88 @@ class WebFavoritesPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Fixed header + filter bar ──────────────────────
         Container(
           color: WebTheme.bg,
-          padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
-          child: const WebSectionHeader(
-            title: 'المفضلة',
-            subtitle: 'المعارض والأجنحة المحفوظة',
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const WebSectionHeader(
+                title: 'المفضلة',
+                subtitle: 'المعارض والفعاليات والأجنحة المحفوظة',
+              ),
+              const SizedBox(height: 20),
+
+              // ── Category filter pills (مطابق لأجنحتي) ──
+              Obx(
+                () => Wrap(
+                  spacing: 8,
+                  children: FavoritesController.webFilters.map((f) {
+                    final active = c.webCategoryFilter.value == f;
+                    return GestureDetector(
+                      onTap: () => c.setWebFilter(f),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient:
+                              active ? AppColors.favoriteGradient : null,
+                          color: active ? null : WebTheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          f,
+                          style: TextStyle(
+                            color:
+                                active ? Colors.white : AppColors.grey,
+                            fontSize: 13,
+                            fontWeight: active
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
 
+        // ── Scrollable content ─────────────────────────────
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Obx(() {
-              final exhibitions = c.favoriteExhibitions.toList();
-              final booths = c.favoriteBooths.toList();
-              final events = c.favoriteEvents.toList();
+              final filter       = c.webCategoryFilter.value;
+              final exhibitions  = c.favoriteExhibitions.toList();
+              final events       = c.favoriteEvents.toList();
+              final booths       = c.favoriteBooths.toList();
 
-              if (exhibitions.isEmpty && booths.isEmpty && events.isEmpty) {
+              final showExhibitions =
+                  filter == 'الكل' || filter == 'معارض';
+              final showEvents =
+                  filter == 'الكل' || filter == 'فعاليات';
+              final showBooths =
+                  filter == 'الكل' || filter == 'أجنحة';
+
+              final visibleExhibitions =
+                  showExhibitions ? exhibitions : <dynamic>[];
+              final visibleEvents =
+                  showEvents ? events : <dynamic>[];
+              final visibleBooths =
+                  showBooths ? booths : <dynamic>[];
+
+              final isEmpty = visibleExhibitions.isEmpty &&
+                  visibleEvents.isEmpty &&
+                  visibleBooths.isEmpty;
+
+              if (isEmpty) {
                 return Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(60),
@@ -47,7 +111,7 @@ class WebFavoritesPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'لا توجد عناصر في المفضلة',
+                        'لا توجد عناصر في هذه الفئة',
                         style: TextStyle(color: AppColors.grey),
                       ),
                     ],
@@ -58,7 +122,8 @@ class WebFavoritesPage extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (exhibitions.isNotEmpty) ...[
+                  // ── Exhibitions ────────────────────────────
+                  if (showExhibitions && exhibitions.isNotEmpty) ...[
                     _subTitle('المعارض', exhibitions.length),
                     const SizedBox(height: 14),
                     Wrap(
@@ -76,10 +141,11 @@ class WebFavoritesPage extends StatelessWidget {
                           )
                           .toList(),
                     ),
-
                     const SizedBox(height: 28),
                   ],
-                  if (events.isNotEmpty) ...[
+
+                  // ── Events ─────────────────────────────────
+                  if (showEvents && events.isNotEmpty) ...[
                     _subTitle('الفعاليات', events.length),
                     const SizedBox(height: 14),
                     Wrap(
@@ -93,7 +159,8 @@ class WebFavoritesPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: WebTheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: WebTheme.border),
+                                border:
+                                    Border.all(color: WebTheme.border),
                               ),
                               child: Row(
                                 children: [
@@ -101,8 +168,10 @@ class WebFavoritesPage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      gradient: AppColors.favoriteGradient,
-                                      borderRadius: BorderRadius.circular(11),
+                                      gradient:
+                                          AppColors.favoriteGradient,
+                                      borderRadius:
+                                          BorderRadius.circular(11),
                                     ),
                                     child: Icon(
                                       Icons.campaign_rounded,
@@ -154,7 +223,9 @@ class WebFavoritesPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 28),
                   ],
-                  if (booths.isNotEmpty) ...[
+
+                  // ── Booths ─────────────────────────────────
+                  if (showBooths && booths.isNotEmpty) ...[
                     _subTitle('الأجنحة', booths.length),
                     const SizedBox(height: 14),
                     Wrap(
@@ -168,7 +239,8 @@ class WebFavoritesPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: WebTheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: WebTheme.border),
+                                border:
+                                    Border.all(color: WebTheme.border),
                               ),
                               child: Row(
                                 children: [
@@ -176,10 +248,10 @@ class WebFavoritesPage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: WebTheme.primary.withOpacity(
-                                        0.15,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
+                                      color: WebTheme.primary
+                                          .withOpacity(0.15),
+                                      borderRadius:
+                                          BorderRadius.circular(12),
                                     ),
                                     child: Icon(
                                       Icons.storefront_rounded,
@@ -237,32 +309,36 @@ class WebFavoritesPage extends StatelessWidget {
     );
   }
 
-  Widget _subTitle(String t, int count) => Row(
-    children: [
-      Text(
-        t,
-        style: TextStyle(
-          color: WebTheme.text,
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      const SizedBox(width: 8),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: WebTheme.primary.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          '$count',
+  Widget _subTitle(String t, int count) => Padding(
+    padding: const EdgeInsets.only(top: 4),
+    child: Row(
+      children: [
+        Text(
+          t,
           style: TextStyle(
-            color: WebTheme.pink,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
+            color: WebTheme.text,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
           ),
         ),
-      ),
-    ],
+        const SizedBox(width: 8),
+        Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: WebTheme.primary.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            '$count',
+            style: TextStyle(
+              color: WebTheme.pink,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }
