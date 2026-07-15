@@ -247,7 +247,7 @@ class MyTranslation extends Translations {
       'forgot_retry': 'إعادة المحاولة',
       'forgot_sent_title': 'تم الإرسال!',
       'forgot_sent_desc': 'تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور.',
-      'forgot_brand_title': 'استعادة\nكلمة المرور',
+      'forgot_brand_title': 'استعادة المرور',
       'forgot_brand_desc':
           'أدخل بريدك الإلكتروني وسنرسل لك رابط آمن لإعادة تعيين كلمة المرور خلال دقائق.',
       'forgot_error_title': 'خطأ في الإرسال',
@@ -927,7 +927,7 @@ class MyTranslation extends Translations {
       'forgot_retry': 'Try Again',
       'forgot_sent_title': 'Email Sent!',
       'forgot_sent_desc': 'Check your inbox for the password reset link.',
-      'forgot_brand_title': 'Reset Your\nPassword',
+      'forgot_brand_title': 'Reset Your Password',
       'forgot_brand_desc':
           'Enter your email and we will send you a secure link to reset your password within minutes.',
       'forgot_error_title': 'Send Failed',

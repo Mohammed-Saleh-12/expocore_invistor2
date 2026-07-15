@@ -54,12 +54,7 @@ class SponsorshipBottomSheet extends StatelessWidget {
                   ],
                 ),
               ),
-              _BottomBar(
-                step: step,
-                ctrl: ctrl,
-                event: event,
-                isDark: isDark,
-              ),
+              _BottomBar(step: step, ctrl: ctrl, event: event, isDark: isDark),
             ],
           );
         }),
@@ -127,8 +122,7 @@ class _StepDetails extends StatelessWidget {
         Obx(
           () => Column(
             children: event.durationOptions.map((opt) {
-              final isSelected =
-                  ctrl.selectedSponsorDuration.value == opt;
+              final isSelected = ctrl.selectedSponsorDuration.value == opt;
               return GestureDetector(
                 onTap: () => ctrl.selectedSponsorDuration.value = opt,
                 child: AnimatedContainer(
@@ -147,8 +141,8 @@ class _StepDetails extends StatelessWidget {
                     color: isSelected
                         ? null
                         : (isDark
-                            ? AppColors.darkSurface
-                            : AppColors.lightSurface),
+                              ? AppColors.darkSurface
+                              : AppColors.lightSurface),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
@@ -175,8 +169,7 @@ class _StepDetails extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color:
-                                    isSelected ? Colors.white : null,
+                                color: isSelected ? Colors.white : null,
                               ),
                             ),
                             Text(
@@ -196,9 +189,7 @@ class _StepDetails extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: isSelected
-                              ? Colors.white
-                              : AppColors.success,
+                          color: isSelected ? Colors.white : AppColors.success,
                         ),
                       ),
                     ],
@@ -214,30 +205,26 @@ class _StepDetails extends StatelessWidget {
   }
 
   Widget _detailRow(IconData icon, String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          children: [
-            Icon(icon, size: 16, color: AppColors.darkPrimary),
-            const SizedBox(width: 8),
-            Text(
-              '$label: ',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                value,
-                style:
-                    const TextStyle(fontSize: 13, color: AppColors.grey),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      children: [
+        Icon(icon, size: 16, color: AppColors.darkPrimary),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         ),
-      );
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 13, color: AppColors.grey),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // ── Step 2: Booking form ──────────────────────────────────────────────────
@@ -379,12 +366,12 @@ class _StepBookingForm extends StatelessWidget {
                                 width: 52,
                                 height: 52,
                                 decoration: BoxDecoration(
-                                  color: AppColors.darkPrimary
-                                      .withOpacity(0.1),
+                                  color: AppColors.darkPrimary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: AppColors.darkPrimary
-                                        .withOpacity(0.3),
+                                    color: AppColors.darkPrimary.withOpacity(
+                                      0.3,
+                                    ),
                                     width: 1.5,
                                   ),
                                 ),
@@ -402,8 +389,7 @@ class _StepBookingForm extends StatelessWidget {
                           controller: item.nameCtrl,
                           style: TextStyle(
                             fontSize: 13,
-                            color:
-                                isDark ? Colors.white : Colors.black87,
+                            color: isDark ? Colors.white : Colors.black87,
                           ),
                           decoration: InputDecoration(
                             hintText: 'اسم المنتج أو الخدمة',
@@ -418,15 +404,13 @@ class _StepBookingForm extends StatelessWidget {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color:
-                                    AppColors.darkPrimary.withOpacity(0.2),
+                                color: AppColors.darkPrimary.withOpacity(0.2),
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color:
-                                    AppColors.darkPrimary.withOpacity(0.2),
+                                color: AppColors.darkPrimary.withOpacity(0.2),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -619,17 +603,6 @@ class _StepBookingForm extends StatelessWidget {
                     );
                   }).toList(),
                 ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: ctrl.pickPosterImages,
-                child: _uploadTile(
-                  isDark,
-                  Icons.campaign_outlined,
-                  bytes.isEmpty
-                      ? 'اضغط لرفع الملصقات الدعائية'
-                      : 'إضافة المزيد من الملصقات',
-                ),
-              ),
             ],
           );
         }),
@@ -644,9 +617,7 @@ class _StepBookingForm extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.darkPrimary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.darkPrimary.withOpacity(0.3),
-              ),
+              border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
             ),
             child: Row(
               children: [
@@ -696,21 +667,21 @@ class _StepBookingForm extends StatelessWidget {
   }
 
   Widget _sectionTitle(String title) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Text(
+      title,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+    ),
+  );
 
   Widget _subLabel(String label) => Text(
-        label,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.grey,
-        ),
-      );
+    label,
+    style: const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      color: AppColors.grey,
+    ),
+  );
 
   Widget _autoFilledField(
     bool isDark,
@@ -718,78 +689,67 @@ class _StepBookingForm extends StatelessWidget {
     String value,
     IconData icon,
   ) => Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.success.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: AppColors.success),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: AppColors.success.withOpacity(0.3)),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.success),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(fontSize: 11, color: AppColors.grey),
               ),
-            ),
-            const Icon(
-              Icons.check_circle,
-              size: 16,
-              color: AppColors.success,
-            ),
-          ],
-        ),
-      );
-
-  Widget _uploadTile(bool isDark, IconData icon, String label) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: AppColors.darkPrimary.withOpacity(0.3),
-            width: 1.5,
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: AppColors.darkPrimary.withOpacity(0.8),
-              size: 22,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 13, color: AppColors.grey),
-            ),
-            const Spacer(),
-            const Icon(
-              Icons.add_circle_outline,
-              color: AppColors.darkPrimary,
-              size: 20,
-            ),
-          ],
+        const Icon(Icons.check_circle, size: 16, color: AppColors.success),
+      ],
+    ),
+  );
+
+  Widget _uploadTile(bool isDark, IconData icon, String label) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(
+        color: AppColors.darkPrimary.withOpacity(0.3),
+        width: 1.5,
+      ),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, color: AppColors.darkPrimary.withOpacity(0.8), size: 22),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 13, color: AppColors.grey),
         ),
-      );
+        const Spacer(),
+        const Icon(
+          Icons.add_circle_outline,
+          color: AppColors.darkPrimary,
+          size: 20,
+        ),
+      ],
+    ),
+  );
 }
 
 // ── Bottom action bar ─────────────────────────────────────────────────────
@@ -863,7 +823,7 @@ class _BottomBar extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: AppColors.darkPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -903,22 +863,22 @@ class _StepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          children: [
-            _dot(0, 'التفاصيل'),
-            Expanded(
-              child: Container(
-                height: 2,
-                color: currentStep >= 1
-                    ? AppColors.darkPrimary
-                    : AppColors.grey.withOpacity(0.3),
-              ),
-            ),
-            _dot(1, 'بيانات الشركة'),
-          ],
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Row(
+      children: [
+        _dot(0, 'التفاصيل'),
+        Expanded(
+          child: Container(
+            height: 2,
+            color: currentStep >= 1
+                ? AppColors.darkPrimary
+                : AppColors.grey.withOpacity(0.3),
+          ),
         ),
-      );
+        _dot(1, 'بيانات الشركة'),
+      ],
+    ),
+  );
 
   Widget _dot(int step, String label) {
     final active = currentStep >= step;

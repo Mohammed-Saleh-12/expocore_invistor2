@@ -145,7 +145,7 @@ class _FilterButton extends StatelessWidget {
                     minHeight: 18,
                   ),
                   decoration: const BoxDecoration(
-                    color: AppColors.darkSecondary,
+                    color: AppColors.error,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,

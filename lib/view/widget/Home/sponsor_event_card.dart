@@ -15,22 +15,6 @@ class SponsorEventCard extends StatelessWidget {
     this.showFavorite,
   });
 
-  IconData _typeIcon(String type) {
-    switch (type) {
-      case 'مؤتمر':
-        return Icons.record_voice_over_outlined;
-      case 'ندوة':
-        return Icons.people_outline;
-      case 'حفل افتتاح':
-      case 'حفل ختامي':
-        return Icons.celebration_outlined;
-      case 'مسابقة':
-        return Icons.emoji_events_outlined;
-      default:
-        return Icons.event_outlined;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -107,20 +91,6 @@ class SponsorEventCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.darkCTAGradient,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          _typeIcon(event.type),
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +98,7 @@ class SponsorEventCard extends StatelessWidget {
                             Text(
                               event.name,
                               style: const TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
                               maxLines: 1,
@@ -197,7 +167,12 @@ class SponsorEventCard extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          gradient: AppColors.favoriteGradient,
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColors.darkPrimary,
+                              AppColors.darkSecondary,
+                            ],
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(

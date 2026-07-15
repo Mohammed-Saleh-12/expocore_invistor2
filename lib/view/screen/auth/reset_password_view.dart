@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/core/functions/ValidInput.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/auth/reset_password_controller.dart';
@@ -7,11 +8,7 @@ import '../../widget/Home/custom_app_bar.dart';
 import '../../widget/Home/custom_button.dart';
 import '../../widget/Home/custom_text_field.dart';
 
-// ════════════════════════════════════════════════════════════
-//  ResetPasswordView  —  View فقط (MVC)
-//  كل المنطق في ResetPasswordController
-//  Token يُمرَّر عبر Get.arguments عند الانتقال للصفحة
-// ════════════════════════════════════════════════════════════
+
 class ResetPasswordView extends StatelessWidget {
   const ResetPasswordView({super.key});
 
@@ -49,48 +46,28 @@ class _FormView extends StatelessWidget {
             const SizedBox(height: 30),
 
             // ── New password ──────────────────────────────
-            Obx(() => CustomTextField(
-                  controller: c.passwordCtrl,
-                  hint: 'reset_password_hint'.tr,
-                  prefixIcon: Icons.lock_outline_rounded,
-                  obscure: c.obscurePass.value,
-                  suffixWidget: GestureDetector(
-                    onTap: c.togglePass,
-                    child: Icon(
-                      c.obscurePass.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: AppColors.grey,
-                      size: 20,
-                    ),
-                  ),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'field_required'.tr;
-                    if (v.length < 8) return 'reset_password_min'.tr;
-                    return null;
-                  },
+            Obx(() => AppTextField(
+                  label: 'كلمة المرور الجديدة',
+                  controller:c.passwordCtrl,
+                  isPassword: true,
+                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                  validator: ValidInput.password,
                 )),
             const SizedBox(height: 16),
 
             // ── Confirm password ──────────────────────────
-            Obx(() => CustomTextField(
+            Obx(() => AppTextField(
+                    label: 'تأكيد كلمة المرور',
                   controller: c.confirmCtrl,
-                  hint: 'reset_confirm_hint'.tr,
-                  prefixIcon: Icons.lock_outline_rounded,
-                  obscure: c.obscureConf.value,
-                  suffixWidget: GestureDetector(
-                    onTap: c.toggleConf,
-                    child: Icon(
-                      c.obscureConf.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: AppColors.grey,
-                      size: 20,
-                    ),
-                  ),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'field_required'.tr;
-                    if (v != c.passwordCtrl.text) return 'register_mismatch'.tr;
+                  isPassword: true,
+                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'يرجى تأكيد كلمة المرور';
+                    }
+                    if (val !=c.passwordCtrl.text) {
+                      return 'كلمتا المرور غير متطابقتين';
+                    }
                     return null;
                   },
                 )),

@@ -1,11 +1,12 @@
+import 'package:expocore_invistor2/core/class/StatusRequest.dart';
+import 'package:expocore_invistor2/core/functions/ValidInput.dart';
+import 'package:expocore_invistor2/view/widget/Home/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/auth/forgot_password_controller.dart';
-import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../widget/Home/custom_app_bar.dart';
 import '../../widget/Home/custom_button.dart';
-import '../../widget/Home/custom_text_field.dart';
 
 // ════════════════════════════════════════════════════════════
 //  ForgotPasswordView  —  View فقط (MVC)
@@ -46,11 +47,13 @@ class _FormView extends StatelessWidget {
               style: const TextStyle(fontSize: 14, color: AppColors.grey, height: 1.6),
             ),
             const SizedBox(height: 30),
-            CustomTextField(
-              controller: c.emailCtrl,
-              hint: 'forgot_email_hint'.tr,
-              prefixIcon: Icons.email_outlined,
-              keyboard: TextInputType.emailAddress,
+            AppTextField(
+              label: 'البريد الإلكتروني',
+                  controller:c.emailCtrl,
+                  keyboardType: TextInputType.emailAddress,
+                  prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                  validator: ValidInput.email,
+                
             ),
             const SizedBox(height: 24),
             Obx(() => CustomButton(

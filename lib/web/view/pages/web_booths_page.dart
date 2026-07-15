@@ -8,9 +8,6 @@ import '../widgets/web_section_header.dart';
 import '../widgets/web_status_chip.dart';
 import '../../controllers/web_nav_controller.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebBoothsPage  —  أجنحتي
-// ════════════════════════════════════════════════════════════
 class WebBoothsPage extends StatelessWidget {
   const WebBoothsPage({super.key});
 
@@ -47,17 +44,14 @@ class WebBoothsPage extends StatelessWidget {
                           vertical: 9,
                         ),
                         decoration: BoxDecoration(
-                          gradient:
-                              active ? AppColors.favoriteGradient : null,
+                          gradient: active ? AppColors.favoriteGradient : null,
                           color: active ? null : WebTheme.surface,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           f,
                           style: TextStyle(
-                            color: active
-                                ? WebTheme.text
-                                : AppColors.grey,
+                            color: active ? Colors.white : AppColors.grey,
                             fontSize: 13,
                             fontWeight: active
                                 ? FontWeight.w700
@@ -90,15 +84,13 @@ class WebBoothsPage extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: list.length,
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: cols,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
                       childAspectRatio: 1.5,
                     ),
-                    itemBuilder: (_, i) =>
-                        _BoothCard(booth: list[i], c: c),
+                    itemBuilder: (_, i) => _BoothCard(booth: list[i], c: c),
                   );
                 },
               );
@@ -179,8 +171,7 @@ class _BoothCard extends StatelessWidget {
                       booth.exhibitionName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          TextStyle(color: AppColors.grey, fontSize: 12),
+                      style: TextStyle(color: AppColors.grey, fontSize: 12),
                     ),
                   ],
                 ),
@@ -191,11 +182,9 @@ class _BoothCard extends StatelessWidget {
           const Spacer(),
           Row(
             children: [
-              _info(Icons.straighten_rounded,
-                  '${booth.area.toInt()} م²'),
+              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
               const SizedBox(width: 16),
-              _info(Icons.payments_outlined,
-                  '${booth.price.toInt()} ر.س'),
+              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
             ],
           ),
           const SizedBox(height: 14),
@@ -224,20 +213,18 @@ class _BoothCard extends StatelessWidget {
                         ),
                       )
                     : booth.status == 'ended'
-                        ? _btn(
-                            label: 'التقرير',
-                            filled: false,
-                            onTap: () =>
-                                WebNavController.to.openReport(
-                              c.buildBoothReport(booth),
-                            ),
-                          )
-                        : _btn(
-                            label: 'خريطة 3D',
-                            filled: false,
-                            onTap: () =>
-                                WebNavController.to.openMap(),
-                          ),
+                    ? _btn(
+                        label: 'التقرير',
+                        filled: false,
+                        onTap: () => WebNavController.to.openReport(
+                          c.buildBoothReport(booth),
+                        ),
+                      )
+                    : _btn(
+                        label: 'خريطة 3D',
+                        filled: false,
+                        onTap: () => WebNavController.to.openMap(),
+                      ),
               ),
             ],
           ),
@@ -267,14 +254,13 @@ class _BoothCard extends StatelessWidget {
         gradient: filled ? AppColors.favoriteGradient : null,
         border: filled
             ? null
-            : Border.all(
-                color: WebTheme.primary.withOpacity(0.5)),
+            : Border.all(color: WebTheme.primary.withOpacity(0.5)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: filled ? WebTheme.text : WebTheme.primary,
+          color: filled ? Colors.white : WebTheme.primary,
           fontSize: 13,
           fontWeight: FontWeight.w700,
         ),

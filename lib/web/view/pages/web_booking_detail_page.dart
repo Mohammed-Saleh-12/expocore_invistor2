@@ -6,9 +6,7 @@ import '../../controllers/web_nav_controller.dart';
 import '../../models/web_theme.dart';
 import '../widgets/web_status_chip.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebBookingDetailPage  —  تفاصيل الحجز (نسخة الويب)
-// ════════════════════════════════════════════════════════════
+
 class WebBookingDetailPage extends StatelessWidget {
   final BoothModel booth;
   const WebBookingDetailPage({super.key, required this.booth});

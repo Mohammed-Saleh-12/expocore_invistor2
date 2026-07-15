@@ -18,8 +18,8 @@ class CreateCampaignView extends GetView<CampaignsController> {
         child: Form(
           key: controller.formKey,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            CustomTextField(controller: controller.titleCtrl, hint: 'campaign_title_hint'.tr, prefixIcon: Icons.title,
-              validator: (v) => v!.isEmpty ? 'required'.tr : null),
+            AppTextField(controller: controller.titleCtrl, hint: 'campaign_title_hint'.tr, prefixIcon:const Icon( Icons.title ,size: 18,),
+              validator: (v) => v!.isEmpty ? 'required'.tr : null, label: 'campaign_title_hint'.tr,),
             const SizedBox(height: 14),
             Obx(() => DropdownButtonFormField<String>(
               value: controller.selectedType.value.isEmpty ? null : controller.selectedType.value,
@@ -34,11 +34,11 @@ class CreateCampaignView extends GetView<CampaignsController> {
               onChanged: (v) => controller.selectedType.value = v ?? '',
             )),
             const SizedBox(height: 14),
-            CustomTextField(controller: controller.descCtrl, hint: 'campaign_desc_hint'.tr, maxLines: 3),
+            AppTextField(controller: controller.descCtrl, maxLines: 3, label: 'campaign_desc_hint'.tr,),
             const SizedBox(height: 14),
             Text('campaign_budget_label'.tr, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.grey)),
             const SizedBox(height: 6),
-            CustomTextField(controller: controller.budgetCtrl, hint: '0', keyboard: TextInputType.number, prefixIcon: Icons.monetization_on_outlined),
+            AppTextField(controller: controller.budgetCtrl, keyboardType: TextInputType.number, prefixIcon:const Icon(Icons.monetization_on_outlined ,size: 18,) , label: '0',),
             const SizedBox(height: 14),
             _dateRange(context),
             const SizedBox(height: 14),

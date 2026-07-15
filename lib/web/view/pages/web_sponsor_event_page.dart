@@ -44,7 +44,7 @@ class WebSponsorEventPage extends StatelessWidget {
                           ),
                           child: Icon(
                             Icons.campaign_rounded,
-                            color: WebTheme.text,
+                            color: Colors.white,
                             size: 28,
                           ),
                         ),
@@ -96,11 +96,7 @@ class WebSponsorEventPage extends StatelessWidget {
                       'التاريخ',
                       '${event.date} • ${event.startTime} - ${event.endTime}',
                     ),
-                    _row(
-                      Icons.location_on_outlined,
-                      'المكان',
-                      event.place,
-                    ),
+                    _row(Icons.location_on_outlined, 'المكان', event.place),
                     _row(
                       Icons.schedule_outlined,
                       'مدة الإدراج',
@@ -134,7 +130,7 @@ class WebSponsorEventPage extends StatelessWidget {
                           children: event.durationOptions.map((opt) {
                             final sel =
                                 c.selectedSponsorDuration.value?.label ==
-                                    opt.label;
+                                opt.label;
                             return GestureDetector(
                               onTap: () =>
                                   c.selectedSponsorDuration.value = opt,
@@ -142,8 +138,9 @@ class WebSponsorEventPage extends StatelessWidget {
                                 margin: const EdgeInsets.only(bottom: 10),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  gradient:
-                                      sel ? AppColors.favoriteGradient : null,
+                                  gradient: sel
+                                      ? AppColors.favoriteGradient
+                                      : null,
                                   color: sel ? null : WebTheme.surfaceAlt,
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
@@ -237,10 +234,6 @@ class WebSponsorEventPage extends StatelessWidget {
                       'الموقع الإلكتروني',
                       Icons.language_outlined,
                     ),
-                    const SizedBox(height: 12),
-                    _subLabel('المنتجات / الخدمات المعروضة'),
-                    const SizedBox(height: 8),
-                    _ProductItemsWidget(c: c),
                   ],
                 ),
               ),
@@ -257,10 +250,7 @@ class WebSponsorEventPage extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       'يرجى رفع المواد الإعلانية المطلوبة للمشاركة',
-                      style: TextStyle(
-                        color: AppColors.grey,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: AppColors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 20),
 
@@ -327,71 +317,10 @@ class WebSponsorEventPage extends StatelessWidget {
                     }),
                     const SizedBox(height: 20),
 
-                    // 2. Ad images
-                    _subLabel('صور ومواد إعلانية (حتى 6 صور)'),
-                    const SizedBox(height: 10),
-                    Obx(() {
-                      final bytes = c.adBytes;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (bytes.isNotEmpty) ...[
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: bytes.asMap().entries.map((e) {
-                                return Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(12),
-                                      child: Image.memory(
-                                        e.value,
-                                        width: 90,
-                                        height: 90,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: -6,
-                                      right: -6,
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            c.removeAdFile(e.key),
-                                        child: Container(
-                                          width: 22,
-                                          height: 22,
-                                          decoration: const BoxDecoration(
-                                            color: AppColors.error,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.close,
-                                            color: Colors.white,
-                                            size: 13,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                          GestureDetector(
-                            onTap: c.pickAdImages,
-                            child: _uploadTile(
-                              Icons.collections_outlined,
-                              bytes.isEmpty
-                                  ? 'اضغط لرفع صور ومواد إعلانية'
-                                  : 'إضافة المزيد من الصور',
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
+                    // 2. Ad imagesconst SizedBox(height: 12),
+                    _subLabel('المنتجات / الخدمات المعروضة'),
+                    const SizedBox(height: 8),
+                    _ProductItemsWidget(c: c),
                     const SizedBox(height: 20),
 
                     // 3. Poster images
@@ -411,8 +340,7 @@ class WebSponsorEventPage extends StatelessWidget {
                                   clipBehavior: Clip.none,
                                   children: [
                                     ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12),
                                       child: Image.memory(
                                         e.value,
                                         width: 90,
@@ -424,8 +352,7 @@ class WebSponsorEventPage extends StatelessWidget {
                                       top: -6,
                                       right: -6,
                                       child: GestureDetector(
-                                        onTap: () =>
-                                            c.removePosterFile(e.key),
+                                        onTap: () => c.removePosterFile(e.key),
                                         child: Container(
                                           width: 22,
                                           height: 22,
@@ -530,12 +457,9 @@ class WebSponsorEventPage extends StatelessWidget {
                       () => SizedBox(
                         width: double.infinity,
                         child: GestureDetector(
-                          onTap: c.isBooking.value
-                              ? null
-                              : () => _book(c),
+                          onTap: c.isBooking.value ? null : () => _book(c),
                           child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               gradient: AppColors.favoriteGradient,
@@ -553,7 +477,7 @@ class WebSponsorEventPage extends StatelessWidget {
                                 : Text(
                                     'تأكيد طلب الرعاية',
                                     style: TextStyle(
-                                      color: WebTheme.text,
+                                      color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -580,93 +504,87 @@ class WebSponsorEventPage extends StatelessWidget {
   }
 
   Widget _back() => GestureDetector(
-        onTap: WebNavController.to.closeDetail,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: WebTheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: WebTheme.border),
-              ),
-              child: Icon(
-                Icons.arrow_forward_rounded,
-                color: WebTheme.text,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              'رجوع',
-              style: TextStyle(color: AppColors.grey, fontSize: 14),
-            ),
-          ],
+    onTap: WebNavController.to.closeDetail,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: WebTheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: WebTheme.border),
+          ),
+          child: Icon(
+            Icons.arrow_forward_rounded,
+            color: WebTheme.text,
+            size: 20,
+          ),
         ),
-      );
+        const SizedBox(width: 10),
+        Text('رجوع', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+      ],
+    ),
+  );
 
   BoxDecoration _dec() => BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: WebTheme.border),
-      );
+    color: WebTheme.surface,
+    borderRadius: BorderRadius.circular(22),
+    border: Border.all(color: WebTheme.border),
+  );
 
   Widget _section(String t) => Row(
-        children: [
-          Container(
-            width: 4,
-            height: 18,
-            decoration: BoxDecoration(
-              gradient: AppColors.favoriteGradient,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            t,
-            style: TextStyle(
-              color: WebTheme.text,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      );
+    children: [
+      Container(
+        width: 4,
+        height: 18,
+        decoration: BoxDecoration(
+          gradient: AppColors.favoriteGradient,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Text(
+        t,
+        style: TextStyle(
+          color: WebTheme.text,
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    ],
+  );
 
   Widget _subLabel(String label) => Text(
-        label,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.grey,
-        ),
-      );
+    label,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: AppColors.grey,
+    ),
+  );
 
   Widget _row(IconData icon, String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Row(
-          children: [
-            Icon(icon, size: 19, color: WebTheme.primary),
-            const SizedBox(width: 12),
-            Text(
-              '$label: ',
-              style: TextStyle(color: AppColors.grey, fontSize: 14),
+    padding: const EdgeInsets.symmetric(vertical: 7),
+    child: Row(
+      children: [
+        Icon(icon, size: 19, color: WebTheme.primary),
+        const SizedBox(width: 12),
+        Text('$label: ', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              color: WebTheme.text,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
-            Expanded(
-              child: Text(
-                value,
-                style: TextStyle(
-                  color: WebTheme.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   Widget _field(
     TextEditingController ctrl,
@@ -674,108 +592,99 @@ class WebSponsorEventPage extends StatelessWidget {
     IconData icon, {
     int maxLines = 1,
   }) => TextField(
-        controller: ctrl,
-        maxLines: maxLines,
-        style: TextStyle(color: WebTheme.text),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
-          prefixIcon: Icon(icon, color: AppColors.grey, size: 20),
-          filled: true,
-          fillColor: WebTheme.surfaceAlt,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: WebTheme.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: WebTheme.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-        ),
-      );
+    controller: ctrl,
+    maxLines: maxLines,
+    style: TextStyle(color: WebTheme.text),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
+      prefixIcon: Icon(icon, color: AppColors.grey, size: 20),
+      filled: true,
+      fillColor: WebTheme.surfaceAlt,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: WebTheme.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: WebTheme.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: WebTheme.primary, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    ),
+  );
 
   Widget _uploadTile(IconData icon, String label) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: WebTheme.surfaceAlt,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: WebTheme.primary.withOpacity(0.35),
-            width: 1.5,
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: WebTheme.surfaceAlt,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: WebTheme.primary.withOpacity(0.35), width: 1.5),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: WebTheme.primary.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: WebTheme.primary, size: 22),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(color: AppColors.grey, fontSize: 13),
           ),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: WebTheme.primary.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: WebTheme.primary, size: 22),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            color: WebTheme.primary.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            'رفع',
+            style: TextStyle(
+              color: WebTheme.primary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(color: AppColors.grey, fontSize: 13),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 7,
-              ),
-              decoration: BoxDecoration(
-                color: WebTheme.primary.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'رفع',
-                style: TextStyle(
-                  color: WebTheme.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   Widget _uploadChip(IconData icon, String label) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: WebTheme.primary.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+    decoration: BoxDecoration(
+      color: WebTheme.primary.withOpacity(0.12),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: WebTheme.primary),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            color: WebTheme.primary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: WebTheme.primary),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                color: WebTheme.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }
 
 // ── Product items widget (web) ────────────────────────────────────────────
@@ -790,7 +699,7 @@ class _ProductItemsWidget extends StatelessWidget {
       return Column(
         children: [
           ...items.asMap().entries.map((e) {
-            final idx  = e.key;
+            final idx = e.key;
             final item = e.value;
             return Container(
               margin: const EdgeInsets.only(bottom: 10),

@@ -4,7 +4,6 @@ import '../../../../controller/Home/booth_management_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/custom_app_bar.dart';
-import '../../../widget/Home/custom_button.dart';
 
 class BoothManagementView extends GetView<BoothManagementController> {
   const BoothManagementView({super.key});
@@ -56,7 +55,6 @@ class BoothManagementView extends GetView<BoothManagementController> {
             _SectionHeader(
               icon: Icons.event_rounded,
               title: 'booth_mgmt_events_title'.tr,
-              subtitle: 'booth_mgmt_events_subtitle'.tr,
               action: TextButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.CREATE_EVENT),
                 icon: const Icon(
@@ -66,17 +64,15 @@ class BoothManagementView extends GetView<BoothManagementController> {
                 ),
                 label: Text(
                   'booth_mgmt_add_event'.tr,
-                  style: const TextStyle(color: AppColors.darkPrimary, fontSize: 12),
+                  style: const TextStyle(
+                    color: AppColors.darkPrimary,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 12),
             _BoothEventsList(isDark: isDark),
-            const SizedBox(height: 28),
-            CustomButton(
-              label: 'booth_mgmt_save_btn'.tr,
-              onTap: controller.saveProfile,
-            ),
           ],
         ),
       ),
@@ -87,15 +83,9 @@ class BoothManagementView extends GetView<BoothManagementController> {
 class _SectionHeader extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
   final Widget? action;
 
-  const _SectionHeader({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.action,
-  });
+  const _SectionHeader({required this.icon, required this.title, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +95,7 @@ class _SectionHeader extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            gradient: AppColors.darkCTAGradient,
+            gradient: AppColors.favoriteGradient,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 18, color: Colors.white),
@@ -121,10 +111,6 @@ class _SectionHeader extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
-              ),
-              Text(
-                subtitle,
-                style: const TextStyle(fontSize: 11, color: AppColors.grey),
               ),
             ],
           ),
@@ -262,7 +248,11 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                   'booth_mgmt_area_label'.tr,
                 ),
                 _divider(),
-                _statItem(Icons.location_on_outlined, b.location, 'booth_mgmt_location_label'.tr),
+                _statItem(
+                  Icons.location_on_outlined,
+                  b.location,
+                  'booth_mgmt_location_label'.tr,
+                ),
                 _divider(),
                 _statItem(
                   Icons.monetization_on_outlined,
@@ -270,7 +260,11 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
                   'booth_mgmt_price_label'.tr,
                 ),
                 _divider(),
-                _statItem(Icons.calendar_today_outlined, b.endDate, 'booth_mgmt_end_label'.tr),
+                _statItem(
+                  Icons.calendar_today_outlined,
+                  b.endDate,
+                  'booth_mgmt_end_label'.tr,
+                ),
               ],
             ),
           ),
@@ -450,11 +444,18 @@ class _SocialLinksSection extends GetView<BoothManagementController> {
         children: [
           Row(
             children: [
-              const Icon(Icons.link_rounded, size: 16, color: AppColors.darkPrimary),
+              const Icon(
+                Icons.link_rounded,
+                size: 16,
+                color: AppColors.darkPrimary,
+              ),
               const SizedBox(width: 8),
               Text(
                 'booth_mgmt_social_links'.tr,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),

@@ -39,10 +39,10 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                   _sectionCard(context, isDark, 'profile_section_about'.tr, [
                     Obx(
                       () => controller.isEditing.value
-                          ? CustomTextField(
+                          ? AppTextField(
                               controller: controller.bioCtrl,
-                              hint: 'profile_bio_hint'.tr,
                               maxLines: 4,
+                              label: 'profile_bio_hint'.tr,
                             )
                           : Text(
                               controller.bioCtrl.text,
@@ -60,28 +60,40 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                       () => controller.isEditing.value
                           ? Column(
                               children: [
-                                CustomTextField(
+                                AppTextField(
                                   controller: controller.locationCtrl,
-                                  hint: 'profile_location_hint'.tr,
-                                  prefixIcon: Icons.location_on_outlined,
+                                  prefixIcon: const Icon(
+                                    Icons.location_on_outlined,
+                                    size: 18,
+                                  ),
+                                  label: 'profile_location_hint'.tr,
                                 ),
                                 const SizedBox(height: 10),
-                                CustomTextField(
+                                AppTextField(
                                   controller: controller.emailCtrl,
-                                  hint: 'profile_email_hint'.tr,
-                                  prefixIcon: Icons.email_outlined,
+                                  prefixIcon: const Icon(
+                                    Icons.email_outlined,
+                                    size: 18,
+                                  ),
+                                  label: 'profile_email_hint'.tr,
                                 ),
                                 const SizedBox(height: 10),
-                                CustomTextField(
+                                AppTextField(
                                   controller: controller.phoneCtrl,
-                                  hint: 'profile_phone_hint'.tr,
-                                  prefixIcon: Icons.phone_outlined,
+                                  prefixIcon: const Icon(
+                                    Icons.phone_outlined,
+                                    size: 18,
+                                  ),
+                                  label: 'profile_phone_hint'.tr,
                                 ),
                                 const SizedBox(height: 10),
-                                CustomTextField(
+                                AppTextField(
                                   controller: controller.websiteCtrl,
-                                  hint: 'profile_website_hint'.tr,
-                                  prefixIcon: Icons.language_outlined,
+                                  prefixIcon: const Icon(
+                                    Icons.language_outlined,
+                                    size: 18,
+                                  ),
+                                  label: 'profile_website_hint'.tr,
                                 ),
                               ],
                             )
@@ -113,37 +125,82 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
                   ]),
                   const SizedBox(height: 14),
                   _sectionCard(context, isDark, 'profile_section_social'.tr, [
-                    Obx(() => controller.isEditing.value
-                        ? Column(
-                            children: [
-                              CustomTextField(controller: controller.linkedinCtrl, hint: 'LinkedIn', prefixIcon: Icons.link),
-                              const SizedBox(height: 10),
-                              CustomTextField(controller: controller.twitterCtrl, hint: 'X (Twitter)', prefixIcon: Icons.alternate_email),
-                              const SizedBox(height: 10),
-                              CustomTextField(controller: controller.instagramCtrl, hint: 'Instagram', prefixIcon: Icons.camera_alt_outlined),
-                              const SizedBox(height: 10),
-                              CustomTextField(controller: controller.facebookCtrl, hint: 'Facebook', prefixIcon: Icons.facebook),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (controller.linkedinCtrl.text.isNotEmpty)
-                                _contactRow(Icons.link, controller.linkedinCtrl.text),
-                              if (controller.twitterCtrl.text.isNotEmpty) ...[
-                                const SizedBox(height: 8),
-                                _contactRow(Icons.alternate_email, controller.twitterCtrl.text),
+                    Obx(
+                      () => controller.isEditing.value
+                          ? Column(
+                              children: [
+                                AppTextField(
+                                  controller: controller.linkedinCtrl,
+                                  prefixIcon: const Icon(Icons.link, size: 18),
+                                  label: 'LinkedIn',
+                                ),
+                                const SizedBox(height: 10),
+                                AppTextField(
+                                  controller: controller.twitterCtrl,
+                                  prefixIcon: const Icon(
+                                    Icons.alternate_email,
+                                    size: 18,
+                                  ),
+                                  label: 'X (Twitter)',
+                                ),
+                                const SizedBox(height: 10),
+                                AppTextField(
+                                  controller: controller.instagramCtrl,
+                                  prefixIcon: const Icon(
+                                    Icons.camera_alt_outlined,
+                                    size: 18,
+                                  ),
+                                  label: 'Instagram',
+                                ),
+                                const SizedBox(height: 10),
+                                AppTextField(
+                                  controller: controller.facebookCtrl,
+                                  prefixIcon: const Icon(
+                                    Icons.facebook,
+                                    size: 18,
+                                  ),
+                                  label: 'Facebook',
+                                ),
                               ],
-                              if (controller.instagramCtrl.text.isNotEmpty) ...[
-                                const SizedBox(height: 8),
-                                _contactRow(Icons.camera_alt_outlined, controller.instagramCtrl.text),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (controller.linkedinCtrl.text.isNotEmpty)
+                                  _contactRow(
+                                    Icons.link,
+                                    controller.linkedinCtrl.text,
+                                  ),
+                                if (controller.twitterCtrl.text.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  _contactRow(
+                                    Icons.alternate_email,
+                                    controller.twitterCtrl.text,
+                                  ),
+                                ],
+                                if (controller
+                                    .instagramCtrl
+                                    .text
+                                    .isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  _contactRow(
+                                    Icons.camera_alt_outlined,
+                                    controller.instagramCtrl.text,
+                                  ),
+                                ],
+                                if (controller
+                                    .facebookCtrl
+                                    .text
+                                    .isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  _contactRow(
+                                    Icons.facebook,
+                                    controller.facebookCtrl.text,
+                                  ),
+                                ],
                               ],
-                              if (controller.facebookCtrl.text.isNotEmpty) ...[
-                                const SizedBox(height: 8),
-                                _contactRow(Icons.facebook, controller.facebookCtrl.text),
-                              ],
-                            ],
-                          )),
+                            ),
+                    ),
                   ]),
                   const SizedBox(height: 20),
                   Obx(
@@ -180,15 +237,17 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
     padding: const EdgeInsets.symmetric(vertical: 30),
     child: Column(
       children: [
-        Obx(() => ProfileAvatar(
-              image: controller.profileImage.value,
-              fallbackLetter: controller.nameCtrl.text.isNotEmpty
-                  ? controller.nameCtrl.text[0]
-                  : 'ش',
-              size: 88,
-              editable: controller.isEditing.value,
-              onEdit: controller.pickProfileImage,
-            )),
+        Obx(
+          () => ProfileAvatar(
+            image: controller.profileImage.value,
+            fallbackLetter: controller.nameCtrl.text.isNotEmpty
+                ? controller.nameCtrl.text[0]
+                : 'ش',
+            size: 88,
+            editable: controller.isEditing.value,
+            onEdit: controller.pickProfileImage,
+          ),
+        ),
         const SizedBox(height: 12),
         Text(
           controller.nameCtrl.text,
@@ -243,5 +302,4 @@ class ProfileCompanyView extends GetView<ProfileCompanyController> {
       Text(text, style: const TextStyle(fontSize: 13)),
     ],
   );
-
 }

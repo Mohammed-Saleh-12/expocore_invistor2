@@ -5,9 +5,6 @@ import '../../../controller/Home/exhibitions_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../widgets/web_exhibition_card.dart';
 
-// ════════════════════════════════════════════════════════════
-//  WebExhibitionsPage  —  المعارض (شبكة + فلترة جانبية)
-// ════════════════════════════════════════════════════════════
 class WebExhibitionsPage extends StatelessWidget {
   const WebExhibitionsPage({super.key});
 
@@ -35,12 +32,20 @@ class WebExhibitionsPage extends StatelessWidget {
                   style: TextStyle(color: WebTheme.text),
                   decoration: InputDecoration(
                     hintText: 'ابحث عن معرض...',
-                    hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
+                    hintStyle: TextStyle(
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
                     prefixIcon: Icon(Icons.search, color: AppColors.grey),
                     filled: true,
                     fillColor: WebTheme.surface,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -48,29 +53,43 @@ class WebExhibitionsPage extends StatelessWidget {
                   child: Obx(() {
                     final list = c.filtered.toList();
                     if (c.isLoading.value) {
-                      return Center(child: CircularProgressIndicator(color: WebTheme.primary));
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: WebTheme.primary,
+                        ),
+                      );
                     }
                     if (list.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.search_off_rounded, size: 56, color: AppColors.grey.withOpacity(0.5)),
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 56,
+                              color: AppColors.grey.withOpacity(0.5),
+                            ),
                             const SizedBox(height: 12),
-                            Text('لا توجد معارض مطابقة', style: TextStyle(color: AppColors.grey)),
+                            Text(
+                              'لا توجد معارض مطابقة',
+                              style: TextStyle(color: AppColors.grey),
+                            ),
                           ],
                         ),
                       );
                     }
                     return SingleChildScrollView(
                       child: Wrap(
-                        spacing: 20, runSpacing: 20,
-                        children: list.map((e) => SizedBox(
-                          width: 300,
-                          child: WebExhibitionCard(
-                            exhibition: e,
-                          ),
-                        )).toList(),
+                        spacing: 20,
+                        runSpacing: 20,
+                        children: list
+                            .map(
+                              (e) => SizedBox(
+                                width: 300,
+                                child: WebExhibitionCard(exhibition: e),
+                              ),
+                            )
+                            .toList(),
                       ),
                     );
                   }),
@@ -105,28 +124,57 @@ class _FiltersPanel extends StatelessWidget {
             children: [
               Icon(Icons.tune_rounded, color: WebTheme.primary, size: 20),
               const SizedBox(width: 8),
-              Text('تصفية', style: TextStyle(color: WebTheme.text, fontSize: 17, fontWeight: FontWeight.w800)),
+              Text(
+                'تصفية',
+                style: TextStyle(
+                  color: WebTheme.text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const Spacer(),
-              Obx(() => c.activeFilterCount > 0
-                  ? GestureDetector(
-                      onTap: c.clearFilters,
-                      child: Text('مسح', style: TextStyle(color: WebTheme.primary, fontSize: 12)),
-                    )
-                  : const SizedBox.shrink()),
+              Obx(
+                () => c.activeFilterCount > 0
+                    ? GestureDetector(
+                        onTap: c.clearFilters,
+                        child: Text(
+                          'مسح',
+                          style: TextStyle(
+                            color: WebTheme.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
             ],
           ),
           const SizedBox(height: 20),
-          // محتوى قابل للتمرير لمنع الطفحان
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _group('الحالة', () => c.statusFilter.value, c.applyFilter, () => c.filters),
+                  _group(
+                    'الحالة',
+                    () => c.statusFilter.value,
+                    c.applyFilter,
+                    () => c.filters,
+                  ),
                   const SizedBox(height: 20),
-                  _group('النوع / القطاع', () => c.sectorFilter.value, c.setSector, () => c.availableSectors),
+                  _group(
+                    'النوع / القطاع',
+                    () => c.sectorFilter.value,
+                    c.setSector,
+                    () => c.availableSectors,
+                  ),
                   const SizedBox(height: 20),
-                  _group('البلد / المدينة', () => c.cityFilter.value, c.setCity, () => c.availableCities),
+                  _group(
+                    'البلد / المدينة',
+                    () => c.cityFilter.value,
+                    c.setCity,
+                    () => c.availableCities,
+                  ),
                 ],
               ),
             ),
@@ -136,35 +184,54 @@ class _FiltersPanel extends StatelessWidget {
     );
   }
 
-  Widget _group(String title, String Function() selected, void Function(String) onTap, List<String> Function() options) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: TextStyle(color: WebTheme.text, fontSize: 13, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 10),
-          Obx(() => Wrap(
-                spacing: 6, runSpacing: 6,
-                children: options().map((o) {
-                  final active = o == selected();
-                  return GestureDetector(
-                    onTap: () => onTap(o),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                      decoration: BoxDecoration(
-                        gradient: active ? AppColors.favoriteGradient : null,
-                        color: active ? null : WebTheme.surfaceAlt,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Text(o,
-                          style: TextStyle(
-                            color: active ? WebTheme.text : AppColors.grey,
-                            fontSize: 12,
-                            fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-                          )),
-                    ),
-                  );
-                }).toList(),
-              )),
-        ],
-      );
+  Widget _group(
+    String title,
+    String Function() selected,
+    void Function(String) onTap,
+    List<String> Function() options,
+  ) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: TextStyle(
+          color: WebTheme.text,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 10),
+      Obx(
+        () => Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: options().map((o) {
+            final active = o == selected();
+            return GestureDetector(
+              onTap: () => onTap(o),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  gradient: active ? AppColors.favoriteGradient : null,
+                  color: active ? null : WebTheme.surfaceAlt,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  o,
+                  style: TextStyle(
+                    color: active ? Colors.white : AppColors.grey,
+                    fontSize: 12,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    ],
+  );
 }

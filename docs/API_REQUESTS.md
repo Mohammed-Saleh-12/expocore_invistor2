@@ -1,14 +1,6 @@
-# توثيق كل الريكوستات (API Requests) في التطبيق
-
-هذا الملف يوثّق كل نداءات الـ API الموجودة في التطبيق، مصدرها في الكود (ملفات `lib/data/sourcedata/remote/...`)، نوع الريكوست (HTTP Method)، الرابط (Endpoint)، ومحتوى الـ Body/Params إن وُجد.
-
-> ملاحظة: كل الروابط تُبنى من `AppLink` في `lib/linkapi.dart`، وقاعدة الرابط (`server`) تأتي من `AppEnv.baseUrl` وتتغير تلقائياً حسب بيئة التشغيل (dev/staging/prod).
-
----
-
 ## 1. المصادقة (Auth) — `remote/Auth/`
 
-### 1.1 تسجيل الدخول — `LoginData.login()`
+### 1.1 تسجيل الدخول —
 - **Method:** `POST`
 - **Endpoint:** `/auth/login`
 - **Body:**
@@ -19,7 +11,7 @@
   }
   ```
 
-### 1.2 إنشاء حساب — `RegisterData.register()`
+### 1.2 إنشاء حساب — 
 - **Method:** `POST`
 - **Endpoint:** `/auth/register`
 - **Body:**
@@ -37,7 +29,7 @@
   }
   ```
 
-### 1.3 نسيت كلمة المرور — `ForgotPasswordData.sendResetLink()`
+### 1.3 نسيت كلمة المرور —
 - **Method:** `POST`
 - **Endpoint:** `/auth/forgot-password`
 - **Body:**
@@ -45,7 +37,7 @@
   { "email": "string" }
   ```
 
-### 1.4 إعادة تعيين كلمة المرور — `ResetPasswordData.resetPassword()`
+### 1.4 إعادة تعيين كلمة المرور —
 - **Method:** `POST`
 - **Endpoint:** `/auth/reset-password`
 - **Body:**
@@ -57,22 +49,25 @@
   }
   ```
 
-### 1.5 تسجيل الخروج — `LogoutData.logout()`
+### 1.5 تسجيل الخروج —
 - **Method:** `POST`
 - **Endpoint:** `/auth/logout`
-- **Body:** لا يوجد (`{}`)
-
-### 1.6 تحديث الجلسة (Refresh Token)
-- **Endpoint معرّف في AppLink فقط:** `/auth/refresh` — لا يوجد استخدام فعلي حالياً في أي ملف `remote` أو كونترولر.
+- **Body:** (`{}`)
 
 ### 1.7 توكن الإشعارات (FCM Token)
-- **Endpoint معرّف في AppLink فقط:** `/auth/fcm-token` (`AppLink.fcmToken`) — يُستخدم مباشرة من خدمة الإشعارات (`fcmConfig.dart`) وليس عبر طبقة `remote`، لذا لم يُدرج ضمن إعادة الهيكلة.
+- **Method:** `POST`
+- **Endpoint:**  `/auth/fcm-token`
+- **Body:**
+```json 
+  {
+  "fcm_token": "string"
+  }
 
 ---
 
-## 2. لوحة التحكم (Dashboard) — `remote/Dashboard/`
+## 2. لوحة التحكم (Dashboard) —
 
-### 2.1 بيانات لوحة التحكم — `DashboardData.getDashboard(period)`
+### 2.1 بيانات لوحة التحكم —
 - **Method:** `GET`
 - **Endpoint:** `/investor/dashboard`
 - **Query Params:**
@@ -83,40 +78,37 @@
 
 ---
 
-## 3. المعارض (Exhibitions) — `remote/Exhibitions/`
+## 3. المعارض (Exhibitions) —
 
-### 3.1 جلب كل المعارض — `ExhibitionsData.getExhibitions()`
+### 3.1 جلب كل المعارض —
 - **Method:** `GET`
 - **Endpoint:** `/exhibitions`
 - **Body:** لا يوجد
 
-### 3.2 إضافة معرض للمفضلة — `ExhibitionsData.addFavorite(exhibitionId)`
+### 3.2 إضافة معرض للمفضلة —
 - **Method:** `POST`
 - **Endpoint:** `/investor/favorites/exhibitions/{id}`
 - **Body:** لا يوجد (`{}`)
 
-### 3.3 إزالة معرض من المفضلة — `ExhibitionsData.removeFavorite(exhibitionId)`
+### 3.3 إزالة معرض من المفضلة — 
 - **Method:** `DELETE`
 - **Endpoint:** `/investor/favorites/exhibitions/{id}`
 - **Body:** لا يوجد
-
-> ملاحظة: `AppLink.exhibitionDetail(id)` معرّف (`/exhibitions/{id}`) لكن غير مستخدم حالياً — تفاصيل المعرض تُعرض من نفس بيانات القائمة.
-
 ---
 
-## 4. الأجنحة (Booths) — `remote/Booths/`
+## 4. الأجنحة (Booths) — 
 
-### 4.1 حجوزاتي — `BoothsData.getMyBookings()`
+### 4.1 حجوزاتي —
 - **Method:** `GET`
 - **Endpoint:** `/investor/bookings`
 - **Body:** لا يوجد
 
-### 4.2 إضافة جناح للمفضلة — `BoothsData.addFavorite(boothId)`
+### 4.2 إضافة جناح للمفضلة — 
 - **Method:** `POST`
 - **Endpoint:** `/investor/favorites/booths/{id}`
 - **Body:** لا يوجد (`{}`)
 
-### 4.3 إزالة جناح من المفضلة — `BoothsData.removeFavorite(boothId)`
+### 4.3 إزالة جناح من المفضلة —
 - **Method:** `DELETE`
 - **Endpoint:** `/investor/favorites/booths/{id}`
 - **Body:** لا يوجد
@@ -125,14 +117,14 @@
 
 ---
 
-## 5. ملف الجناح (Booth Profile) — `remote/Booths/BoothProfileData.dart`
+## 5. ملف الجناح (Booth Profile) 
 
 ### 5.1 جلب ملف الجناح — `getBoothProfile(boothId)`
 - **Method:** `GET`
 - **Endpoint:** `/investor/booths/{boothId}/profile`
 - **Body:** لا يوجد
 
-### 5.2 تحديث ملف الجناح — `updateBoothProfile()`
+### 5.2 تحديث ملف الجناح — 
 - **Method:** `PUT`
 - **Endpoint:** `/investor/booths/{boothId}/profile`
 - **Body:**
@@ -147,7 +139,7 @@
   }
   ```
 
-### 5.3 فعاليات الجناح — `getBoothEvents(boothId)`
+### 5.3 فعاليات الجناح — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/events`
 - **Query Params:**
@@ -158,9 +150,9 @@
 
 ---
 
-## 6. الحجوزات (Booking) — `remote/Booking/`
+## 6. الحجوزات (Booking) —
 
-### 6.1 حجز جناح — `BookingData.bookBooth()`
+### 6.1 حجز جناح —
 - **Method:** `POST`
 - **Endpoint:** `/booths/book`
 - **Body:**
@@ -177,21 +169,21 @@
   }
   ```
 
-### 6.2 إلغاء حجز — `BookingData.cancelBooking(bookingId)`
+### 6.2 إلغاء حجز — 
 - **Method:** `PATCH`
 - **Endpoint:** `/investor/bookings/{id}/cancel`
 - **Body:** لا يوجد (`{}`)
 
 ---
 
-## 7. الحملات (Campaigns) — `remote/Campaigns/`
+## 7. الحملات (Campaigns) — 
 
 ### 7.1 جلب الحملات — `getCampaigns()`
 - **Method:** `GET`
 - **Endpoint:** `/investor/campaigns`
 - **Body:** لا يوجد
 
-### 7.2 إنشاء حملة — `createCampaign()`
+### 7.2 إنشاء حملة — 
 - **Method:** `POST`
 - **Endpoint:** `/investor/campaigns`
 - **Body:**
@@ -206,21 +198,21 @@
   }
   ```
 
-### 7.3 حذف حملة — `deleteCampaign(campaignId)`
+### 7.3 حذف حملة — `
 - **Method:** `DELETE`
 - **Endpoint:** `/investor/campaigns/{id}`
 - **Body:** لا يوجد
 
 ---
 
-## 8. الفعاليات (Events) — `remote/Events/`
+## 8. الفعاليات (Events) — 
 
-### 8.1 فعالياتي — `getInvestorEvents()`
+### 8.1 فعالياتي — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/events`
 - **Body:** لا يوجد
 
-### 8.2 إنشاء فعالية — `createInvestorEvent()`
+### 8.2 إنشاء فعالية —
 - **Method:** `POST`
 - **Endpoint:** `/investor/events`
 - **Body:**
@@ -247,17 +239,17 @@
   }
   ```
 
-### 8.3 فعاليات الرعاية المتاحة — `getSponsorEvents()`
+### 8.3 فعاليات الرعاية المتاحة — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/sponsor-events`
 - **Body:** لا يوجد
 
-### 8.4 رعاياتي — `getSponsorships()`
+### 8.4 رعاياتي — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/sponsorships`
 - **Body:** لا يوجد
 
-### 8.5 إنشاء رعاية — `createSponsorship()`
+### 8.5 إنشاء رعاية — 
 - **Method:** `POST`
 - **Endpoint:** `/investor/sponsorships`
 - **Body:**
@@ -274,12 +266,12 @@
   }
   ```
 
-### 8.6 طلبات التذاكر لفعالية — `getTicketRequests(eventId)`
+### 8.6 طلبات التذاكر لفعالية —
 - **Method:** `GET`
 - **Endpoint:** `/investor/events/{eventId}/ticket-requests`
 - **Body:** لا يوجد
 
-### 8.7 قبول/رفض طلب تذكرة — `ticketRequestAction(eventId, requestId, action)`
+### 8.7 قبول/رفض طلب تذكرة — 
 - **Method:** `PATCH`
 - **Endpoint:** `/investor/events/{eventId}/ticket-requests/{requestId}`
 - **Body:**
@@ -287,89 +279,31 @@
   { "action": "string  // accept | reject" }
   ```
 
-### 8.8 إضافة فعالية للمفضلة — `addFavoriteEvent(eventId)`
+### 8.8 إضافة فعالية للمفضلة — 
 - **Method:** `POST`
 - **Endpoint:** `/investor/favorites/events/{id}`
 - **Body:** لا يوجد (`{}`)
 
-### 8.9 إزالة فعالية من المفضلة — `removeFavoriteEvent(eventId)`
+### 8.9 إزالة فعالية من المفضلة —
 - **Method:** `DELETE`
 - **Endpoint:** `/investor/favorites/events/{id}`
 - **Body:** لا يوجد
 
-> ملاحظة: `AppLink.eventDetail(id)` و`AppLink.cancelSponsorship(id)` معرّفان لكن غير مستخدمين حالياً في أي `remote` class.
-
 ---
 
-## 9. المفضلة (Favorites) — `remote/Favorites/`
+## 9. المفضلة (Favorites) — 
 
-### 9.1 جلب كل المفضلة — `getFavorites()`
+### 9.1 جلب كل المفضلة — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/favorites`
 - **Body:** لا يوجد
 
-> إضافة/إزالة عناصر المفضلة (معارض، أجنحة، فعاليات) تتم عبر `ExhibitionsData` / `BoothsData` / `EventsData` أعلاه.
 
 ---
 
-## 10. الرسائل (Messages) — `remote/Messages/`
+## 12. الإشعارات (Notifications) — 
 
-### 10.1 جلب المحادثات — `getConversations()`
-- **Method:** `GET`
-- **Endpoint:** `/investor/messages`
-- **Body:** لا يوجد
-
-### 10.2 تفاصيل محادثة — `getConversationDetail(conversationId)`
-- **Method:** `GET`
-- **Endpoint:** `/investor/messages/{id}`
-- **Body:** لا يوجد
-
-### 10.3 إنشاء محادثة جديدة — `createConversation()`
-- **Method:** `POST`
-- **Endpoint:** `/investor/messages`
-- **Body:**
-  ```json
-  {
-    "exhibition_id": "int",
-    "exhibition_name": "string"
-  }
-  ```
-
-### 10.4 إرسال رسالة — `sendMessage(conversationId, text)`
-- **Method:** `POST`
-- **Endpoint:** `/investor/messages/{id}/send`
-- **Body:**
-  ```json
-  { "text": "string" }
-  ```
-
----
-
-## 11. رسائل الزوار (Visitor Messages) — `remote/VisitorMessages/`
-
-### 11.1 جلب المحادثات — `getConversations()`
-- **Method:** `GET`
-- **Endpoint:** `/investor/visitor-messages`
-- **Body:** لا يوجد
-
-### 11.2 تفاصيل محادثة زائر — `getConversationDetail(conversationId)`
-- **Method:** `GET`
-- **Endpoint:** `/investor/visitor-messages/{id}`
-- **Body:** لا يوجد
-
-### 11.3 إرسال رسالة لزائر — `sendMessage(conversationId, text)`
-- **Method:** `POST`
-- **Endpoint:** `/investor/visitor-messages/{id}/send`
-- **Body:**
-  ```json
-  { "text": "string" }
-  ```
-
----
-
-## 12. الإشعارات (Notifications) — `remote/Notifications/`
-
-### 12.1 جلب الإشعارات — `getNotifications()`
+### 12.1 جلب الإشعارات —
 - **Method:** `GET`
 - **Endpoint:** `/investor/notifications`
 - **Body:** لا يوجد
@@ -386,14 +320,14 @@
 
 ---
 
-## 13. الملف الشخصي (Profile) — `remote/Profile/`
+## 13. الملف الشخصي (Profile) — 
 
-### 13.1 جلب بيانات الملف الشخصي — `getProfile()`
+### 13.1 جلب بيانات الملف الشخصي — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/profile`
 - **Body:** لا يوجد
 
-### 13.2 تحديث الملف الشخصي — `updateProfile()`
+### 13.2 تحديث الملف الشخصي —
 - **Method:** `PUT`
 - **Endpoint:** `/investor/profile`
 - **Body:**
@@ -416,22 +350,18 @@
 
 ---
 
-## 14. التقارير (Reports) — `remote/Reports/`
+## 14. التقارير (Reports) —
 
 ### 14.1 جلب التقارير — `getReports()`
 - **Method:** `GET`
 - **Endpoint:** `/investor/reports`
 - **Body:** لا يوجد
 
-> ملاحظات:
-> - `AppLink.reportDetail(id)` معرّف لكن غير مستخدم حالياً (تفاصيل التقرير تُعرض من بيانات القائمة نفسها).
-> - `AppLink.reportDownload(id, format)` (`GET /investor/reports/{id}/download?format={fmt}`) لا يُستخدم عبر `Crud`/`remote` — يُستخدم مباشرة في `reports_controller.dart` لبناء رابط تحميل يُمرَّر إلى `DownloadService` (تنزيل ملف وليس نداء بيانات JSON عادي)، لذا تُرك خارج طبقة `remote` بشكل متعمد.
-
 ---
 
-## 15. التحليلات (Analytics) — `remote/Analytics/`
+## 15. التحليلات (Analytics) — 
 
-### 15.1 بيانات التحليلات — `getAnalytics(period)`
+### 15.1 بيانات التحليلات — 
 - **Method:** `GET`
 - **Endpoint:** `/investor/analytics`
 - **Query Params:**
@@ -441,15 +371,3 @@
 - **Body:** لا يوجد
 
 ---
-
-## ملخص عام
-
-| العدد | التصنيف |
-|---|---|
-| 6 | POST بدون body ذي محتوى (فقط `{}`) — تفعيل مفضلة، تسجيل خروج، إلخ |
-| 9 | POST/PUT ببody يحمل بيانات فعلية |
-| 4 | PATCH (بعضها ببيانات، بعضها بدون) |
-| 4 | DELETE |
-| ~17 | GET (بعضها بـ query params) |
-
-**إجمالي عدد نداءات API الموثّقة: 34 نداء** موزعة على 15 ملف `remote`، بالإضافة إلى استخدامين خاصين خارج طبقة `remote` (رابط تنزيل التقرير، وتوكن FCM) موضّحين أعلاه لأسباب واضحة.

@@ -73,8 +73,9 @@ class WebCreateEventPage extends StatelessWidget {
                         ),
                       ),
                       Obx(() {
-                        if (c.selectedExhibitionName.value.isEmpty)
+                        if (c.selectedExhibitionName.value.isEmpty) {
                           return const SizedBox.shrink();
+                        }
                         final booths = c.boothsForSelectedExhibition;
                         return Padding(
                           padding: const EdgeInsets.only(top: 14),
@@ -370,7 +371,6 @@ class WebCreateEventPage extends StatelessWidget {
     }
   }
 
-  // ── Media picker (آمن للويب) ──────────────────────────────
   Widget _mediaPicker(EventsController c) => Obx(() {
     final count = c.pickedImages.length;
     return Column(

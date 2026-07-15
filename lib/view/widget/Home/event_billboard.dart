@@ -1,4 +1,3 @@
-import 'package:expocore_invistor2/web/models/web_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
@@ -37,7 +36,9 @@ class EventBillboard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: WebTheme.text,
+                  color: context.isDarkMode
+                      ? Colors.white
+                      : const Color(0xFF1D1A39),
                 ),
               ),
             ],
@@ -60,20 +61,6 @@ class EventBillboard extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 6,
-              child: _NavBtn(
-                icon: Icons.chevron_left_rounded,
-                onTap: ctrl.prev,
-              ),
-            ),
-            Positioned(
-              right: 6,
-              child: _NavBtn(
-                icon: Icons.chevron_right_rounded,
-                onTap: ctrl.next,
-              ),
-            ),
-            Positioned(
               bottom: 10,
               child: Obx(
                 () => Row(
@@ -87,6 +74,14 @@ class EventBillboard extends StatelessWidget {
                       height: 6,
                       decoration: BoxDecoration(
                         color: isActive ? Colors.white : Colors.white54,
+                        gradient: isActive
+                            ? const LinearGradient(
+                                colors: [
+                                  AppColors.darkPrimary,
+                                  AppColors.darkSecondary,
+                                ],
+                              )
+                            : null,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     );
@@ -125,16 +120,7 @@ class _EventBillboardSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
@@ -240,17 +226,16 @@ class _EventBillboardSlide extends StatelessWidget {
                           color: Colors.white70,
                         ),
                         const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            event.exhibitionName,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          event.exhibitionName,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+
                         const SizedBox(width: 12),
                         const Icon(
                           Icons.calendar_today_outlined,
@@ -307,24 +292,4 @@ class _EventBillboardSlide extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NavBtn extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _NavBtn({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.45),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: Colors.white, size: 22),
-    ),
-  );
 }

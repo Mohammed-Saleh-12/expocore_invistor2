@@ -296,7 +296,7 @@ class WebSettingsPage extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: active ? WebTheme.text : AppColors.grey,
+              color: active ? Colors.white : AppColors.grey,
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
@@ -388,14 +388,18 @@ class _PersonalInfoCard extends StatelessWidget {
                           p.isEditing.value
                               ? Icons.close_rounded
                               : Icons.edit_outlined,
-                          color: WebTheme.text,
+                          color: p.isEditing.value
+                              ? WebTheme.text
+                              : Colors.white,
                           size: 16,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           p.isEditing.value ? 'إلغاء' : 'تعديل',
                           style: TextStyle(
-                            color: WebTheme.text,
+                            color: p.isEditing.value
+                                ? WebTheme.text
+                                : Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
@@ -515,7 +519,7 @@ class _PersonalInfoCard extends StatelessWidget {
                             : Text(
                                 'حفظ التغييرات',
                                 style: TextStyle(
-                                  color: WebTheme.text,
+                                  color: Colors.white,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                 ),

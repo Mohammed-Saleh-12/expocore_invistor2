@@ -87,8 +87,8 @@ class _LoginBrand extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 44,
                       fontWeight: FontWeight.w900,
-                      height: 1.25,
-                      color: WebTheme.text,
+                      height: 1.5,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -328,7 +328,7 @@ class _GradientButton extends StatelessWidget {
             : Text(
                 label,
                 style: TextStyle(
-                  color: WebTheme.text,
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),

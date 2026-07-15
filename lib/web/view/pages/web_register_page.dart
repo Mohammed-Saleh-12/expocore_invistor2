@@ -87,7 +87,7 @@ class _RegisterBrand extends StatelessWidget {
                       fontSize: 40,
                       fontWeight: FontWeight.w900,
                       height: 1.3,
-                      color: WebTheme.text,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -308,7 +308,7 @@ class _RegisterForm extends StatelessWidget {
                       : Text(
                           'register_btn'.tr,
                           style: TextStyle(
-                            color: WebTheme.text,
+                            color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),

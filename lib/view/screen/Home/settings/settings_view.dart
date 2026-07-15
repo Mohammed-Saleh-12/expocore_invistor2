@@ -137,12 +137,7 @@ class SettingsView extends GetView<SettingsController> {
                     ),
                     child: Text(
                       'العربية',
-                      style: TextStyle(
-                        color: controller.currentLang.value == 'ar'
-                            ? Colors.white
-                            : AppColors.grey,
-                        fontSize: 11,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 11),
                     ),
                   ),
                 ),
@@ -163,12 +158,7 @@ class SettingsView extends GetView<SettingsController> {
                     ),
                     child: Text(
                       'English',
-                      style: TextStyle(
-                        color: controller.currentLang.value == 'en'
-                            ? Colors.white
-                            : AppColors.grey,
-                        fontSize: 11,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 11),
                     ),
                   ),
                 ),

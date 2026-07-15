@@ -295,7 +295,7 @@ Widget _actionBtn(
     child: Text(
       label,
       style: TextStyle(
-        color: filled ? WebTheme.text : WebTheme.primary,
+        color: filled ? Colors.white : WebTheme.primary,
         fontSize: 14,
         fontWeight: FontWeight.w700,
       ),
@@ -322,7 +322,6 @@ class _ExhibitionDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fav = Get.find<FavoritesController>();
     final events = Get.find<EventsController>();
 
     return _DetailScaffold(
@@ -395,15 +394,6 @@ class _ExhibitionDetail extends StatelessWidget {
         }),
       ],
       actions: [
-        // مفضلة
-        Obx(() {
-          final isFav = fav.isExhibitionFavorited(e.id);
-          return _actionBtn(
-            isFav ? '★ في المفضلة' : '☆ أضف للمفضلة',
-            filled: false,
-            onTap: () => fav.toggleFavoriteExhibition(e),
-          );
-        }),
         // تواصل
         _actionBtn(
           'تواصل مع الإدارة',
@@ -477,7 +467,7 @@ class _SponsorEventRow extends StatelessWidget {
               ),
               child: Icon(
                 Icons.campaign_rounded,
-                color: WebTheme.text,
+                color: Colors.white,
                 size: 22,
               ),
             ),
@@ -508,7 +498,7 @@ class _SponsorEventRow extends StatelessWidget {
                 onPressed: () => ctrl.toggleSponsorFavorite(event),
                 icon: Icon(
                   event.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: WebTheme.secondary,
+                  color: AppColors.error,
                   size: 20,
                 ),
               );
@@ -563,8 +553,9 @@ class _BoothDetail extends StatelessWidget {
           'تواصل مع الإدارة',
           filled: true,
           onTap: () {
-            Get.find<MessagesController>()
-                .prepareConversationForExhibition(b.exhibitionName);
+            Get.find<MessagesController>().prepareConversationForExhibition(
+              b.exhibitionName,
+            );
             WebNavController.to.select(6);
           },
         ),
@@ -696,14 +687,14 @@ class _ReportDetail extends StatelessWidget {
                   Text(
                     content.kpis.first.value,
                     style: TextStyle(
-                      color: WebTheme.text,
+                      color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   Text(
                     content.kpis.first.label,
-                    style: TextStyle(color: WebTheme.text70, fontSize: 14),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -720,7 +711,7 @@ class _ReportDetail extends StatelessWidget {
                 child: Text(
                   '+${r.trend}%',
                   style: TextStyle(
-                    color: WebTheme.text,
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),

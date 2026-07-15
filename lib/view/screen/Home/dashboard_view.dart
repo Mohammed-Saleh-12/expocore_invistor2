@@ -1,4 +1,3 @@
-import 'package:expocore_invistor2/web/models/web_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
@@ -8,9 +7,7 @@ import '../../../core/constant/appcolors.dart';
 import '../../../core/constant/routes.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../widget/Home/bottom_nav_custom.dart';
-import '../../widget/Home/expocore_logo.dart';
 import '../../widget/Home/stats_card.dart';
-import '../../widget/Home/exhibition_card.dart';
 import '../../widget/Home/sponsor_event_card.dart';
 import '../../widget/Home/exhibition_billboard.dart';
 import '../../widget/Home/event_billboard.dart';
@@ -23,6 +20,7 @@ class DashboardView extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     final notifCtrl = Get.find<NotificationsController>();
     final eventsCtrl = Get.find<EventsController>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: SafeArea(
@@ -32,72 +30,74 @@ class DashboardView extends GetView<DashboardController> {
           child: CustomScrollView(
             slivers: [
               SliverAppBar(
-                pinned: true,
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                floating: true,
+                snap: true,
+                toolbarHeight: 56,
+                backgroundColor: isDark
                     ? AppColors.darkBg
-                    : AppColors.lightBg,
+                    : AppColors.lightCard,
                 elevation: 0,
                 automaticallyImplyLeading: false,
-                title: Row(
-                  children: [
-                    // Logo
-                    const ExpocoreLogo(size: 34),
-                    const SizedBox(width: 8),
-                    // Brand name
-                    RichText(
-                      text: const TextSpan(
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
+                titleSpacing: 0,
+                title: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Image.asset(
+                          isDark
+                              ? 'assets/images/logo1.png'
+                              : 'assets/images/logo.png',
+                          height: 38,
+                          fit: BoxFit.contain,
                         ),
-                        children: [
-                          TextSpan(
-                            text: 'EXPO',
-                            style: TextStyle(color: AppColors.darkSecondary),
-                          ),
-                          TextSpan(
-                            text: 'CORE',
-                            style: TextStyle(color: AppColors.darkAccent),
-                          ),
-                        ],
                       ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Stack(
+                      Stack(
+                        alignment: Alignment.center,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.notifications_outlined),
+                            padding: const EdgeInsets.only(right: 10),
+                            icon: Icon(
+                              Icons.notifications_outlined,
+                              color: isDark
+                                  ? AppColors.white
+                                  : AppColors.lightPrimary,
+                              size: 28,
+                            ),
                             onPressed: () =>
                                 Get.toNamed(AppRoutes.NOTIFICATIONS),
                           ),
-                          if (notifCtrl.unreadCount > 0)
-                            Positioned(
-                              right: 8,
-                              top: 8,
-                              child: Container(
-                                width: 14,
-                                height: 14,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.darkSecondary,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '${notifCtrl.unreadCount}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9,
+                          Obx(
+                            () => notifCtrl.unreadCount > 0
+                                ? Positioned(
+                                    right: 8,
+                                    top: 4,
+                                    child: Container(
+                                      width: 14,
+                                      height: 14,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '${notifCtrl.unreadCount}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: AppColors.white,
+                                          fontSize: 8,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SliverToBoxAdapter(
@@ -119,24 +119,6 @@ class DashboardView extends GetView<DashboardController> {
                     const SizedBox(height: 20),
                     _quickActions(context),
                     const SizedBox(height: 20),
-                    _sectionHeader('أحدث المعارض', AppRoutes.EXHIBITIONS),
-                    Obx(
-                      () => Column(
-                        children: controller.latestExhibitions
-                            .map(
-                              (e) => ExhibitionCard(
-                                exhibition: e,
-                                onTap: () => Get.toNamed(
-                                  AppRoutes.EXHIBITION_DETAIL,
-                                  arguments: e,
-                                ),
-                                onFavorite: () {},
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                     Obx(
                       () => EventBillboard(
                         key: ValueKey(
@@ -151,7 +133,9 @@ class DashboardView extends GetView<DashboardController> {
                     // Upcoming sponsor events from exhibitions investor participates in
                     _sectionHeader(
                       'فعاليات المعارض القادمة',
+
                       AppRoutes.EXHIBITION_EVENTS,
+                      context,
                     ),
                     Obx(() {
                       final list = eventsCtrl.myExhibitionSponsorEvents;
@@ -233,7 +217,9 @@ class DashboardView extends GetView<DashboardController> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: WebTheme.text,
+                    color: context.isDarkMode
+                        ? Colors.white
+                        : const Color(0xFF1D1A39),
                   ),
                 ),
               ],
@@ -373,7 +359,9 @@ class DashboardView extends GetView<DashboardController> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: WebTheme.text,
+                  color: context.isDarkMode
+                      ? Colors.white
+                      : const Color(0xFF1D1A39),
                 ),
               ),
             ],
@@ -446,44 +434,47 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _sectionHeader(String title, String route) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-    child: Row(
-      children: [
-        Row(
+  Widget _sectionHeader(String title, String route, BuildContext context) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Row(
           children: [
-            Container(
-              width: 5,
-              height: 22,
-              decoration: BoxDecoration(
-                gradient: AppColors.favoriteGradient,
-                borderRadius: BorderRadius.circular(3),
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 5,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.favoriteGradient,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: context.isDarkMode
+                        ? Colors.white
+                        : const Color(0xFF1D1A39),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: WebTheme.text,
+            const Spacer(),
+            GestureDetector(
+              onTap: () => Get.toNamed(route),
+              child: const Text(
+                'عرض الكل',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.darkPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
         ),
-        const Spacer(),
-        GestureDetector(
-          onTap: () => Get.toNamed(route),
-          child: const Text(
-            'عرض الكل',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.darkPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 }
