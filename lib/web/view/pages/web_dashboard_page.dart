@@ -51,12 +51,6 @@ class WebDashboardPage extends StatelessWidget {
                 _performanceSection(c),
                 const SizedBox(height: 32),
 
-                // ── Quick actions ─────────────────────────
-                _sectionTitle('الإجراءات السريعة'),
-                const SizedBox(height: 16),
-                _quickActions(),
-                const SizedBox(height: 32),
-
                 // ── Latest exhibitions ────────────────────
                 _sectionTitleWithAction(
                   'أحدث المعارض',
@@ -218,48 +212,6 @@ class WebDashboardPage extends StatelessWidget {
     ],
   );
 
-  // ── Quick actions ──────────────────────────────────────────
-  Widget _quickActions() {
-    final actions = [
-      (
-        _QA(
-          Icons.qr_code_scanner_rounded,
-          'مسح QR',
-          WebTheme.accent,
-          gradient: false,
-        ),
-        WebNavController.to.openScanner,
-      ),
-      (
-        _QA(Icons.add_circle_outline, 'نشر فعالية', WebTheme.secondary),
-        WebNavController.to.openCreateEvent,
-      ),
-      (
-        _QA(Icons.event_note, 'فعالياتي', WebTheme.primary),
-        () => WebNavController.to.select(3),
-      ),
-      (
-        _QA(Icons.workspace_premium_outlined, 'رعاياتي', AppColors.orange),
-        () => WebNavController.to.select(4),
-      ),
-      (
-        _QA(Icons.bar_chart, 'التقارير', AppColors.info),
-        () => WebNavController.to.select(5),
-      ),
-      (
-        _QA(Icons.message, 'التواصل', const Color.fromARGB(255, 192, 31, 255)),
-        () => WebNavController.to.select(6),
-      ),
-    ];
-    return Wrap(
-      spacing: 14,
-      runSpacing: 14,
-      children: actions
-          .map((a) => _QuickActionBtn(qa: a.$1, onTap: a.$2))
-          .toList(),
-    );
-  }
-
   // ── Section titles ─────────────────────────────────────────
   Widget _sectionTitle(String t) => Row(
     children: [
@@ -311,64 +263,6 @@ class WebDashboardPage extends StatelessWidget {
     ),
     child: Text(t, style: TextStyle(color: AppColors.grey)),
   );
-}
-
-// ── Quick action model + button ──────────────────────────────
-class _QA {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final bool gradient;
-  _QA(this.icon, this.label, this.color, {this.gradient = false});
-}
-
-class _QuickActionBtn extends StatelessWidget {
-  final _QA qa;
-  final VoidCallback onTap;
-  const _QuickActionBtn({required this.qa, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 150,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
-        decoration: BoxDecoration(
-          color: WebTheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: WebTheme.border),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                gradient: qa.gradient ? AppColors.favoriteGradient : null,
-                color: qa.gradient ? null : qa.color.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                qa.icon,
-                color: qa.gradient ? Colors.white : qa.color,
-                size: 24,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              qa.label,
-              style: TextStyle(
-                color: WebTheme.text,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
-  }
 }
 
 // ── Stat data + card ──────────────────────────────────────────

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../models/web_section.dart';
+import '../../controllers/web_nav_controller.dart';
 
 class WebSidebar extends StatelessWidget {
   final List<WebSection> sections;
@@ -55,6 +56,50 @@ class WebSidebar extends StatelessWidget {
                 section: sections[i],
                 active: i == selected,
                 onTap: () => onSelect(i),
+              ),
+            ),
+          ),
+
+          // ── Publish event ────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: InkWell(
+              onTap: WebNavController.to.openCreateEvent,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 13,
+                ),
+                decoration: BoxDecoration(
+                  gradient: AppColors.favoriteGradient,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: WebTheme.primary.withOpacity(0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.add_circle_outline_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'نشر فعالية',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
