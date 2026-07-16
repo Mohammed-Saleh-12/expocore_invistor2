@@ -12,20 +12,22 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return SwipeNavWrapper(child: Scaffold(
-      bottomNavigationBar: const BottomNavCustom(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _profileSection(context, isDark),
-              const SizedBox(height: 8),
-              _settingsList(context, isDark),
-            ],
+    return SwipeNavWrapper(
+      child: Scaffold(
+        bottomNavigationBar: const BottomNavCustom(),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _profileSection(context, isDark),
+                const SizedBox(height: 8),
+                _settingsList(context, isDark),
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _profileSection(BuildContext context, bool isDark) => Container(
@@ -116,15 +118,7 @@ class SettingsView extends GetView<SettingsController> {
           isDark,
           Icons.lock_outline,
           'تغيير كلمة المرور',
-          () => _showChangePasswordSheet(context),
-        ),
-        _settingTile(
-          context,
-          isDark,
-          Icons.delete_forever_outlined,
-          'حذف الحساب',
-          () => _showDeleteAccountDialog(context),
-          isDestructive: true,
+          () => Get.toNamed(AppRoutes.changePassword),
         ),
         const SizedBox(height: 12),
 
@@ -273,6 +267,14 @@ class SettingsView extends GetView<SettingsController> {
           controller.logout,
           isDestructive: true,
         ),
+        _settingTile(
+          context,
+          isDark,
+          Icons.delete_forever_outlined,
+          'حذف الحساب',
+          () => _showDeleteAccountDialog(context),
+          isDestructive: true,
+        ),
         const SizedBox(height: 24),
         const Text(
           'ExpoCore v1.0.0 • منصة المستثمر',
@@ -283,112 +285,6 @@ class SettingsView extends GetView<SettingsController> {
     ),
   );
 
-  // ── Change Password — bottom sheet ─────────────────────────
-  void _showChangePasswordSheet(BuildContext context) {
-    final currentCtrl = TextEditingController();
-    final newCtrl     = TextEditingController();
-    final confirmCtrl = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: AppColors.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.darkCTAGradient,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.lock_outline,
-                        color: Colors.white, size: 18),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'تغيير كلمة المرور',
-                    style: TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.w800),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _passwordField('كلمة المرور الحالية', currentCtrl),
-              const SizedBox(height: 12),
-              _passwordField('كلمة المرور الجديدة', newCtrl),
-              const SizedBox(height: 12),
-              _passwordField('تأكيد كلمة المرور الجديدة', confirmCtrl),
-              const SizedBox(height: 20),
-              Obx(
-                () => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.isChangingPassword.value
-                        ? null
-                        : () => controller.changePassword(
-                              current: currentCtrl.text.trim(),
-                              newPass: newCtrl.text.trim(),
-                              confirm: confirmCtrl.text.trim(),
-                            ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.darkPrimary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: controller.isChangingPassword.value
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
-                          )
-                        : const Text('حفظ كلمة المرور',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w700)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ).whenComplete(() {
-      currentCtrl.dispose();
-      newCtrl.dispose();
-      confirmCtrl.dispose();
-    });
-  }
-
   // ── Delete Account — confirm dialog ────────────────────────
   void _showDeleteAccountDialog(BuildContext context) {
     Get.dialog(
@@ -396,8 +292,11 @@ class SettingsView extends GetView<SettingsController> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: const [
-            Icon(Icons.delete_forever_outlined,
-                color: AppColors.error, size: 26),
+            Icon(
+              Icons.delete_forever_outlined,
+              color: AppColors.error,
+              size: 26,
+            ),
             SizedBox(width: 8),
             Text('حذف الحساب'),
           ],
@@ -407,10 +306,7 @@ class SettingsView extends GetView<SettingsController> {
           textAlign: TextAlign.center,
         ),
         actions: [
-          TextButton(
-            onPressed: Get.back,
-            child: const Text('إلغاء'),
-          ),
+          TextButton(onPressed: Get.back, child: const Text('إلغاء')),
           Obx(
             () => TextButton(
               onPressed: controller.isDeletingAccount.value
@@ -424,10 +320,14 @@ class SettingsView extends GetView<SettingsController> {
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                          color: AppColors.error, strokeWidth: 2),
+                        color: AppColors.error,
+                        strokeWidth: 2,
+                      ),
                     )
-                  : const Text('حذف نهائي',
-                      style: TextStyle(color: AppColors.error)),
+                  : const Text(
+                      'حذف نهائي',
+                      style: TextStyle(color: AppColors.error),
+                    ),
             ),
           ),
         ],
@@ -435,18 +335,6 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _passwordField(String label, TextEditingController ctrl) =>
-      TextField(
-        controller: ctrl,
-        obscureText: true,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          prefixIcon: const Icon(Icons.lock_outline, size: 20),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        ),
-      );
 
   Widget _sectionTitle(String t) => Align(
     alignment: Alignment.centerRight,

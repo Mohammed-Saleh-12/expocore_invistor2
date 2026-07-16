@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/core/class/StatusRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
@@ -9,22 +10,24 @@ import '../../data/sourcedata/remote/Auth/ChangePasswordData.dart';
 import '../../data/sourcedata/remote/Auth/DeleteAccountData.dart';
 
 class SettingsController extends GetxController {
-  final LogoutData        _logoutData        = LogoutData(Crud());
+  final LogoutData _logoutData = LogoutData(Crud());
   final ChangePasswordData _changePasswordData = ChangePasswordData(Crud());
-  final DeleteAccountData  _deleteAccountData  = DeleteAccountData(Crud());
-
-  final isDark               = true.obs;
+  final DeleteAccountData _deleteAccountData = DeleteAccountData(Crud());
+  final RxBool isLoading = false.obs;
+  final Rx<StatusRequest> status = StatusRequest.none.obs;
+  final RxString errorMessage = ''.obs;
+  final isDark = true.obs;
   final notificationsEnabled = true.obs;
-  final favoritesNotify      = true.obs;
-  final reportsNotify        = true.obs;
-  final currentLang          = 'ar'.obs;
-  final isLoggingOut         = false.obs;
-  final isChangingPassword   = false.obs;
-  final isDeletingAccount    = false.obs;
+  final favoritesNotify = true.obs;
+  final reportsNotify = true.obs;
+  final currentLang = 'ar'.obs;
+  final isLoggingOut = false.obs;
+  final isChangingPassword = false.obs;
+  final isDeletingAccount = false.obs;
 
   @override
   void onInit() {
-    isDark.value      = Get.find<Services>().isDarkMode;
+    isDark.value = Get.find<Services>().isDarkMode;
     currentLang.value = Get.find<Services>().lang;
     super.onInit();
   }
@@ -37,27 +40,31 @@ class SettingsController extends GetxController {
 
   void changeLanguage(String lang) {
     currentLang.value = lang;
-    appLang.value     = lang;
+    appLang.value = lang;
     Get.updateLocale(Locale(lang, lang == 'ar' ? 'SA' : 'US'));
     Get.find<Services>().saveLang(lang);
   }
 
   Future<void> logout() async {
-    final confirm = await Get.dialog<bool>(AlertDialog(
-      title:   Text('settings_logout'.tr),
-      content: Text('settings_logout_confirm'.tr),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(result: false),
-          child: Text('btn_cancel'.tr),
-        ),
-        TextButton(
-          onPressed: () => Get.back(result: true),
-          child: Text('btn_confirm'.tr,
-              style: const TextStyle(color: Colors.red)),
-        ),
-      ],
-    ));
+    final confirm = await Get.dialog<bool>(
+      AlertDialog(
+        title: Text('settings_logout'.tr),
+        content: Text('settings_logout_confirm'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: Text('btn_cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: Text(
+              'btn_confirm'.tr,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
 
     if (confirm == true) {
       isLoggingOut.value = true;
@@ -74,11 +81,17 @@ class SettingsController extends GetxController {
     required String newPass,
     required String confirm,
   }) async {
+    isLoading.value = true;
+    status.value = StatusRequest.loading;
+    errorMessage.value = '';
     if (newPass != confirm) {
-      Get.snackbar('خطأ', 'كلمة المرور الجديدة وتأكيدها غير متطابقتين',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.85),
-          colorText: Colors.white);
+      Get.snackbar(
+        'خطأ',
+        'كلمة المرور الجديدة وتأكيدها غير متطابقتين',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.85),
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -92,17 +105,26 @@ class SettingsController extends GetxController {
 
     if (result['status'] == true) {
       Get.back(); // أغلق الـ dialog
-      Get.snackbar('تم', 'تم تغيير كلمة المرور بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.85),
-          colorText: Colors.white);
+      Get.snackbar(
+        'تم',
+        'تم تغيير كلمة المرور بنجاح',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.85),
+        colorText: Colors.white,
+      );
     } else {
-      final msg = result['message'] ?? 'فشل تغيير كلمة المرور، تحقق من كلمة المرور الحالية';
-      Get.snackbar('خطأ', msg,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.85),
-          colorText: Colors.white);
+      final msg =
+          result['message'] ??
+          'فشل تغيير كلمة المرور، تحقق من كلمة المرور الحالية';
+      Get.snackbar(
+        'خطأ',
+        msg,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.85),
+        colorText: Colors.white,
+      );
     }
+    isLoading.value = false;
   }
 
   /// حذف الحساب — يُنهي الجلسة ويعود للتسجيل عند النجاح
@@ -116,10 +138,13 @@ class SettingsController extends GetxController {
       Get.offAllNamed(AppRoutes.LOGIN);
     } else {
       final msg = result['message'] ?? 'فشل حذف الحساب، حاول مجدداً';
-      Get.snackbar('خطأ', msg,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.85),
-          colorText: Colors.white);
+      Get.snackbar(
+        'خطأ',
+        msg,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.85),
+        colorText: Colors.white,
+      );
     }
   }
 }

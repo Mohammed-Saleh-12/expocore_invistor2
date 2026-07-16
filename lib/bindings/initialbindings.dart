@@ -1,3 +1,5 @@
+import 'package:expocore_invistor2/controller/auth/change_password_controller.dart';
+import 'package:expocore_invistor2/core/class/crud.dart';
 import 'package:get/get.dart';
 import '../controller/auth/login_controller.dart';
 import '../controller/auth/register_controller.dart';
@@ -75,5 +77,16 @@ class InitialBindings extends Bindings {
       Get.lazyPut(() => WebBillboardController(),  fenix: true);
       Get.lazyPut(() => WebScannerController(),    fenix: true);
     }
+  }
+  
+}
+class ChangePasswordBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<Crud>(() => Crud(), fenix: true);
+    Get.lazyPut<ChangePasswordController>(
+      () => ChangePasswordController(),
+      fenix: true,
+    );
   }
 }

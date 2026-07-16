@@ -15,86 +15,88 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeNavWrapper(child: Scaffold(
-      bottomNavigationBar: const BottomNavCustom(),
-      body: Column(
-        children: [
-          SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Column(
-              children: [
-                // ── Search bar + filter button ──────────────
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: controller.searchCtrl,
-                        textDirection: TextDirection.rtl,
-                        onChanged: controller.onSearch,
-                        decoration: InputDecoration(
-                          hintText: 'ابحث عن معرض...',
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: AppColors.grey,
-                          ),
-                          filled: true,
-                          fillColor:
-                              Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkCard
-                              : AppColors.lightCard,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
+    return SwipeNavWrapper(
+      child: Scaffold(
+        bottomNavigationBar: const BottomNavCustom(),
+        body: Column(
+          children: [
+            SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Column(
+                children: [
+                  // ── Search bar + filter button ──────────────
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: controller.searchCtrl,
+                          textDirection: TextDirection.rtl,
+                          onChanged: controller.onSearch,
+                          decoration: InputDecoration(
+                            hintText: 'ابحث عن معرض...',
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: AppColors.grey,
+                            ),
+                            filled: true,
+                            fillColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkCard
+                                : AppColors.lightCard,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    _FilterButton(controller: controller),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // ── Active filters strip ────────────────────
-                _ActiveFilters(controller: controller),
-              ],
+                      const SizedBox(width: 10),
+                      _FilterButton(controller: controller),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // ── Active filters strip ────────────────────
+                  _ActiveFilters(controller: controller),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) return const LoadingWidget();
-              if (controller.filtered.isEmpty) {
-                return EmptyWidget(
-                  message: 'لا توجد معارض',
-                  buttonLabel: 'تحديث',
-                  onAction: controller.refresh,
+            const SizedBox(height: 6),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) return const LoadingWidget();
+                if (controller.filtered.isEmpty) {
+                  return EmptyWidget(
+                    message: 'لا توجد معارض',
+                    buttonLabel: 'تحديث',
+                    onAction: controller.refresh,
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: controller.refresh,
+                  child: ListView.builder(
+                    itemCount: controller.filtered.length,
+                    itemBuilder: (_, i) {
+                      final e = controller.filtered[i];
+                      return ExhibitionCard(
+                        exhibition: e,
+                        onTap: () => Get.toNamed(
+                          AppRoutes.EXHIBITION_DETAIL,
+                          arguments: e,
+                        ),
+                        onFavorite: () => controller.toggleFavorite(e),
+                      );
+                    },
+                  ),
                 );
-              }
-              return RefreshIndicator(
-                onRefresh: controller.refresh,
-                child: ListView.builder(
-                  itemCount: controller.filtered.length,
-                  itemBuilder: (_, i) {
-                    final e = controller.filtered[i];
-                    return ExhibitionCard(
-                      exhibition: e,
-                      onTap: () => Get.toNamed(
-                        AppRoutes.EXHIBITION_DETAIL,
-                        arguments: e,
-                      ),
-                      onFavorite: () => controller.toggleFavorite(e),
-                    );
-                  },
-                ),
-              );
-            }),
-          ),
-        ],
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -163,7 +165,7 @@ class _FilterButton extends StatelessWidget {
           ],
         );
       }),
-    ));
+    );
   }
 }
 

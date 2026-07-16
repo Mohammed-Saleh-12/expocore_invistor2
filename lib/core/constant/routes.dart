@@ -36,4 +36,5 @@ class AppRoutes {
   static const String NOTIFICATIONS = '/notifications';
   static const String SETTINGS    = '/settings';
   static const String QR_SCANNER  = '/qr-scanner';
+  static const String changePassword    = '/change-password';
 }

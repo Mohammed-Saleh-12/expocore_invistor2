@@ -90,3 +90,157 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
+class AppButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final bool isOutlined;
+  final bool isDisabled;
+  final Color? color;
+  final IconData? icon;
+  final double? width;
+
+  const AppButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.isOutlined = false,
+    this.isDisabled = false,
+    this.color,
+    this.icon,
+    this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = color ?? AppColors.orange;
+    final disabled = isDisabled || isLoading;
+
+    if (isOutlined) {
+      return SizedBox(
+        width: width ?? double.infinity,
+        height: 52,
+        child: OutlinedButton.icon(
+          onPressed: disabled ? null : onPressed,
+          icon: icon != null ? Icon(icon, size: 18) : const SizedBox.shrink(),
+          label: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: bg,
+            side: BorderSide(color: bg, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: width ?? double.infinity,
+      height: 52,
+      child: ElevatedButton.icon(
+        onPressed: disabled ? null : onPressed,
+        icon: icon != null
+            ? Icon(icon, size: 18, color: AppColors.white)
+            : const SizedBox.shrink(),
+        label: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.white,
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Cairo',
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.white,
+                ),
+              ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: disabled ? AppColors.grey : bg,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: disabled ? 0 : 2,
+        ),
+      ),
+    );
+  }
+}
+
+class AppButtonSeconde extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final bool isOutlined;
+  final bool isDisabled;
+  final Gradient? color;
+  final IconData? icon;
+  final double? width;
+
+  const AppButtonSeconde({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.isOutlined = false,
+    this.isDisabled = false,
+    this.color,
+    this.icon,
+    this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final disabled = isDisabled || isLoading;
+
+    return SizedBox(
+      width: width ?? double.infinity,
+      height: 52,
+      child: GestureDetector(
+        onTap: disabled ? null : onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            gradient: AppColors.favoriteGradient,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) Icon(icon, size: 18, color: AppColors.white),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

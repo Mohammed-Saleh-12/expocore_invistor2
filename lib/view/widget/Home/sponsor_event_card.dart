@@ -67,7 +67,7 @@ class SponsorEventCard extends StatelessWidget {
                   if (onFavorite != null)
                     Positioned(
                       top: 10,
-                      left: 6,
+                      left: 8,
                       child: GestureDetector(
                         onTap: onFavorite,
                         child: Icon(

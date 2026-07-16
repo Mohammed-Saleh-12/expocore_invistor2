@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/language_picker_controller.dart';
 import '../../../core/constant/appcolors.dart';
-import '../../widget/Home/expocore_logo.dart';
 
-// ════════════════════════════════════════════════════════════
-//  LanguagePickerView  —  First-launch language selection
-// ════════════════════════════════════════════════════════════
 class LanguagePickerView extends StatelessWidget {
   const LanguagePickerView({super.key});
 
@@ -29,116 +25,100 @@ class LanguagePickerView extends StatelessWidget {
                       const Spacer(flex: 2),
 
                       // ── Logo ──────────────────────────────
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const ExpocoreLogo(size: 48),
-                          const SizedBox(width: 14),
-                          RichText(
-                            text: const TextSpan(
-                              style: TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 3),
-                              children: [
-                                TextSpan(
-                                    text: 'EXPO',
-                                    style: TextStyle(
-                                        color: AppColors.darkSecondary)),
-                                TextSpan(
-                                    text: 'CORE',
-                                    style: TextStyle(
-                                        color: AppColors.darkAccent)),
-                              ],
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 26),
+                      Image.asset(
+                        context.isDarkMode
+                            ? 'assets/images/logo3.png'
+                            : 'assets/images/logo2.png',
+                        height: 150,
                       ),
                       const SizedBox(height: 48),
 
                       // ── Title (bilingual, always shown) ───
-                      const Text(
-                        'اختر لغتك  •  Choose Your Language',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          height: 1.4,
+                      Obx(
+                        () => Text(
+                          c.selected.value == 'ar'
+                              ? 'اختر لغتك'
+                              : ' Choose Your Language',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'يمكنك تغيير اللغة لاحقاً من الإعدادات\nYou can change this later in Settings',
-                        style: TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 13,
-                          height: 1.7,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 48),
+
+                      const SizedBox(height: 16),
 
                       // ── Arabic option ─────────────────────
-                      Obx(() => _LangCard(
-                            selected: c.selected.value == 'ar',
-                            onTap: () => c.pick('ar'),
-                            flag: '🇸🇦',
-                            nativeName: 'العربية',
-                            englishName: 'Arabic',
-                            direction: 'RTL',
-                          )),
+                      Obx(
+                        () => _LangCard(
+                          selected: c.selected.value == 'ar',
+                          onTap: () => c.pick('ar'),
+                          flag: '🇸🇦',
+                          nativeName: 'العربية',
+                          englishName: 'Arabic',
+                          direction: 'RTL',
+                        ),
+                      ),
                       const SizedBox(height: 16),
 
                       // ── English option ────────────────────
-                      Obx(() => _LangCard(
-                            selected: c.selected.value == 'en',
-                            onTap: () => c.pick('en'),
-                            flag: '🇬🇧',
-                            nativeName: 'English',
-                            englishName: 'English',
-                            direction: 'LTR',
-                          )),
+                      Obx(
+                        () => _LangCard(
+                          selected: c.selected.value == 'en',
+                          onTap: () => c.pick('en'),
+                          flag: '🇬🇧',
+                          nativeName: 'English',
+                          englishName: 'English',
+                          direction: 'LTR',
+                        ),
+                      ),
 
                       const Spacer(flex: 3),
 
                       // ── Continue button ───────────────────
-                      Obx(() => SizedBox(
-                            width: double.infinity,
-                            height: 54,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: AppColors.favoriteGradient,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.darkPrimary.withOpacity(0.5),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: ElevatedButton(
-                                onPressed: c.proceed,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16)),
+                      Obx(
+                        () => SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: AppColors.favoriteGradient,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.darkPrimary.withOpacity(0.5),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
                                 ),
-                                child: Text(
-                                  c.selected.value == 'ar'
-                                      ? 'متابعة  →'
-                                      : 'Continue  →',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: c.proceed,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                c.selected.value == 'ar'
+                                    ? 'متابعة'
+                                    : 'Continue',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
-                          )),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -154,12 +134,12 @@ class LanguagePickerView extends StatelessWidget {
 
 // ── Language card ────────────────────────────────────────────
 class _LangCard extends StatelessWidget {
-  final bool         selected;
+  final bool selected;
   final VoidCallback onTap;
-  final String       flag;
-  final String       nativeName;
-  final String       englishName;
-  final String       direction;
+  final String flag;
+  final String nativeName;
+  final String englishName;
+  final String direction;
 
   const _LangCard({
     required this.selected,
@@ -193,7 +173,7 @@ class _LangCard extends StatelessWidget {
                     color: AppColors.darkPrimary.withOpacity(0.4),
                     blurRadius: 20,
                     offset: const Offset(0, 6),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -231,14 +211,18 @@ class _LangCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: selected ? Colors.white : Colors.transparent,
                 border: Border.all(
-                  color:
-                      selected ? Colors.white : AppColors.grey.withOpacity(0.4),
+                  color: selected
+                      ? Colors.white
+                      : AppColors.grey.withOpacity(0.4),
                   width: 2,
                 ),
               ),
               child: selected
-                  ? const Icon(Icons.check,
-                      size: 13, color: AppColors.darkAccent)
+                  ? const Icon(
+                      Icons.check,
+                      size: 13,
+                      color: AppColors.darkAccent,
+                    )
                   : null,
             ),
           ],

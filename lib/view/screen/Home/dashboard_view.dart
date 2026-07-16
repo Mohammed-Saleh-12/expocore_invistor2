@@ -22,163 +22,168 @@ class DashboardView extends GetView<DashboardController> {
     final notifCtrl = Get.find<NotificationsController>();
     final eventsCtrl = Get.find<EventsController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return SwipeNavWrapper(child: Scaffold(
-      bottomNavigationBar: const BottomNavCustom(),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async =>
-              await Future.delayed(const Duration(milliseconds: 800)),
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                snap: true,
-                toolbarHeight: 56,
-                backgroundColor: isDark
-                    ? AppColors.darkBg
-                    : AppColors.lightCard,
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                title: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Image.asset(
-                          isDark
-                              ? 'assets/images/logo1.png'
-                              : 'assets/images/logo.png',
-                          height: 38,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          IconButton(
-                            padding: const EdgeInsets.only(right: 10),
-                            icon: Icon(
-                              Icons.notifications_outlined,
-                              color: isDark
-                                  ? AppColors.white
-                                  : AppColors.lightPrimary,
-                              size: 28,
-                            ),
-                            onPressed: () =>
-                                Get.toNamed(AppRoutes.NOTIFICATIONS),
+    return SwipeNavWrapper(
+      child: Scaffold(
+        bottomNavigationBar: const BottomNavCustom(),
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async =>
+                await Future.delayed(const Duration(milliseconds: 800)),
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  snap: true,
+                  toolbarHeight: 56,
+                  backgroundColor: isDark
+                      ? AppColors.darkBg
+                      : AppColors.lightCard,
+                  elevation: 0,
+                  automaticallyImplyLeading: false,
+                  titleSpacing: 0,
+                  title: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Image.asset(
+                            isDark
+                                ? 'assets/images/logo1.png'
+                                : 'assets/images/logo.png',
+                            height: 38,
+                            fit: BoxFit.contain,
                           ),
-                          Obx(
-                            () => notifCtrl.unreadCount > 0
-                                ? Positioned(
-                                    right: 8,
-                                    top: 4,
-                                    child: Container(
-                                      width: 14,
-                                      height: 14,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.red,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Text(
-                                        '${notifCtrl.unreadCount}',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: AppColors.white,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.bold,
+                        ),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            IconButton(
+                              padding: const EdgeInsets.only(right: 10),
+                              icon: Icon(
+                                Icons.notifications_outlined,
+                                color: isDark
+                                    ? AppColors.white
+                                    : AppColors.lightPrimary,
+                                size: 28,
+                              ),
+                              onPressed: () =>
+                                  Get.toNamed(AppRoutes.NOTIFICATIONS),
+                            ),
+                            Obx(
+                              () => notifCtrl.unreadCount > 0
+                                  ? Positioned(
+                                      right: 12,
+                                      top: 4,
+                                      child: Container(
+                                        width: 14,
+                                        height: 14,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Text(
+                                          '${notifCtrl.unreadCount}',
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: AppColors.white,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
+                                    )
+                                  : const SizedBox.shrink(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Obx(
+                        () => ExhibitionBillboard(
+                          key: ValueKey(controller.featuredExhibitions.length),
+                          exhibitions: controller.featuredExhibitions.toList(),
+                          onTap: (e) => Get.toNamed(
+                            AppRoutes.EXHIBITION_DETAIL,
+                            arguments: e,
                           ),
-                        ],
+                        ),
                       ),
+                      const SizedBox(height: 10),
+                      _performanceCard(context),
+                      const SizedBox(height: 20),
+                      _quickActions(context),
+                      const SizedBox(height: 20),
+                      Obx(
+                        () => EventBillboard(
+                          key: ValueKey(
+                            eventsCtrl.exhibitionSponsorEvents.length,
+                          ),
+                          events: eventsCtrl.exhibitionSponsorEvents.toList(),
+                          onTap: (ev) =>
+                              _showSponsorSheet(context, ev, eventsCtrl),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Upcoming sponsor events from exhibitions investor participates in
+                      _sectionHeader(
+                        'فعاليات المعارض القادمة',
+
+                        AppRoutes.EXHIBITION_EVENTS,
+                        context,
+                      ),
+                      Obx(() {
+                        final list = eventsCtrl.myExhibitionSponsorEvents;
+                        if (list.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Text(
+                              'لا توجد فعاليات في معارضك المشترك بها',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.grey,
+                              ),
+                            ),
+                          );
+                        }
+                        return Column(
+                          children: list
+                              .take(3)
+                              .map(
+                                (ev) => SponsorEventCard(
+                                  event: ev,
+                                  onTap: () => _showSponsorSheet(
+                                    context,
+                                    ev,
+                                    eventsCtrl,
+                                  ),
+                                  onFavorite: () =>
+                                      eventsCtrl.toggleSponsorFavorite(ev),
+                                ),
+                              )
+                              .toList(),
+                        );
+                      }),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Obx(
-                      () => ExhibitionBillboard(
-                        key: ValueKey(controller.featuredExhibitions.length),
-                        exhibitions: controller.featuredExhibitions.toList(),
-                        onTap: (e) => Get.toNamed(
-                          AppRoutes.EXHIBITION_DETAIL,
-                          arguments: e,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _performanceCard(context),
-                    const SizedBox(height: 20),
-                    _quickActions(context),
-                    const SizedBox(height: 20),
-                    Obx(
-                      () => EventBillboard(
-                        key: ValueKey(
-                          eventsCtrl.exhibitionSponsorEvents.length,
-                        ),
-                        events: eventsCtrl.exhibitionSponsorEvents.toList(),
-                        onTap: (ev) =>
-                            _showSponsorSheet(context, ev, eventsCtrl),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Upcoming sponsor events from exhibitions investor participates in
-                    _sectionHeader(
-                      'فعاليات المعارض القادمة',
-
-                      AppRoutes.EXHIBITION_EVENTS,
-                      context,
-                    ),
-                    Obx(() {
-                      final list = eventsCtrl.myExhibitionSponsorEvents;
-                      if (list.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: Text(
-                            'لا توجد فعاليات في معارضك المشترك بها',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: AppColors.grey,
-                            ),
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: list
-                            .take(3)
-                            .map(
-                              (ev) => SponsorEventCard(
-                                event: ev,
-                                onTap: () =>
-                                    _showSponsorSheet(context, ev, eventsCtrl),
-                                onFavorite: () =>
-                                    eventsCtrl.toggleSponsorFavorite(ev),
-                              ),
-                            )
-                            .toList(),
-                      );
-                    }),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   void _showSponsorSheet(

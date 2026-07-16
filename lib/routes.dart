@@ -1,4 +1,5 @@
 import 'package:expocore_invistor2/view/screen/Home/messages/conversations_list_view.dart';
+import 'package:expocore_invistor2/view/screen/auth/change_password_screen.dart';
 import 'package:get/get.dart';
 import 'bindings/initialbindings.dart';
 import 'core/constant/routes.dart';
@@ -78,5 +79,11 @@ class AppPages {
     GetPage(name: AppRoutes.NOTIFICATIONS,      page: () => const NotificationsView()),
     GetPage(name: AppRoutes.SETTINGS,           page: () => const SettingsView()),
     GetPage(name: AppRoutes.QR_SCANNER,         page: () => const QrScannerView()),
+    GetPage(
+      name: AppRoutes.changePassword,
+      page: () => const ChangePasswordScreen(),
+      binding: ChangePasswordBinding(),
+      transition: Transition.downToUp,
+    ),
   ];
 }
