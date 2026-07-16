@@ -409,11 +409,12 @@ class WebSettingsPage extends StatelessWidget {
     bool isDestructive = false,
   }) {
     final color = isDestructive ? AppColors.error : WebTheme.primary;
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         child: Row(
           children: [
             Icon(icon, color: color, size: 22),
