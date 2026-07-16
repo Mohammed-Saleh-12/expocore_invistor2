@@ -4,6 +4,7 @@ import '../../../../controller/Home/settings_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/bottom_nav_custom.dart';
+import '../../../widget/Home/swipe_nav_wrapper.dart';
 
 class SettingsView extends GetView<SettingsController> {
   const SettingsView({super.key});
@@ -11,7 +12,7 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
+    return SwipeNavWrapper(child: Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -24,7 +25,7 @@ class SettingsView extends GetView<SettingsController> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _profileSection(BuildContext context, bool isDark) => Container(

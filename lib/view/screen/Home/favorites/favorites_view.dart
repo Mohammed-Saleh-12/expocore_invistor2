@@ -5,6 +5,7 @@ import '../../../../controller/Home/favorites_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/bottom_nav_custom.dart';
+import '../../../widget/Home/swipe_nav_wrapper.dart';
 import '../../../widget/Home/exhibition_card.dart';
 import '../../../widget/Home/booth_card.dart';
 import '../../../widget/Home/empty_widget.dart';
@@ -14,7 +15,7 @@ class FavoritesView extends GetView<FavoritesController> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return SwipeNavWrapper(child: DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
@@ -78,7 +79,7 @@ class FavoritesView extends GetView<FavoritesController> {
           children: [_exhibitionsTab(), _eventsTab(), _boothsTab()],
         ),
       ),
-    );
+    ));
   }
 
   Widget _exhibitionsTab() => Obx(() {

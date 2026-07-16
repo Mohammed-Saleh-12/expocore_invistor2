@@ -7,6 +7,7 @@ import '../../../core/constant/appcolors.dart';
 import '../../../core/constant/routes.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../widget/Home/bottom_nav_custom.dart';
+import '../../widget/Home/swipe_nav_wrapper.dart';
 import '../../widget/Home/stats_card.dart';
 import '../../widget/Home/sponsor_event_card.dart';
 import '../../widget/Home/exhibition_billboard.dart';
@@ -21,7 +22,7 @@ class DashboardView extends GetView<DashboardController> {
     final notifCtrl = Get.find<NotificationsController>();
     final eventsCtrl = Get.find<EventsController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
+    return SwipeNavWrapper(child: Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: SafeArea(
         child: RefreshIndicator(
@@ -177,7 +178,7 @@ class DashboardView extends GetView<DashboardController> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   void _showSponsorSheet(

@@ -4,6 +4,7 @@ import '../../../../controller/Home/exhibitions_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/bottom_nav_custom.dart';
+import '../../../widget/Home/swipe_nav_wrapper.dart';
 import '../../../widget/Home/exhibition_card.dart';
 import '../../../widget/Home/loading_widget.dart';
 import '../../../widget/Home/empty_widget.dart';
@@ -14,7 +15,7 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SwipeNavWrapper(child: Scaffold(
       bottomNavigationBar: const BottomNavCustom(),
       body: Column(
         children: [
@@ -162,7 +163,7 @@ class _FilterButton extends StatelessWidget {
           ],
         );
       }),
-    );
+    ));
   }
 }
 
