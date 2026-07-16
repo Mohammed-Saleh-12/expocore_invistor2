@@ -99,6 +99,23 @@ class WebSettingsPage extends StatelessWidget {
                     ]),
                     const SizedBox(height: 18),
 
+                    // ── الأمان ───────────────────────────────
+                    _card('الأمان', [
+                      _actionTile(
+                        icon: Icons.lock_outline_rounded,
+                        title: 'تغيير كلمة المرور',
+                        onTap: () => _showChangePasswordDialog(c),
+                      ),
+                      const SizedBox(height: 4),
+                      _actionTile(
+                        icon: Icons.delete_forever_rounded,
+                        title: 'حذف الحساب',
+                        onTap: () => _confirmDeleteAccount(c),
+                        isDestructive: true,
+                      ),
+                    ]),
+                    const SizedBox(height: 18),
+
                     GestureDetector(
                       onTap: () => _confirmLogout(),
                       child: Container(
@@ -141,6 +158,281 @@ class WebSettingsPage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  // ── Change Password dialog ─────────────────────────────────
+  void _showChangePasswordDialog(SettingsController c) {
+    final currentCtrl = TextEditingController();
+    final newCtrl     = TextEditingController();
+    final confirmCtrl = TextEditingController();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: WebTheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SizedBox(
+          width: 420,
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_outline_rounded,
+                    color: WebTheme.primary, size: 44),
+                const SizedBox(height: 16),
+                Text(
+                  'تغيير كلمة المرور',
+                  style: TextStyle(
+                    color: WebTheme.text,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'أدخل كلمة المرور الحالية ثم الجديدة',
+                  style: TextStyle(color: AppColors.grey, fontSize: 13),
+                ),
+                const SizedBox(height: 24),
+                _dialogPasswordField('كلمة المرور الحالية', currentCtrl),
+                const SizedBox(height: 12),
+                _dialogPasswordField('كلمة المرور الجديدة', newCtrl),
+                const SizedBox(height: 12),
+                _dialogPasswordField('تأكيد كلمة المرور الجديدة', confirmCtrl),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: Get.back,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: AppColors.grey.withOpacity(0.4)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Obx(
+                        () => GestureDetector(
+                          onTap: c.isChangingPassword.value
+                              ? null
+                              : () => c.changePassword(
+                                    current: currentCtrl.text.trim(),
+                                    newPass: newCtrl.text.trim(),
+                                    confirm: confirmCtrl.text.trim(),
+                                  ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              gradient: c.isChangingPassword.value
+                                  ? null
+                                  : AppColors.favoriteGradient,
+                              color: c.isChangingPassword.value
+                                  ? WebTheme.surfaceAlt
+                                  : null,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: c.isChangingPassword.value
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        color: WebTheme.primary,
+                                        strokeWidth: 2),
+                                  )
+                                : const Text(
+                                    'حفظ',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).whenComplete(() {
+      currentCtrl.dispose();
+      newCtrl.dispose();
+      confirmCtrl.dispose();
+    });
+  }
+
+  // ── Delete Account confirm dialog ──────────────────────────
+  void _confirmDeleteAccount(SettingsController c) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: WebTheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SizedBox(
+          width: 380,
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.delete_forever_rounded,
+                    color: AppColors.error, size: 44),
+                const SizedBox(height: 16),
+                Text(
+                  'حذف الحساب',
+                  style: TextStyle(
+                    color: WebTheme.text,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'هذا الإجراء لا يمكن التراجع عنه.\nسيتم حذف حسابك وجميع بياناتك نهائياً.',
+                  style: TextStyle(color: AppColors.grey, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: Get.back,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: AppColors.grey.withOpacity(0.4)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Obx(
+                        () => GestureDetector(
+                          onTap: c.isDeletingAccount.value
+                              ? null
+                              : () {
+                                  Get.back();
+                                  c.deleteAccount();
+                                },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: c.isDeletingAccount.value
+                                  ? AppColors.error.withOpacity(0.4)
+                                  : AppColors.error,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: c.isDeletingAccount.value
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        color: Colors.white, strokeWidth: 2),
+                                  )
+                                : const Text(
+                                    'حذف نهائي',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _dialogPasswordField(String label, TextEditingController ctrl) =>
+      TextField(
+        controller: ctrl,
+        obscureText: true,
+        style: TextStyle(color: WebTheme.text, fontSize: 14),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: AppColors.grey, fontSize: 13),
+          filled: true,
+          fillColor: WebTheme.surfaceAlt,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          prefixIcon:
+              Icon(Icons.lock_outline, color: AppColors.grey, size: 18),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        ),
+      );
+
+  Widget _actionTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    final color = isDestructive ? AppColors.error : WebTheme.primary;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isDestructive ? AppColors.error : WebTheme.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded,
+                color: AppColors.grey, size: 14),
+          ],
+        ),
+      ),
     );
   }
 

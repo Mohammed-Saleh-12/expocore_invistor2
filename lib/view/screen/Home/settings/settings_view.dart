@@ -101,6 +101,7 @@ class SettingsView extends GetView<SettingsController> {
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Column(
       children: [
+        // ── الحساب ───────────────────────────────────────────
         _sectionTitle('الحساب'),
         _settingTile(
           context,
@@ -109,7 +110,24 @@ class SettingsView extends GetView<SettingsController> {
           'معلومات الحساب',
           () => Get.toNamed(AppRoutes.PROFILE),
         ),
+        _settingTile(
+          context,
+          isDark,
+          Icons.lock_outline,
+          'تغيير كلمة المرور',
+          () => _showChangePasswordSheet(context),
+        ),
+        _settingTile(
+          context,
+          isDark,
+          Icons.delete_forever_outlined,
+          'حذف الحساب',
+          () => _showDeleteAccountDialog(context),
+          isDestructive: true,
+        ),
         const SizedBox(height: 12),
+
+        // ── التفضيلات ─────────────────────────────────────────
         _sectionTitle('التفضيلات'),
         _settingTile(
           context,
@@ -181,6 +199,8 @@ class SettingsView extends GetView<SettingsController> {
           ),
         ),
         const SizedBox(height: 12),
+
+        // ── الإشعارات ─────────────────────────────────────────
         _sectionTitle('الإشعارات'),
         _settingTile(
           context,
@@ -225,6 +245,8 @@ class SettingsView extends GetView<SettingsController> {
           ),
         ),
         const SizedBox(height: 12),
+
+        // ── المزيد ────────────────────────────────────────────
         _sectionTitle('المزيد'),
         _settingTile(context, isDark, Icons.help_outline, 'مساعدة ودعم', () {}),
         _settingTile(
@@ -259,6 +281,171 @@ class SettingsView extends GetView<SettingsController> {
       ],
     ),
   );
+
+  // ── Change Password — bottom sheet ─────────────────────────
+  void _showChangePasswordSheet(BuildContext context) {
+    final currentCtrl = TextEditingController();
+    final newCtrl     = TextEditingController();
+    final confirmCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.darkCTAGradient,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.lock_outline,
+                        color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'تغيير كلمة المرور',
+                    style: TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w800),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _passwordField('كلمة المرور الحالية', currentCtrl),
+              const SizedBox(height: 12),
+              _passwordField('كلمة المرور الجديدة', newCtrl),
+              const SizedBox(height: 12),
+              _passwordField('تأكيد كلمة المرور الجديدة', confirmCtrl),
+              const SizedBox(height: 20),
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isChangingPassword.value
+                        ? null
+                        : () => controller.changePassword(
+                              current: currentCtrl.text.trim(),
+                              newPass: newCtrl.text.trim(),
+                              confirm: confirmCtrl.text.trim(),
+                            ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkPrimary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: controller.isChangingPassword.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                color: Colors.white, strokeWidth: 2),
+                          )
+                        : const Text('حفظ كلمة المرور',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w700)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).whenComplete(() {
+      currentCtrl.dispose();
+      newCtrl.dispose();
+      confirmCtrl.dispose();
+    });
+  }
+
+  // ── Delete Account — confirm dialog ────────────────────────
+  void _showDeleteAccountDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: const [
+            Icon(Icons.delete_forever_outlined,
+                color: AppColors.error, size: 26),
+            SizedBox(width: 8),
+            Text('حذف الحساب'),
+          ],
+        ),
+        content: const Text(
+          'هذا الإجراء لا يمكن التراجع عنه.\nسيتم حذف حسابك وجميع بياناتك نهائياً.',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: Get.back,
+            child: const Text('إلغاء'),
+          ),
+          Obx(
+            () => TextButton(
+              onPressed: controller.isDeletingAccount.value
+                  ? null
+                  : () {
+                      Get.back();
+                      controller.deleteAccount();
+                    },
+              child: controller.isDeletingAccount.value
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          color: AppColors.error, strokeWidth: 2),
+                    )
+                  : const Text('حذف نهائي',
+                      style: TextStyle(color: AppColors.error)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _passwordField(String label, TextEditingController ctrl) =>
+      TextField(
+        controller: ctrl,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          prefixIcon: const Icon(Icons.lock_outline, size: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        ),
+      );
 
   Widget _sectionTitle(String t) => Align(
     alignment: Alignment.centerRight,

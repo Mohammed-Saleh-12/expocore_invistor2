@@ -5,15 +5,22 @@ import '../../core/constant/app_globals.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
 import '../../data/sourcedata/remote/Auth/LogoutData.dart';
+import '../../data/sourcedata/remote/Auth/ChangePasswordData.dart';
+import '../../data/sourcedata/remote/Auth/DeleteAccountData.dart';
 
 class SettingsController extends GetxController {
-  final LogoutData _logoutData = LogoutData(Crud());
+  final LogoutData        _logoutData        = LogoutData(Crud());
+  final ChangePasswordData _changePasswordData = ChangePasswordData(Crud());
+  final DeleteAccountData  _deleteAccountData  = DeleteAccountData(Crud());
+
   final isDark               = true.obs;
   final notificationsEnabled = true.obs;
   final favoritesNotify      = true.obs;
   final reportsNotify        = true.obs;
   final currentLang          = 'ar'.obs;
   final isLoggingOut         = false.obs;
+  final isChangingPassword   = false.obs;
+  final isDeletingAccount    = false.obs;
 
   @override
   void onInit() {
@@ -58,6 +65,61 @@ class SettingsController extends GetxController {
       await Get.find<Services>().clearSession();
       isLoggingOut.value = false;
       Get.offAllNamed(AppRoutes.LOGIN);
+    }
+  }
+
+  /// تغيير كلمة المرور — يُغلق الـ dialog عند النجاح
+  Future<void> changePassword({
+    required String current,
+    required String newPass,
+    required String confirm,
+  }) async {
+    if (newPass != confirm) {
+      Get.snackbar('خطأ', 'كلمة المرور الجديدة وتأكيدها غير متطابقتين',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.85),
+          colorText: Colors.white);
+      return;
+    }
+
+    isChangingPassword.value = true;
+    final result = await _changePasswordData.changePassword(
+      currentPassword: current,
+      newPassword: newPass,
+      newPasswordConfirmation: confirm,
+    );
+    isChangingPassword.value = false;
+
+    if (result['status'] == true) {
+      Get.back(); // أغلق الـ dialog
+      Get.snackbar('تم', 'تم تغيير كلمة المرور بنجاح',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.85),
+          colorText: Colors.white);
+    } else {
+      final msg = result['message'] ?? 'فشل تغيير كلمة المرور، تحقق من كلمة المرور الحالية';
+      Get.snackbar('خطأ', msg,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.85),
+          colorText: Colors.white);
+    }
+  }
+
+  /// حذف الحساب — يُنهي الجلسة ويعود للتسجيل عند النجاح
+  Future<void> deleteAccount() async {
+    isDeletingAccount.value = true;
+    final result = await _deleteAccountData.deleteAccount();
+    isDeletingAccount.value = false;
+
+    if (result['status'] == true) {
+      await Get.find<Services>().clearSession();
+      Get.offAllNamed(AppRoutes.LOGIN);
+    } else {
+      final msg = result['message'] ?? 'فشل حذف الحساب، حاول مجدداً';
+      Get.snackbar('خطأ', msg,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.85),
+          colorText: Colors.white);
     }
   }
 }

@@ -14,6 +14,8 @@ class AppLink {
   static String get forgotPassword => '$server/auth/forgot-password';
   static String get resetPassword => '$server/auth/reset-password';
   static String get refreshToken => '$server/auth/refresh';
+  static String get changePassword => '$server/auth/change-password';
+  static String get deleteAccount => '$server/auth/delete-account';
 
   // ── Exhibitions ──────────────────────────────────────────
   static String get exhibitions => '$server/exhibitions';
