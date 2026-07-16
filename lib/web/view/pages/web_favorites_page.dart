@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../../models/web_theme.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/favorites_controller.dart';
+import '../../../controller/Home/booth_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
 import '../widgets/web_section_header.dart';
 import '../widgets/web_exhibition_card.dart';
 import '../widgets/web_sponsor_event_card.dart';
 import '../widgets/web_status_chip.dart';
+import '../../controllers/web_nav_controller.dart';
 
 class WebFavoritesPage extends StatelessWidget {
   const WebFavoritesPage({super.key});
@@ -184,11 +186,12 @@ class WebFavoritesPage extends StatelessWidget {
                             crossAxisCount: cols,
                             crossAxisSpacing: 20,
                             mainAxisSpacing: 20,
-                            childAspectRatio: 1.5,
+                            childAspectRatio: 1.05,
                           ),
                           itemBuilder: (_, i) => _FavBoothCard(
                             booth: booths[i],
                             onRemove: () => c.removeBooth(booths[i]),
+                            boothCtrl: Get.find<BoothController>(),
                           ),
                         );
                       },
@@ -237,11 +240,20 @@ class WebFavoritesPage extends StatelessWidget {
   );
 }
 
-// ── Favourite booth card (matches _BoothCard style in أجنحتي) ──────────────
+// ── Favourite booth card (matches _BoothCard style + remove button) ──────────
 class _FavBoothCard extends StatelessWidget {
   final BoothModel booth;
   final VoidCallback onRemove;
-  const _FavBoothCard({required this.booth, required this.onRemove});
+  final BoothController boothCtrl;
+
+  const _FavBoothCard({
+    required this.booth,
+    required this.onRemove,
+    required this.boothCtrl,
+  });
+
+  bool get _approved => booth.status == 'active';
+  bool get _ended    => booth.status == 'ended';
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +267,7 @@ class _FavBoothCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Header ──────────────────────────────────────
           Row(
             children: [
               Container(
@@ -287,8 +300,7 @@ class _FavBoothCard extends StatelessWidget {
                       booth.exhibitionName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          TextStyle(color: AppColors.grey, fontSize: 12),
+                      style: TextStyle(color: AppColors.grey, fontSize: 12),
                     ),
                   ],
                 ),
@@ -297,35 +309,73 @@ class _FavBoothCard extends StatelessWidget {
             ],
           ),
           const Spacer(),
+
+          // ── Info row ────────────────────────────────────
           Row(
             children: [
               _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
               const SizedBox(width: 16),
-              _info(
-                  Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
+              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
+
+          // ── Status-based action buttons (same as أجنحتي) ──
+          Row(
+            children: [
+              Expanded(
+                child: _btn(
+                  label: _approved ? 'إدارة' : 'تفاصيل',
+                  filled: true,
+                  onTap: () => _approved
+                      ? WebNavController.to.openBoothManagement(booth)
+                      : WebNavController.to.openBooth(
+                          booth,
+                          report: boothCtrl.buildBoothReport(booth),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: (_approved || _ended)
+                    ? _btn(
+                        label: 'التقرير',
+                        filled: false,
+                        onTap: () => WebNavController.to.openReport(
+                          boothCtrl.buildBoothReport(booth),
+                        ),
+                      )
+                    : _btn(
+                        label: 'خريطة 3D',
+                        filled: false,
+                        onTap: () => WebNavController.to.openMap(),
+                      ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // ── Remove from favourites ───────────────────────
           GestureDetector(
             onTap: onRemove,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 11),
+              padding: const EdgeInsets.symmetric(vertical: 9),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.error.withOpacity(0.5)),
+                border: Border.all(color: AppColors.error.withOpacity(0.45)),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite, color: AppColors.error, size: 15),
-                  const SizedBox(width: 6),
+                  Icon(Icons.favorite, color: AppColors.error, size: 14),
+                  const SizedBox(width: 5),
                   Text(
                     'إزالة من المفضلة',
                     style: TextStyle(
                       color: AppColors.error,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -340,9 +390,37 @@ class _FavBoothCard extends StatelessWidget {
 
   Widget _info(IconData icon, String text) => Row(
     children: [
-      Icon(icon, size: 15, color: AppColors.grey),
+      Icon(icon, size: 14, color: AppColors.grey),
       const SizedBox(width: 4),
       Text(text, style: TextStyle(color: AppColors.grey, fontSize: 12)),
     ],
   );
+
+  Widget _btn({
+    required String label,
+    required bool filled,
+    required VoidCallback onTap,
+  }) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            gradient: filled ? AppColors.favoriteGradient : null,
+            border: filled
+                ? null
+                : Border.all(color: WebTheme.primary.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: filled ? Colors.white : WebTheme.primary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      );
 }
