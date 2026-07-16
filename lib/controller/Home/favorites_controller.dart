@@ -114,7 +114,13 @@ class FavoritesController extends GetxController {
   }
 
   void removeBooth(BoothModel b) {
-    favoriteBooths.remove(b);
+    final existing = favoriteBooths.firstWhereOrNull((e) => e.id == b.id);
+    if (existing != null) {
+      favoriteBooths.remove(existing);
+      existing.isFavorite = false;
+    } else {
+      favoriteBooths.removeWhere((e) => e.id == b.id);
+    }
     b.isFavorite = false;
     _boothsData.removeFavorite(b.id);
     Get.snackbar('fav_removed_title'.tr,
