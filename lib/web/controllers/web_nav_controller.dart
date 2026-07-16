@@ -93,6 +93,9 @@ class WebNavController extends GetxController {
   void openExhibitionEvents() =>
       detail.value = const WebDetailRequest(WebDetailType.exhibitionEvents);
 
+  void openAccountDetail() =>
+      detail.value = const WebDetailRequest(WebDetailType.accountDetail);
+
   void closeDetail() => detail.value = null;
 
   WebSection get current => sections[selected.value];
@@ -114,6 +117,7 @@ class WebNavController extends GetxController {
       case WebDetailType.sponsorEvent:    return 'detail_sponsor_event'.tr;
       case WebDetailType.map:             return 'detail_map'.tr;
       case WebDetailType.exhibitionEvents: return 'فعاليات المعارض الإعلانية';
+      case WebDetailType.accountDetail:   return 'تفاصيل الحساب';
       case null:                          return current.label.tr;
     }
   }

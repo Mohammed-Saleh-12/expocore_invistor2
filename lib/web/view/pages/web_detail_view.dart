@@ -27,6 +27,8 @@ import 'web_booth_management_page.dart';
 import 'web_booking_request_page.dart';
 import 'web_booking_detail_page.dart';
 import 'web_exhibition_events_page.dart';
+import '../../../controller/Home/profile_company_controller.dart';
+import '../../../view/widget/Home/profile_avatar.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDetailView  —  موجّه الصفحات الداخلية (يعرض الصفحة المناسبة)
@@ -75,6 +77,8 @@ class WebDetailView extends StatelessWidget {
         return WebBookingDetailPage(booth: request.data as BoothModel);
       case WebDetailType.exhibitionEvents:
         return const WebExhibitionEventsPage();
+      case WebDetailType.accountDetail:
+        return const _AccountDetailPage();
     }
   }
 }
@@ -958,4 +962,321 @@ class _SparklinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SparklinePainter old) => old.data != data;
+}
+
+// ════════════════════════════════════════════════════════════
+//  Account Detail Page — صفحة تفاصيل الحساب (قابلة للتعديل)
+// ════════════════════════════════════════════════════════════
+class _AccountDetailPage extends StatelessWidget {
+  const _AccountDetailPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = Get.find<ProfileCompanyController>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Header bar ──────────────────────────────────────
+        Container(
+          color: WebTheme.bg,
+          padding: const EdgeInsets.fromLTRB(28, 20, 28, 16),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: WebNavController.to.closeDetail,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: WebTheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: WebTheme.border),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.grey,
+                    size: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'تفاصيل الحساب',
+                      style: TextStyle(
+                        color: WebTheme.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      'بيانات الشركة والتواصل الاجتماعي',
+                      style: TextStyle(color: AppColors.grey, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              // Edit / Cancel toggle
+              Obx(
+                () => GestureDetector(
+                  onTap: p.toggleEdit,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 9,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: p.isEditing.value
+                          ? null
+                          : AppColors.favoriteGradient,
+                      color: p.isEditing.value ? WebTheme.surfaceAlt : null,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          p.isEditing.value
+                              ? Icons.close_rounded
+                              : Icons.edit_outlined,
+                          color: p.isEditing.value
+                              ? WebTheme.text
+                              : Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          p.isEditing.value ? 'إلغاء' : 'تعديل',
+                          style: TextStyle(
+                            color: p.isEditing.value
+                                ? WebTheme.text
+                                : Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // ── Scrollable form ──────────────────────────────────
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 760),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: WebTheme.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: WebTheme.border),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Avatar row ──────────────────────────
+                      Row(
+                        children: [
+                          Obx(() {
+                            p.isLoading.value;
+                            p.isEditing.value;
+                            p.profileImage.value;
+                            return ProfileAvatar(
+                              image: p.profileImage.value,
+                              fallbackLetter: p.nameCtrl.text.isNotEmpty
+                                  ? p.nameCtrl.text[0]
+                                  : 'ش',
+                              size: 72,
+                              editable: p.isEditing.value,
+                              onEdit: p.pickProfileImage,
+                            );
+                          }),
+                          const SizedBox(width: 16),
+                          Obx(() {
+                            p.isLoading.value;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  p.nameCtrl.text.isEmpty
+                                      ? 'اسم الشركة'
+                                      : p.nameCtrl.text,
+                                  style: TextStyle(
+                                    color: WebTheme.text,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  p.emailCtrl.text.isEmpty
+                                      ? '—'
+                                      : p.emailCtrl.text,
+                                  style: TextStyle(
+                                    color: AppColors.grey,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // ── Fields ──────────────────────────────
+                      Obx(() {
+                        final editing = p.isEditing.value;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _field('اسم الشركة', p.nameCtrl,
+                                Icons.business_outlined, editing),
+                            _field('البريد الإلكتروني', p.emailCtrl,
+                                Icons.email_outlined, editing),
+                            _field('رقم الجوال', p.phoneCtrl,
+                                Icons.phone_outlined, editing),
+                            _field('الموقع', p.locationCtrl,
+                                Icons.location_on_outlined, editing),
+                            _field('الموقع الإلكتروني', p.websiteCtrl,
+                                Icons.language_outlined, editing),
+                            _field('نبذة', p.bioCtrl,
+                                Icons.description_outlined, editing,
+                                maxLines: 3),
+
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 4,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.favoriteGradient,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'التواصل الاجتماعي',
+                                  style: TextStyle(
+                                    color: WebTheme.text,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            _field('LinkedIn', p.linkedinCtrl, Icons.link,
+                                editing),
+                            _field('X (Twitter)', p.twitterCtrl,
+                                Icons.alternate_email, editing),
+                            _field('Instagram', p.instagramCtrl,
+                                Icons.camera_alt_outlined, editing),
+                            _field('Facebook', p.facebookCtrl,
+                                Icons.facebook, editing),
+
+                            if (editing) ...[
+                              const SizedBox(height: 16),
+                              GestureDetector(
+                                onTap: p.saveChanges,
+                                child: Obx(
+                                  () => Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      gradient: AppColors.favoriteGradient,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: p.isSaving.value
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'حفظ التغييرات',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _field(
+    String label,
+    TextEditingController controller,
+    IconData icon,
+    bool editing, {
+    int maxLines = 1,
+  }) =>
+      Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.grey,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: controller,
+              enabled: editing,
+              maxLines: maxLines,
+              style: TextStyle(color: WebTheme.text, fontSize: 14),
+              decoration: InputDecoration(
+                prefixIcon: Icon(icon, color: AppColors.grey, size: 19),
+                filled: true,
+                fillColor: editing ? WebTheme.surfaceAlt : WebTheme.topbar,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 13,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
 }

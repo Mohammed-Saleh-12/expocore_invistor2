@@ -80,7 +80,7 @@ class WebTopbar extends StatelessWidget {
             const SizedBox(width: 10),
 
             GestureDetector(
-              onTap: () => WebNavController.to.select(8),
+              onTap: () => WebNavController.to.openAccountDetail(),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                 decoration: BoxDecoration(
