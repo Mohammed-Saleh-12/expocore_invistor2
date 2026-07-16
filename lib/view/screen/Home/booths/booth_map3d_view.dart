@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controller/Home/booth_map_controller.dart';
+import '../../../../controller/Home/favorites_controller.dart';
 import '../../../../core/constant/appcolors.dart';
+import '../../../../data/model/booth/booth_model.dart';
 import '../../../../data/model/map/exhibition_map_model.dart';
 import '../../../widget/Home/custom_app_bar.dart';
 import '../../../widget/Home/custom_button.dart';
@@ -664,7 +666,49 @@ class _BoothInfoPanel extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
+              // ── Favourite heart button ──
+              Obx(() {
+                final fav = Get.find<FavoritesController>();
+                final isFav = fav.isBoothFavorited(booth.id);
+                return GestureDetector(
+                  onTap: () => fav.toggleFavoriteBooth(
+                    BoothModel(
+                      id: booth.id,
+                      number: booth.number,
+                      exhibitionName: booth.hallName,
+                      imageUrl: '',
+                      area: booth.area,
+                      status: 'pending',
+                      price: booth.price,
+                      endDate: '',
+                      location: booth.hallName,
+                      amenities: booth.amenities,
+                      isFavorite: isFav,
+                    ),
+                  ),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: isFav
+                          ? AppColors.error.withOpacity(0.12)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isFav ? AppColors.error : AppColors.grey,
+                      ),
+                    ),
+                    child: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? AppColors.error : AppColors.grey,
+                      size: 20,
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(width: 10),
               Expanded(
                 flex: 2,
                 child: CustomButton(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/booth_map_controller.dart';
+import '../../../controller/Home/favorites_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
 import '../../../data/model/map/exhibition_map_model.dart';
@@ -423,21 +424,70 @@ class _WebBoothInfoPanel extends StatelessWidget {
               ),
               Text('full_exhibition_duration'.tr, style: const TextStyle(color: AppColors.grey, fontSize: 10)),
               const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  final boothModel = BoothModel(
-                    id: booth.id, number: booth.number, exhibitionName: booth.hallName,
-                    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
-                    area: booth.area, status: 'pending', price: booth.price, endDate: '2026-07-20',
-                    location: '${booth.hallName} - صف ${booth.row + 1}', amenities: booth.amenities, isFavorite: false,
-                  );
-                  WebNavController.to.openBookingRequest(boothModel);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                  decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
-                  child: Text('booth_book_btn'.tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ── Favourite heart button ──
+                  Obx(() {
+                    final fav = Get.find<FavoritesController>();
+                    final isFav = fav.isBoothFavorited(booth.id);
+                    return GestureDetector(
+                      onTap: () => fav.toggleFavoriteBooth(
+                        BoothModel(
+                          id: booth.id,
+                          number: booth.number,
+                          exhibitionName: booth.hallName,
+                          imageUrl: '',
+                          area: booth.area,
+                          status: 'pending',
+                          price: booth.price,
+                          endDate: '',
+                          location: '${booth.hallName} - صف ${booth.row + 1}',
+                          amenities: booth.amenities,
+                          isFavorite: isFav,
+                        ),
+                      ),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: isFav
+                              ? AppColors.error.withOpacity(0.12)
+                              : WebTheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isFav
+                                ? AppColors.error
+                                : WebTheme.border,
+                          ),
+                        ),
+                        child: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav ? AppColors.error : AppColors.grey,
+                          size: 20,
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      final boothModel = BoothModel(
+                        id: booth.id, number: booth.number, exhibitionName: booth.hallName,
+                        imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+                        area: booth.area, status: 'pending', price: booth.price, endDate: '2026-07-20',
+                        location: '${booth.hallName} - صف ${booth.row + 1}', amenities: booth.amenities, isFavorite: false,
+                      );
+                      WebNavController.to.openBookingRequest(boothModel);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                      decoration: BoxDecoration(gradient: AppColors.favoriteGradient, borderRadius: BorderRadius.circular(10)),
+                      child: Text('booth_book_btn'.tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
