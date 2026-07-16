@@ -3,8 +3,11 @@ import '../../models/web_theme.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/favorites_controller.dart';
 import '../../../core/constant/appcolors.dart';
+import '../../../data/model/booth/booth_model.dart';
 import '../widgets/web_section_header.dart';
 import '../widgets/web_exhibition_card.dart';
+import '../widgets/web_sponsor_event_card.dart';
+import '../widgets/web_status_chip.dart';
 
 class WebFavoritesPage extends StatelessWidget {
   const WebFavoritesPage({super.key});
@@ -29,7 +32,7 @@ class WebFavoritesPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── Category filter pills (مطابق لأجنحتي) ──
+              // ── Category filter pills ──
               Obx(
                 () => Wrap(
                   spacing: 8,
@@ -74,17 +77,14 @@ class WebFavoritesPage extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Obx(() {
-              final filter       = c.webCategoryFilter.value;
-              final exhibitions  = c.favoriteExhibitions.toList();
-              final events       = c.favoriteEvents.toList();
-              final booths       = c.favoriteBooths.toList();
+              final filter      = c.webCategoryFilter.value;
+              final exhibitions = c.favoriteExhibitions.toList();
+              final events      = c.favoriteEvents.toList();
+              final booths      = c.favoriteBooths.toList();
 
-              final showExhibitions =
-                  filter == 'الكل' || filter == 'معارض';
-              final showEvents =
-                  filter == 'الكل' || filter == 'فعاليات';
-              final showBooths =
-                  filter == 'الكل' || filter == 'أجنحة';
+              final showExhibitions = filter == 'معارض';
+              final showEvents      = filter == 'فعاليات';
+              final showBooths      = filter == 'أجنحة';
 
               final visibleExhibitions =
                   showExhibitions ? exhibitions : <dynamic>[];
@@ -149,73 +149,15 @@ class WebFavoritesPage extends StatelessWidget {
                     _subTitle('الفعاليات', events.length),
                     const SizedBox(height: 14),
                     Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
+                      spacing: 20,
+                      runSpacing: 20,
                       children: events
                           .map(
-                            (ev) => Container(
+                            (ev) => SizedBox(
                               width: 320,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: WebTheme.surface,
-                                borderRadius: BorderRadius.circular(16),
-                                border:
-                                    Border.all(color: WebTheme.border),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      gradient:
-                                          AppColors.favoriteGradient,
-                                      borderRadius:
-                                          BorderRadius.circular(11),
-                                    ),
-                                    child: Icon(
-                                      Icons.campaign_rounded,
-                                      color: WebTheme.text,
-                                      size: 22,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          ev.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: WebTheme.text,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        Text(
-                                          ev.exhibitionName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: AppColors.grey,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () => c.removeEvent(ev),
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: AppColors.error,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
+                              child: WebSponsorEventCard(
+                                event: ev,
+                                onFavorite: () => c.removeEvent(ev),
                               ),
                             ),
                           )
@@ -228,76 +170,28 @@ class WebFavoritesPage extends StatelessWidget {
                   if (showBooths && booths.isNotEmpty) ...[
                     _subTitle('الأجنحة', booths.length),
                     const SizedBox(height: 14),
-                    Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      children: booths
-                          .map(
-                            (b) => Container(
-                              width: 260,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: WebTheme.surface,
-                                borderRadius: BorderRadius.circular(16),
-                                border:
-                                    Border.all(color: WebTheme.border),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: WebTheme.primary
-                                          .withOpacity(0.15),
-                                      borderRadius:
-                                          BorderRadius.circular(12),
-                                    ),
-                                    child: Icon(
-                                      Icons.storefront_rounded,
-                                      color: WebTheme.primary,
-                                      size: 22,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'جناح ${b.number}',
-                                          style: TextStyle(
-                                            color: WebTheme.text,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        Text(
-                                          b.exhibitionName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: AppColors.grey,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () => c.removeBooth(b),
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: AppColors.error,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
+                    LayoutBuilder(
+                      builder: (context, cons) {
+                        final cols = cons.maxWidth > 1100
+                            ? 3
+                            : (cons.maxWidth > 700 ? 2 : 1);
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: booths.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: cols,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20,
+                            childAspectRatio: 1.5,
+                          ),
+                          itemBuilder: (_, i) => _FavBoothCard(
+                            booth: booths[i],
+                            onRemove: () => c.removeBooth(booths[i]),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ],
@@ -340,5 +234,115 @@ class WebFavoritesPage extends StatelessWidget {
         ),
       ],
     ),
+  );
+}
+
+// ── Favourite booth card (matches _BoothCard style in أجنحتي) ──────────────
+class _FavBoothCard extends StatelessWidget {
+  final BoothModel booth;
+  final VoidCallback onRemove;
+  const _FavBoothCard({required this.booth, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: WebTheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: WebTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: WebTheme.primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.storefront_rounded,
+                  color: WebTheme.primary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'جناح ${booth.number}',
+                      style: TextStyle(
+                        color: WebTheme.text,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      booth.exhibitionName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          TextStyle(color: AppColors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              WebStatusChip(status: booth.status),
+            ],
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
+              const SizedBox(width: 16),
+              _info(
+                  Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
+            ],
+          ),
+          const SizedBox(height: 14),
+          GestureDetector(
+            onTap: onRemove,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 11),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.error.withOpacity(0.5)),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.favorite, color: AppColors.error, size: 15),
+                  const SizedBox(width: 6),
+                  Text(
+                    'إزالة من المفضلة',
+                    style: TextStyle(
+                      color: AppColors.error,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _info(IconData icon, String text) => Row(
+    children: [
+      Icon(icon, size: 15, color: AppColors.grey),
+      const SizedBox(width: 4),
+      Text(text, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+    ],
   );
 }
