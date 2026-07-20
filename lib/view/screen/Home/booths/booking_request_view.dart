@@ -24,6 +24,8 @@ class BookingRequestView extends GetView<BookingController> {
           children: [
             _boothSummary(context, booth),
             const SizedBox(height: 20),
+            _dateSection(context, isDark),
+            const SizedBox(height: 20),
             Text(
               'booking_extra_services'.tr,
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
@@ -126,6 +128,143 @@ class BookingRequestView extends GetView<BookingController> {
       ),
     );
   }
+
+  // ── Date range section ────────────────────────────────────────────────
+  Widget _dateSection(BuildContext context, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: isDark ? AppColors.darkCardGradient : null,
+        color: isDark ? null : AppColors.lightCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.date_range_outlined,
+                  size: 18, color: AppColors.darkPrimary),
+              const SizedBox(width: 8),
+              Text(
+                'booking_dates_label'.tr,
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                  child: _datePickerBox(
+                context,
+                isDark,
+                label: 'booking_start_date'.tr,
+                icon: Icons.calendar_today_outlined,
+                rxValue: controller.startDate,
+                onPicked: controller.setStartDate,
+              )),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: _datePickerBox(
+                context,
+                isDark,
+                label: 'booking_end_date'.tr,
+                icon: Icons.event_available_outlined,
+                rxValue: controller.endDate,
+                onPicked: controller.setEndDate,
+              )),
+            ],
+          ),
+          Obx(() {
+            if (controller.startDate.value.isEmpty ||
+                controller.endDate.value.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline,
+                      size: 14, color: AppColors.darkSecondary),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${'booking_duration_days'.tr}: ${controller.duration.value}',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.darkSecondary,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _datePickerBox(
+    BuildContext context,
+    bool isDark, {
+    required String label,
+    required IconData icon,
+    required RxString rxValue,
+    required void Function(DateTime) onPicked,
+  }) =>
+      GestureDetector(
+        onTap: () async {
+          final now = DateTime.now();
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: now,
+            firstDate: now,
+            lastDate: DateTime(now.year + 2, 12, 31),
+          );
+          if (picked != null) onPicked(picked);
+        },
+        child: Obx(() {
+          final val = rxValue.value;
+          return Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkCard : Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: val.isNotEmpty
+                    ? AppColors.darkPrimary.withOpacity(0.5)
+                    : AppColors.grey.withOpacity(0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(icon,
+                    size: 16,
+                    color: val.isNotEmpty
+                        ? AppColors.darkPrimary
+                        : AppColors.grey),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    val.isNotEmpty ? val : label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: val.isNotEmpty ? null : AppColors.grey,
+                      fontWeight: val.isNotEmpty
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      );
 
   Widget _serviceCheck(String label, RxBool val, IconData icon) => Obx(
     () => CheckboxListTile(

@@ -392,6 +392,10 @@ class MyTranslation extends Translations {
       'booking_total': 'الإجمالي',
       'booking_submit_btn': 'إرسال طلب الحجز',
       'booking_per_exhibition': 'ريال / معرض',
+      'booking_dates_label': 'تواريخ الحجز',
+      'booking_start_date': 'تاريخ البداية',
+      'booking_end_date': 'تاريخ النهاية',
+      'booking_duration_days': 'المدة (أيام)',
 
       // ── Booth management ──────────────────────────────────────────────
       'booth_mgmt_company_nature': 'طبيعة الشركة',
@@ -423,6 +427,10 @@ class MyTranslation extends Translations {
       'event_selected_location': 'الموقع المختار',
       'event_section_datetime': 'التاريخ والوقت',
       'event_date_label': 'التاريخ',
+      'event_start_date_label': 'تاريخ البداية',
+      'event_end_date_label': 'تاريخ النهاية',
+      'event_start_date_hint': 'تاريخ البداية',
+      'event_end_date_hint': 'تاريخ النهاية',
       'event_time_label': 'الوقت',
       'event_duration_label': 'مدة الفعالية (أيام)',
       'event_section_about': 'نبذة عن الفعالية',
@@ -1074,6 +1082,10 @@ class MyTranslation extends Translations {
       'booking_total': 'Total',
       'booking_submit_btn': 'Submit Booking Request',
       'booking_per_exhibition': 'SAR / exhibition',
+      'booking_dates_label': 'Booking Dates',
+      'booking_start_date': 'Start Date',
+      'booking_end_date': 'End Date',
+      'booking_duration_days': 'Duration (days)',
 
       // ── Booth management ──────────────────────────────────────────────
       'booth_mgmt_company_nature': 'Company Nature',
@@ -1105,6 +1117,10 @@ class MyTranslation extends Translations {
       'event_selected_location': 'Selected Location',
       'event_section_datetime': 'Date & Time',
       'event_date_label': 'Date',
+      'event_start_date_label': 'Start Date',
+      'event_end_date_label': 'End Date',
+      'event_start_date_hint': 'Start Date',
+      'event_end_date_hint': 'End Date',
       'event_time_label': 'Time',
       'event_duration_label': 'Event Duration (days)',
       'event_section_about': 'About the Event',

@@ -217,15 +217,17 @@ class CreateEventView extends GetView<EventsController> {
               // ── Date & time ────────────────────────────────────────
               _sectionHeader('event_section_datetime'.tr),
               const SizedBox(height: 12),
+              // تاريخ البداية / تاريخ النهاية
               Row(
                 children: [
                   Expanded(
                     child: _datePicker(
                       context,
                       isDark,
-                      'event_date_label'.tr,
+                      'event_start_date_label'.tr,
                       Icons.calendar_today_outlined,
                       isDate: true,
+                      isEnd: false,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -233,12 +235,22 @@ class CreateEventView extends GetView<EventsController> {
                     child: _datePicker(
                       context,
                       isDark,
-                      'event_time_label'.tr,
-                      Icons.access_time_outlined,
-                      isDate: false,
+                      'event_end_date_label'.tr,
+                      Icons.event_available_outlined,
+                      isDate: true,
+                      isEnd: true,
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              // الوقت
+              _datePicker(
+                context,
+                isDark,
+                'event_time_label'.tr,
+                Icons.access_time_outlined,
+                isDate: false,
               ),
 
               const SizedBox(height: 20),
@@ -323,19 +335,27 @@ class CreateEventView extends GetView<EventsController> {
     String label,
     IconData icon, {
     required bool isDate,
+    bool isEnd = false,
   }) {
     return GestureDetector(
       onTap: () async {
+        final ctrl = Get.find<EventsController>();
         if (isDate) {
+          final now = DateTime.now();
           final picked = await showDatePicker(
             context: context,
-            initialDate: DateTime(2026, 7, 16),
-            firstDate: DateTime(2026, 1, 1),
-            lastDate: DateTime(2027, 12, 31),
+            initialDate: now,
+            firstDate: now,
+            lastDate: DateTime(now.year + 2, 12, 31),
           );
           if (picked != null) {
-            Get.find<EventsController>().selectedDate.value =
+            final formatted =
                 '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+            if (isEnd) {
+              ctrl.selectedEndDate.value = formatted;
+            } else {
+              ctrl.selectedDate.value = formatted;
+            }
           }
         } else {
           final picked = await showTimePicker(
@@ -343,7 +363,7 @@ class CreateEventView extends GetView<EventsController> {
             initialTime: TimeOfDay.now(),
           );
           if (picked != null) {
-            Get.find<EventsController>().selectedTime.value =
+            ctrl.selectedTime.value =
                 '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
           }
         }
@@ -351,17 +371,24 @@ class CreateEventView extends GetView<EventsController> {
       child: Obx(() {
         final ctrl = Get.find<EventsController>();
         final value = isDate
-            ? ctrl.selectedDate.value
+            ? (isEnd ? ctrl.selectedEndDate.value : ctrl.selectedDate.value)
             : ctrl.selectedTime.value;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkCard : AppColors.lightCard,
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: value.isNotEmpty
+                  ? AppColors.darkPrimary.withOpacity(0.4)
+                  : Colors.transparent,
+            ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 16, color: AppColors.grey),
+              Icon(icon,
+                  size: 16,
+                  color: value.isNotEmpty ? AppColors.darkPrimary : AppColors.grey),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -369,6 +396,8 @@ class CreateEventView extends GetView<EventsController> {
                   style: TextStyle(
                     fontSize: 13,
                     color: value.isNotEmpty ? null : AppColors.grey,
+                    fontWeight:
+                        value.isNotEmpty ? FontWeight.w600 : FontWeight.w400,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),

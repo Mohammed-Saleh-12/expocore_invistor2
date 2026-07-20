@@ -77,6 +77,7 @@ class EventsController extends GetxController {
   }
   final selectedType        = ''.obs;
   final selectedDate        = ''.obs;
+  final selectedEndDate     = ''.obs;
   final selectedTime        = ''.obs;
   final selectedDuration    = 1.obs;
   final hasBookableSeats    = false.obs;
@@ -530,7 +531,8 @@ class EventsController extends GetxController {
     nameCtrl.clear(); descCtrl.clear(); maxCtrl.clear();
     seatsCtrl.clear(); ticketPriceCtrl.clear(); videoPromoCtrl.clear();
     freeLimitCtrl.clear(); pickedImages.clear();
-    selectedType.value = ''; selectedDate.value = ''; selectedTime.value = '';
+    selectedType.value = ''; selectedDate.value = ''; selectedEndDate.value = '';
+    selectedTime.value = '';
     selectedDuration.value = 1; hasBookableSeats.value = false;
     isGeneralInvite.value = true; ticketType.value = 'general';
     selectedExhibitionName.value = ''; selectedBooth.value = null;

@@ -33,7 +33,7 @@ class WebBookingRequestPage extends StatelessWidget {
               const SizedBox(height: 20),
               _boothSummary(c),
               const SizedBox(height: 20),
-              _durationSection(c),
+              _durationSection(context, c),
               const SizedBox(height: 20),
               _servicesSection(c),
               const SizedBox(height: 20),
@@ -114,7 +114,7 @@ class WebBookingRequestPage extends StatelessWidget {
     );
   });
 
-  Widget _durationSection(BookingController c) => Container(
+  Widget _durationSection(BuildContext context, BookingController c) => Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: WebTheme.surface,
@@ -129,53 +129,111 @@ class WebBookingRequestPage extends StatelessWidget {
             Container(
               width: 36, height: 36,
               decoration: BoxDecoration(gradient: AppColors.darkCTAGradient, borderRadius: BorderRadius.circular(10)),
-              child: const Icon(Icons.calendar_today_rounded, size: 18, color: Colors.white),
+              child: const Icon(Icons.date_range_rounded, size: 18, color: Colors.white),
             ),
             const SizedBox(width: 12),
-            Text('booking_duration_label'.tr,
+            Text('booking_dates_label'.tr,
                 style: TextStyle(color: WebTheme.text, fontSize: 15, fontWeight: FontWeight.w700)),
           ],
         ),
         const SizedBox(height: 16),
-        Obx(() => Row(
-          children: List.generate(5, (i) {
-            final d = i + 1;
-            final active = c.duration.value == d;
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => c.duration.value = d,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  height: 64,
-                  decoration: BoxDecoration(
-                    gradient: active ? AppColors.darkCTAGradient : null,
-                    color: active ? null : WebTheme.surfaceAlt,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: active ? Colors.transparent : WebTheme.border),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('$d',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: active ? Colors.white : WebTheme.text)),
-                      Text('يوم',
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: active ? Colors.white70 : AppColors.grey)),
-                    ],
-                  ),
-                ),
+        Row(
+          children: [
+            Expanded(child: _webDatePickerBox(context, c, isStart: true)),
+            const SizedBox(width: 14),
+            Expanded(child: _webDatePickerBox(context, c, isStart: false)),
+          ],
+        ),
+        Obx(() {
+          if (c.startDate.value.isEmpty || c.endDate.value.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: WebTheme.primary.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: WebTheme.primary.withOpacity(0.25)),
               ),
-            );
-          }),
-        )),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline_rounded, size: 15, color: WebTheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${'booking_duration_days'.tr}: ${c.duration.value}',
+                    style: TextStyle(fontSize: 13, color: WebTheme.primary, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
       ],
     ),
   );
+
+  Widget _webDatePickerBox(BuildContext context, BookingController c, {required bool isStart}) =>
+      Obx(() {
+        final val = isStart ? c.startDate.value : c.endDate.value;
+        final label = isStart ? 'booking_start_date'.tr : 'booking_end_date'.tr;
+        final icon = isStart ? Icons.calendar_today_outlined : Icons.event_available_outlined;
+        return GestureDetector(
+          onTap: () async {
+            final now = DateTime.now();
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: now,
+              firstDate: now,
+              lastDate: DateTime(now.year + 2, 12, 31),
+            );
+            if (picked != null) {
+              if (isStart) c.setStartDate(picked);
+              else c.setEndDate(picked);
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              color: val.isNotEmpty
+                  ? WebTheme.primary.withOpacity(0.07)
+                  : WebTheme.surfaceAlt,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: val.isNotEmpty ? WebTheme.primary : WebTheme.border,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 17,
+                    color: val.isNotEmpty ? WebTheme.primary : AppColors.grey),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label,
+                          style: const TextStyle(
+                              fontSize: 10, color: AppColors.grey)),
+                      const SizedBox(height: 2),
+                      Text(
+                        val.isEmpty ? '—' : val,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: val.isEmpty ? AppColors.grey : WebTheme.text,
+                          fontWeight: val.isEmpty ? FontWeight.w400 : FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
 
   Widget _servicesSection(BookingController c) => Container(
     padding: const EdgeInsets.all(20),
