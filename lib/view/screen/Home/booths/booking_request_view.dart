@@ -14,6 +14,7 @@ class BookingRequestView extends GetView<BookingController> {
   @override
   Widget build(BuildContext context) {
     final booth = Get.arguments as BoothModel? ?? DummyData.myBooths.first;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     controller.setBooth(booth);
     return Scaffold(
       appBar: CustomAppBar(title: 'booking_request_title'.tr),
