@@ -98,7 +98,7 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
           ],
         ),
       ),
-    ));
+    );
   }
 }
 
