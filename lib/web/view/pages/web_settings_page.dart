@@ -340,10 +340,7 @@ class WebSettingsPage extends StatelessWidget {
                         () => GestureDetector(
                           onTap: c.isDeletingAccount.value
                               ? null
-                              : () {
-                                  Get.back();
-                                  c.deleteAccount();
-                                },
+                              : () => c.deleteAccount(),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             alignment: Alignment.center,

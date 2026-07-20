@@ -81,9 +81,19 @@ class SettingsController extends GetxController {
     required String newPass,
     required String confirm,
   }) async {
-    isLoading.value = true;
-    status.value = StatusRequest.loading;
-    errorMessage.value = '';
+    // التحقق من الحقول الفارغة
+    if (current.isEmpty || newPass.isEmpty || confirm.isEmpty) {
+      Get.snackbar(
+        'خطأ',
+        'يرجى ملء جميع الحقول',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.85),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // التحقق من تطابق كلمتَي المرور
     if (newPass != confirm) {
       Get.snackbar(
         'خطأ',
@@ -124,19 +134,22 @@ class SettingsController extends GetxController {
         colorText: Colors.white,
       );
     }
-    isLoading.value = false;
   }
 
   /// حذف الحساب — يُنهي الجلسة ويعود للتسجيل عند النجاح
+  /// ملاحظة: لا تُغلق الـ dialog من الـ view قبل استدعاء هذه الدالة —
+  /// الدالة تُغلقه بنفسها عند الفشل، وتستبدل كل المسارات عند النجاح.
   Future<void> deleteAccount() async {
     isDeletingAccount.value = true;
     final result = await _deleteAccountData.deleteAccount();
     isDeletingAccount.value = false;
 
     if (result['status'] == true) {
+      // Get.offAllNamed تُزيل كل المسارات بما فيها الـ dialog
       await Get.find<Services>().clearSession();
       Get.offAllNamed(AppRoutes.LOGIN);
     } else {
+      Get.back(); // أغلق الـ dialog عند الفشل
       final msg = result['message'] ?? 'فشل حذف الحساب، حاول مجدداً';
       Get.snackbar(
         'خطأ',
