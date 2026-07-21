@@ -284,11 +284,8 @@ class _DateBox extends StatelessWidget {
             ),
             if (value != null)
               GestureDetector(
-                // مسح هذا التاريخ فقط
-                onTap: () => onPick == c.filterByDate as dynamic
-                    ? null
-                    : _clearThis(c, label),
-                child: Icon(
+                onTap: () => _clearThis(c, label),
+                child: const Icon(
                   Icons.close_rounded,
                   color: AppColors.grey,
                   size: 15,
