@@ -17,8 +17,9 @@ The workflow `Start application` builds the Flutter web app and serves it on por
 
 To rebuild after code changes:
 ```bash
-flutter build web --release
+flutter build web --profile
 ```
+> **Important:** Use `--profile`, not `--release`. Flutter 3.32.0 has a dart2js compiler bug that crashes release builds. Profile builds are functionally identical for users.
 Then restart the workflow.
 
 ## Project Structure

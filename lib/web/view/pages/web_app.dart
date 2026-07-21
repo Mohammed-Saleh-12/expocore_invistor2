@@ -19,6 +19,7 @@ import 'web_favorites_page.dart';
 import 'web_settings_page.dart';
 import 'web_sponsorships_page.dart';
 import 'web_detail_view.dart';
+import 'web_create_event_page.dart';
 
 
 class WebApp extends StatelessWidget {
@@ -66,6 +67,7 @@ class _WebHome extends StatelessWidget {
       case 6: return WebMessagesPage();
       case 7: return WebFavoritesPage();
       case 8: return WebSettingsPage();
+      case 9: return WebCreateEventPage();
       default: return WebDashboardPage();
     }
   }

@@ -108,16 +108,18 @@ class WebCreateEventPage extends StatelessWidget {
                       // ── التاريخ والوقت والمدة ────────────
                       _section('event_section_datetime'.tr),
                       const SizedBox(height: 14),
+                      // تاريخ البداية / تاريخ النهاية
                       Row(
                         children: [
                           Expanded(
                             child: Obx(
                               () => _pickerBox(
                                 context,
-                                'event_date_hint'.tr,
+                                'event_start_date_hint'.tr,
                                 Icons.calendar_today_outlined,
                                 c.selectedDate.value,
                                 isDate: true,
+                                isEnd: false,
                                 c: c,
                               ),
                             ),
@@ -127,15 +129,28 @@ class WebCreateEventPage extends StatelessWidget {
                             child: Obx(
                               () => _pickerBox(
                                 context,
-                                'event_time_hint'.tr,
-                                Icons.access_time_outlined,
-                                c.selectedTime.value,
-                                isDate: false,
+                                'event_end_date_hint'.tr,
+                                Icons.event_available_outlined,
+                                c.selectedEndDate.value,
+                                isDate: true,
+                                isEnd: true,
                                 c: c,
                               ),
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 14),
+                      // الوقت
+                      Obx(
+                        () => _pickerBox(
+                          context,
+                          'event_time_hint'.tr,
+                          Icons.access_time_outlined,
+                          c.selectedTime.value,
+                          isDate: false,
+                          c: c,
+                        ),
                       ),
 
                       const SizedBox(height: 24),
@@ -642,19 +657,27 @@ class WebCreateEventPage extends StatelessWidget {
     IconData icon,
     String value, {
     required bool isDate,
+    bool isEnd = false,
     required EventsController c,
   }) => GestureDetector(
     onTap: () async {
       if (isDate) {
+        final now = DateTime.now();
         final p = await showDatePicker(
           context: context,
-          initialDate: DateTime(2026, 7, 18),
-          firstDate: DateTime(2026, 1, 1),
-          lastDate: DateTime(2027, 12, 31),
+          initialDate: now,
+          firstDate: now,
+          lastDate: DateTime(now.year + 2, 12, 31),
         );
-        if (p != null)
-          c.selectedDate.value =
+        if (p != null) {
+          final formatted =
               '${p.year}-${p.month.toString().padLeft(2, '0')}-${p.day.toString().padLeft(2, '0')}';
+          if (isEnd) {
+            c.selectedEndDate.value = formatted;
+          } else {
+            c.selectedDate.value = formatted;
+          }
+        }
       } else {
         final p = await showTimePicker(
           context: context,
@@ -665,21 +688,43 @@ class WebCreateEventPage extends StatelessWidget {
               '${p.hour.toString().padLeft(2, '0')}:${p.minute.toString().padLeft(2, '0')}';
       }
     },
-    child: Container(
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: WebTheme.surfaceAlt,
+        color: value.isNotEmpty
+            ? WebTheme.primary.withOpacity(0.07)
+            : WebTheme.surfaceAlt,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: value.isNotEmpty ? WebTheme.primary : WebTheme.border,
+        ),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.grey, size: 18),
+          Icon(icon,
+              color: value.isNotEmpty ? WebTheme.primary : AppColors.grey,
+              size: 18),
           const SizedBox(width: 10),
-          Text(
-            value.isEmpty ? label : value,
-            style: TextStyle(
-              color: value.isEmpty ? AppColors.grey : WebTheme.text,
-              fontSize: 14,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 10, color: AppColors.grey)),
+                const SizedBox(height: 2),
+                Text(
+                  value.isEmpty ? '—' : value,
+                  style: TextStyle(
+                    color: value.isEmpty ? AppColors.grey : WebTheme.text,
+                    fontSize: 13,
+                    fontWeight:
+                        value.isEmpty ? FontWeight.w400 : FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

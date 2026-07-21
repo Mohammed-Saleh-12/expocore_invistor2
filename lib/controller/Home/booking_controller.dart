@@ -10,6 +10,8 @@ class BookingController extends GetxController {
   final booth           = Rx<BoothModel?>(null);
   final notesCtrl       = TextEditingController();
   final duration        = 1.obs;
+  final startDate       = ''.obs;
+  final endDate         = ''.obs;
   final status          = StatusRequest.none.obs;
   final isSubmitting    = false.obs;
   final screenService   = false.obs;
@@ -18,6 +20,28 @@ class BookingController extends GetxController {
   final cleaningService = false.obs;
 
   VoidCallback? _onWebSuccess;
+
+  // ── Date helpers ──────────────────────────────────────────────────────
+  void setStartDate(DateTime d) {
+    startDate.value = _fmtDate(d);
+    _syncDuration();
+  }
+
+  void setEndDate(DateTime d) {
+    endDate.value = _fmtDate(d);
+    _syncDuration();
+  }
+
+  void _syncDuration() {
+    final s = DateTime.tryParse(startDate.value);
+    final e = DateTime.tryParse(endDate.value);
+    if (s != null && e != null && !e.isBefore(s)) {
+      duration.value = e.difference(s).inDays + 1;
+    }
+  }
+
+  String _fmtDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   double get total {
     final base   = (booth.value?.price ?? 0) * duration.value;
@@ -33,6 +57,8 @@ class BookingController extends GetxController {
   void resetForWeb(BoothModel b, VoidCallback onSuccess) {
     booth.value           = b;
     duration.value        = 1;
+    startDate.value       = '';
+    endDate.value         = '';
     screenService.value   = false;
     setupService.value    = false;
     securitySvc.value     = false;

@@ -30,6 +30,10 @@ class ReportsController extends GetxController {
 
   // ── Derived helpers ───────────────────────────────────────
   bool get hasDateFilter => dateFrom.value != null || dateTo.value != null;
+  bool get hasActiveFilter =>
+      selectedType.value != 'الكل' ||
+      dateFrom.value != null ||
+      dateTo.value != null;
 
   @override
   void onInit() {
@@ -68,6 +72,14 @@ class ReportsController extends GetxController {
   void clearDateFilter() {
     dateFrom.value = null;
     dateTo.value   = null;
+    applyFilters();
+  }
+
+  // ── Clear all filters ─────────────────────────────────────
+  void clearAllFilters() {
+    selectedType.value = 'الكل';
+    dateFrom.value     = null;
+    dateTo.value       = null;
     applyFilters();
   }
 
