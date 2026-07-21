@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'appcolors.dart';
 
 class AppTheme {
-  static TextTheme get _cairoTextTheme => GoogleFonts.cairoTextTheme(
-    const TextTheme(
-      headlineLarge:  TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-      headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-      titleLarge:     TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      titleMedium:    TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      bodyLarge:      TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-      bodySmall:      TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-      labelSmall:     TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-    ),
+  static const String _fontFamily = 'Cairo';
+
+  static TextTheme get _cairoTextTheme => const TextTheme(
+    headlineLarge:  TextStyle(fontFamily: _fontFamily, fontSize: 28, fontWeight: FontWeight.w700),
+    headlineMedium: TextStyle(fontFamily: _fontFamily, fontSize: 22, fontWeight: FontWeight.w600),
+    titleLarge:     TextStyle(fontFamily: _fontFamily, fontSize: 18, fontWeight: FontWeight.w600),
+    titleMedium:    TextStyle(fontFamily: _fontFamily, fontSize: 16, fontWeight: FontWeight.w500),
+    bodyLarge:      TextStyle(fontFamily: _fontFamily, fontSize: 14, fontWeight: FontWeight.w400),
+    bodySmall:      TextStyle(fontFamily: _fontFamily, fontSize: 12, fontWeight: FontWeight.w400),
+    labelSmall:     TextStyle(fontFamily: _fontFamily, fontSize: 10, fontWeight: FontWeight.w500),
   );
 
   static ThemeData get darkTheme => ThemeData(

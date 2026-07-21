@@ -45,4 +45,8 @@ flutter:
     - assets/images/logo1.png
     - assets/images/logo2.png
     - assets/images/logo3.png
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo[slnt,wght].ttf
     
