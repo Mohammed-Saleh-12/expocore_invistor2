@@ -75,34 +75,38 @@ class SettingsController extends GetxController {
     }
   }
 
-  /// تغيير كلمة المرور — يُغلق الـ dialog عند النجاح
-  Future<void> changePassword({
+  /// تغيير كلمة المرور — يُعيد true عند النجاح و false عند الفشل.
+  /// على الجوال: يُغلق الـ dialog ويعرض snackbar عبر GetX.
+  /// على الويب: تتولى الـ view إغلاق الـ dialog وعرض الرسائل.
+  Future<bool> changePassword({
     required String current,
     required String newPass,
     required String confirm,
   }) async {
     // التحقق من الحقول الفارغة
     if (current.isEmpty || newPass.isEmpty || confirm.isEmpty) {
+      errorMessage.value = 'يرجى ملء جميع الحقول';
       Get.snackbar(
         'خطأ',
-        'يرجى ملء جميع الحقول',
+        errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
       );
-      return;
+      return false;
     }
 
     // التحقق من تطابق كلمتَي المرور
     if (newPass != confirm) {
+      errorMessage.value = 'كلمة المرور الجديدة وتأكيدها غير متطابقتين';
       Get.snackbar(
         'خطأ',
-        'كلمة المرور الجديدة وتأكيدها غير متطابقتين',
+        errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
       );
-      return;
+      return false;
     }
 
     isChangingPassword.value = true;
@@ -114,7 +118,8 @@ class SettingsController extends GetxController {
     isChangingPassword.value = false;
 
     if (result['status'] == true) {
-      Get.back(); // أغلق الـ dialog
+      errorMessage.value = '';
+      Get.back(); // يعمل على الجوال، لا-op على الويب
       Get.snackbar(
         'تم',
         'تم تغيير كلمة المرور بنجاح',
@@ -122,42 +127,45 @@ class SettingsController extends GetxController {
         backgroundColor: Colors.green.withOpacity(0.85),
         colorText: Colors.white,
       );
+      return true;
     } else {
-      final msg =
-          result['message'] ??
-          'فشل تغيير كلمة المرور، تحقق من كلمة المرور الحالية';
+      errorMessage.value =
+          result['message'] ?? 'فشل تغيير كلمة المرور، تحقق من كلمة المرور الحالية';
       Get.snackbar(
         'خطأ',
-        msg,
+        errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
       );
+      return false;
     }
   }
 
-  /// حذف الحساب — يُنهي الجلسة ويعود للتسجيل عند النجاح
-  /// ملاحظة: لا تُغلق الـ dialog من الـ view قبل استدعاء هذه الدالة —
-  /// الدالة تُغلقه بنفسها عند الفشل، وتستبدل كل المسارات عند النجاح.
-  Future<void> deleteAccount() async {
+  /// حذف الحساب — يُعيد true عند النجاح و false عند الفشل.
+  /// على الجوال: ينقل للتسجيل عبر GetX.
+  /// على الويب: تتولى الـ view تسجيل الخروج عبر WebAuthController.
+  Future<bool> deleteAccount() async {
     isDeletingAccount.value = true;
     final result = await _deleteAccountData.deleteAccount();
     isDeletingAccount.value = false;
 
     if (result['status'] == true) {
-      // Get.offAllNamed تُزيل كل المسارات بما فيها الـ dialog
+      errorMessage.value = '';
       await Get.find<Services>().clearSession();
-      Get.offAllNamed(AppRoutes.LOGIN);
+      Get.offAllNamed(AppRoutes.LOGIN); // يعمل على الجوال، لا-op على الويب
+      return true;
     } else {
-      Get.back(); // أغلق الـ dialog عند الفشل
-      final msg = result['message'] ?? 'فشل حذف الحساب، حاول مجدداً';
+      errorMessage.value = result['message'] ?? 'فشل حذف الحساب، حاول مجدداً';
+      Get.back(); // يعمل على الجوال، لا-op على الويب
       Get.snackbar(
         'خطأ',
-        msg,
+        errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
       );
+      return false;
     }
   }
 }

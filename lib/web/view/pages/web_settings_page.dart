@@ -104,20 +104,20 @@ class WebSettingsPage extends StatelessWidget {
                       _actionTile(
                         icon: Icons.lock_outline_rounded,
                         title: 'تغيير كلمة المرور',
-                        onTap: () => _showChangePasswordDialog(c),
+                        onTap: () => _showChangePasswordDialog(context, c),
                       ),
                       const SizedBox(height: 4),
                       _actionTile(
                         icon: Icons.delete_forever_rounded,
                         title: 'حذف الحساب',
-                        onTap: () => _confirmDeleteAccount(c),
+                        onTap: () => _confirmDeleteAccount(context, c),
                         isDestructive: true,
                       ),
                     ]),
                     const SizedBox(height: 18),
 
                     GestureDetector(
-                      onTap: () => _confirmLogout(),
+                      onTap: () => _confirmLogout(context),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -162,13 +162,18 @@ class WebSettingsPage extends StatelessWidget {
   }
 
   // ── Change Password dialog ─────────────────────────────────
-  void _showChangePasswordDialog(SettingsController c) {
+  // استخدام showDialog مع context من الـ Navigator الداخلي للويب بدلاً من
+  // Get.dialog الذي يعتمد على navigator GetX غير المُنشأ في وضع الويب.
+  void _showChangePasswordDialog(BuildContext buildContext, SettingsController c) {
+    c.errorMessage.value = '';
     final currentCtrl = TextEditingController();
     final newCtrl     = TextEditingController();
     final confirmCtrl = TextEditingController();
 
-    Get.dialog(
-      Dialog(
+    showDialog(
+      context: buildContext,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
         backgroundColor: WebTheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
@@ -200,12 +205,24 @@ class WebSettingsPage extends StatelessWidget {
                 _dialogPasswordField('كلمة المرور الجديدة', newCtrl),
                 const SizedBox(height: 12),
                 _dialogPasswordField('تأكيد كلمة المرور الجديدة', confirmCtrl),
+                // رسالة الخطأ
+                Obx(() => c.errorMessage.value.isEmpty
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          c.errorMessage.value,
+                          style: const TextStyle(
+                              color: AppColors.error, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      )),
                 const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: Get.back,
+                        onTap: () => Navigator.of(ctx).pop(),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 13),
                           alignment: Alignment.center,
@@ -230,11 +247,22 @@ class WebSettingsPage extends StatelessWidget {
                         () => GestureDetector(
                           onTap: c.isChangingPassword.value
                               ? null
-                              : () => c.changePassword(
+                              : () async {
+                                  final success = await c.changePassword(
                                     current: currentCtrl.text.trim(),
                                     newPass: newCtrl.text.trim(),
                                     confirm: confirmCtrl.text.trim(),
-                                  ),
+                                  );
+                                  if (success && ctx.mounted) {
+                                    Navigator.of(ctx).pop();
+                                    ScaffoldMessenger.maybeOf(buildContext)
+                                        ?.showSnackBar(const SnackBar(
+                                      content:
+                                          Text('تم تغيير كلمة المرور بنجاح'),
+                                      backgroundColor: AppColors.success,
+                                    ));
+                                  }
+                                },
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             alignment: Alignment.center,
@@ -281,9 +309,12 @@ class WebSettingsPage extends StatelessWidget {
   }
 
   // ── Delete Account confirm dialog ──────────────────────────
-  void _confirmDeleteAccount(SettingsController c) {
-    Get.dialog(
-      Dialog(
+  void _confirmDeleteAccount(BuildContext buildContext, SettingsController c) {
+    c.errorMessage.value = '';
+    showDialog(
+      context: buildContext,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
         backgroundColor: WebTheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
@@ -310,12 +341,23 @@ class WebSettingsPage extends StatelessWidget {
                   style: TextStyle(color: AppColors.grey, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
+                Obx(() => c.errorMessage.value.isEmpty
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          c.errorMessage.value,
+                          style: const TextStyle(
+                              color: AppColors.error, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      )),
                 const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: Get.back,
+                        onTap: () => Navigator.of(ctx).pop(),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 13),
                           alignment: Alignment.center,
@@ -340,7 +382,23 @@ class WebSettingsPage extends StatelessWidget {
                         () => GestureDetector(
                           onTap: c.isDeletingAccount.value
                               ? null
-                              : () => c.deleteAccount(),
+                              : () async {
+                                  final success = await c.deleteAccount();
+                                  if (success) {
+                                    WebAuthController.to.logout();
+                                  } else if (ctx.mounted) {
+                                    Navigator.of(ctx).pop();
+                                    ScaffoldMessenger.maybeOf(buildContext)
+                                        ?.showSnackBar(SnackBar(
+                                      content: Text(
+                                        c.errorMessage.value.isEmpty
+                                            ? 'فشل حذف الحساب، حاول مجدداً'
+                                            : c.errorMessage.value,
+                                      ),
+                                      backgroundColor: AppColors.error,
+                                    ));
+                                  }
+                                },
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             alignment: Alignment.center,
@@ -434,9 +492,10 @@ class WebSettingsPage extends StatelessWidget {
     );
   }
 
-  void _confirmLogout() {
-    Get.dialog(
-      Dialog(
+  void _confirmLogout(BuildContext buildContext) {
+    showDialog(
+      context: buildContext,
+      builder: (ctx) => Dialog(
         backgroundColor: WebTheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
@@ -465,7 +524,7 @@ class WebSettingsPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: Get.back,
+                      onTap: () => Navigator.of(ctx).pop(),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 13),
                         alignment: Alignment.center,
@@ -489,7 +548,7 @@ class WebSettingsPage extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        Get.back();
+                        Navigator.of(ctx).pop();
                         WebAuthController.to.logout();
                       },
                       child: Container(
