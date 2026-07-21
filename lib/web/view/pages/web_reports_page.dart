@@ -157,7 +157,7 @@ class WebReportsPage extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Obx(() {
-              // استخدام .value صراحةً لضمان تتبّع GetX للتغييرات
+              // ignore: invalid_use_of_protected_member
               final list = c.filtered.value;
               if (list.isEmpty) {
                 return Container(

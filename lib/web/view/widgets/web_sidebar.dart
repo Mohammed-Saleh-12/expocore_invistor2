@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../models/web_theme.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../models/web_section.dart';
-import '../../controllers/web_nav_controller.dart';
 
 class WebSidebar extends StatelessWidget {
   final List<WebSection> sections;
@@ -104,12 +103,12 @@ class _NavItem extends StatelessWidget {
   final WebSection section;
   final bool active;
   final VoidCallback onTap;
-  /// false → استخدم النص كما هو بدون ترجمة
-  final bool translated;
+  final bool? translated;
   const _NavItem({
     required this.section,
     required this.active,
     required this.onTap,
+    // ignore: unused_element_parameter
     this.translated = true,
   });
 
@@ -145,7 +144,7 @@ class _NavItem extends StatelessWidget {
               ),
               const SizedBox(width: 13),
               Text(
-                translated ? section.label.tr : section.label,
+                translated! ? section.label.tr : section.label,
                 style: TextStyle(
                   color: active ? WebTheme.onGradient : AppColors.grey,
                   fontSize: 14.5,

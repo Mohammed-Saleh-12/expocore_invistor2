@@ -12,7 +12,7 @@ android {
     namespace = "com.example.expocore_invistor2"
     
     compileSdk = 36
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -29,7 +29,7 @@ android {
         // TODO: Specify your own unique Application ID (https://android.com).
         applicationId = "com.example.expocore_invistor2"
         
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
