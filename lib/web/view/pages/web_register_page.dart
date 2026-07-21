@@ -56,6 +56,7 @@ class _RegisterBrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wide = MediaQuery.of(context).size.width >= 1350;
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -66,8 +67,7 @@ class _RegisterBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(60),
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -78,19 +78,20 @@ class _RegisterBrand extends StatelessWidget {
                   height: 250,
                 ),
                 const SizedBox(height: 50),
-                ShaderMask(
-                  shaderCallback: (b) =>
-                      AppColors.favoriteGradient.createShader(b),
-                  child: Text(
-                    'ابدأ رحلتك معنا وأنشئ حسابك الآن',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w900,
-                      height: 1.3,
-                      color: Colors.white,
+                if (wide)
+                  ShaderMask(
+                    shaderCallback: (b) =>
+                        AppColors.favoriteGradient.createShader(b),
+                    child: Text(
+                      'ابدأ رحلتك معنا وأنشئ حسابك الآن',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        height: 1.3,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

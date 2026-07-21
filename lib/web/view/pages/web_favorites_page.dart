@@ -48,16 +48,14 @@ class WebFavoritesPage extends StatelessWidget {
                           vertical: 9,
                         ),
                         decoration: BoxDecoration(
-                          gradient:
-                              active ? AppColors.favoriteGradient : null,
+                          gradient: active ? AppColors.favoriteGradient : null,
                           color: active ? null : WebTheme.surface,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           f,
                           style: TextStyle(
-                            color:
-                                active ? Colors.white : AppColors.grey,
+                            color: active ? Colors.white : AppColors.grey,
                             fontSize: 13,
                             fontWeight: active
                                 ? FontWeight.w700
@@ -79,23 +77,23 @@ class WebFavoritesPage extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Obx(() {
-              final filter      = c.webCategoryFilter.value;
+              final filter = c.webCategoryFilter.value;
               final exhibitions = c.favoriteExhibitions.toList();
-              final events      = c.favoriteEvents.toList();
-              final booths      = c.favoriteBooths.toList();
+              final events = c.favoriteEvents.toList();
+              final booths = c.favoriteBooths.toList();
 
               final showExhibitions = filter == 'معارض';
-              final showEvents      = filter == 'فعاليات';
-              final showBooths      = filter == 'أجنحة';
+              final showEvents = filter == 'فعاليات';
+              final showBooths = filter == 'أجنحة';
 
-              final visibleExhibitions =
-                  showExhibitions ? exhibitions : <dynamic>[];
-              final visibleEvents =
-                  showEvents ? events : <dynamic>[];
-              final visibleBooths =
-                  showBooths ? booths : <dynamic>[];
+              final visibleExhibitions = showExhibitions
+                  ? exhibitions
+                  : <dynamic>[];
+              final visibleEvents = showEvents ? events : <dynamic>[];
+              final visibleBooths = showBooths ? booths : <dynamic>[];
 
-              final isEmpty = visibleExhibitions.isEmpty &&
+              final isEmpty =
+                  visibleExhibitions.isEmpty &&
                   visibleEvents.isEmpty &&
                   visibleBooths.isEmpty;
 
@@ -126,7 +124,6 @@ class WebFavoritesPage extends StatelessWidget {
                 children: [
                   // ── Exhibitions ────────────────────────────
                   if (showExhibitions && exhibitions.isNotEmpty) ...[
-                    _subTitle('المعارض', exhibitions.length),
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 20,
@@ -148,7 +145,6 @@ class WebFavoritesPage extends StatelessWidget {
 
                   // ── Events ─────────────────────────────────
                   if (showEvents && events.isNotEmpty) ...[
-                    _subTitle('الفعاليات', events.length),
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 20,
@@ -170,7 +166,6 @@ class WebFavoritesPage extends StatelessWidget {
 
                   // ── Booths ─────────────────────────────────
                   if (showBooths && booths.isNotEmpty) ...[
-                    _subTitle('الأجنحة', booths.length),
                     const SizedBox(height: 14),
                     LayoutBuilder(
                       builder: (context, cons) {
@@ -183,11 +178,11 @@ class WebFavoritesPage extends StatelessWidget {
                           itemCount: booths.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cols,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                            childAspectRatio: 1.05,
-                          ),
+                                crossAxisCount: cols,
+                                crossAxisSpacing: 20,
+                                mainAxisSpacing: 20,
+                                childAspectRatio: 1.05,
+                              ),
                           itemBuilder: (_, i) => _FavBoothCard(
                             booth: booths[i],
                             onRemove: () => c.removeBooth(booths[i]),
@@ -205,39 +200,6 @@ class WebFavoritesPage extends StatelessWidget {
       ],
     );
   }
-
-  Widget _subTitle(String t, int count) => Padding(
-    padding: const EdgeInsets.only(top: 4),
-    child: Row(
-      children: [
-        Text(
-          t,
-          style: TextStyle(
-            color: WebTheme.text,
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: WebTheme.primary.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            '$count',
-            style: TextStyle(
-              color: WebTheme.pink,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 // ── Favourite booth card (matches _BoothCard style + remove button) ──────────
@@ -253,7 +215,7 @@ class _FavBoothCard extends StatelessWidget {
   });
 
   bool get _approved => booth.status == 'active';
-  bool get _ended    => booth.status == 'ended';
+  bool get _ended => booth.status == 'ended';
 
   @override
   Widget build(BuildContext context) {
@@ -400,27 +362,26 @@ class _FavBoothCard extends StatelessWidget {
     required String label,
     required bool filled,
     required VoidCallback onTap,
-  }) =>
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            gradient: filled ? AppColors.favoriteGradient : null,
-            border: filled
-                ? null
-                : Border.all(color: WebTheme.primary.withOpacity(0.5)),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: filled ? Colors.white : WebTheme.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+  }) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: filled ? AppColors.favoriteGradient : null,
+        border: filled
+            ? null
+            : Border.all(color: WebTheme.primary.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: filled ? Colors.white : WebTheme.primary,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
         ),
-      );
+      ),
+    ),
+  );
 }

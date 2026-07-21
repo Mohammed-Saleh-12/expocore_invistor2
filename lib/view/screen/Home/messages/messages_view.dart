@@ -66,7 +66,7 @@ class MessagesView extends GetView<MessagesController> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
               child: Text(

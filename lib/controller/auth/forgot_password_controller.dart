@@ -4,23 +4,15 @@ import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/sourcedata/remote/Auth/ForgotPasswordData.dart';
 
-// ════════════════════════════════════════════════════════════
-//  ForgotPasswordController  —  MVC / GetX
-//  shared between mobile ForgotPasswordView and web WebForgotPasswordPage
-// ════════════════════════════════════════════════════════════
 class ForgotPasswordController extends GetxController {
-  // ── Dependencies ─────────────────────────────────────────
   final ForgotPasswordData _forgotPasswordData = ForgotPasswordData(Crud());
 
-  // ── Form ─────────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();
 
-  // ── State ─────────────────────────────────────────────────
   final status = StatusRequest.none.obs;
   final sent   = false.obs;
 
-  // ── Send reset link ───────────────────────────────────────
   Future<void> sendResetLink() async {
     if (!formKey.currentState!.validate()) return;
     status.value = StatusRequest.loading;
@@ -36,14 +28,12 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-  // ── Reset to form state (re-try or navigate back) ────────
   void reset() {
     sent.value   = false;
     status.value = StatusRequest.none;
     emailCtrl.clear();
   }
 
-  // ── Helpers ───────────────────────────────────────────────
   void _showError(String message) => Get.snackbar(
     'forgot_error_title'.tr,
     message,
@@ -55,7 +45,6 @@ class ForgotPasswordController extends GetxController {
     duration: const Duration(seconds: 3),
   );
 
-  // ── Dispose ───────────────────────────────────────────────
   @override
   void onClose() {
     emailCtrl.dispose();

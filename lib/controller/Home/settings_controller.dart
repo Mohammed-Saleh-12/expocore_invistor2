@@ -74,10 +74,6 @@ class SettingsController extends GetxController {
       Get.offAllNamed(AppRoutes.LOGIN);
     }
   }
-
-  /// تغيير كلمة المرور — يُعيد true عند النجاح و false عند الفشل.
-  /// على الجوال: يُغلق الـ dialog ويعرض snackbar عبر GetX.
-  /// على الويب: تتولى الـ view إغلاق الـ dialog وعرض الرسائل.
   Future<bool> changePassword({
     required String current,
     required String newPass,

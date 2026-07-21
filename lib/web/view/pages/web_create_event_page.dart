@@ -21,8 +21,6 @@ class WebCreateEventPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _back(),
-              const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(28),
                 decoration: _cardDec(),
@@ -298,12 +296,12 @@ class WebCreateEventPage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Icon(icon, color: sel ? WebTheme.text : color, size: 24),
+                    Icon(icon, color: sel ? Colors.white : color, size: 24),
                     const SizedBox(height: 6),
                     Text(
                       label,
                       style: TextStyle(
-                        color: sel ? WebTheme.text : WebTheme.text,
+                        color: sel ? Colors.white : WebTheme.text,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -312,7 +310,7 @@ class WebCreateEventPage extends StatelessWidget {
                     Text(
                       sub,
                       style: TextStyle(
-                        color: sel ? WebTheme.text70 : AppColors.grey,
+                        color: sel ? Colors.white : AppColors.grey,
                         fontSize: 10,
                       ),
                     ),
@@ -489,35 +487,6 @@ class WebCreateEventPage extends StatelessWidget {
     );
   });
 
-  // ── Pieces ────────────────────────────────────────────────
-  Widget _back() => GestureDetector(
-    onTap: WebNavController.to.closeDetail,
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: WebTheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: WebTheme.border),
-          ),
-          child: Icon(
-            Icons.arrow_forward_rounded,
-            color: WebTheme.text,
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          'btn_back'.tr,
-          style: TextStyle(color: AppColors.grey, fontSize: 14),
-        ),
-      ],
-    ),
-  );
-
   Widget _title() => Row(
     children: [
       Container(
@@ -683,9 +652,10 @@ class WebCreateEventPage extends StatelessWidget {
           context: context,
           initialTime: TimeOfDay.now(),
         );
-        if (p != null)
+        if (p != null) {
           c.selectedTime.value =
               '${p.hour.toString().padLeft(2, '0')}:${p.minute.toString().padLeft(2, '0')}';
+        }
       }
     },
     child: AnimatedContainer(
@@ -702,28 +672,33 @@ class WebCreateEventPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon,
-              color: value.isNotEmpty ? WebTheme.primary : AppColors.grey,
-              size: 18),
+          Icon(
+            icon,
+            color: value.isNotEmpty ? WebTheme.primary : AppColors.grey,
+            size: 18,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 10, color: AppColors.grey)),
-                const SizedBox(height: 2),
-                Text(
-                  value.isEmpty ? '—' : value,
-                  style: TextStyle(
-                    color: value.isEmpty ? AppColors.grey : WebTheme.text,
-                    fontSize: 13,
-                    fontWeight:
-                        value.isEmpty ? FontWeight.w400 : FontWeight.w700,
+                if (value.isEmpty)
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 10, color: AppColors.grey),
+                  )
+                else
+                  Text(
+                    value.isEmpty ? '' : value,
+                    style: TextStyle(
+                      color: value.isEmpty ? AppColors.grey : WebTheme.text,
+                      fontSize: 13,
+                      fontWeight: value.isEmpty
+                          ? FontWeight.w400
+                          : FontWeight.w700,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

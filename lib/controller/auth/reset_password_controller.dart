@@ -5,40 +5,26 @@ import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../data/sourcedata/remote/Auth/ResetPasswordData.dart';
 
-// ════════════════════════════════════════════════════════════
-//  ResetPasswordController  —  MVC / GetX
-//  shared between mobile ResetPasswordView and web WebResetPasswordPage
-//
-//  Token source:
-//   • Web  → extracted from Uri.base query params by WebAuthController
-//             and injected via initToken()
-//   • Mobile → passed as Get.arguments when navigating to RESET_PW route
-// ════════════════════════════════════════════════════════════
+
 class ResetPasswordController extends GetxController {
-  // ── Dependencies ─────────────────────────────────────────
   final ResetPasswordData _resetPasswordData = ResetPasswordData(Crud());
 
-  // ── Form ─────────────────────────────────────────────────
   final formKey     = GlobalKey<FormState>();
   final passwordCtrl = TextEditingController();
   final confirmCtrl  = TextEditingController();
 
-  // ── State ─────────────────────────────────────────────────
   final status      = StatusRequest.none.obs;
   final done        = false.obs;
   final token       = ''.obs;
   final obscurePass = true.obs;
   final obscureConf = true.obs;
 
-  // ── Derived ───────────────────────────────────────────────
   bool get hasToken => token.value.isNotEmpty;
 
-  // ── Toggles ───────────────────────────────────────────────
   void togglePass() => obscurePass.value = !obscurePass.value;
   void toggleConf() => obscureConf.value = !obscureConf.value;
 
-  // ── Token injection ───────────────────────────────────────
-  /// Called by WebAuthController (web) or the route handler (mobile)
+  
   void initToken(String t) => token.value = t.trim();
 
   // ── Reset password ────────────────────────────────────────
@@ -51,7 +37,6 @@ class ResetPasswordController extends GetxController {
     status.value = StatusRequest.loading;
 
     final result = await _resetPasswordData.resetPassword(
-      token: token.value,
       password: passwordCtrl.text,
       passwordConfirmation: confirmCtrl.text,
     );

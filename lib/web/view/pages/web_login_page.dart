@@ -56,6 +56,8 @@ class _LoginBrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wide = MediaQuery.of(context).size.width >= 1200;
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -66,8 +68,7 @@ class _LoginBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 150),
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -79,19 +80,20 @@ class _LoginBrand extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 50),
-                ShaderMask(
-                  shaderCallback: (b) =>
-                      AppColors.favoriteGradient.createShader(b),
-                  child: Text(
-                    'login_brand_title'.tr,
-                    style: TextStyle(
-                      fontSize: 44,
-                      fontWeight: FontWeight.w900,
-                      height: 1.5,
-                      color: Colors.white,
+                if (wide)
+                  ShaderMask(
+                    shaderCallback: (b) =>
+                        AppColors.favoriteGradient.createShader(b),
+                    child: Text(
+                      'login_brand_title'.tr,
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w700,
+                        height: 1.5,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

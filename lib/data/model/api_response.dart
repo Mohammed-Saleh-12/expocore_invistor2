@@ -1,6 +1,3 @@
-// ════════════════════════════════════════════════════════════
-//  ApiResponse  —  standardised wrapper around every API call
-// ════════════════════════════════════════════════════════════
 class ApiResponse<T> {
   final bool    success;
   final T?      data;
@@ -14,14 +11,12 @@ class ApiResponse<T> {
     this.statusCode = 0,
   });
 
-  // ── Named constructors ────────────────────────────────────
   factory ApiResponse.ok(T data, {String message = ''}) =>
       ApiResponse(success: true, data: data, message: message, statusCode: 200);
 
   factory ApiResponse.fail(String message, {int code = 0}) =>
       ApiResponse(success: false, message: message, statusCode: code);
 
-  // ── Parse from Crud.postData / getData result map ─────────
   factory ApiResponse.fromMap(
     Map<String, dynamic> result, {
     T Function(dynamic)? parser,
@@ -39,7 +34,6 @@ class ApiResponse<T> {
     );
   }
 
-  // ── Helpers ───────────────────────────────────────────────
   bool get isUnauthorized => statusCode == 401;
   bool get isNotFound     => statusCode == 404;
   bool get isServerError  => statusCode >= 500;

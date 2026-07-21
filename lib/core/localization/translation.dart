@@ -455,7 +455,7 @@ class MyTranslation extends Translations {
       'event_invalid_count': 'عدد غير صحيح',
       'event_booth_prefix': 'جناح',
       'event_paid_note': 'يجب على الحضور الدفع للحصول على تذكرة دخول',
-      'event_max_optional_hint': 'الحد الأقصى للمشاركين (اختياري)',
+      'event_max_optional_hint': 'الحد الأقصى للمشاركين',
       'event_open_note': 'الفعالية مفتوحة للجميع بدون حجز مسبق',
       'event_free_limited_banner_title': 'تذاكر مجانية — محدودة العدد',
       'event_free_limited_banner_sub': 'الدخول مجاني لأول N مسجّل فقط',
@@ -1145,7 +1145,7 @@ class MyTranslation extends Translations {
       'event_invalid_count': 'Invalid number',
       'event_booth_prefix': 'Booth',
       'event_paid_note': 'Attendees must pay to get an entry ticket',
-      'event_max_optional_hint': 'Maximum participants (optional)',
+      'event_max_optional_hint': 'Maximum participants',
       'event_open_note': 'Event is open to everyone without pre-registration',
       'event_free_limited_banner_title': 'Free Tickets — Limited Spots',
       'event_free_limited_banner_sub':

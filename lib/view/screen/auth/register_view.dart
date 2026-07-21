@@ -278,9 +278,7 @@ class RegisterView extends GetView<RegisterController> {
       'register_activity'.tr,
       style: const TextStyle(color: AppColors.grey),
     ),
-    dropdownColor: context.isDarkMode
-        ? AppColors.darkBg.withOpacity(0.5)
-        : Colors.white,
+    dropdownColor: context.isDarkMode ? AppColors.darkBg : Colors.white,
     decoration: InputDecoration(
       filled: true,
       fillColor: context.isDarkMode

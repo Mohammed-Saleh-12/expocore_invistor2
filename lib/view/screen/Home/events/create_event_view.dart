@@ -386,9 +386,13 @@ class CreateEventView extends GetView<EventsController> {
           ),
           child: Row(
             children: [
-              Icon(icon,
-                  size: 16,
-                  color: value.isNotEmpty ? AppColors.darkPrimary : AppColors.grey),
+              Icon(
+                icon,
+                size: 16,
+                color: value.isNotEmpty
+                    ? AppColors.darkPrimary
+                    : AppColors.grey,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -396,8 +400,9 @@ class CreateEventView extends GetView<EventsController> {
                   style: TextStyle(
                     fontSize: 13,
                     color: value.isNotEmpty ? null : AppColors.grey,
-                    fontWeight:
-                        value.isNotEmpty ? FontWeight.w600 : FontWeight.w400,
+                    fontWeight: value.isNotEmpty
+                        ? FontWeight.w600
+                        : FontWeight.w400,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),

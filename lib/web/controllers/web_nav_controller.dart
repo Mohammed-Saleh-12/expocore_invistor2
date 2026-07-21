@@ -16,20 +16,26 @@ class WebNavController extends GetxController {
       ? Get.find<WebNavController>()
       : Get.put(WebNavController(), permanent: true);
 
-  final selected    = 0.obs;
+  final selected = 0.obs;
   final messagesTab = 0.obs;
 
   static const sections = <WebSection>[
-    WebSection(icon: Icons.dashboard_rounded,         label: 'nav_home'),
-    WebSection(icon: Icons.storefront_rounded,        label: 'nav_exhibitions'),
-    WebSection(icon: Icons.grid_view_rounded,         label: 'nav_my_booths'),
-    WebSection(icon: Icons.event_rounded,             label: 'nav_events'),
-    WebSection(icon: Icons.workspace_premium_rounded, label: 'nav_sponsorships'),
-    WebSection(icon: Icons.bar_chart_rounded,         label: 'nav_reports'),
-    WebSection(icon: Icons.chat_bubble_rounded,       label: 'nav_messages'),
-    WebSection(icon: Icons.favorite_rounded,          label: 'nav_favorites'),
-    WebSection(icon: Icons.settings_rounded,          label: 'nav_settings'),
-    WebSection(icon: Icons.add_circle_outline_rounded, label: 'detail_create_event'),
+    WebSection(icon: Icons.dashboard_rounded, label: 'nav_home'),
+    WebSection(icon: Icons.storefront_rounded, label: 'nav_exhibitions'),
+    WebSection(icon: Icons.grid_view_rounded, label: 'nav_my_booths'),
+    WebSection(icon: Icons.event_rounded, label: 'nav_events'),
+    WebSection(
+      icon: Icons.add_circle_outline_rounded,
+      label: 'detail_create_event',
+    ),
+    WebSection(
+      icon: Icons.workspace_premium_rounded,
+      label: 'nav_sponsorships',
+    ),
+    WebSection(icon: Icons.bar_chart_rounded, label: 'nav_reports'),
+    WebSection(icon: Icons.chat_bubble_rounded, label: 'nav_messages'),
+    WebSection(icon: Icons.favorite_rounded, label: 'nav_favorites'),
+    WebSection(icon: Icons.settings_rounded, label: 'nav_settings'),
   ];
 
   final detail = Rxn<WebDetailRequest>();
@@ -42,8 +48,8 @@ class WebNavController extends GetxController {
   void openExhibition(ExhibitionModel e) =>
       detail.value = WebDetailRequest(WebDetailType.exhibition, data: e);
 
-  void openBooth(BoothModel b, {ReportModel? report}) =>
-      detail.value = WebDetailRequest(WebDetailType.booth, data: b, extra: report);
+  void openBooth(BoothModel b, {ReportModel? report}) => detail.value =
+      WebDetailRequest(WebDetailType.booth, data: b, extra: report);
 
   void openBoothManagement(BoothModel b) {
     final c = Get.isRegistered<BoothManagementController>()
@@ -90,8 +96,7 @@ class WebNavController extends GetxController {
   void openSponsorEvent(ExhibitionSponsorEvent e) =>
       detail.value = WebDetailRequest(WebDetailType.sponsorEvent, data: e);
 
-  void openMap() =>
-      detail.value = const WebDetailRequest(WebDetailType.map);
+  void openMap() => detail.value = const WebDetailRequest(WebDetailType.map);
 
   void openExhibitionEvents() =>
       detail.value = const WebDetailRequest(WebDetailType.exhibitionEvents);
@@ -105,23 +110,40 @@ class WebNavController extends GetxController {
 
   String get currentTitle {
     switch (detail.value?.type) {
-      case WebDetailType.exhibition:      return 'detail_exhibition'.tr;
-      case WebDetailType.booth:           return 'detail_booth'.tr;
-      case WebDetailType.boothManagement: return 'detail_booth_management'.tr;
-      case WebDetailType.bookingRequest:  return 'detail_booking_request'.tr;
-      case WebDetailType.bookingDetail:   return 'detail_booking_detail'.tr;
-      case WebDetailType.event:           return 'detail_event'.tr;
-      case WebDetailType.report:          return 'detail_report'.tr;
-      case WebDetailType.createEvent:     return 'detail_create_event'.tr;
-      case WebDetailType.ticketRequests:  return 'detail_ticket_requests'.tr;
-      case WebDetailType.sponsorship:     return 'detail_sponsorship'.tr;
-      case WebDetailType.scanner:         return 'detail_scanner'.tr;
-      case WebDetailType.notifications:   return 'detail_notifications'.tr;
-      case WebDetailType.sponsorEvent:    return 'detail_sponsor_event'.tr;
-      case WebDetailType.map:             return 'detail_map'.tr;
-      case WebDetailType.exhibitionEvents: return 'فعاليات المعارض الإعلانية';
-      case WebDetailType.accountDetail:   return 'تفاصيل الحساب';
-      case null:                          return current.label.tr;
+      case WebDetailType.exhibition:
+        return 'detail_exhibition'.tr;
+      case WebDetailType.booth:
+        return 'detail_booth'.tr;
+      case WebDetailType.boothManagement:
+        return 'detail_booth_management'.tr;
+      case WebDetailType.bookingRequest:
+        return 'detail_booking_request'.tr;
+      case WebDetailType.bookingDetail:
+        return 'detail_booking_detail'.tr;
+      case WebDetailType.event:
+        return 'detail_event'.tr;
+      case WebDetailType.report:
+        return 'detail_report'.tr;
+      case WebDetailType.createEvent:
+        return 'detail_create_event'.tr;
+      case WebDetailType.ticketRequests:
+        return 'detail_ticket_requests'.tr;
+      case WebDetailType.sponsorship:
+        return 'detail_sponsorship'.tr;
+      case WebDetailType.scanner:
+        return 'detail_scanner'.tr;
+      case WebDetailType.notifications:
+        return 'detail_notifications'.tr;
+      case WebDetailType.sponsorEvent:
+        return 'detail_sponsor_event'.tr;
+      case WebDetailType.map:
+        return 'detail_map'.tr;
+      case WebDetailType.exhibitionEvents:
+        return 'فعاليات المعارض الإعلانية';
+      case WebDetailType.accountDetail:
+        return 'تفاصيل الحساب';
+      case null:
+        return current.label.tr;
     }
   }
 }

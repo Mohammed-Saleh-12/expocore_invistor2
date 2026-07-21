@@ -54,7 +54,7 @@ class _WebRoot extends StatelessWidget {
 
 // _WebHome
 class _WebHome extends StatelessWidget {
-  _WebHome();
+  const _WebHome();
 
   Widget _page(int i) {
     switch (i) {
@@ -62,12 +62,13 @@ class _WebHome extends StatelessWidget {
       case 1: return WebExhibitionsPage();
       case 2: return WebBoothsPage();
       case 3: return WebEventsPage();
-      case 4: return WebSponsorshipsPage();
-      case 5: return WebReportsPage();
-      case 6: return WebMessagesPage();
-      case 7: return WebFavoritesPage();
-      case 8: return WebSettingsPage();
-      case 9: return WebCreateEventPage();
+      case 4: return WebCreateEventPage();
+      case 5: return WebSponsorshipsPage();
+      case 6: return WebReportsPage();
+      case 7: return WebMessagesPage();
+      case 8: return WebFavoritesPage();
+      case 9: return WebSettingsPage();
+      
       default: return WebDashboardPage();
     }
   }

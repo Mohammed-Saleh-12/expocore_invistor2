@@ -7,12 +7,10 @@ class ResetPasswordData {
   ResetPasswordData(this.crud);
 
   Future<Map<String, dynamic>> resetPassword({
-    required String token,
     required String password,
     required String passwordConfirmation,
   }) async {
     return await crud.postData(AppLink.resetPassword, {
-      'token': token,
       'password': password,
       'password_confirmation': passwordConfirmation,
     });

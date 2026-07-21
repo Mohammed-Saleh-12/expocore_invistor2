@@ -6,33 +6,24 @@ import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
 import '../../core/services/services.dart';
 
-// ════════════════════════════════════════════════════════════
-//  LoginController  —  MVC / GetX
-// ════════════════════════════════════════════════════════════
 class LoginController extends GetxController {
-  // ── Dependencies ─────────────────────────────────────────
   final LoginData _loginData = LoginData(Crud());
-  // ── Form ─────────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
 
-  // ── State ─────────────────────────────────────────────────
   final status = StatusRequest.none.obs;
   final obscure = true.obs;
   final rememberMe = false.obs;
 
-  // ── Demo credentials (حساب تجريبي مؤقت) ─────────────────
   static const String _demoEmail = 'demo@expocore.app';
   static const String _demoPassword = 'Demo@1234';
   static const String _demoToken = 'demo-token-local';
   static const String _demoCompany = 'زائر تجريبي';
 
-  // ── Toggles ───────────────────────────────────────────────
   void toggleObscure() => obscure.value = !obscure.value;
   void toggleRemember() => rememberMe.value = !rememberMe.value;
 
-  /// Fill demo credentials automatically
   void fillDemo() {
     emailCtrl.text = _demoEmail;
     passwordCtrl.text = _demoPassword;
@@ -79,7 +70,6 @@ class LoginController extends GetxController {
     }
   }
 
-  // ── Helpers ───────────────────────────────────────────────
   bool _isDemoCredentials() =>
       emailCtrl.text.trim().toLowerCase() == _demoEmail &&
       passwordCtrl.text == _demoPassword;
@@ -134,7 +124,6 @@ class LoginController extends GetxController {
     return null;
   }
 
-  // ── Dispose ───────────────────────────────────────────────
   @override
   void onClose() {
     emailCtrl.dispose();
