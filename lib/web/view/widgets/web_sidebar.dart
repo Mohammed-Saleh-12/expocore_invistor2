@@ -60,20 +60,6 @@ class WebSidebar extends StatelessWidget {
             ),
           ),
 
-          // ── Publish event ────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-            child: _NavItem(
-              section: const WebSection(
-                icon: Icons.add_circle_outline_rounded,
-                label: 'نشر فعالية',
-              ),
-              active: false,
-              onTap: WebNavController.to.openCreateEvent,
-              translated: false,
-            ),
-          ),
-
           // ── Logout ──────────────────────────────────────
           Divider(color: WebTheme.border, height: 1),
           Padding(

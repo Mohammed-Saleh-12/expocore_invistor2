@@ -29,6 +29,7 @@ class WebNavController extends GetxController {
     WebSection(icon: Icons.chat_bubble_rounded,       label: 'nav_messages'),
     WebSection(icon: Icons.favorite_rounded,          label: 'nav_favorites'),
     WebSection(icon: Icons.settings_rounded,          label: 'nav_settings'),
+    WebSection(icon: Icons.add_circle_outline_rounded, label: 'detail_create_event'),
   ];
 
   final detail = Rxn<WebDetailRequest>();
