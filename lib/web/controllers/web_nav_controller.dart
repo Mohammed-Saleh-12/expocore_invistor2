@@ -67,8 +67,10 @@ class WebNavController extends GetxController {
   void openEvent(EventModel e) =>
       detail.value = WebDetailRequest(WebDetailType.event, data: e);
 
-  void openReport(ReportModel r) =>
-      detail.value = WebDetailRequest(WebDetailType.report, data: r);
+  void openReport(ReportModel r) {
+    selected.value = sections.indexWhere((s) => s.label == 'nav_reports');
+    detail.value = WebDetailRequest(WebDetailType.report, data: r);
+  }
 
   void openCreateEvent() =>
       detail.value = const WebDetailRequest(WebDetailType.createEvent);

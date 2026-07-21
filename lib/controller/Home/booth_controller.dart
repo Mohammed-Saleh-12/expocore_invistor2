@@ -5,6 +5,7 @@ import '../../data/model/booth/booth_model.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import 'reports_controller.dart';
 
 class BoothController extends GetxController {
   final BoothsData _boothsData = BoothsData(Crud());
@@ -87,8 +88,12 @@ class BoothController extends GetxController {
   }
 
   // ── فتح تقرير الجناح (الجوال) ──────────────────────────────
-  void openBoothReport(BoothModel b) =>
-      Get.toNamed(AppRoutes.REPORT_DETAIL, arguments: buildBoothReport(b));
+  void openBoothReport(BoothModel b) {
+    if (!Get.isRegistered<ReportsController>()) {
+      Get.put(ReportsController());
+    }
+    Get.toNamed(AppRoutes.REPORT_DETAIL, arguments: buildBoothReport(b));
+  }
 
   Future<void> refresh() => _loadBooths();
 
