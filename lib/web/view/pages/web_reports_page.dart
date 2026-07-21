@@ -29,15 +29,18 @@ class WebReportsPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              Obx(
-                () => Wrap(
+              // ── Type filter chips ────────────────────────
+              Obx(() {
+                final selectedType = c.selectedType.value;
+                return Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: c.typeFilters.map((t) {
-                    final active = c.selectedType.value == t;
+                    final active = selectedType == t;
                     return GestureDetector(
                       onTap: () => c.filterByType(t),
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 9,
@@ -46,59 +49,116 @@ class WebReportsPage extends StatelessWidget {
                           gradient: active ? AppColors.favoriteGradient : null,
                           color: active ? null : WebTheme.surface,
                           borderRadius: BorderRadius.circular(20),
+                          border: active
+                              ? null
+                              : Border.all(color: WebTheme.border),
                         ),
                         child: Text(
                           t,
                           style: TextStyle(
                             color: active ? Colors.white : AppColors.grey,
                             fontSize: 13,
-                            fontWeight: active
-                                ? FontWeight.w700
-                                : FontWeight.w400,
+                            fontWeight:
+                                active ? FontWeight.w700 : FontWeight.w400,
                           ),
                         ),
                       ),
                     );
                   }).toList(),
-                ),
-              ),
+                );
+              }),
               const SizedBox(height: 12),
 
-              Obx(
-                () => Row(
+              // ── Date filters + clear button ───────────────
+              Obx(() {
+                final from    = c.dateFrom.value;
+                final to      = c.dateTo.value;
+                final hasAny  = c.hasActiveFilter;
+
+                return Row(
                   children: [
+                    // ── From date ───────────────────────────
                     Expanded(
-                      child: _dateBox(
-                        context,
-                        c,
-                        'reports_date_from'.tr,
-                        c.dateFrom.value,
-                        (d) => c.filterByDate(d, c.dateTo.value),
+                      child: _DateBox(
+                        label: 'reports_date_from'.tr,
+                        value: from,
+                        onPick: (d) => c.filterByDate(d, c.dateTo.value),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
+
+                    // ── To date ─────────────────────────────
                     Expanded(
-                      child: _dateBox(
-                        context,
-                        c,
-                        'reports_date_to'.tr,
-                        c.dateTo.value,
-                        (d) => c.filterByDate(c.dateFrom.value, d),
+                      child: _DateBox(
+                        label: 'reports_date_to'.tr,
+                        value: to,
+                        onPick: (d) => c.filterByDate(c.dateFrom.value, d),
                       ),
+                    ),
+
+                    // ── Clear button (visible when any filter active) ──
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                      child: hasAny
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Tooltip(
+                                message: 'مسح الفلاتر',
+                                child: GestureDetector(
+                                  onTap: c.clearAllFilters,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.error.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.error.withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.filter_alt_off_rounded,
+                                          color: AppColors.error,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'مسح',
+                                          style: TextStyle(
+                                            color: AppColors.error,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
                   ],
-                ),
-              ),
+                );
+              }),
               const SizedBox(height: 16),
             ],
           ),
         ),
 
+        // ── Report list ──────────────────────────────────────
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Obx(() {
-              final list = c.filtered.toList();
+              // استخدام .value صراحةً لضمان تتبّع GetX للتغييرات
+              final list = c.filtered.value;
               if (list.isEmpty) {
                 return Container(
                   width: double.infinity,
@@ -116,6 +176,42 @@ class WebReportsPage extends StatelessWidget {
                         'reports_no_reports'.tr,
                         style: TextStyle(color: AppColors.grey),
                       ),
+                      // زر مسح الفلاتر عند عدم وجود نتائج مع فلتر نشط
+                      if (c.hasActiveFilter) ...[
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: c.clearAllFilters,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.error.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.filter_alt_off_rounded,
+                                    color: AppColors.error, size: 16),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'مسح الفلاتر',
+                                  style: TextStyle(
+                                    color: AppColors.error,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 );
@@ -129,51 +225,92 @@ class WebReportsPage extends StatelessWidget {
       ],
     );
   }
-
-  Widget _dateBox(
-    BuildContext context,
-    ReportsController c,
-    String label,
-    DateTime? value,
-    ValueChanged<DateTime> onPick,
-  ) => GestureDetector(
-    onTap: () async {
-      final picked = await showDatePicker(
-        context: context,
-        initialDate: value ?? DateTime(2026, 6, 1),
-        firstDate: DateTime(2025, 1, 1),
-        lastDate: DateTime(2027, 12, 31),
-      );
-      if (picked != null) onPick(picked);
-    },
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: WebTheme.border),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.calendar_today_outlined,
-            color: WebTheme.primary,
-            size: 18,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            value == null ? label : c.formatDate(value),
-            style: TextStyle(
-              color: value == null ? AppColors.grey : WebTheme.text,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
+// ── Date picker box ──────────────────────────────────────────
+// widget مستقل لتجنب إشكالية الـ context بعد await
+class _DateBox extends StatelessWidget {
+  final String label;
+  final DateTime? value;
+  final ValueChanged<DateTime> onPick;
+
+  const _DateBox({
+    required this.label,
+    required this.value,
+    required this.onPick,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Get.find<ReportsController>();
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: value ?? DateTime(2026, 6, 1),
+          firstDate: DateTime(2024, 1, 1),
+          lastDate: DateTime(2028, 12, 31),
+        );
+        if (picked != null) onPick(picked);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: WebTheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: value != null
+                ? WebTheme.primary.withOpacity(0.5)
+                : WebTheme.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.calendar_today_outlined,
+              color: value != null ? WebTheme.primary : AppColors.grey,
+              size: 17,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                value == null ? label : c.formatDate(value),
+                style: TextStyle(
+                  color: value == null ? AppColors.grey : WebTheme.text,
+                  fontSize: 13,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (value != null)
+              GestureDetector(
+                // مسح هذا التاريخ فقط
+                onTap: () => onPick == c.filterByDate as dynamic
+                    ? null
+                    : _clearThis(c, label),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: AppColors.grey,
+                  size: 15,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _clearThis(ReportsController c, String lbl) {
+    // نحدد أيهما نمسح من خلال النص
+    if (lbl == 'reports_date_from'.tr || lbl.contains('من')) {
+      c.filterByDate(null, c.dateTo.value);
+    } else {
+      c.filterByDate(c.dateFrom.value, null);
+    }
+  }
+}
+
+// ── Report row ───────────────────────────────────────────────
 class _ReportRow extends StatelessWidget {
   final ReportModel report;
   final ReportsController c;
@@ -246,7 +383,8 @@ class _ReportRow extends StatelessWidget {
             ),
             const SizedBox(width: 20),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.success.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -288,19 +426,12 @@ class _ReportRow extends StatelessWidget {
                           value: 'pdf',
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.picture_as_pdf_rounded,
-                                color: AppColors.error,
-                                size: 18,
-                              ),
+                              Icon(Icons.picture_as_pdf_rounded,
+                                  color: AppColors.error, size: 18),
                               const SizedBox(width: 10),
-                              Text(
-                                'reports_format_pdf'.tr,
-                                style: TextStyle(
-                                  color: WebTheme.text,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text('reports_format_pdf'.tr,
+                                  style: TextStyle(
+                                      color: WebTheme.text, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -308,19 +439,12 @@ class _ReportRow extends StatelessWidget {
                           value: 'excel',
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.table_chart_rounded,
-                                color: AppColors.success,
-                                size: 18,
-                              ),
+                              Icon(Icons.table_chart_rounded,
+                                  color: AppColors.success, size: 18),
                               const SizedBox(width: 10),
-                              Text(
-                                'reports_format_excel'.tr,
-                                style: TextStyle(
-                                  color: WebTheme.text,
-                                  fontSize: 13,
-                                ),
-                              ),
+                              Text('reports_format_excel'.tr,
+                                  style: TextStyle(
+                                      color: WebTheme.text, fontSize: 13)),
                             ],
                           ),
                         ),
