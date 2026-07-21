@@ -67,8 +67,9 @@ class BoothController extends GetxController {
   // ── بناء تقرير خاص بجناح (مشترك بين الجوال والويب) ─────────
   ReportModel buildBoothReport(BoothModel b) {
     final existing = DummyData.reports.firstWhereOrNull(
-      (r) => r.boothName.contains(b.number) ||
-             (r.exhibitionName == b.exhibitionName && r.boothName.isNotEmpty),
+      (r) => r.type == 'performance' &&
+             (r.boothName.contains(b.number) ||
+              (r.exhibitionName == b.exhibitionName && r.boothName.isNotEmpty)),
     );
     return existing ??
         ReportModel(
