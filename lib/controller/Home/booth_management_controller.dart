@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/booth/booth_model.dart';
@@ -16,13 +17,17 @@ class BoothManagementController extends GetxController {
   final headquartersCtrl     = TextEditingController();
   final newLinkCtrl          = TextEditingController();
 
-  final socialLinks   = <String>[].obs;
-  final productImages = <String>[].obs;
-  final boothImages   = <String>[].obs;
-  final boothEvents   = <EventModel>[].obs;
-  final isLoading     = false.obs;
-  final isSaving      = false.obs;
-  final status        = StatusRequest.none.obs;
+  final socialLinks        = <String>[].obs;
+  final productImages      = <String>[].obs;   // URLs from server
+  final boothImages        = <String>[].obs;   // URLs from server
+  final productImageFiles  = <XFile>[].obs;    // locally picked
+  final boothImageFiles    = <XFile>[].obs;    // locally picked
+  final boothEvents        = <EventModel>[].obs;
+  final isLoading          = false.obs;
+  final isSaving           = false.obs;
+  final status             = StatusRequest.none.obs;
+
+  final _picker = ImagePicker();
 
   final profileLinks = [
     'https://linkedin.com/company/myco',
@@ -103,16 +108,54 @@ class BoothManagementController extends GetxController {
     if (!socialLinks.contains(link)) socialLinks.add(link);
   }
 
-  void addProductImage() {
-    productImages.add(
-      'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400',
-    );
+  Future<void> addProductImage() async {
+    try {
+      final picked = await _picker.pickMultiImage(
+        imageQuality: 85,
+        requestFullMetadata: false,
+      );
+      if (picked.isNotEmpty) productImageFiles.addAll(picked);
+    } catch (_) {
+      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
-  void addBoothImage() {
-    boothImages.add(
-      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400',
-    );
+  Future<void> addBoothImage() async {
+    try {
+      final picked = await _picker.pickMultiImage(
+        imageQuality: 85,
+        requestFullMetadata: false,
+      );
+      if (picked.isNotEmpty) boothImageFiles.addAll(picked);
+    } catch (_) {
+      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  void removeProductImage(int index) {
+    if (index < productImages.length) {
+      productImages.removeAt(index);
+    }
+  }
+
+  void removeBoothImage(int index) {
+    if (index < boothImages.length) {
+      boothImages.removeAt(index);
+    }
+  }
+
+  void removeProductImageFile(int index) {
+    if (index < productImageFiles.length) {
+      productImageFiles.removeAt(index);
+    }
+  }
+
+  void removeBoothImageFile(int index) {
+    if (index < boothImageFiles.length) {
+      boothImageFiles.removeAt(index);
+    }
   }
 
   Future<void> saveProfile() async {

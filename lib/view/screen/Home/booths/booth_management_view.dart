@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../controller/Home/booth_management_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
@@ -644,7 +646,10 @@ class _ImagesSection extends GetView<BoothManagementController> {
           title: 'booth_mgmt_product_images'.tr,
           icon: Icons.inventory_2_outlined,
           images: controller.productImages,
+          imageFiles: controller.productImageFiles,
           onAdd: controller.addProductImage,
+          onRemoveUrl: controller.removeProductImage,
+          onRemoveFile: controller.removeProductImageFile,
         ),
         const SizedBox(height: 12),
         _ImageGrid(
@@ -652,7 +657,10 @@ class _ImagesSection extends GetView<BoothManagementController> {
           title: 'booth_mgmt_booth_images'.tr,
           icon: Icons.photo_library_outlined,
           images: controller.boothImages,
+          imageFiles: controller.boothImageFiles,
           onAdd: controller.addBoothImage,
+          onRemoveUrl: controller.removeBoothImage,
+          onRemoveFile: controller.removeBoothImageFile,
         ),
       ],
     );
@@ -664,14 +672,20 @@ class _ImageGrid extends StatelessWidget {
   final String title;
   final IconData icon;
   final RxList<String> images;
+  final RxList<XFile> imageFiles;
   final VoidCallback onAdd;
+  final void Function(int) onRemoveUrl;
+  final void Function(int) onRemoveFile;
 
   const _ImageGrid({
     required this.isDark,
     required this.title,
     required this.icon,
     required this.images,
+    required this.imageFiles,
     required this.onAdd,
+    required this.onRemoveUrl,
+    required this.onRemoveFile,
   });
 
   @override
@@ -712,20 +726,44 @@ class _ImageGrid extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  ...images.map(
-                    (url) => Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
+                  // ── صور الشبكة (من السيرفر) ──
+                  ...images.asMap().entries.map(
+                    (e) => _ImageTile(
+                      size: 90,
+                      onRemove: () => onRemoveUrl(e.key),
+                      child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: NetworkImage(url),
+                        child: Image.network(
+                          e.value,
+                          width: 90,
+                          height: 90,
                           fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: AppColors.darkSurface,
+                            child: const Icon(Icons.broken_image_outlined,
+                                color: AppColors.grey),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  // ── صور محلية (من الجهاز) ──
+                  ...imageFiles.asMap().entries.map(
+                    (e) => _ImageTile(
+                      size: 90,
+                      onRemove: () => onRemoveFile(e.key),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: _XFileImage(
+                          file: e.value,
+                          width: 90,
+                          height: 90,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // ── زر الإضافة ──
+                  const SizedBox(width: 8),
                   GestureDetector(
                     onTap: onAdd,
                     child: Container(
@@ -736,7 +774,6 @@ class _ImageGrid extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: AppColors.darkPrimary.withOpacity(0.3),
-                          style: BorderStyle.solid,
                         ),
                       ),
                       child: const Column(
@@ -765,6 +802,91 @@ class _ImageGrid extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// غلاف صورة مع زر ✕ للحذف
+class _ImageTile extends StatelessWidget {
+  final double size;
+  final Widget child;
+  final VoidCallback onRemove;
+
+  const _ImageTile({
+    required this.size,
+    required this.child,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      width: size,
+      height: size,
+      child: Stack(
+        children: [
+          SizedBox(width: size, height: size, child: child),
+          Positioned(
+            top: 4,
+            left: 4,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close_rounded,
+                    size: 12, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// عرض XFile كصورة (يعمل على موبايل وويب)
+class _XFileImage extends StatelessWidget {
+  final XFile file;
+  final double width;
+  final double height;
+
+  const _XFileImage({
+    required this.file,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: file.readAsBytes(),
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return Image.memory(
+            snap.data!,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+        }
+        return Container(
+          width: width,
+          height: height,
+          color: AppColors.darkSurface,
+          child: const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        );
+      },
     );
   }
 }

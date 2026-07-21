@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../controller/Home/booth_management_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
@@ -35,14 +37,20 @@ class WebBoothManagementPage extends StatelessWidget {
                 title: 'صور منتجات الشركة',
                 icon: Icons.inventory_2_outlined,
                 images: c.productImages,
+                imageFiles: c.productImageFiles,
                 onAdd: c.addProductImage,
+                onRemoveUrl: c.removeProductImage,
+                onRemoveFile: c.removeProductImageFile,
               ),
               const SizedBox(height: 16),
               _ImagesCard(
                 title: 'صور المشاركة في المعرض',
                 icon: Icons.photo_library_outlined,
                 images: c.boothImages,
+                imageFiles: c.boothImageFiles,
                 onAdd: c.addBoothImage,
+                onRemoveUrl: c.removeBoothImage,
+                onRemoveFile: c.removeBoothImageFile,
               ),
               const SizedBox(height: 16),
               _BoothEventsCard(c: c),
@@ -416,11 +424,23 @@ class _SocialLinksCard extends StatelessWidget {
 
 // ── Images card ──────────────────────────────────────────────
 class _ImagesCard extends StatelessWidget {
-  final String       title;
-  final IconData     icon;
-  final RxList<String> images;
-  final VoidCallback onAdd;
-  const _ImagesCard({required this.title, required this.icon, required this.images, required this.onAdd});
+  final String            title;
+  final IconData          icon;
+  final RxList<String>    images;
+  final RxList<XFile>     imageFiles;
+  final VoidCallback      onAdd;
+  final void Function(int) onRemoveUrl;
+  final void Function(int) onRemoveFile;
+
+  const _ImagesCard({
+    required this.title,
+    required this.icon,
+    required this.images,
+    required this.imageFiles,
+    required this.onAdd,
+    required this.onRemoveUrl,
+    required this.onRemoveFile,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -432,13 +452,38 @@ class _ImagesCard extends StatelessWidget {
         spacing: 10,
         runSpacing: 10,
         children: [
-          ...images.map((url) => ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(url, width: 100, height: 80, fit: BoxFit.cover,
+          // ── صور الشبكة (من السيرفر) ──
+          ...images.asMap().entries.map((e) => _WebImageTile(
+            width: 100,
+            height: 80,
+            onRemove: () => onRemoveUrl(e.key),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                e.value,
+                width: 100,
+                height: 80,
+                fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                    width: 100, height: 80, color: WebTheme.surfaceAlt,
-                    child: const Icon(Icons.broken_image_outlined, color: AppColors.grey))),
+                  width: 100,
+                  height: 80,
+                  color: WebTheme.surfaceAlt,
+                  child: const Icon(Icons.broken_image_outlined, color: AppColors.grey),
+                ),
+              ),
+            ),
           )),
+          // ── صور محلية (من الجهاز) ──
+          ...imageFiles.asMap().entries.map((e) => _WebImageTile(
+            width: 100,
+            height: 80,
+            onRemove: () => onRemoveFile(e.key),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _XFileImage(file: e.value, width: 100, height: 80),
+            ),
+          )),
+          // ── زر الإضافة ──
           GestureDetector(
             onTap: onAdd,
             child: Container(
@@ -449,11 +494,106 @@ class _ImagesCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
               ),
-              child: Icon(Icons.add_photo_alternate_outlined, color: WebTheme.primary, size: 28),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_photo_alternate_outlined,
+                      color: WebTheme.primary, size: 26),
+                  const SizedBox(height: 4),
+                  Text('إضافة',
+                      style: TextStyle(fontSize: 11, color: WebTheme.primary)),
+                ],
+              ),
             ),
           ),
         ],
       )),
+    );
+  }
+}
+
+/// غلاف صورة في الويب مع زر ✕ للحذف
+class _WebImageTile extends StatelessWidget {
+  final double     width;
+  final double     height;
+  final Widget     child;
+  final VoidCallback onRemove;
+
+  const _WebImageTile({
+    required this.width,
+    required this.height,
+    required this.child,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
+        children: [
+          SizedBox(width: width, height: height, child: child),
+          Positioned(
+            top: 4,
+            left: 4,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close_rounded,
+                    size: 13, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// عرض XFile كصورة (يعمل على موبايل وويب)
+class _XFileImage extends StatelessWidget {
+  final XFile  file;
+  final double width;
+  final double height;
+
+  const _XFileImage({
+    required this.file,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: file.readAsBytes(),
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return Image.memory(
+            snap.data!,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+        }
+        return Container(
+          width: width,
+          height: height,
+          color: WebTheme.surfaceAlt,
+          child: const Center(
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        );
+      },
     );
   }
 }
