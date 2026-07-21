@@ -2,27 +2,41 @@
 import 'dart:html' as html;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/report_type_helper.dart';
 import '../../data/model/report/report_model.dart';
 
 class PdfExportService {
   PdfExportService._();
 
-  static void printReport(ReportModel r, ReportTypeContent c) {
-    final htmlContent = _buildHtml(r, c);
+  static String? _cachedFontBase64;
+
+  static Future<void> printReport(ReportModel r, ReportTypeContent c) async {
+    _cachedFontBase64 ??= await _loadFontBase64();
+    final htmlContent = _buildHtml(r, c, _cachedFontBase64);
     final bytes  = utf8.encode(htmlContent);
     final blob   = html.Blob([bytes], 'text/html; charset=utf-8');
     final url    = html.Url.createObjectUrlFromBlob(blob);
-
-
+    html.window.open(url, '_blank');
     Future.delayed(
       const Duration(seconds: 60),
       () => html.Url.revokeObjectUrl(url),
     );
   }
 
+  static Future<String?> _loadFontBase64() async {
+    try {
+      final data = await rootBundle.load(
+        'assets/fonts/Cairo/Cairo[slnt,wght].ttf',
+      );
+      return base64Encode(data.buffer.asUint8List());
+    } catch (_) {
+      return null;
+    }
+  }
+
   // ── HTML builder ──────────────────────────────────────────
-  static String _buildHtml(ReportModel r, ReportTypeContent c) {
+  static String _buildHtml(ReportModel r, ReportTypeContent c, String? fontBase64) {
     final accent      = _hex(c.accentColor);
     final accentLight = _hex(c.accentColor.withOpacity(0.12));
 
@@ -62,10 +76,10 @@ class PdfExportService {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${_esc(r.title)}</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
+  ${fontBase64 != null ? "@font-face{font-family:'Cairo';src:url('data:font/truetype;base64,$fontBase64') format('truetype');font-weight:100 900;font-style:normal}" : ''}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Tajawal','Arial',sans-serif;direction:rtl;background:#f4f4f8;color:#1a1a2e;min-height:100vh}
+  body{font-family:'Cairo','Arial',sans-serif;direction:rtl;background:#f4f4f8;color:#1a1a2e;min-height:100vh}
 
   /* ── Print settings ─────────────────────────────────── */
   @page{size:A4;margin:12mm 14mm}
@@ -160,7 +174,7 @@ class PdfExportService {
     background:linear-gradient(135deg,#7A1FFF,#FF1592);
     color:#fff;border:none;border-radius:12px;
     padding:13px 26px;font-size:14px;font-weight:700;
-    cursor:pointer;font-family:'Tajawal',sans-serif;
+    cursor:pointer;font-family:'Cairo',sans-serif;
     box-shadow:0 4px 20px rgba(122,31,255,.4);
     display:flex;align-items:center;gap:8px
   }

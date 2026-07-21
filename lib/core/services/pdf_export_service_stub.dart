@@ -13,11 +13,11 @@ import '../../data/model/report/report_model.dart';
 class PdfExportService {
   PdfExportService._();
 
-  static void printReport(ReportModel r, ReportTypeContent c) {
-    _shareReport(r, c);
+  static Future<void> printReport(ReportModel r, ReportTypeContent c) async {
+    await _shareReport(r, c);
   }
 
-  static void _shareReport(ReportModel r, ReportTypeContent c) async {
+  static Future<void> _shareReport(ReportModel r, ReportTypeContent c) async {
     try {
       final text = _buildText(r, c);
 

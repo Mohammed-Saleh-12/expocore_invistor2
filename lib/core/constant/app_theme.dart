@@ -16,6 +16,7 @@ class AppTheme {
 
   static ThemeData get darkTheme => ThemeData(
     brightness: Brightness.dark,
+    fontFamily: _fontFamily,
     scaffoldBackgroundColor: AppColors.darkBg,
     cardColor: AppColors.darkCard,
     colorScheme: const ColorScheme.dark(
@@ -52,6 +53,7 @@ class AppTheme {
 
   static ThemeData get lightTheme => ThemeData(
     brightness: Brightness.light,
+    fontFamily: _fontFamily,
     scaffoldBackgroundColor: AppColors.lightBg,
     cardColor: AppColors.lightCard,
     colorScheme: const ColorScheme.light(

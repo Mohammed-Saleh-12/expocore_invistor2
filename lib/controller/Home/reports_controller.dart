@@ -121,9 +121,9 @@ class ReportsController extends GetxController {
   }
 
   // ── Export to PDF via window.print() (web) / share (mobile) ─
-  void exportToPdf(ReportModel r) {
+  Future<void> exportToPdf(ReportModel r) async {
     final content = ReportTypeHelper.of(r);
-    PdfExportService.printReport(r, content);
+    await PdfExportService.printReport(r, content);
   }
 
   // ── Download report (PDF = client-side, Excel = server-side) ─
@@ -141,7 +141,7 @@ class ReportsController extends GetxController {
         final model = _findReport(reportId);
         if (model != null) {
           final content = ReportTypeHelper.of(model);
-          PdfExportService.printReport(model, content);
+          await PdfExportService.printReport(model, content);
         } else {
           // Model not loaded yet — fall back to server download
           await DownloadService.downloadUrl(
