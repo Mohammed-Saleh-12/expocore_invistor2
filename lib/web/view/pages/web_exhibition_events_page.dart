@@ -81,22 +81,35 @@ class WebExhibitionEventsPage extends StatelessWidget {
                         ),
                       );
                     }
-                    return SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: list
-                            .map((e) => SizedBox(
-                                  width: 320,
-                                  child: _WebSponsorEventCard(
-                                    event: e,
-                                    ctrl: c,
-                                    onTap: () =>
-                                        _showSheet(context, e, c),
-                                  ),
-                                ))
-                            .toList(),
-                      ),
+                    return LayoutBuilder(
+                      builder: (_, constraints) {
+                        const spacing = 20.0;
+                        final cols = (constraints.maxWidth /
+                                (280 + spacing))
+                            .floor()
+                            .clamp(1, 3);
+                        final cardWidth =
+                            (constraints.maxWidth -
+                                    spacing * (cols - 1)) /
+                                cols;
+                        return SingleChildScrollView(
+                          child: Wrap(
+                            spacing: spacing,
+                            runSpacing: spacing,
+                            children: list
+                                .map((e) => SizedBox(
+                                      width: cardWidth,
+                                      child: _WebSponsorEventCard(
+                                        event: e,
+                                        ctrl: c,
+                                        onTap: () =>
+                                            _showSheet(context, e, c),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        );
+                      },
                     );
                   }),
                 ),
@@ -365,16 +378,6 @@ class _FiltersPanel extends StatelessWidget {
           initialDate: initial,
           firstDate: DateTime(2020),
           lastDate: DateTime(2032),
-          builder: (ctx, child) => Theme(
-            data: ThemeData.dark().copyWith(
-              colorScheme: ColorScheme.dark(
-                primary: WebTheme.primary,
-                onPrimary: Colors.white,
-                surface: WebTheme.surface,
-              ),
-            ),
-            child: child!,
-          ),
         );
         if (picked != null) onPick(picked);
       },
