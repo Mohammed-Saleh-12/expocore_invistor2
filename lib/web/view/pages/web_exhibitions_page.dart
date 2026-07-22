@@ -78,19 +78,33 @@ class WebExhibitionsPage extends StatelessWidget {
                         ),
                       );
                     }
-                    return SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: list
-                            .map(
-                              (e) => SizedBox(
-                                width: 300,
-                                child: WebExhibitionCard(exhibition: e),
-                              ),
-                            )
-                            .toList(),
-                      ),
+                    return LayoutBuilder(
+                      builder: (_, constraints) {
+                        const spacing = 20.0;
+                        final cols = (constraints.maxWidth /
+                                (280 + spacing))
+                            .floor()
+                            .clamp(1, 3);
+                        final cardWidth =
+                            (constraints.maxWidth -
+                                    spacing * (cols - 1)) /
+                                cols;
+                        return SingleChildScrollView(
+                          child: Wrap(
+                            spacing: spacing,
+                            runSpacing: spacing,
+                            children: list
+                                .map(
+                                  (e) => SizedBox(
+                                    width: cardWidth,
+                                    child: WebExhibitionCard(
+                                        exhibition: e),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        );
+                      },
                     );
                   }),
                 ),
