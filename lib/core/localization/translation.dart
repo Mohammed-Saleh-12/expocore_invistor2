@@ -253,6 +253,20 @@ class MyTranslation extends Translations {
       'forgot_error_title': 'خطأ في الإرسال',
       'forgot_error_generic': 'حدث خطأ. يرجى المحاولة مرة أخرى.',
 
+      // ── Forgot Password OTP step ──────────────────────────────────────
+      'fotp_title': 'التحقق من بريدك الإلكتروني',
+      'fotp_hint': 'أدخل رمز التحقق المكون من 6 أرقام المُرسَل إلى',
+      'fotp_confirm': 'تأكيد الرمز',
+      'fotp_resend': 'إعادة إرسال الرمز',
+      'fotp_resend_wait': 'إعادة الإرسال بعد',
+      'fotp_seconds': 'ثانية',
+      'fotp_back': 'تغيير البريد الإلكتروني',
+      'fotp_brand_title': 'التحقق\nمن الهوية',
+      'fotp_brand_desc': 'أرسلنا رمز التحقق إلى بريدك الإلكتروني. الرمز صالح لمدة 10 دقائق.',
+      'fotp_req_length': '8 أحرف على الأقل',
+      'fotp_req_upper': 'حرف كبير واحد على الأقل',
+      'fotp_req_number': 'رقم واحد على الأقل',
+
       // ── Reset Password ───────────────────────────────────────────────
       'reset_title': 'تعيين كلمة مرور جديدة',
       'reset_hint': 'أدخل كلمة المرور الجديدة وتأكيدها لإعادة تعيين حسابك.',
@@ -940,6 +954,20 @@ class MyTranslation extends Translations {
           'Enter your email and we will send you a secure link to reset your password within minutes.',
       'forgot_error_title': 'Send Failed',
       'forgot_error_generic': 'Something went wrong. Please try again.',
+
+      // ── Forgot Password OTP step ──────────────────────────────────────
+      'fotp_title': 'Check Your Email',
+      'fotp_hint': 'Enter the 6-digit verification code sent to',
+      'fotp_confirm': 'Verify Code',
+      'fotp_resend': 'Resend Code',
+      'fotp_resend_wait': 'Resend in',
+      'fotp_seconds': 'seconds',
+      'fotp_back': 'Change Email',
+      'fotp_brand_title': 'Identity\nVerification',
+      'fotp_brand_desc': 'We sent a verification code to your email. The code is valid for 10 minutes.',
+      'fotp_req_length': 'At least 8 characters',
+      'fotp_req_upper': 'At least one uppercase letter',
+      'fotp_req_number': 'At least one number',
 
       // ── Reset Password ───────────────────────────────────────────────
       'reset_title': 'Set a New Password',

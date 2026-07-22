@@ -38,9 +38,7 @@ class WebForgotPasswordPage extends StatelessWidget {
                     delay: const Duration(milliseconds: 200),
                     scale: true,
                     beginOffset: const Offset(0, 0.15),
-                    child: Obx(
-                      () => c.sent.value ? _SentPanel(c: c) : _ForgotForm(c: c),
-                    ),
+                    child: _ForgotForm(c: c),
                   ),
                 ),
               ),
@@ -241,78 +239,6 @@ class _ForgotForm extends StatelessWidget {
       fontWeight: FontWeight.w600,
     ),
   );
-}
-
-// ── Success confirmation panel ───────────────────────────────
-class _SentPanel extends StatelessWidget {
-  final ForgotPasswordController c;
-  const _SentPanel({required this.c});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(height: 20),
-        Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.12),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.mark_email_read_outlined,
-            size: 48,
-            color: AppColors.success,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'forgot_sent_title'.tr,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w900,
-            color: WebTheme.text,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'forgot_sent_desc'.tr,
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.grey.withOpacity(0.85),
-            height: 1.6,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 36),
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: _GradientButton(
-            loading: false,
-            onTap: () {
-              c.reset();
-              WebAuthController.to.goToLogin();
-            },
-            label: 'forgot_back_login'.tr,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: TextButton(
-            onPressed: c.reset,
-            child: Text(
-              'forgot_retry'.tr,
-              style: const TextStyle(fontSize: 13, color: AppColors.grey),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _GradientButton extends StatelessWidget {

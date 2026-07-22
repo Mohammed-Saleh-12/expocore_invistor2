@@ -11,6 +11,11 @@ import '../../core/services/services.dart';
 //  يدير حالة الدخول لطبقة الويب (مفصول عن الـ View)
 //  يراقب Login / Register / ForgotPassword / ResetPassword
 //
+//  تدفق نسيان كلمة المرور (3 خطوات عبر webStep):
+//    webStep = 1  →  showForgotPasswordOtp
+//    webStep = 2  →  showForgotPasswordReset
+//    webStep = 3  →  goToLogin (اكتمل التغيير)
+//
 //  Deep-link flow (reset password via email link):
 //    1. Backend sends email with link: https://your-app.com/?token=TOKEN
 //    2. App loads, onInit() reads Uri.base, extracts ?token=
@@ -22,10 +27,12 @@ class WebAuthController extends GetxController {
       ? Get.find<WebAuthController>()
       : Get.put(WebAuthController(), permanent: true);
 
-  final loggedIn            = false.obs;
-  final showRegister        = false.obs;
-  final showForgotPassword  = false.obs;
-  final showResetPassword   = false.obs;
+  final loggedIn                = false.obs;
+  final showRegister            = false.obs;
+  final showForgotPassword      = false.obs;
+  final showForgotPasswordOtp   = false.obs;
+  final showForgotPasswordReset = false.obs;
+  final showResetPassword       = false.obs; // deep-link token flow
 
   @override
   void onInit() {
@@ -41,6 +48,13 @@ class WebAuthController extends GetxController {
     // ── مراقبة نجاح إنشاء الحساب ──────────────────────────
     ever(Get.find<RegisterController>().status, (StatusRequest s) {
       if (s == StatusRequest.success) goToLogin();
+    });
+
+    // ── مراقبة خطوات تدفق نسيان كلمة المرور ────────────────
+    ever(Get.find<ForgotPasswordController>().webStep, (int step) {
+      if (step == 1) _goToForgotPasswordOtp();
+      else if (step == 2) _goToForgotPasswordReset();
+      else if (step == 3) goToLogin();
     });
   }
 
@@ -60,6 +74,16 @@ class WebAuthController extends GetxController {
     _clearAuthScreens();
     _resetForgotState();
     showForgotPassword.value = true;
+  }
+
+  void _goToForgotPasswordOtp() {
+    _clearAuthScreens();
+    showForgotPasswordOtp.value = true;
+  }
+
+  void _goToForgotPasswordReset() {
+    _clearAuthScreens();
+    showForgotPasswordReset.value = true;
   }
 
   void goToResetPassword(String token) {
@@ -94,9 +118,11 @@ class WebAuthController extends GetxController {
 
   // ── Helpers ───────────────────────────────────────────────
   void _clearAuthScreens() {
-    showRegister.value       = false;
-    showForgotPassword.value = false;
-    showResetPassword.value  = false;
+    showRegister.value            = false;
+    showForgotPassword.value      = false;
+    showForgotPasswordOtp.value   = false;
+    showForgotPasswordReset.value = false;
+    showResetPassword.value       = false;
   }
 
   bool _sessionValid() {

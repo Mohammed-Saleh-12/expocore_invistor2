@@ -8,6 +8,8 @@ import '../../data/sourcedata/remote/Auth/ForgotPasswordData.dart';
 
 // ════════════════════════════════════════════════════════════
 //  ForgotPasswordController  —  3 خطوات: OTP → تحقق → إعادة تعيين
+//  التنقل على الويب يتم عبر webStep (يراقبها WebAuthController)
+//  التنقل على الجوال يتم عبر Get.toNamed
 // ════════════════════════════════════════════════════════════
 class ForgotPasswordController extends GetxController {
   final _box = GetStorage();
@@ -28,6 +30,28 @@ class ForgotPasswordController extends GetxController {
   final errorMessage = ''.obs;
   final savedEmail   = ''.obs;
   final savedOtp     = ''.obs;
+
+  // ── إشارة التنقل للويب (يراقبها WebAuthController) ────────
+  // -1=idle, 1=show OTP page, 2=show Reset page, 3=done→login
+  final webStep = (-1).obs;
+
+  // ── Aliases للويب ─────────────────────────────────────────
+  TextEditingController get emailCtrl => emailFormCtrl;
+
+  /// الويب: تحقق من النموذج ثم أرسل OTP
+  Future<void> sendResetLink() async {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+    await sendOtp(emailFormCtrl.text.trim());
+  }
+
+  /// إعادة تعيين حالة الصفحة (الويب يستدعيها عند الرجوع للـ login)
+  void reset() {
+    webStep.value      = -1;
+    errorMessage.value = '';
+    status.value       = StatusRequest.none;
+    emailFormCtrl.clear();
+    _clearSession();
+  }
 
   // ── Getters للجلسة المعلّقة ───────────────────────────────
   bool get hasPendingSession  => (_box.read<int>(_kStep) ?? 0) > 0;
@@ -63,7 +87,13 @@ class ForgotPasswordController extends GetxController {
       _box.remove(_kOtp);
 
       status.value = StatusRequest.success;
-      Get.toNamed(AppRoutes.FORGOT_PW_OTP);
+      // ويب: إشارة لـ WebAuthController للانتقال لصفحة OTP
+      // جوال: التنقل المباشر
+      if (GetPlatform.isWeb) {
+        webStep.value = 1;
+      } else {
+        Get.toNamed(AppRoutes.FORGOT_PW_OTP);
+      }
     } else {
       _handleError(result['message']);
     }
@@ -83,7 +113,11 @@ class ForgotPasswordController extends GetxController {
       _box.write(_kStep, 2);
 
       status.value = StatusRequest.success;
-      Get.toNamed(AppRoutes.RESET_PW);
+      if (GetPlatform.isWeb) {
+        webStep.value = 2;
+      } else {
+        Get.toNamed(AppRoutes.RESET_PW);
+      }
     } else {
       _handleError(result['message']);
     }
@@ -107,7 +141,11 @@ class ForgotPasswordController extends GetxController {
       _clearSession();
       status.value = StatusRequest.success;
       _showSuccess('تم تغيير كلمة المرور، يمكنك تسجيل الدخول الآن');
-      Get.offAllNamed(AppRoutes.LOGIN);
+      if (GetPlatform.isWeb) {
+        webStep.value = 3;
+      } else {
+        Get.offAllNamed(AppRoutes.LOGIN);
+      }
     } else {
       _handleError(result['message']);
     }
