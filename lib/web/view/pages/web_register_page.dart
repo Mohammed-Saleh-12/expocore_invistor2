@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../controller/auth/register_controller.dart';
+import '../../../controller/auth/auth_controller.dart';
 import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_auth_controller.dart';
@@ -12,7 +12,7 @@ class WebRegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<RegisterController>();
+    final c = Get.find<AuthController>();
     final wide = MediaQuery.of(context).size.width >= 1000;
 
     return Scaffold(
@@ -103,7 +103,7 @@ class _RegisterBrand extends StatelessWidget {
 
 // ── Form side ───────────────────────────────────────────────
 class _RegisterForm extends StatelessWidget {
-  final RegisterController c;
+  final AuthController c;
   const _RegisterForm({required this.c});
 
   @override

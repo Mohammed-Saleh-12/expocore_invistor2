@@ -8,6 +8,7 @@ import 'web_register_page.dart';
 import 'web_forgot_password_page.dart';
 import 'web_forgot_password_otp_page.dart';
 import 'web_forgot_password_reset_page.dart';
+import 'web_register_otp_page.dart';
 import 'web_reset_password_page.dart';
 import '../widgets/web_sidebar.dart';
 import '../widgets/web_topbar.dart';
@@ -49,6 +50,7 @@ class _WebRoot extends StatelessWidget {
       if (auth.showForgotPasswordReset.value) return const WebForgotPasswordResetPage();
       if (auth.showForgotPasswordOtp.value)   return const WebForgotPasswordOtpPage();
       if (auth.showForgotPassword.value)      return const WebForgotPasswordPage();
+      if (auth.showRegisterOtp.value)         return const WebRegisterOtpPage();
       if (auth.showRegister.value)            return const WebRegisterPage();
       return const WebLoginPage();
     });

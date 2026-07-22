@@ -254,6 +254,13 @@ class MyTranslation extends Translations {
       'forgot_error_generic': 'حدث خطأ. يرجى المحاولة مرة أخرى.',
 
       // ── Forgot Password OTP step ──────────────────────────────────────
+      // ── OTP التسجيل ──────────────────────────────────────
+      'otp_title': 'تأكيد حسابك',
+      'otp_hint': 'أدخل رمز التحقق المُرسَل إلى',
+      'otp_back_register': 'العودة إلى التسجيل',
+      'otp_brand_title': 'خطوة واحدة\nللانطلاق',
+      'otp_brand_desc': 'تأكيد بريدك الإلكتروني يضمن أمان حسابك\nويمنحك وصولاً كاملاً للمنصة.',
+      // ── OTP نسيان كلمة المرور ────────────────────────────
       'fotp_title': 'التحقق من بريدك الإلكتروني',
       'fotp_hint': 'أدخل رمز التحقق المكون من 6 أرقام المُرسَل إلى',
       'fotp_confirm': 'تأكيد الرمز',
@@ -956,6 +963,13 @@ class MyTranslation extends Translations {
       'forgot_error_generic': 'Something went wrong. Please try again.',
 
       // ── Forgot Password OTP step ──────────────────────────────────────
+      // ── OTP after registration ────────────────────────────
+      'otp_title': 'Verify Your Account',
+      'otp_hint': 'Enter the verification code sent to',
+      'otp_back_register': 'Back to Sign Up',
+      'otp_brand_title': 'One Step\nto Go',
+      'otp_brand_desc': 'Verifying your email keeps your account secure\nand unlocks full access to the platform.',
+      // ── Forgot-password OTP ───────────────────────────────
       'fotp_title': 'Check Your Email',
       'fotp_hint': 'Enter the 6-digit verification code sent to',
       'fotp_confirm': 'Verify Code',

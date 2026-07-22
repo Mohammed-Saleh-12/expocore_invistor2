@@ -26,6 +26,13 @@ class AuthController extends GetxController {
   final status       = StatusRequest.none.obs;
   final errorMessage = ''.obs;
 
+  // ── إشارة التنقل للويب (يراقبها WebAuthController) ────────
+  // -1=idle, 1=show OTP page, 2=done→dashboard
+  final webStep = (-1).obs;
+
+  /// إعادة تعيين حالة الويب (يُستدعى عند مسح جلسة التسجيل)
+  void resetWebStep() => webStep.value = -1;
+
   // ── Form controllers (التسجيل) ───────────────────────────
   final companyCtrl  = TextEditingController();
   final tradeCtrl    = TextEditingController();
@@ -94,7 +101,11 @@ class AuthController extends GetxController {
       if (otp != null) _box.write(_kOtp, otp);
 
       status.value = StatusRequest.success;
-      Get.toNamed(AppRoutes.OTP);
+      if (GetPlatform.isWeb) {
+        webStep.value = 1;
+      } else {
+        Get.toNamed(AppRoutes.OTP);
+      }
     } else {
       status.value = StatusRequest.failure;
       _showError(result['message'] ?? 'حدث خطأ في التسجيل');
@@ -134,7 +145,11 @@ class AuthController extends GetxController {
 
       _clearPending();
       status.value = StatusRequest.success;
-      Get.offAllNamed(AppRoutes.DASHBOARD);
+      if (GetPlatform.isWeb) {
+        webStep.value = 2;
+      } else {
+        Get.offAllNamed(AppRoutes.DASHBOARD);
+      }
     } else {
       status.value = StatusRequest.failure;
       _showError(result['message'] ?? 'رمز خاطئ، حاول مجدداً');

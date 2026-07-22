@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
+import '../../controller/auth/auth_controller.dart';
 import '../../controller/auth/forgot_password_controller.dart';
 import '../../controller/auth/login_controller.dart';
-import '../../controller/auth/register_controller.dart';
 import '../../controller/auth/reset_password_controller.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/services/services.dart';
@@ -29,6 +29,7 @@ class WebAuthController extends GetxController {
 
   final loggedIn                = false.obs;
   final showRegister            = false.obs;
+  final showRegisterOtp         = false.obs; // OTP بعد التسجيل
   final showForgotPassword      = false.obs;
   final showForgotPasswordOtp   = false.obs;
   final showForgotPasswordReset = false.obs;
@@ -45,9 +46,11 @@ class WebAuthController extends GetxController {
       if (s == StatusRequest.success) markLoggedIn();
     });
 
-    // ── مراقبة نجاح إنشاء الحساب ──────────────────────────
-    ever(Get.find<RegisterController>().status, (StatusRequest s) {
-      if (s == StatusRequest.success) goToLogin();
+    // ── مراقبة تدفق التسجيل + OTP ──────────────────────────
+    // webStep=1 → اعرض OTP التسجيل  |  webStep=2 → تسجيل دخول ناجح
+    ever(Get.find<AuthController>().webStep, (int step) {
+      if (step == 1) _goToRegisterOtp();
+      else if (step == 2) markLoggedIn();
     });
 
     // ── مراقبة خطوات تدفق نسيان كلمة المرور ────────────────
@@ -74,6 +77,11 @@ class WebAuthController extends GetxController {
     _clearAuthScreens();
     _resetForgotState();
     showForgotPassword.value = true;
+  }
+
+  void _goToRegisterOtp() {
+    _clearAuthScreens();
+    showRegisterOtp.value = true;
   }
 
   void _goToForgotPasswordOtp() {
@@ -119,6 +127,7 @@ class WebAuthController extends GetxController {
   // ── Helpers ───────────────────────────────────────────────
   void _clearAuthScreens() {
     showRegister.value            = false;
+    showRegisterOtp.value         = false;
     showForgotPassword.value      = false;
     showForgotPasswordOtp.value   = false;
     showForgotPasswordReset.value = false;
