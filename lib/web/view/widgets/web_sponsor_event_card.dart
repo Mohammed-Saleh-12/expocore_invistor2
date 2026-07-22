@@ -37,8 +37,9 @@ class WebSponsorEventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hover = false.obs;
     final e = event;
-    final minPrice =
-        e.durationOptions.isNotEmpty ? e.durationOptions.first.price : 0.0;
+    final minPrice = e.durationOptions.isNotEmpty
+        ? e.durationOptions.first.price
+        : 0.0;
 
     return Obx(
       () => MouseRegion(
@@ -91,15 +92,7 @@ class WebSponsorEventCard extends StatelessWidget {
                         height: 170,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          height: 170,
-                          color: WebTheme.surfaceAlt,
-                          child: const Icon(
-                            Icons.image,
-                            size: 48,
-                            color: AppColors.grey,
-                          ),
-                        ),
+                        errorBuilder: (_, __, ___) => _imagePlaceholder(),
                       ),
                     ),
                     // Type badge (top-right)
@@ -149,8 +142,9 @@ class WebSponsorEventCard extends StatelessWidget {
                               e.isFavorite
                                   ? Icons.favorite
                                   : Icons.favorite_border,
-                              color:
-                                  e.isFavorite ? AppColors.error : Colors.white,
+                              color: e.isFavorite
+                                  ? AppColors.error
+                                  : Colors.white,
                               size: 18,
                             ),
                           ),
@@ -198,10 +192,7 @@ class WebSponsorEventCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      _row(
-                        Icons.store_outlined,
-                        e.exhibitionName,
-                      ),
+                      _row(Icons.store_outlined, e.exhibitionName),
                       const SizedBox(height: 4),
                       _row(
                         Icons.calendar_today_outlined,
@@ -274,5 +265,11 @@ class WebSponsorEventCard extends StatelessWidget {
         ),
       ),
     ],
+  );
+  Widget _imagePlaceholder() => Container(
+    height: 160,
+    width: double.infinity,
+    color: WebTheme.surfaceAlt,
+    child: Icon(Icons.image, size: 48, color: AppColors.grey.withOpacity(0.4)),
   );
 }

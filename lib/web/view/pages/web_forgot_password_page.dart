@@ -66,8 +66,7 @@ class _ForgotBrand extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 200),
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

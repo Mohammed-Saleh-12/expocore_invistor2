@@ -41,7 +41,9 @@ class WebExhibitionEventsPage extends StatelessWidget {
                   style: TextStyle(color: WebTheme.text),
                   decoration: InputDecoration(
                     hintText: 'ابحث عن فعالية أو معرض...',
-                    hintStyle: TextStyle(color: AppColors.grey.withOpacity(0.6)),
+                    hintStyle: TextStyle(
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
                     prefixIcon: Icon(Icons.search, color: AppColors.grey),
                     filled: true,
                     fillColor: WebTheme.surface,
@@ -63,7 +65,9 @@ class WebExhibitionEventsPage extends StatelessWidget {
                     final list = c.filteredSponsorEvents;
                     if (c.isLoading.value) {
                       return Center(
-                        child: CircularProgressIndicator(color: WebTheme.primary),
+                        child: CircularProgressIndicator(
+                          color: WebTheme.primary,
+                        ),
                       );
                     }
                     if (list.isEmpty) {
@@ -71,12 +75,16 @@ class WebExhibitionEventsPage extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.campaign_outlined,
-                                size: 56,
-                                color: AppColors.grey.withOpacity(0.5)),
+                            Icon(
+                              Icons.campaign_outlined,
+                              size: 56,
+                              color: AppColors.grey.withOpacity(0.5),
+                            ),
                             const SizedBox(height: 12),
-                            Text('لا توجد فعاليات مطابقة',
-                                style: TextStyle(color: AppColors.grey)),
+                            Text(
+                              'لا توجد فعاليات مطابقة',
+                              style: TextStyle(color: AppColors.grey),
+                            ),
                           ],
                         ),
                       );
@@ -84,28 +92,27 @@ class WebExhibitionEventsPage extends StatelessWidget {
                     return LayoutBuilder(
                       builder: (_, constraints) {
                         const spacing = 20.0;
-                        final cols = (constraints.maxWidth /
-                                (280 + spacing))
+                        final cols = (constraints.maxWidth / (280 + spacing))
                             .floor()
                             .clamp(1, 3);
                         final cardWidth =
-                            (constraints.maxWidth -
-                                    spacing * (cols - 1)) /
-                                cols;
+                            (constraints.maxWidth - spacing * (cols - 1)) /
+                            cols;
                         return SingleChildScrollView(
                           child: Wrap(
                             spacing: spacing,
                             runSpacing: spacing,
                             children: list
-                                .map((e) => SizedBox(
-                                      width: cardWidth,
-                                      child: _WebSponsorEventCard(
-                                        event: e,
-                                        ctrl: c,
-                                        onTap: () =>
-                                            _showSheet(context, e, c),
-                                      ),
-                                    ))
+                                .map(
+                                  (e) => SizedBox(
+                                    width: cardWidth,
+                                    child: _WebSponsorEventCard(
+                                      event: e,
+                                      ctrl: c,
+                                      onTap: () => _showSheet(context, e, c),
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                           ),
                         );
@@ -122,7 +129,10 @@ class WebExhibitionEventsPage extends StatelessWidget {
   }
 
   void _showSheet(
-      BuildContext context, ExhibitionSponsorEvent event, EventsController c) {
+    BuildContext context,
+    ExhibitionSponsorEvent event,
+    EventsController c,
+  ) {
     c.selectedSponsorDuration.value = null;
     showModalBottomSheet(
       context: context,
@@ -171,7 +181,9 @@ class _FiltersPanel extends StatelessWidget {
                         child: Text(
                           'مسح',
                           style: TextStyle(
-                              color: WebTheme.primary, fontSize: 12),
+                            color: WebTheme.primary,
+                            fontSize: 12,
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),
@@ -216,51 +228,51 @@ class _FiltersPanel extends StatelessWidget {
     required String Function() selected,
     required void Function(String) onTap,
     required List<String> Function() options,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: WebTheme.text,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Obx(
-            () => Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: options().map((o) {
-                final active = o == selected();
-                return GestureDetector(
-                  onTap: () => onTap(o),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 7),
-                    decoration: BoxDecoration(
-                      gradient: active ? AppColors.favoriteGradient : null,
-                      color: active ? null : WebTheme.surfaceAlt,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Text(
-                      o,
-                      style: TextStyle(
-                        color: active ? Colors.white : AppColors.grey,
-                        fontSize: 12,
-                        fontWeight:
-                            active ? FontWeight.w700 : FontWeight.w400,
-                      ),
-                    ),
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: TextStyle(
+          color: WebTheme.text,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 10),
+      Obx(
+        () => Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: options().map((o) {
+            final active = o == selected();
+            return GestureDetector(
+              onTap: () => onTap(o),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  gradient: active ? AppColors.favoriteGradient : null,
+                  color: active ? null : WebTheme.surfaceAlt,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  o,
+                  style: TextStyle(
+                    color: active ? Colors.white : AppColors.grey,
+                    fontSize: 12,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w400,
                   ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      );
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    ],
+  );
 
   // ── نطاق السعر ───────────────────────────────────────────────────────────
   // SliderTheme MUST be outside Obx so it uses the build-phase context correctly.
@@ -271,15 +283,16 @@ class _FiltersPanel extends StatelessWidget {
         inactiveTrackColor: WebTheme.surfaceAlt,
         thumbColor: WebTheme.primary,
         overlayColor: WebTheme.primary.withOpacity(0.15),
-        rangeThumbShape:
-            const RoundRangeSliderThumbShape(enabledThumbRadius: 7),
+        rangeThumbShape: const RoundRangeSliderThumbShape(
+          enabledThumbRadius: 7,
+        ),
         trackHeight: 3,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'نطاق السعر',
+            'السعر',
             style: TextStyle(
               color: WebTheme.text,
               fontSize: 13,
@@ -289,8 +302,8 @@ class _FiltersPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Obx(() {
             final maxLimit = c.sponsorComputedMaxPrice;
-            final r        = c.sponsorPriceRange.value;
-            final current  = (r.start == 0 && r.end == 0)
+            final r = c.sponsorPriceRange.value;
+            final current = (r.start == 0 && r.end == 0)
                 ? RangeValues(0, maxLimit)
                 : r;
             return Column(
@@ -306,13 +319,11 @@ class _FiltersPanel extends StatelessWidget {
                   children: [
                     Text(
                       '${current.start.toStringAsFixed(0)} ﷼',
-                      style:
-                          TextStyle(color: AppColors.grey, fontSize: 11),
+                      style: TextStyle(color: AppColors.grey, fontSize: 11),
                     ),
                     Text(
                       '${current.end.toStringAsFixed(0)} ﷼',
-                      style:
-                          TextStyle(color: AppColors.grey, fontSize: 11),
+                      style: TextStyle(color: AppColors.grey, fontSize: 11),
                     ),
                   ],
                 ),
@@ -330,7 +341,7 @@ class _FiltersPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'نطاق التاريخ',
+          'التاريخ',
           style: TextStyle(
             color: WebTheme.text,
             fontSize: 13,
@@ -338,21 +349,25 @@ class _FiltersPanel extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Obx(() => _datePicker(
-              context: context,
-              label: 'من تاريخ',
-              value: c.sponsorDateStart.value,
-              onPick: (d) => c.setSponsorDateStart(_fmt(d)),
-              onClear: () => c.setSponsorDateStart(''),
-            )),
+        Obx(
+          () => _datePicker(
+            context: context,
+            label: 'من تاريخ',
+            value: c.sponsorDateStart.value,
+            onPick: (d) => c.setSponsorDateStart(_fmt(d)),
+            onClear: () => c.setSponsorDateStart(''),
+          ),
+        ),
         const SizedBox(height: 8),
-        Obx(() => _datePicker(
-              context: context,
-              label: 'إلى تاريخ',
-              value: c.sponsorDateEnd.value,
-              onPick: (d) => c.setSponsorDateEnd(_fmt(d)),
-              onClear: () => c.setSponsorDateEnd(''),
-            )),
+        Obx(
+          () => _datePicker(
+            context: context,
+            label: 'إلى تاريخ',
+            value: c.sponsorDateEnd.value,
+            onPick: (d) => c.setSponsorDateEnd(_fmt(d)),
+            onClear: () => c.setSponsorDateEnd(''),
+          ),
+        ),
       ],
     );
   }
@@ -371,8 +386,7 @@ class _FiltersPanel extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         final now = DateTime.now();
-        final initial =
-            active ? (DateTime.tryParse(value) ?? now) : now;
+        final initial = active ? (DateTime.tryParse(value) ?? now) : now;
         final picked = await showDatePicker(
           context: context,
           initialDate: initial,
@@ -383,8 +397,7 @@ class _FiltersPanel extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: active
               ? WebTheme.primary.withOpacity(0.1)
@@ -444,223 +457,236 @@ class _WebSponsorEventCard extends StatelessWidget {
         ? event.durationOptions.first.price
         : 0.0;
 
-    return Obx(() => MouseRegion(
-          onEnter: (_) => hover.value = true,
-          onExit: (_) => hover.value = false,
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: onTap,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              transform: hover.value
-                  ? (Matrix4.identity()..translate(0.0, -6.0))
-                  : Matrix4.identity(),
-              decoration: BoxDecoration(
-                color: WebTheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: hover.value
-                      ? WebTheme.primary.withOpacity(0.5)
-                      : WebTheme.border,
-                ),
-                boxShadow: hover.value
-                    ? [
-                        BoxShadow(
-                          color: WebTheme.primary.withOpacity(0.3),
-                          blurRadius: 24,
-                          offset: const Offset(0, 12),
-                        )
-                      ]
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        )
-                      ],
+    return Obx(
+      () => MouseRegion(
+        onEnter: (_) => hover.value = true,
+        onExit: (_) => hover.value = false,
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            transform: hover.value
+                ? (Matrix4.identity()..translate(0.0, -6.0))
+                : Matrix4.identity(),
+            decoration: BoxDecoration(
+              color: WebTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: hover.value
+                    ? WebTheme.primary.withOpacity(0.5)
+                    : WebTheme.border,
               ),
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Image header ───────────────────────────
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(20)),
-                        child: event.exhibitionImageUrl.isNotEmpty
-                            ? Image.network(
-                                event.exhibitionImageUrl,
-                                height: 160,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                    _imagePlaceholder(),
-                              )
-                            : _imagePlaceholder(),
+              boxShadow: hover.value
+                  ? [
+                      BoxShadow(
+                        color: WebTheme.primary.withOpacity(0.3),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
                       ),
-
-                      // Type badge — top right
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.55),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            event.type,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Favourite — top left
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Obx(() {
-                          ctrl.exhibitionSponsorEvents.length;
-                          return GestureDetector(
-                            onTap: () => ctrl.toggleSponsorFavorite(event),
-                            child: Container(
-                              width: 34,
-                              height: 34,
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.45),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                event.isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: event.isFavorite
-                                    ? AppColors.error
-                                    : Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          );
-                        }),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
-                  ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Image header ───────────────────────────
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      child: event.exhibitionImageUrl.isNotEmpty
+                          ? Image.network(
+                              event.exhibitionImageUrl,
+                              height: 160,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                            )
+                          : _imagePlaceholder(),
+                    ),
 
-                  // ── Content ────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          event.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: WebTheme.text,
-                            fontSize: 16,
+                    // Type badge — top right
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.55),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          event.type,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${event.type} • ${event.exhibitionName}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _infoRow(
-                          Icons.calendar_today_outlined,
-                          '${event.date}   ${event.startTime} — ${event.endTime}',
-                        ),
-                        const SizedBox(height: 4),
-                        _infoRow(Icons.location_on_outlined, event.place),
-                        const SizedBox(height: 4),
-                        _infoRow(Icons.schedule_outlined,
-                            'مدة الإدراج: ${event.listingDays} أيام'),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.success.withOpacity(0.4),
-                                ),
-                              ),
-                              child: Text(
-                                'من ${minPrice.toStringAsFixed(0)} ﷼',
-                                style: const TextStyle(
-                                  color: AppColors.success,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 7),
-                              decoration: BoxDecoration(
-                                gradient: AppColors.favoriteGradient,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'احجز الآن',
-                                style: TextStyle(
-                                  color: WebTheme.text,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
+
+                    // Favourite — top left
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Obx(() {
+                        ctrl.exhibitionSponsorEvents.length;
+                        return GestureDetector(
+                          onTap: () => ctrl.toggleSponsorFavorite(event),
+                          child: Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.45),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              event.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: event.isFavorite
+                                  ? AppColors.error
+                                  : Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+
+                // ── Content ────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: WebTheme.text,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${event.type} • ${event.exhibitionName}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 11,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _infoRow(
+                        Icons.calendar_today_outlined,
+                        '${event.date}   ${event.startTime} — ${event.endTime}',
+                      ),
+                      const SizedBox(height: 4),
+                      _infoRow(Icons.location_on_outlined, event.place),
+                      const SizedBox(height: 4),
+                      _infoRow(
+                        Icons.schedule_outlined,
+                        'مدة الإدراج: ${event.listingDays} أيام',
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.success.withOpacity(0.4),
+                              ),
+                            ),
+                            child: Text(
+                              'من ${minPrice.toStringAsFixed(0)} ﷼',
+                              style: const TextStyle(
+                                color: AppColors.success,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: AppColors.favoriteGradient,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              'احجز الآن',
+                              style: TextStyle(
+                                color: WebTheme.text,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _imagePlaceholder() => Container(
-        height: 160,
-        width: double.infinity,
-        color: WebTheme.surfaceAlt,
-        child: Icon(Icons.campaign_rounded,
-            size: 48, color: AppColors.grey.withOpacity(0.4)),
-      );
+    height: 160,
+    width: double.infinity,
+    color: WebTheme.surfaceAlt,
+    child: Icon(
+      Icons.campaign_rounded,
+      size: 48,
+      color: AppColors.grey.withOpacity(0.4),
+    ),
+  );
 
   Widget _infoRow(IconData icon, String text) => Row(
-        children: [
-          Icon(icon, size: 13, color: AppColors.grey),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.grey, fontSize: 12),
-            ),
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 13, color: AppColors.grey),
+      const SizedBox(width: 5),
+      Expanded(
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: AppColors.grey, fontSize: 12),
+        ),
+      ),
+    ],
+  );
 }

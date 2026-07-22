@@ -71,11 +71,12 @@ class ExhibitionCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       height: 160,
+                      width: double.infinity,
                       color: AppColors.darkSurface,
-                      child: const Icon(
+                      child: Icon(
                         Icons.image,
                         size: 48,
-                        color: AppColors.grey,
+                        color: AppColors.grey.withOpacity(0.4),
                       ),
                     ),
                   ),
@@ -111,14 +112,22 @@ class ExhibitionCard extends StatelessWidget {
                   left: 10,
                   child: GestureDetector(
                     onTap: onFavorite,
-                    child: Icon(
-                      exhibition.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: exhibition.isFavorite
-                          ? AppColors.error
-                          : AppColors.grey,
-                      size: 22,
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.45),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        exhibition.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: exhibition.isFavorite
+                            ? AppColors.error
+                            : AppColors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ),

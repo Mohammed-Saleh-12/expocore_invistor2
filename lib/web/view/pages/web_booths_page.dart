@@ -88,7 +88,8 @@ class WebBoothsPage extends StatelessWidget {
                       crossAxisCount: cols,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
-           mainAxisExtent: 340,                    ),
+                      mainAxisExtent: 318,
+                    ),
                     itemBuilder: (_, i) => _BoothCard(booth: list[i], c: c),
                   );
                 },
@@ -179,39 +180,25 @@ class _BoothCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: booth.imageUrl.isNotEmpty
-                ? Image.network(
-                    booth.imageUrl,
-                    height: 130,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _imagePlaceholder(),
-                  )
-                : _imagePlaceholder(),
-          ),
-          const SizedBox(height: 14),
-          const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: booth.imageUrl.isNotEmpty
-                ? Image.network(
-                    booth.imageUrl,
-                    height: 130,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _imagePlaceholder(),
-                  )
-                : _imagePlaceholder(),
-          ),
-          const SizedBox(height: 14),
           Row(
             children: [
               _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
               const SizedBox(width: 16),
               _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
             ],
+          ),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: booth.imageUrl.isNotEmpty
+                ? Image.network(
+                    booth.imageUrl,
+                    height: 130,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                  )
+                : _imagePlaceholder(),
           ),
           const SizedBox(height: 14),
           Row(

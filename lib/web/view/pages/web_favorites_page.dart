@@ -181,7 +181,7 @@ class WebFavoritesPage extends StatelessWidget {
                                 crossAxisCount: cols,
                                 crossAxisSpacing: 20,
                                 mainAxisSpacing: 20,
-                                mainAxisExtent: 390,
+                                mainAxisExtent: 355,
                               ),
                           itemBuilder: (_, i) => _FavBoothCard(
                             booth: booths[i],
@@ -271,6 +271,16 @@ class _FavBoothCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
+
+          // ── Info row ────────────────────────────────────
+          Row(
+            children: [
+              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
+              const SizedBox(width: 16),
+              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
+            ],
+          ),
+          const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: booth.imageUrl.isNotEmpty
@@ -282,16 +292,6 @@ class _FavBoothCard extends StatelessWidget {
                     errorBuilder: (_, __, ___) => _imagePlaceholder(),
                   )
                 : _imagePlaceholder(),
-          ),
-          const SizedBox(height: 14),
-
-          // ── Info row ────────────────────────────────────
-          Row(
-            children: [
-              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
-              const SizedBox(width: 16),
-              _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
-            ],
           ),
           const SizedBox(height: 10),
 

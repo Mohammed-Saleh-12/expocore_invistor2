@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/appcolors.dart';
-import 'expocore_logo.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -27,15 +26,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: true,
       automaticallyImplyLeading: showBack,
-      leading: showBack
-          ? IconButton(
+      leading:  IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
               onPressed: () => Navigator.of(context).pop(),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(10),
-              child: const ExpocoreLogo(size: 28),
             ),
+        
       title: Text(
         title,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),

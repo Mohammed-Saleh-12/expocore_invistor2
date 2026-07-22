@@ -83,10 +83,8 @@ class WebDashboardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _sectionTitleWithAction(
-                          'فعاليات المعارض الإعلانية',
-                          onAll: () => WebNavController.to.openExhibitionEvents(),
-                        ),
+                        _sectionTitle('فعاليات المعارض الإعلانية'),
+
                         const SizedBox(height: 14),
                         WebEventBillboard(events: evs),
                       ],
@@ -101,8 +99,9 @@ class WebDashboardPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Obx(() {
                   final list = events.myExhibitionSponsorEvents;
-                  if (list.isEmpty)
+                  if (list.isEmpty) {
                     return _emptyHint('لا توجد فعاليات في معارضك المشترك بها');
+                  }
                   return Wrap(
                     spacing: 20,
                     runSpacing: 20,
@@ -224,14 +223,16 @@ class WebDashboardPage extends StatelessWidget {
         ),
       ),
       const SizedBox(width: 10),
-      Obx(() => Text(
-        t,
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-          color: WebTheme.text,
+      Obx(
+        () => Text(
+          t,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: WebTheme.text,
+          ),
         ),
-      )),
+      ),
     ],
   );
 
@@ -241,14 +242,16 @@ class WebDashboardPage extends StatelessWidget {
           Expanded(child: _sectionTitle(t)),
           GestureDetector(
             onTap: onAll,
-            child: Obx(() => Text(
-              'عرض الكل',
-              style: TextStyle(
-                color: WebTheme.primary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+            child: Obx(
+              () => Text(
+                'عرض الكل',
+                style: TextStyle(
+                  color: WebTheme.primary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            )),
+            ),
           ),
         ],
       );
@@ -279,64 +282,66 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: WebTheme.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: data.color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(14),
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: WebTheme.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: WebTheme.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: data.color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(data.icon, color: data.color, size: 26),
             ),
-            child: Icon(data.icon, color: data.color, size: 26),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  data.value,
-                  style: TextStyle(
-                    color: WebTheme.text,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    data.value,
+                    style: TextStyle(
+                      color: WebTheme.text,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  data.label,
-                  style: TextStyle(color: AppColors.grey, fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              data.trend,
-              style: TextStyle(
-                color: AppColors.success,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
+                  const SizedBox(height: 2),
+                  Text(
+                    data.label,
+                    style: TextStyle(color: AppColors.grey, fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                data.trend,
+                style: TextStyle(
+                  color: AppColors.success,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

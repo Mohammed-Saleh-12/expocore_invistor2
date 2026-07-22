@@ -91,12 +91,22 @@ class BoothCard extends StatelessWidget {
                   right: 8,
                   child: GestureDetector(
                     onTap: onFavorite,
-                    child: Icon(
-                      booth.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: booth.isFavorite
-                          ? AppColors.error
-                          : AppColors.grey,
-                      size: 22,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.45),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        booth.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: booth.isFavorite
+                            ? AppColors.error
+                            : AppColors.white,
+                        size: 16,
+                      ),
                     ),
                   ),
                 ),
@@ -267,11 +277,18 @@ class _PendingButtons extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.map_outlined, size: 11, color: AppColors.darkPrimary),
+                  Icon(
+                    Icons.map_outlined,
+                    size: 11,
+                    color: AppColors.darkPrimary,
+                  ),
                   SizedBox(width: 3),
                   Text(
                     'على الخريطة',
-                    style: TextStyle(color: AppColors.darkPrimary, fontSize: 10),
+                    style: TextStyle(
+                      color: AppColors.darkPrimary,
+                      fontSize: 10,
+                    ),
                   ),
                 ],
               ),

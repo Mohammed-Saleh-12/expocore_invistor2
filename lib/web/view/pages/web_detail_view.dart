@@ -163,11 +163,15 @@ class _DetailScaffold extends StatelessWidget {
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             height: 260,
-                            color: WebTheme.surfaceAlt,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: WebTheme.primary.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Icon(
                               Icons.image,
-                              color: AppColors.grey,
-                              size: 56,
+                              color: WebTheme.primary.withOpacity(0.35),
+                              size: 40,
                             ),
                           ),
                         ),
@@ -529,15 +533,6 @@ class _BoothDetail extends StatelessWidget {
       title: 'جناح ${b.number}',
       imageUrl: b.imageUrl,
       badge: WebStatusChip(status: b.status),
-      children: [
-        _infoRow(Icons.storefront_rounded, 'المعرض', b.exhibitionName),
-        _infoRow(Icons.location_on_outlined, 'الموقع', b.location),
-        _infoRow(Icons.straighten_rounded, 'المساحة', '${b.area.toInt()} م²'),
-        _infoRow(Icons.payments_outlined, 'السعر', '${b.price.toInt()} ر.س'),
-        _infoRow(Icons.event_outlined, 'ينتهي في', b.endDate),
-        const SizedBox(height: 16),
-        _chips('الخدمات', b.amenities),
-      ],
       actions: [
         if (b.status == 'ended' && report != null)
           _actionBtn(
@@ -556,10 +551,18 @@ class _BoothDetail extends StatelessWidget {
         _actionBtn(
           'تواصل مع الإدارة',
           filled: true,
-          onTap: () => WebNavController.to.openMessagesForExhibition(
-            b.exhibitionName,
-          ),
+          onTap: () =>
+              WebNavController.to.openMessagesForExhibition(b.exhibitionName),
         ),
+      ],
+      children: [
+        _infoRow(Icons.storefront_rounded, 'المعرض', b.exhibitionName),
+        _infoRow(Icons.location_on_outlined, 'الموقع', b.location),
+        _infoRow(Icons.straighten_rounded, 'المساحة', '${b.area.toInt()} م²'),
+        _infoRow(Icons.payments_outlined, 'السعر', '${b.price.toInt()} ر.س'),
+        _infoRow(Icons.event_outlined, 'ينتهي في', b.endDate),
+        const SizedBox(height: 16),
+        _chips('الخدمات', b.amenities),
       ],
     );
   }
@@ -1138,19 +1141,43 @@ class _AccountDetailPage extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _field('اسم الشركة', p.nameCtrl,
-                                Icons.business_outlined, editing),
-                            _field('البريد الإلكتروني', p.emailCtrl,
-                                Icons.email_outlined, editing),
-                            _field('رقم الجوال', p.phoneCtrl,
-                                Icons.phone_outlined, editing),
-                            _field('الموقع', p.locationCtrl,
-                                Icons.location_on_outlined, editing),
-                            _field('الموقع الإلكتروني', p.websiteCtrl,
-                                Icons.language_outlined, editing),
-                            _field('نبذة', p.bioCtrl,
-                                Icons.description_outlined, editing,
-                                maxLines: 3),
+                            _field(
+                              'اسم الشركة',
+                              p.nameCtrl,
+                              Icons.business_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'البريد الإلكتروني',
+                              p.emailCtrl,
+                              Icons.email_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'رقم الجوال',
+                              p.phoneCtrl,
+                              Icons.phone_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'الموقع',
+                              p.locationCtrl,
+                              Icons.location_on_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'الموقع الإلكتروني',
+                              p.websiteCtrl,
+                              Icons.language_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'نبذة',
+                              p.bioCtrl,
+                              Icons.description_outlined,
+                              editing,
+                              maxLines: 3,
+                            ),
 
                             const SizedBox(height: 4),
                             Row(
@@ -1175,14 +1202,30 @@ class _AccountDetailPage extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            _field('LinkedIn', p.linkedinCtrl, Icons.link,
-                                editing),
-                            _field('X (Twitter)', p.twitterCtrl,
-                                Icons.alternate_email, editing),
-                            _field('Instagram', p.instagramCtrl,
-                                Icons.camera_alt_outlined, editing),
-                            _field('Facebook', p.facebookCtrl,
-                                Icons.facebook, editing),
+                            _field(
+                              'LinkedIn',
+                              p.linkedinCtrl,
+                              Icons.link,
+                              editing,
+                            ),
+                            _field(
+                              'X (Twitter)',
+                              p.twitterCtrl,
+                              Icons.alternate_email,
+                              editing,
+                            ),
+                            _field(
+                              'Instagram',
+                              p.instagramCtrl,
+                              Icons.camera_alt_outlined,
+                              editing,
+                            ),
+                            _field(
+                              'Facebook',
+                              p.facebookCtrl,
+                              Icons.facebook,
+                              editing,
+                            ),
 
                             if (editing) ...[
                               const SizedBox(height: 16),
@@ -1192,7 +1235,8 @@ class _AccountDetailPage extends StatelessWidget {
                                   () => Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
+                                      vertical: 15,
+                                    ),
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       gradient: AppColors.favoriteGradient,
@@ -1239,41 +1283,40 @@ class _AccountDetailPage extends StatelessWidget {
     IconData icon,
     bool editing, {
     int maxLines = 1,
-  }) =>
-      Padding(
-        padding: const EdgeInsets.only(bottom: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.grey,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              controller: controller,
-              enabled: editing,
-              maxLines: maxLines,
-              style: TextStyle(color: WebTheme.text, fontSize: 14),
-              decoration: InputDecoration(
-                prefixIcon: Icon(icon, color: AppColors.grey, size: 19),
-                filled: true,
-                fillColor: editing ? WebTheme.surfaceAlt : WebTheme.topbar,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 13,
-                ),
-              ),
-            ),
-          ],
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 14),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      );
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          enabled: editing,
+          maxLines: maxLines,
+          style: TextStyle(color: WebTheme.text, fontSize: 14),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: AppColors.grey, size: 19),
+            filled: true,
+            fillColor: editing ? WebTheme.surfaceAlt : WebTheme.topbar,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 13,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -184,57 +184,18 @@ class _EventCard extends StatelessWidget {
                   '${event.registeredCount}/${event.maxParticipants}',
                 ),
                 const Spacer(),
-                // Ticket button — conditional on ticket category:
-                // none  → hidden entirely
-                // free  → read-only booked count label (no navigation)
-                // paid  → pending-count chip with navigation to requests
-                Builder(builder: (_) {
-                  final tc = event.ticketCategory;
-                  if (tc == 'none') return const SizedBox.shrink();
-                  if (tc == 'free') {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.info.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.confirmation_number_outlined,
-                            size: 13,
-                            color: AppColors.info,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${event.bookedSeats} محجوز',
-                            style: TextStyle(
-                              color: AppColors.info,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  // paid
-                  return Obx(() {
-                    final pending = c.pendingRequestsCount(event.id);
-                    return GestureDetector(
-                      onTap: () =>
-                          WebNavController.to.openTicketRequests(event),
-                      child: Container(
+                Builder(
+                  builder: (_) {
+                    final tc = event.ticketCategory;
+                    if (tc == 'none') return const SizedBox(height: 26);
+                    if (tc == 'free') {
+                      return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: WebTheme.secondary.withOpacity(0.15),
+                          color: AppColors.info.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -243,23 +204,60 @@ class _EventCard extends StatelessWidget {
                             Icon(
                               Icons.confirmation_number_outlined,
                               size: 13,
-                              color: WebTheme.secondary,
+                              color: AppColors.info,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              pending > 0 ? '$pending طلب' : 'التذاكر',
+                              '${event.bookedSeats} محجوز',
                               style: TextStyle(
-                                color: WebTheme.secondary,
+                                color: AppColors.info,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  });
-                }),
+                      );
+                    }
+                    // paid
+                    return Obx(() {
+                      final pending = c.pendingRequestsCount(event.id);
+                      return GestureDetector(
+                        onTap: () =>
+                            WebNavController.to.openTicketRequests(event),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: WebTheme.secondary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.confirmation_number_outlined,
+                                size: 13,
+                                color: WebTheme.secondary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                pending > 0 ? '$pending طلب' : 'التذاكر',
+                                style: TextStyle(
+                                  color: WebTheme.secondary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    });
+                  },
+                ),
               ],
             ),
           ],

@@ -114,42 +114,7 @@ class WebSettingsPage extends StatelessWidget {
                         isDestructive: true,
                       ),
                     ]),
-                    const SizedBox(height: 18),
 
-                    GestureDetector(
-                      onTap: () => _confirmLogout(context),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.error.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: AppColors.error.withOpacity(0.4),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.logout_rounded,
-                              color: AppColors.error.withOpacity(0.9),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'تسجيل الخروج',
-                              style: TextStyle(
-                                color: AppColors.error.withOpacity(0.9),
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -164,10 +129,13 @@ class WebSettingsPage extends StatelessWidget {
   // ── Change Password dialog ─────────────────────────────────
   // استخدام showDialog مع context من الـ Navigator الداخلي للويب بدلاً من
   // Get.dialog الذي يعتمد على navigator GetX غير المُنشأ في وضع الويب.
-  void _showChangePasswordDialog(BuildContext buildContext, SettingsController c) {
+  void _showChangePasswordDialog(
+    BuildContext buildContext,
+    SettingsController c,
+  ) {
     c.errorMessage.value = '';
     final currentCtrl = TextEditingController();
-    final newCtrl     = TextEditingController();
+    final newCtrl = TextEditingController();
     final confirmCtrl = TextEditingController();
 
     showDialog(
@@ -183,8 +151,11 @@ class WebSettingsPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.lock_outline_rounded,
-                    color: WebTheme.primary, size: 44),
+                Icon(
+                  Icons.lock_outline_rounded,
+                  color: WebTheme.primary,
+                  size: 44,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'تغيير كلمة المرور',
@@ -206,17 +177,21 @@ class WebSettingsPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 _dialogPasswordField('تأكيد كلمة المرور الجديدة', confirmCtrl),
                 // رسالة الخطأ
-                Obx(() => c.errorMessage.value.isEmpty
-                    ? const SizedBox.shrink()
-                    : Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          c.errorMessage.value,
-                          style: const TextStyle(
-                              color: AppColors.error, fontSize: 12),
-                          textAlign: TextAlign.center,
+                Obx(
+                  () => c.errorMessage.value.isEmpty
+                      ? const SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            c.errorMessage.value,
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                      )),
+                ),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -228,7 +203,8 @@ class WebSettingsPage extends StatelessWidget {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: AppColors.grey.withOpacity(0.4)),
+                              color: AppColors.grey.withOpacity(0.4),
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -255,12 +231,16 @@ class WebSettingsPage extends StatelessWidget {
                                   );
                                   if (success && ctx.mounted) {
                                     Navigator.of(ctx).pop();
-                                    ScaffoldMessenger.maybeOf(buildContext)
-                                        ?.showSnackBar(const SnackBar(
-                                      content:
-                                          Text('تم تغيير كلمة المرور بنجاح'),
-                                      backgroundColor: AppColors.success,
-                                    ));
+                                    ScaffoldMessenger.maybeOf(
+                                      buildContext,
+                                    )?.showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'تم تغيير كلمة المرور بنجاح',
+                                        ),
+                                        backgroundColor: AppColors.success,
+                                      ),
+                                    );
                                   }
                                 },
                           child: Container(
@@ -280,8 +260,9 @@ class WebSettingsPage extends StatelessWidget {
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(
-                                        color: WebTheme.primary,
-                                        strokeWidth: 2),
+                                      color: WebTheme.primary,
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Text(
                                     'حفظ',
@@ -324,8 +305,11 @@ class WebSettingsPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.delete_forever_rounded,
-                    color: AppColors.error, size: 44),
+                Icon(
+                  Icons.delete_forever_rounded,
+                  color: AppColors.error,
+                  size: 44,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'حذف الحساب',
@@ -341,17 +325,21 @@ class WebSettingsPage extends StatelessWidget {
                   style: TextStyle(color: AppColors.grey, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
-                Obx(() => c.errorMessage.value.isEmpty
-                    ? const SizedBox.shrink()
-                    : Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          c.errorMessage.value,
-                          style: const TextStyle(
-                              color: AppColors.error, fontSize: 12),
-                          textAlign: TextAlign.center,
+                Obx(
+                  () => c.errorMessage.value.isEmpty
+                      ? const SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            c.errorMessage.value,
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                      )),
+                ),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -363,7 +351,8 @@ class WebSettingsPage extends StatelessWidget {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: AppColors.grey.withOpacity(0.4)),
+                              color: AppColors.grey.withOpacity(0.4),
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -388,15 +377,18 @@ class WebSettingsPage extends StatelessWidget {
                                     WebAuthController.to.logout();
                                   } else if (ctx.mounted) {
                                     Navigator.of(ctx).pop();
-                                    ScaffoldMessenger.maybeOf(buildContext)
-                                        ?.showSnackBar(SnackBar(
-                                      content: Text(
-                                        c.errorMessage.value.isEmpty
-                                            ? 'فشل حذف الحساب، حاول مجدداً'
-                                            : c.errorMessage.value,
+                                    ScaffoldMessenger.maybeOf(
+                                      buildContext,
+                                    )?.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          c.errorMessage.value.isEmpty
+                                              ? 'فشل حذف الحساب، حاول مجدداً'
+                                              : c.errorMessage.value,
+                                        ),
+                                        backgroundColor: AppColors.error,
                                       ),
-                                      backgroundColor: AppColors.error,
-                                    ));
+                                    );
                                   }
                                 },
                           child: Container(
@@ -413,7 +405,9 @@ class WebSettingsPage extends StatelessWidget {
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(
-                                        color: Colors.white, strokeWidth: 2),
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Text(
                                     'حذف نهائي',
@@ -450,10 +444,11 @@ class WebSettingsPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          prefixIcon:
-              Icon(Icons.lock_outline, color: AppColors.grey, size: 18),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
         ),
       );
 
@@ -484,94 +479,12 @@ class WebSettingsPage extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded,
-                color: AppColors.grey, size: 14),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppColors.grey,
+              size: 14,
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  void _confirmLogout(BuildContext buildContext) {
-    showDialog(
-      context: buildContext,
-      builder: (ctx) => Dialog(
-        backgroundColor: WebTheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.logout_rounded, color: AppColors.error, size: 44),
-              const SizedBox(height: 16),
-              Text(
-                'تسجيل الخروج',
-                style: TextStyle(
-                  color: WebTheme.text,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                style: TextStyle(color: AppColors.grey, fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(ctx).pop(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 13),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.grey.withOpacity(0.4),
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'إلغاء',
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(ctx).pop();
-                        WebAuthController.to.logout();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 13),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.error,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'خروج',
-                          style: TextStyle(
-                            color: WebTheme.text,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     );

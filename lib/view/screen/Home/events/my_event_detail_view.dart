@@ -40,7 +40,7 @@ class MyEventDetailView extends StatelessWidget {
                 Icons.arrow_back_ios_new_rounded,
                 color: Colors.white,
               ),
-              onPressed: () => Get.back(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
 
             flexibleSpace: FlexibleSpaceBar(

@@ -3,17 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../controller/auth/auth_controller.dart';
-import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_auth_controller.dart';
 import '../../models/web_theme.dart';
 import '../widgets/web_fade_in.dart';
-
-// ════════════════════════════════════════════════════════════
-//  WebRegisterOtpPage
-//  OTP التحقق من الحساب بعد التسجيل (نسخة الويب)
-//  يستخدم AuthController الذي يملك منطق Register→OTP كاملاً
-// ════════════════════════════════════════════════════════════
 class WebRegisterOtpPage extends StatelessWidget {
   const WebRegisterOtpPage({super.key});
 

@@ -34,7 +34,7 @@ class WebSidebar extends StatelessWidget {
         children: [
           // ── Brand ───────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 18, 25, 5),
+            padding: const EdgeInsets.fromLTRB(10, 11, 25, 11),
 
             child: Image.asset(
               WebTheme.isDark.value
