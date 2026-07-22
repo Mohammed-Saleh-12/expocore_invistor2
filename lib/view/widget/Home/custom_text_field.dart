@@ -74,13 +74,14 @@ class AppTextField extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: AppColors.darkPrimary.withOpacity(0.25),
+              // Use theme's primary so the border updates when the theme changes.
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppColors.darkPrimary,
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
               width: 1,
             ),
           ),

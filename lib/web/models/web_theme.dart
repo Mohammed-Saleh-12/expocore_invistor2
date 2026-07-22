@@ -14,6 +14,11 @@ class WebTheme {
 
   static void setDark(bool v) {
     isDark.value = v;
+    // Sync Flutter's own ThemeMode so the entire widget tree rebuilds and all
+    // WebTheme.* getters (including border colours) are re-evaluated in every
+    // build() call — without this, the inner Obx in _WebHome does not rebuild
+    // on isDark change and border colours stay frozen until a hard refresh.
+    Get.changeThemeMode(v ? ThemeMode.dark : ThemeMode.light);
     try {
       Get.find<Services>().saveTheme(v);
     } catch (_) {}
