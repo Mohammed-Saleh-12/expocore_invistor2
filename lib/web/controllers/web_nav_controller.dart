@@ -10,6 +10,7 @@ import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/model/event/sponsorship_booking_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
+import '../../controller/Home/messages_controller.dart';
 
 class WebNavController extends GetxController {
   static WebNavController get to => Get.isRegistered<WebNavController>()
@@ -76,6 +77,12 @@ class WebNavController extends GetxController {
   void openReport(ReportModel r) {
     selected.value = sections.indexWhere((s) => s.label == 'nav_reports');
     detail.value = WebDetailRequest(WebDetailType.report, data: r);
+  }
+
+  void openMessagesForExhibition(String exhibitionName) {
+    Get.find<MessagesController>().prepareConversationForExhibition(exhibitionName);
+    detail.value = null;
+    selected.value = sections.indexWhere((s) => s.label == 'nav_messages');
   }
 
   void openCreateEvent() =>

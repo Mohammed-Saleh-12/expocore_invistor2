@@ -90,6 +90,85 @@ class EventsController extends GetxController {
   final selectedExhibitionName = ''.obs;
   final selectedBooth          = Rxn<BoothModel>();
 
+  // ── Web: sponsor-events search & filter ──────────────────────────────
+  final sponsorSearchCtrl  = TextEditingController();
+  final sponsorTypeFilter  = 'الكل'.obs;
+  /// RangeValues(0,0) = unset (full range)
+  final sponsorPriceRange  = const RangeValues(0, 0).obs;
+  final sponsorDateStart   = ''.obs;   // 'YYYY-MM-DD' or ''
+  final sponsorDateEnd     = ''.obs;   // 'YYYY-MM-DD' or ''
+
+  /// Maximum price across all duration options (used as slider ceiling)
+  double get sponsorComputedMaxPrice {
+    if (exhibitionSponsorEvents.isEmpty) return 10000;
+    double max = 0;
+    for (final e in exhibitionSponsorEvents) {
+      for (final d in e.durationOptions) {
+        if (d.price > max) max = d.price;
+      }
+    }
+    return max == 0 ? 10000 : max;
+  }
+
+  bool get _isPriceFiltered {
+    final r   = sponsorPriceRange.value;
+    final top = sponsorComputedMaxPrice;
+    return r.start > 0 || (r.end > 0 && r.end < top);
+  }
+
+  List<ExhibitionSponsorEvent> get filteredSponsorEvents {
+    final q         = sponsorSearchCtrl.text.trim().toLowerCase();
+    final type      = sponsorTypeFilter.value;
+    final top       = sponsorComputedMaxPrice;
+    final r         = sponsorPriceRange.value;
+    final priceMin  = r.start;
+    final priceMax  = (r.start == 0 && r.end == 0) ? top : r.end;
+    final dateStart = sponsorDateStart.value;
+    final dateEnd   = sponsorDateEnd.value;
+
+    return exhibitionSponsorEvents.where((e) {
+      final matchQ = q.isEmpty || e.name.toLowerCase().contains(q);
+      final matchT = type == 'الكل' || e.type == type;
+
+      // Price: compare event's lowest duration price
+      final eventMin = e.durationOptions.isNotEmpty
+          ? e.durationOptions.map((d) => d.price).reduce((a, b) => a < b ? a : b)
+          : 0.0;
+      final matchP = eventMin >= priceMin && eventMin <= priceMax;
+
+      // Date: string comparison works for ISO format
+      bool matchD = true;
+      if (e.date.isNotEmpty) {
+        if (dateStart.isNotEmpty && e.date.compareTo(dateStart) < 0) matchD = false;
+        if (dateEnd.isNotEmpty   && e.date.compareTo(dateEnd)   > 0) matchD = false;
+      }
+
+      return matchQ && matchT && matchP && matchD;
+    }).toList();
+  }
+
+  List<String> get availableSponsorTypes =>
+      ['الكل', ...exhibitionSponsorEvents.map((e) => e.type).toSet().toList()];
+
+  int get sponsorActiveFilterCount =>
+      (sponsorTypeFilter.value != 'الكل' ? 1 : 0) +
+      (_isPriceFiltered ? 1 : 0) +
+      (sponsorDateStart.value.isNotEmpty || sponsorDateEnd.value.isNotEmpty ? 1 : 0);
+
+  void onSponsorSearch(String _)       => exhibitionSponsorEvents.refresh();
+  void setSponsorType(String v)        { sponsorTypeFilter.value = v; exhibitionSponsorEvents.refresh(); }
+  void setSponsorPriceRange(RangeValues v) { sponsorPriceRange.value = v; exhibitionSponsorEvents.refresh(); }
+  void setSponsorDateStart(String v)   { sponsorDateStart.value = v; exhibitionSponsorEvents.refresh(); }
+  void setSponsorDateEnd(String v)     { sponsorDateEnd.value = v; exhibitionSponsorEvents.refresh(); }
+  void clearSponsorFilters() {
+    sponsorTypeFilter.value = 'الكل';
+    sponsorPriceRange.value = const RangeValues(0, 0);
+    sponsorDateStart.value  = '';
+    sponsorDateEnd.value    = '';
+    sponsorSearchCtrl.clear();
+    exhibitionSponsorEvents.refresh();
+  }
+
   // ── Sponsorship booking form ──────────────────────────────────────────
   final selectedSponsorDuration = Rxn<SponsorDurationOption>();
   final companyNameCtrl  = TextEditingController();
@@ -552,6 +631,7 @@ class EventsController extends GetxController {
     nameCtrl.dispose(); descCtrl.dispose(); maxCtrl.dispose();
     seatsCtrl.dispose(); ticketPriceCtrl.dispose(); videoPromoCtrl.dispose();
     freeLimitCtrl.dispose();
+    sponsorSearchCtrl.dispose();
     companyNameCtrl.dispose(); companyWebCtrl.dispose();
     companyPhoneCtrl.dispose();
     _resetSponsorMedia();

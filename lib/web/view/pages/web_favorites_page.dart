@@ -181,7 +181,7 @@ class WebFavoritesPage extends StatelessWidget {
                                 crossAxisCount: cols,
                                 crossAxisSpacing: 20,
                                 mainAxisSpacing: 20,
-                                childAspectRatio: 1.05,
+                                mainAxisExtent: 390,
                               ),
                           itemBuilder: (_, i) => _FavBoothCard(
                             booth: booths[i],
@@ -270,7 +270,20 @@ class _FavBoothCard extends StatelessWidget {
               WebStatusChip(status: booth.status),
             ],
           ),
-          const Spacer(),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: booth.imageUrl.isNotEmpty
+                ? Image.network(
+                    booth.imageUrl,
+                    height: 130,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                  )
+                : _imagePlaceholder(),
+          ),
+          const SizedBox(height: 14),
 
           // ── Info row ────────────────────────────────────
           Row(
@@ -350,6 +363,19 @@ class _FavBoothCard extends StatelessWidget {
     );
   }
 
+  Widget _imagePlaceholder() => Container(
+    height: 130,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: WebTheme.primary.withOpacity(0.08),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Icon(
+      Icons.storefront_rounded,
+      color: WebTheme.primary.withOpacity(0.35),
+      size: 40,
+    ),
+  );
   Widget _info(IconData icon, String text) => Row(
     children: [
       Icon(icon, size: 14, color: AppColors.grey),

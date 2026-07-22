@@ -556,12 +556,9 @@ class _BoothDetail extends StatelessWidget {
         _actionBtn(
           'تواصل مع الإدارة',
           filled: true,
-          onTap: () {
-            Get.find<MessagesController>().prepareConversationForExhibition(
-              b.exhibitionName,
-            );
-            WebNavController.to.select(6);
-          },
+          onTap: () => WebNavController.to.openMessagesForExhibition(
+            b.exhibitionName,
+          ),
         ),
       ],
     );
