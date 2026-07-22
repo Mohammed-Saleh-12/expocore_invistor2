@@ -10,6 +10,7 @@ import 'bindings/initialbindings.dart';
 import 'core/constant/routes.dart';
 import 'core/localization/translation.dart';
 import 'routes.dart';
+import 'package:get_storage/get_storage.dart';
 import 'core/services/services.dart';
 import 'core/responsive/web_shell.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +20,7 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await GetStorage.init();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );

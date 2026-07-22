@@ -1,5 +1,7 @@
 import 'package:expocore_invistor2/view/screen/Home/messages/conversations_list_view.dart';
 import 'package:expocore_invistor2/view/screen/auth/change_password_screen.dart';
+import 'package:expocore_invistor2/view/screen/auth/otp_screen.dart';
+import 'package:expocore_invistor2/view/screen/auth/forgot_password_otp_screen.dart';
 import 'package:get/get.dart';
 import 'bindings/initialbindings.dart';
 import 'core/constant/routes.dart';
@@ -46,9 +48,11 @@ class AppPages {
     GetPage(name: AppRoutes.LANGUAGE_PICKER,    page: () => const LanguagePickerView()),
     GetPage(name: AppRoutes.ONBOARDING,         page: () => const OnboardingView()),
     GetPage(name: AppRoutes.LOGIN,              page: () => const LoginView()),
-    GetPage(name: AppRoutes.REGISTER,           page: () => const RegisterView()),
-    GetPage(name: AppRoutes.FORGOT_PW,          page: () => const ForgotPasswordView()),
-    GetPage(name: AppRoutes.RESET_PW,           page: () => const ResetPasswordView()),
+    GetPage(name: AppRoutes.REGISTER,       page: () => const RegisterView(),           binding: AuthBinding()),
+    GetPage(name: AppRoutes.OTP,            page: () => const OtpScreen(),             binding: AuthBinding(),           transition: Transition.rightToLeft),
+    GetPage(name: AppRoutes.FORGOT_PW,      page: () => const ForgotPasswordView(),    binding: ForgotPasswordBinding(), transition: Transition.downToUp),
+    GetPage(name: AppRoutes.FORGOT_PW_OTP,  page: () => const ForgotPasswordOtpScreen(), binding: ForgotPasswordBinding(), transition: Transition.rightToLeft),
+    GetPage(name: AppRoutes.RESET_PW,       page: () => const ResetPasswordView(),     binding: ForgotPasswordBinding(), transition: Transition.rightToLeft),
     GetPage(name: AppRoutes.DASHBOARD,          page: () => const DashboardView()),
     GetPage(name: AppRoutes.EXHIBITIONS,        page: () => const ExhibitionsListView()),
     GetPage(name: AppRoutes.EXHIBITION_DETAIL,  page: () => const ExhibitionDetailView()),

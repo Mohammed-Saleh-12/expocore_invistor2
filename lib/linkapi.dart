@@ -17,6 +17,14 @@ class AppLink {
   static String get changePassword => '$server/auth/change-password';
   static String get deleteAccount => '$server/auth/delete-account';
 
+  // ── Auth — OTP (تسجيل) ───────────────────────────────────
+  static String get verifyOtp  => '$server/auth/verify-otp';
+  static String get resendOtp  => '$server/auth/resend-otp';
+
+  // ── Auth — Forgot Password OTP ───────────────────────────
+  static String get verifyForgotOtp => '$server/auth/forgot-password/verify-otp';
+  static String get resendForgotOtp => '$server/auth/forgot-password/resend-otp';
+
   // ── Exhibitions ──────────────────────────────────────────
   static String get exhibitions => '$server/exhibitions';
   static String exhibitionDetail(int id) => '$server/exhibitions/$id';

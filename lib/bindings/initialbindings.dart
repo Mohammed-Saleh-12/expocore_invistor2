@@ -1,3 +1,4 @@
+import 'package:expocore_invistor2/controller/auth/auth_controller.dart';
 import 'package:expocore_invistor2/controller/auth/change_password_controller.dart';
 import 'package:expocore_invistor2/core/class/crud.dart';
 import 'package:get/get.dart';
@@ -38,6 +39,7 @@ class InitialBindings extends Bindings {
     // ── Auth controllers (shared: mobile + web) ──────────────
     Get.lazyPut(() => LoginController(),          fenix: true);
     Get.lazyPut(() => RegisterController(),       fenix: true);
+    Get.lazyPut(() => AuthController(),           fenix: true);
     Get.lazyPut(() => ForgotPasswordController(), fenix: true);
     Get.lazyPut(() => ResetPasswordController(),  fenix: true);
 
@@ -88,5 +90,22 @@ class ChangePasswordBinding extends Bindings {
       () => ChangePasswordController(),
       fenix: true,
     );
+  }
+}
+
+// ── Binding التسجيل + OTP (التسجيل) ──────────────────────────
+class AuthBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<AuthController>(() => AuthController(), fenix: true);
+  }
+}
+
+// ── Binding نسيان كلمة المرور (3 شاشات) ─────────────────────
+class ForgotPasswordBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<ForgotPasswordController>(
+        () => ForgotPasswordController(), fenix: true);
   }
 }

@@ -37,4 +37,6 @@ class AppRoutes {
   static const String SETTINGS    = '/settings';
   static const String QR_SCANNER  = '/qr-scanner';
   static const String changePassword    = '/change-password';
+  static const String OTP              = '/otp';
+  static const String FORGOT_PW_OTP   = '/forgot-password-otp';
 }

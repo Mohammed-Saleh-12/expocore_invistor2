@@ -9,8 +9,7 @@ import '../../widget/Home/custom_app_bar.dart';
 import '../../widget/Home/custom_button.dart';
 
 // ════════════════════════════════════════════════════════════
-//  ForgotPasswordView  —  View فقط (MVC)
-//  كل المنطق في ForgotPasswordController
+//  ForgotPasswordView  —  الخطوة 0: إدخال الإيميل
 // ════════════════════════════════════════════════════════════
 class ForgotPasswordView extends StatelessWidget {
   const ForgotPasswordView({super.key});
@@ -22,7 +21,7 @@ class ForgotPasswordView extends StatelessWidget {
       appBar: CustomAppBar(title: 'forgot_title'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24),
-        child: Obx(() => c.sent.value ? _SentView(c: c) : _FormView(c: c)),
+        child: _FormView(c: c),
       ),
     );
   }
@@ -44,21 +43,39 @@ class _FormView extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               'forgot_hint'.tr,
-              style: const TextStyle(fontSize: 14, color: AppColors.grey, height: 1.6),
+              style: const TextStyle(
+                  fontSize: 14, color: AppColors.grey, height: 1.6),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 16),
+
+            // ── بانر الجلسة المعلّقة ───────────────────────
+            Obx(() {
+              if (!c.hasPendingSession) return const SizedBox.shrink();
+              return _PendingSessionBanner(c: c);
+            }),
+
+            const SizedBox(height: 16),
+
+            // ── حقل البريد الإلكتروني ─────────────────────
             AppTextField(
               label: 'البريد الإلكتروني',
-                  controller:c.emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                  validator: ValidInput.email,
-                
+              controller: c.emailFormCtrl,
+              keyboardType: TextInputType.emailAddress,
+              prefixIcon: const Icon(Icons.email_outlined, size: 20),
+              validator: ValidInput.email,
             ),
             const SizedBox(height: 24),
+
+            // ── زر إرسال OTP ───────────────────────────────
             Obx(() => CustomButton(
-                  label: 'forgot_btn'.tr,
-                  onTap: c.sendResetLink,
+                  label: 'إرسال رمز التحقق',
+                  onTap: c.isLoading.value
+                      ? null
+                      : () {
+                          if (c.formKey.currentState?.validate() ?? false) {
+                            c.sendOtp(c.emailFormCtrl.text.trim());
+                          }
+                        },
                   isLoading: c.status.value == StatusRequest.loading,
                 )),
           ],
@@ -66,35 +83,73 @@ class _FormView extends StatelessWidget {
       );
 }
 
-// ── Sent confirmation view ───────────────────────────────────
-class _SentView extends StatelessWidget {
+// ── بانر الجلسة المعلّقة ─────────────────────────────────────
+class _PendingSessionBanner extends StatelessWidget {
   final ForgotPasswordController c;
-  const _SentView({required this.c});
+  const _PendingSessionBanner({required this.c});
 
   @override
-  Widget build(BuildContext context) => Center(
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.darkPrimary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: AppColors.darkPrimary.withOpacity(0.35), width: 1),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.mark_email_read_outlined, size: 80, color: AppColors.success),
-            const SizedBox(height: 20),
-            Text(
-              'forgot_sent_title'.tr,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+            Row(
+              children: [
+                const Icon(Icons.info_outline_rounded,
+                    size: 18, color: AppColors.darkPrimary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'يوجد طلب استعادة سابق لـ ${c.savedEmail.value}',
+                    style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.darkPrimary,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
-            Text(
-              'forgot_sent_desc'.tr,
-              style: const TextStyle(color: AppColors.grey),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            CustomButton(
-              label: 'forgot_back_login'.tr,
-              onTap: () {
-                c.reset();
-                Get.back();
-              },
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: c.resumePendingSession,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.darkPrimary),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text('استكمال',
+                        style: TextStyle(
+                            color: AppColors.darkPrimary,
+                            fontWeight: FontWeight.w700)),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: c.discardSession,
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                          color: AppColors.grey.withOpacity(0.5)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text('تجاهل',
+                        style: TextStyle(color: AppColors.grey)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

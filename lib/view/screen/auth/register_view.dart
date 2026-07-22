@@ -2,13 +2,13 @@ import 'package:expocore_invistor2/core/functions/ValidInput.dart';
 import 'package:expocore_invistor2/view/widget/Home/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../controller/auth/register_controller.dart';
+import '../../../controller/auth/auth_controller.dart';
 import '../../../core/class/StatusRequest.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../core/constant/routes.dart';
 import '../../widget/Home/custom_button.dart';
 
-class RegisterView extends GetView<RegisterController> {
+class RegisterView extends GetView<AuthController> {
   const RegisterView({super.key});
 
   @override
