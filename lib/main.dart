@@ -21,17 +21,34 @@ void main() {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       await GetStorage.init();
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      try {
+        // Do not let a browser-side Firebase plugin/configuration issue keep
+        // the entire Flutter app from rendering. Mobile startup retains the
+        // original fail-fast behavior; web gets a bounded initialization wait.
+        final firebaseInit = Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        if (kIsWeb) {
+          await firebaseInit.timeout(const Duration(seconds: 12));
+        } else {
+          await firebaseInit;
+        }
+      } catch (error) {
+        debugPrint('[ExpoCore] Firebase initialization skipped: $error');
+      }
       if (!kIsWeb) {
         FirebaseMessaging.onBackgroundMessage(
           firebaseMessagingBackgroundHandler,
         );
       }
-      try {
-        await initFCM();
-      } catch (_) {}
+      // Firebase Messaging on web requires a configured VAPID key and
+      // browser notification permission. Keep web startup independent from
+      // that optional mobile notification setup.
+      if (!kIsWeb) {
+        try {
+          await initFCM();
+        } catch (_) {}
+      }
       FlutterError.onError = (FlutterErrorDetails details) {
         if (_isOverlayNullError(details.exception)) {
           debugPrint('[ExpoCore] Snackbar overlay not ready — skipped');

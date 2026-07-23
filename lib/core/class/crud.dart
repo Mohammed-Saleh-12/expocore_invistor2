@@ -48,12 +48,13 @@ class Crud {
   // ── POST ──────────────────────────────────────────────────
   Future<Map<String, dynamic>> postData(
     String url,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    Map<String, dynamic>? params,
+  }) async {
     try {
       if (AppEnv.logEnabled) dev.log('→ POST $url', name: 'API');
       final res = await http
-          .post(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .post(_uri(url, params), headers: _headers(), body: jsonEncode(data))
           .timeout(AppEnv.sendTimeout);
       return _handle(res);
     } catch (e) {
@@ -64,12 +65,13 @@ class Crud {
   // ── PUT ───────────────────────────────────────────────────
   Future<Map<String, dynamic>> putData(
     String url,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    Map<String, dynamic>? params,
+  }) async {
     try {
       if (AppEnv.logEnabled) dev.log('→ PUT $url', name: 'API');
       final res = await http
-          .put(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .put(_uri(url, params), headers: _headers(), body: jsonEncode(data))
           .timeout(AppEnv.sendTimeout);
       return _handle(res);
     } catch (e) {
@@ -80,12 +82,13 @@ class Crud {
   // ── PATCH ─────────────────────────────────────────────────
   Future<Map<String, dynamic>> patchData(
     String url,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    Map<String, dynamic>? params,
+  }) async {
     try {
       if (AppEnv.logEnabled) dev.log('→ PATCH $url', name: 'API');
       final res = await http
-          .patch(_uri(url), headers: _headers(), body: jsonEncode(data))
+          .patch(_uri(url, params), headers: _headers(), body: jsonEncode(data))
           .timeout(AppEnv.sendTimeout);
       return _handle(res);
     } catch (e) {
@@ -94,11 +97,14 @@ class Crud {
   }
 
   // ── DELETE ────────────────────────────────────────────────
-  Future<Map<String, dynamic>> deleteData(String url) async {
+  Future<Map<String, dynamic>> deleteData(
+    String url, {
+    Map<String, dynamic>? params,
+  }) async {
     try {
       if (AppEnv.logEnabled) dev.log('→ DELETE $url', name: 'API');
       final res = await http
-          .delete(_uri(url), headers: _headers())
+          .delete(_uri(url, params), headers: _headers())
           .timeout(AppEnv.receiveTimeout);
       return _handle(res);
     } catch (e) {

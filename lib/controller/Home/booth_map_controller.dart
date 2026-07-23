@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../core/class/crud.dart';
 import '../../data/model/map/exhibition_map_model.dart';
 import '../../data/model/booth/booth_model.dart';
+import '../../data/sourcedata/remote/Exhibitions/ExhibitionMapData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../core/constant/routes.dart';
 import '../../view/widget/Home/isometric_map_painter.dart';
@@ -10,8 +12,7 @@ class BoothCompanyInfo {
   final String name;
   final String email;
   final String initials;
-  final Color color;
-
+  final Color  color;
   const BoothCompanyInfo({
     required this.name,
     required this.email,
@@ -21,14 +22,19 @@ class BoothCompanyInfo {
 }
 
 class BoothMapController extends GetxController {
-  final mapData                  = Rxn<ExhibitionMapModel>();
-  final selectedBooth            = Rxn<MapBoothModel>();
-  final selectedBoothPosition    = Rxn<Offset>();
-  final isLoading                = true.obs;
-  final allBooths                = <MapBoothModel>[].obs;
+  final ExhibitionMapData _mapData = ExhibitionMapData(Crud());
+
+  final mapData               = Rxn<ExhibitionMapModel>();
+  final selectedBooth         = Rxn<MapBoothModel>();
+  final selectedBoothPosition = Rxn<Offset>();
+  final isLoading             = true.obs;
+  final allBooths             = <MapBoothModel>[].obs;
 
   final transformationController = TransformationController();
   final hitAreas = <BoothHitArea>[];
+
+  // معرّف المعرض — يُضبط من الشاشة قبل الانتقال
+  int exhibitionId = 0;
 
   static const bookedCompanies = <int, BoothCompanyInfo>{
     2:  BoothCompanyInfo(name: 'تقنية الغد',    email: 'info@techfuture.sa',    initials: 'تغ', color: Color(0xFF7A1FFF)),
@@ -44,6 +50,13 @@ class BoothMapController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // exhibitionId قد يُمرَّر عبر Get.arguments قبل onInit
+    final args = Get.arguments;
+    if (args is Map && args['exhibition_id'] != null) {
+      exhibitionId = args['exhibition_id'] as int;
+    } else if (args is int) {
+      exhibitionId = args;
+    }
     loadMapData();
   }
 
@@ -55,7 +68,19 @@ class BoothMapController extends GetxController {
 
   Future<void> loadMapData() async {
     isLoading.value = true;
-    await Future.delayed(const Duration(milliseconds: 100));
+    if (exhibitionId > 0) {
+      final result = await _mapData.getExhibitionMap(exhibitionId);
+      if (result['status'] == true) {
+        final body = result['data'] is Map
+            ? (result['data'] as Map<String, dynamic>)
+            : <String, dynamic>{};
+        mapData.value   = ExhibitionMapModel.fromJson(body);
+        allBooths.value = mapData.value!.halls.expand((h) => h.booths).toList();
+        isLoading.value = false;
+        return;
+      }
+    }
+    // fallback إلى البيانات الثابتة إذا لم يكن لدينا معرّف أو فشل الطلب
     mapData.value   = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
     allBooths.value = mapData.value!.halls.expand((h) => h.booths).toList();
     isLoading.value = false;
@@ -86,11 +111,11 @@ class BoothMapController extends GetxController {
       id:             booth.id,
       number:         booth.number,
       exhibitionName: booth.hallName,
-      imageUrl:       'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+      imageUrl:       '',
       area:           booth.area,
       status:         'pending',
       price:          booth.price,
-      endDate:        '2026-07-20',
+      endDate:        '',
       location:       '${booth.hallName} - صف ${booth.row + 1}',
       amenities:      booth.amenities,
       isFavorite:     false,

@@ -1,181 +1,199 @@
+import 'dart:async';
+import 'package:expocore_invistor2/data/sourcedata/remote/Firebace/MessagesFirebaseData.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
+import '../../core/services/services.dart';
 import '../../data/model/message/conversation_model.dart';
 import '../../data/model/message/message_model.dart';
-import '../../data/sourcedata/remote/Messages/MessagesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 
+// ════════════════════════════════════════════════════════════
+//  MessagesController
+//  محادثات المستثمر مع المعارض — Firebase Firestore
+//  ─────────────────────────────────────────────────────────
+//  الواجهات تستخدم conv.id (int) لتحديد المحادثة النشطة.
+//  نحن نتتبع Firestore doc id (String) داخلياً عبر خريطة.
+// ════════════════════════════════════════════════════════════
 class MessagesController extends GetxController {
-  final MessagesData _messagesData   = MessagesData(Crud());
+  final MessagesFirebaseData _firebaseData = MessagesFirebaseData();
+
   final conversations        = <ConversationModel>[].obs;
+  /// id المحادثة النشطة — نفس النوع الذي تستخدمه الواجهة (int)
   final activeConversationId = Rxn<int>();
   final inputCtrl            = TextEditingController();
   final isLoading            = false.obs;
   final isSending            = false.obs;
-  int _nextId                = 500;
 
-  @override
-  void onInit() {
-    _loadConversations();
-    super.onInit();
-  }
+  /// رسائل المحادثة المفتوحة (مُحدَّثة عبر Stream)
+  final activeMessages = <MessageModel>[].obs;
 
-  Future<void> _loadConversations() async {
-    isLoading.value = true;
-    final result = await _messagesData.getConversations();
-    if (result['status'] == true) {
-      final list = _asList(result['data']);
-      conversations.value =
-          list.map((e) => ConversationModel.fromJson(e)).toList();
-    } else {
-      conversations.value = List.from(DummyData.conversations);
-    }
-    isLoading.value = false;
-  }
+  StreamSubscription<List<ConversationModel>>? _convSub;
+  StreamSubscription<List<MessageModel>>?      _msgSub;
 
-  Future<void> _loadConversationMessages(int convId) async {
-    final result = await _messagesData.getConversationDetail(convId);
-    if (result['status'] == true) {
-      final d    = _body(result['data']);
-      final msgs = _asList(d['messages'])
-          .map((m) => MessageModel.fromJson(m))
-          .toList();
-      final idx = conversations.indexWhere((c) => c.id == convId);
-      if (idx != -1) {
-        final c = conversations[idx];
-        conversations[idx] = ConversationModel(
-          id:                 c.id,
-          exhibitionId:       c.exhibitionId,
-          exhibitionName:     c.exhibitionName,
-          exhibitionInitials: c.exhibitionInitials,
-          color:              c.color,
-          messages:           msgs,
-          unreadCount:        0,
-        );
-        conversations.refresh();
-      }
-    }
-  }
+  /// خريطة int-id → Firestore doc-id
+  final _firestoreIds = <int, String>{};
 
-  // ── Active conversation helpers ─────────────────────────────────────
+  int _investorId = 0;
+
+  int get totalUnread =>
+      conversations.fold(0, (sum, c) => sum + c.unreadCount);
+
+  /// المحادثة النشطة كنموذج كامل (تستخدمها الواجهة المحمولة)
   ConversationModel? get activeConversation {
     final id = activeConversationId.value;
     if (id == null) return null;
     return conversations.firstWhereOrNull((c) => c.id == id);
   }
 
-  List<MessageModel> get activeMessages => activeConversation?.messages ?? [];
-
-  // ── Open a conversation ─────────────────────────────────────────────
-  void openConversation(int id) {
-    activeConversationId.value = id;
-    final conv = conversations.firstWhereOrNull((c) => c.id == id);
-    if (conv != null) {
-      conv.unreadCount = 0;
-      conversations.refresh();
-    }
-    _loadConversationMessages(id);
+  @override
+  void onInit() {
+    _investorId = Get.find<Services>().userId;
+    _subscribeToConversations();
+    super.onInit();
   }
 
-  // ── تجهيز/إنشاء محادثة معرض (بدون تنقّل — يصلح للويب والجوال) ─────────
-  int prepareConversationForExhibition(String exhibitionName) {
-    var conv = conversations.firstWhereOrNull(
-      (c) => c.exhibitionName == exhibitionName,
+  void _subscribeToConversations() {
+    if (_investorId == 0) {
+      conversations.value = List.from(DummyData.conversations);
+      isLoading.value = false;
+      return;
+    }
+    isLoading.value = true;
+    _convSub = _firebaseData.conversationsStream(_investorId).listen(
+      (list) {
+        conversations.value = list;
+        isLoading.value = false;
+      },
+      onError: (e) {
+        debugPrint('[Messages] Firestore error: $e');
+        if (conversations.isEmpty) {
+          conversations.value = List.from(DummyData.conversations);
+        }
+        isLoading.value = false;
+      },
     );
+  }
 
-    if (conv == null) {
-      final ex = DummyData.exhibitions
-          .firstWhereOrNull((e) => e.name == exhibitionName);
-      final initials = exhibitionName.length >= 2
-          ? exhibitionName.substring(0, 2)
-          : exhibitionName;
-      conv = ConversationModel(
-        id:                 conversations.length + 200,
-        exhibitionId:       ex?.id ?? 0,
-        exhibitionName:     exhibitionName,
-        exhibitionInitials: initials,
-        color:              0xFF7A1FFF,
-        messages: [
-          MessageModel(
-            id: _nextId++, text: 'مرحباً، كيف يمكننا مساعدتك؟',
-            isMe: false, time: _now(), isRead: true,
-          ),
-        ],
-        unreadCount: 0,
-      );
-      conversations.add(conv);
-      _messagesData.createConversation(
-        exhibitionId: ex?.id ?? 0,
-        exhibitionName: exhibitionName,
-      );
+  // ── فتح محادثة (mobile: تمرَّر conv.id من النوع int) ───────
+  void openConversation(int convId) {
+    activeConversationId.value = convId;
+    activeMessages.clear();
+    _msgSub?.cancel();
+
+    final firestoreId = _firestoreIds[convId];
+    if (firestoreId == null) {
+      // بيانات ثابتة أو مباشرة من الكاش
+      final conv = conversations.firstWhereOrNull((c) => c.id == convId);
+      if (conv != null) {
+        activeMessages.value = List.from(conv.messages);
+      }
+      return;
     }
-
-    openConversation(conv.id);
-    return conv.id;
+    _msgSub = _firebaseData.messagesStream(firestoreId).listen(
+      (msgs) => activeMessages.value = msgs,
+      onError: (e) => debugPrint('[Messages] msg stream: $e'),
+    );
+    _firebaseData.markConversationRead(firestoreId).ignore();
   }
 
-  // ── Open (or create) conversation by exhibition name (الجوال) ───────
-  void openConversationForExhibitionName(String exhibitionName) {
-    prepareConversationForExhibition(exhibitionName);
-    Get.toNamed(AppRoutes.CONVERSATION);
+  void closeConversation() {
+    activeConversationId.value = null;
+    activeMessages.clear();
+    _msgSub?.cancel();
+    _msgSub = null;
   }
 
-  // ── Send a message ──────────────────────────────────────────────────
+  // ── إرسال رسالة — لا مُعامَل، يقرأ من inputCtrl (VoidCallback ✓) ─
   Future<void> sendMessage() async {
     final text = inputCtrl.text.trim();
     if (text.isEmpty) return;
-    final conv = activeConversation;
-    if (conv == null) return;
-
-    final optimisticMsg = MessageModel(
-      id: _nextId++, text: text, isMe: true, time: _now(), isRead: false,
-    );
-    conv.messages.add(optimisticMsg);
-    conversations.refresh();
+    final convId      = activeConversationId.value;
+    final firestoreId = convId != null ? _firestoreIds[convId] : null;
     inputCtrl.clear();
 
-    isSending.value = true;
-    final result = await _messagesData.sendMessage(conv.id, text);
-    isSending.value = false;
-
-    if (result['status'] != true) {
-      Future.delayed(const Duration(milliseconds: 1200), () {
-        if (activeConversation?.id == conv.id) {
-          conv.messages.add(MessageModel(
-            id: _nextId++,
-            text: 'شكراً لتواصلك معنا. سيرد عليك فريق الدعم قريباً.',
-            isMe: false, time: _now(), isRead: true,
-          ));
-          conversations.refresh();
+    if (firestoreId != null) {
+      isSending.value = true;
+      await _firebaseData.sendMessage(
+        conversationId: firestoreId,
+        senderId:       _investorId,
+        text:           text,
+        isMe:           true,
+      );
+      isSending.value = false;
+    } else {
+      // fallback optimistic (بيانات ثابتة)
+      final idx = conversations.indexWhere((c) => c.id == convId);
+      if (idx != -1) {
+        conversations[idx].messages.add(MessageModel(
+          id: DateTime.now().millisecondsSinceEpoch,
+          text: text,
+          isMe: true,
+          time: _now(),
+          isRead: false,
+        ));
+        conversations.refresh();
+        if (activeConversationId.value == convId) {
+          activeMessages.add(conversations[idx].messages.last);
         }
-      });
+      }
     }
   }
 
-  int get totalUnread =>
-      conversations.fold(0, (sum, c) => sum + c.unreadCount);
+  // ── البحث عن محادثة باسم المعرض أو إنشائها ثم الانتقال للرسائل
+  void prepareConversationForExhibition(String exhibitionName) {
+    final existing = conversations.firstWhereOrNull(
+      (c) => c.exhibitionName.contains(exhibitionName),
+    );
+    if (existing != null) {
+      openConversation(existing.id);
+    } else {
+      _createAndOpen(exhibitionName: exhibitionName);
+    }
+  }
 
-  Future<void> refresh() => _loadConversations();
+  /// يُستدعى من شاشة تفاصيل المعرض والجناح ثم ينتقل لصفحة الرسائل
+  void openConversationForExhibitionName(String exhibitionName) {
+    prepareConversationForExhibition(exhibitionName);
+    Get.toNamed(AppRoutes.MESSAGES);
+  }
+
+  Future<void> _createAndOpen({required String exhibitionName}) async {
+    if (_investorId == 0) return;
+    final firestoreId = await _firebaseData.createConversation(
+      investorId:         _investorId,
+      exhibitionId:       0,
+      exhibitionName:     exhibitionName,
+      exhibitionInitials: _initials(exhibitionName),
+      color:              0xFF7A1FFF,
+    );
+    final intId = firestoreId.hashCode.abs();
+    _firestoreIds[intId] = firestoreId;
+    openConversation(intId);
+  }
+
+  Future<void> refresh() async {
+    _convSub?.cancel();
+    _subscribeToConversations();
+  }
 
   String _now() {
     final t = DateTime.now();
     return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
   }
 
-  List _asList(dynamic data) {
-    if (data is List) return data;
-    if (data is Map && data['data'] is List) return data['data'];
-    return [];
+  String _initials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}';
+    return name.isNotEmpty ? name[0] : '؟';
   }
-
-  dynamic _body(dynamic data) =>
-      (data is Map && data['data'] is Map) ? data['data'] : (data ?? {});
 
   @override
   void onClose() {
     inputCtrl.dispose();
+    _convSub?.cancel();
+    _msgSub?.cancel();
     super.onClose();
   }
 }

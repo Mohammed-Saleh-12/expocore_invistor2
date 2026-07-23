@@ -4,6 +4,7 @@ import '../../core/constant/routes.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
+import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import 'reports_controller.dart';
 
@@ -57,10 +58,11 @@ class BoothController extends GetxController {
     b.isFavorite = !wasFav;
     booths.refresh();
     filtered.refresh();
+    final _fav = FavoritesData(Crud());
     if (wasFav) {
-      _boothsData.removeFavorite(b.id);
+      _fav.removeFavorite(b.id, FavoriteType.booth);
     } else {
-      _boothsData.addFavorite(b.id);
+      _fav.addFavorite(b.id, FavoriteType.booth);
     }
   }
 

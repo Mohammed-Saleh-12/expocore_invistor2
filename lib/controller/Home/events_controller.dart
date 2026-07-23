@@ -13,6 +13,7 @@ import '../../data/model/event/ticket_request_model.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/remote/Events/EventsData.dart';
+import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 
 class ProductItem {
@@ -317,15 +318,53 @@ class EventsController extends GetxController {
     }
   }
 
-  Future<void> _loadSponsorEvents() async {
-    final result = await _eventsData.getSponsorEvents();
+  Future<void> _loadSponsorEvents({int page = 1}) async {
+    final result = await _eventsData.getSponsorEvents(
+      page:    page,
+      perPage: 20,
+      type:    sponsorTypeFilter.value == 'الكل' ? null : sponsorTypeFilter.value,
+      dateStart: sponsorDateStart.value.isEmpty ? null : sponsorDateStart.value,
+      dateEnd:   sponsorDateEnd.value.isEmpty   ? null : sponsorDateEnd.value,
+    );
     if (result['status'] == true) {
-      exhibitionSponsorEvents.value = _asList(result['data'])
-          .map((e) => ExhibitionSponsorEvent.fromJson(e))
-          .toList();
+      final body = result['data'];
+      final list = _asList(body is Map ? (body['data'] ?? body) : body);
+      if (page == 1) {
+        exhibitionSponsorEvents.value =
+            list.map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
+      } else {
+        exhibitionSponsorEvents
+            .addAll(list.map((e) => ExhibitionSponsorEvent.fromJson(e)));
+      }
+      // تحديث totalPages إذا وُجدت البيانات
+      if (body is Map) {
+        final meta = body['meta'] ?? body['pagination'] ?? {};
+        _sponsorTotalPages = meta['last_page'] ?? meta['total_pages'] ?? 1;
+      }
     } else {
-      exhibitionSponsorEvents.value = List.from(DummyData.exhibitionSponsorEvents);
+      if (page == 1) {
+        exhibitionSponsorEvents.value = List.from(DummyData.exhibitionSponsorEvents);
+      }
     }
+  }
+
+  // ── Sponsor Events Pagination ──────────────────────────────────────────
+  int _sponsorCurrentPage = 1;
+  int _sponsorTotalPages  = 1;
+  bool get hasSponsorMore => _sponsorCurrentPage < _sponsorTotalPages;
+  final isLoadingSponsorMore = false.obs;
+
+  Future<void> loadMoreSponsorEvents() async {
+    if (!hasSponsorMore || isLoadingSponsorMore.value) return;
+    isLoadingSponsorMore.value = true;
+    _sponsorCurrentPage++;
+    await _loadSponsorEvents(page: _sponsorCurrentPage);
+    isLoadingSponsorMore.value = false;
+  }
+
+  Future<void> refreshSponsorEvents() async {
+    _sponsorCurrentPage = 1;
+    await _loadSponsorEvents(page: 1);
   }
 
   Future<void> _loadSponsorships() async {
@@ -576,10 +615,11 @@ class EventsController extends GetxController {
     final wasFav = e.isFavorite;
     e.isFavorite = !wasFav;
     exhibitionSponsorEvents.refresh();
+    final _fav = FavoritesData(Crud());
     if (wasFav) {
-      _eventsData.removeFavoriteEvent(e.id);
+      _fav.removeFavorite(e.id, FavoriteType.event);
     } else {
-      _eventsData.addFavoriteEvent(e.id);
+      _fav.addFavorite(e.id, FavoriteType.event);
     }
   }
 

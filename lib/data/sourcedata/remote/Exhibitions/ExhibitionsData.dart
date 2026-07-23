@@ -2,19 +2,32 @@ import 'package:expocore_invistor2/core/class/crud.dart';
 import 'package:expocore_invistor2/linkapi.dart';
 
 class ExhibitionsData {
-  Crud crud;
-
+  final Crud crud;
   ExhibitionsData(this.crud);
 
-  Future<Map<String, dynamic>> getExhibitions() async {
-    return await crud.getData(AppLink.exhibitions);
+  /// جلب قائمة المعارض مع Pagination
+  /// [page]    : رقم الصفحة (يبدأ من 1)
+  /// [perPage] : عدد العناصر في الصفحة (افتراضي 15)
+  /// [status]  : فلتر الحالة اختياري (upcoming | active | ended)
+  Future<Map<String, dynamic>> getExhibitions({
+    int page = 1,
+    int perPage = 15,
+    String? status,
+    String? city,
+    String? sector,
+  }) async {
+    final params = <String, dynamic>{
+      'page':     page,
+      'per_page': perPage,
+    };
+    if (status != null && status.isNotEmpty) params['status'] = status;
+    if (city   != null && city.isNotEmpty)   params['city']   = city;
+    if (sector  != null && sector.isNotEmpty) params['sector'] = sector;
+    return await crud.getData(AppLink.exhibitions, params: params);
   }
 
-  Future<Map<String, dynamic>> addFavorite(int exhibitionId) async {
-    return await crud.postData(AppLink.favoriteExhibition(exhibitionId), {});
-  }
-
-  Future<Map<String, dynamic>> removeFavorite(int exhibitionId) async {
-    return await crud.deleteData(AppLink.favoriteExhibition(exhibitionId));
+  /// جلب تفاصيل معرض واحد
+  Future<Map<String, dynamic>> getExhibitionDetail(int id) async {
+    return await crud.getData(AppLink.exhibitionDetail(id));
   }
 }
