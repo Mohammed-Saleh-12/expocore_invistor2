@@ -29,6 +29,7 @@ import 'web_booking_detail_page.dart';
 import 'web_exhibition_events_page.dart';
 import '../../../controller/Home/profile_company_controller.dart';
 import '../../../view/widget/Home/profile_avatar.dart';
+import '../../../view/widget/Home/exhibition_image_gallery.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDetailView  —  موجّه الصفحات الداخلية (يعرض الصفحة المناسبة)
@@ -318,25 +319,21 @@ class _ExhibitionDetail extends StatelessWidget {
   final ExhibitionModel e;
   const _ExhibitionDetail({required this.e});
 
-  // خدمات المعرض (مطابقة لنسخة الجوال)
-  static const _services = [
-    (Icons.wifi, 'واي فاي مجاني'),
-    (Icons.local_parking, 'موقف سيارات مجاني'),
-    (Icons.security, 'أمن وحراسة على مدار الساعة'),
-    (Icons.restaurant, 'منطقة طعام ومقاهي'),
-    (Icons.settings_input_component, 'دعم تقني وكهربائي'),
-    (Icons.person, 'استقبال وخدمة عملاء'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final events = Get.find<EventsController>();
 
     return _DetailScaffold(
       title: e.name,
-      imageUrl: e.imageUrl,
+      imageUrl: e.images.isEmpty ? null : e.imageUrl,
       badge: WebStatusChip(status: e.status),
       children: [
+        // ── معرض الصور (عند وجود أكثر من صورة) ──────────
+        if (e.images.length > 1) ...[
+          ExhibitionImageGallery(images: e.images),
+          const SizedBox(height: 20),
+        ],
+
         _desc(e.description),
         const SizedBox(height: 18),
         _infoRow(
@@ -358,48 +355,43 @@ class _ExhibitionDetail extends StatelessWidget {
         _chips('القطاعات', e.sectors),
         const SizedBox(height: 24),
 
-        // ── خدمات المعرض ─────────────────────────────────
+        // ── خدمات المعرض (ديناميكية من الـ API) ──────────
         _subHeader('خدمات المعرض'),
         const SizedBox(height: 12),
-        ..._services.map(
-          (s) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              children: [
-                Icon(s.$1, size: 20, color: WebTheme.primary),
-                const SizedBox(width: 12),
-                Text(
-                  s.$2,
-                  style: TextStyle(color: WebTheme.text, fontSize: 14),
-                ),
-              ],
+        if (e.services.isEmpty)
+          Text(
+            'لا توجد خدمات مُدرجة لهذا المعرض',
+            style: TextStyle(color: AppColors.grey.withOpacity(0.8), fontSize: 13),
+          )
+        else
+          ...e.services.map(
+            (s) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle_outline_rounded, size: 20, color: WebTheme.primary),
+                  const SizedBox(width: 12),
+                  Text(s, style: TextStyle(color: WebTheme.text, fontSize: 14)),
+                ],
+              ),
             ),
           ),
-        ),
         const SizedBox(height: 24),
 
-        // ── فعاليات المعرض ───────────────────────────────
+        // ── فعاليات المعرض (من بيانات التفاصيل مباشرة) ──
         _subHeader('فعاليات المعرض'),
         const SizedBox(height: 12),
-        Obx(() {
-          final list = events.exhibitionSponsorEvents
-              .where((ev) => ev.exhibitionId == e.id)
-              .toList();
-          if (list.isEmpty) {
-            return Text(
-              'لا توجد فعاليات إعلانية لهذا المعرض حالياً',
-              style: TextStyle(
-                color: AppColors.grey.withOpacity(0.8),
-                fontSize: 13,
-              ),
-            );
-          }
-          return Column(
-            children: list
+        if (e.sponsorEvents.isEmpty)
+          Text(
+            'لا توجد فعاليات إعلانية لهذا المعرض حالياً',
+            style: TextStyle(color: AppColors.grey.withOpacity(0.8), fontSize: 13),
+          )
+        else
+          Column(
+            children: e.sponsorEvents
                 .map((ev) => _SponsorEventRow(event: ev, ctrl: events))
                 .toList(),
-          );
-        }),
+          ),
       ],
       actions: [
         // تواصل
