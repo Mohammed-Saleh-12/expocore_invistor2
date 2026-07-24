@@ -272,7 +272,7 @@ class ExhibitionDetailView extends StatelessWidget {
       );
     }
     // ignore: deprecated_member_use_from_same_package
-    final eventsCtrl = Get.find<ExhibitionDetailController>();
+    Get.find<ExhibitionDetailController>();
     return ListView.builder(
       padding: const EdgeInsets.only(top: 8),
       itemCount: events.length,

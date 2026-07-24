@@ -1319,5 +1319,3 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 7 | `route` | `String?` | `route` (nullable) |
 
 ---
-
-*آخر تحديث: يوليو 2026 — مولَّد من الكود الفعلي للتطبيق*

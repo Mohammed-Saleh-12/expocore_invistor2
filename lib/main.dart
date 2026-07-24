@@ -22,9 +22,6 @@ void main() {
       WidgetsFlutterBinding.ensureInitialized();
       await GetStorage.init();
       try {
-        // Do not let a browser-side Firebase plugin/configuration issue keep
-        // the entire Flutter app from rendering. Mobile startup retains the
-        // original fail-fast behavior; web gets a bounded initialization wait.
         final firebaseInit = Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform,
         );

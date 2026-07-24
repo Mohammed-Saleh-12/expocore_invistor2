@@ -39,7 +39,6 @@ class ProfileData {
     });
   }
 
-  /// رفع صورة البروفايل كـ multipart — يعمل على الويب والجوال
   Future<Map<String, dynamic>> uploadAvatar(XFile image) async {
     return await crud.uploadData(
       AppLink.investorProfileAvatar,
