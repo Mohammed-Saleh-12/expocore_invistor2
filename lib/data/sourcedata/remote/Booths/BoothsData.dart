@@ -5,12 +5,35 @@ class BoothsData {
   final Crud crud;
   BoothsData(this.crud);
 
-  /// جلب أجنحتي (حجوزاتي)
+  /// جلب أجنحتي (حجوزاتي) — GET /investor/bookings
   Future<Map<String, dynamic>> getMyBookings() async {
     return await crud.getData(AppLink.investorBookings);
   }
 
-  /// جلب تفاصيل جناح
+  /// جلب تفاصيل جناح محجوز — GET /investor/bookings/{id}
+  Future<Map<String, dynamic>> getBookingDetail(int bookingId) async {
+    return await crud.getData(AppLink.bookingDetail(bookingId));
+  }
+
+  /// جلب الأجنحة المتاحة للحجز — GET /booths
+  /// [exhibitionId] : فلتر اختياري للمعرض
+  /// [status]       : فلتر الحالة (available, booked, ...)
+  Future<Map<String, dynamic>> getAvailableBooths({
+    int?    exhibitionId,
+    String? status,
+    int     page    = 1,
+    int     perPage = 20,
+  }) async {
+    final params = <String, dynamic>{
+      'page':     page,
+      'per_page': perPage,
+    };
+    if (exhibitionId != null) params['exhibition_id'] = exhibitionId;
+    if (status != null && status.isNotEmpty) params['status'] = status;
+    return await crud.getData(AppLink.booths, params: params);
+  }
+
+  /// جلب تفاصيل جناح واحد — GET /booths/{id}
   Future<Map<String, dynamic>> getBoothDetail(int id) async {
     return await crud.getData(AppLink.boothDetail(id));
   }

@@ -1,6 +1,7 @@
 class CampaignModel {
   final int    id;
   final String title;
+  final String description;
   final String type;
   final String startDate;
   final String endDate;
@@ -12,6 +13,7 @@ class CampaignModel {
   CampaignModel({
     required this.id,
     required this.title,
+    this.description = '',
     required this.type,
     required this.startDate,
     required this.endDate,
@@ -24,6 +26,7 @@ class CampaignModel {
   factory CampaignModel.fromJson(Map<String, dynamic> j) => CampaignModel(
     id:          j['id'] ?? 0,
     title:       j['title'] ?? '',
+    description: j['description'] ?? '',
     type:        j['type'] ?? '',
     startDate:   j['start_date'] ?? '',
     endDate:     j['end_date'] ?? '',
@@ -36,10 +39,11 @@ class CampaignModel {
   );
 
   Map<String, dynamic> toJson() => {
-    'title':      title,
-    'type':       type,
-    'start_date': startDate,
-    'end_date':   endDate,
-    'budget':     budget,
+    'title':       title,
+    'description': description,
+    'type':        type,
+    'start_date':  startDate,
+    'end_date':    endDate,
+    'budget':      budget,
   };
 }

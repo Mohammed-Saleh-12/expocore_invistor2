@@ -28,17 +28,16 @@ Future<void> initFCM() async {
   final messaging = FirebaseMessaging.instance;
 
   // 1. طلب الإذن (iOS + Android 13+)
-  await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+  await messaging.requestPermission(alert: true, badge: true, sound: true);
 
   // 2. إعداد الإشعارات المحلية
   await _setupLocalNotifications();
 
   // 3. الحصول على Token وإرساله للـ backend
-  final token = await messaging.getToken();
+  final token = await messaging.getToken(
+    vapidKey:
+        'BPoV9MkU1cXtrj_7iKGda1Dchteqt8KpxKFak4KjBwcxi589Gb35DgY8Hv1vj1JiB18y_PLYg2zNN8lZDH6hgNs',
+  );
   if (token != null) {
     await _sendTokenToBackend(token);
   }
@@ -105,6 +104,16 @@ Future<void> _setupLocalNotifications() async {
 
   await _localNotifications
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin
+      >()
       ?.createNotificationChannel(_channel);
 }
+// // 1. إرسال الـ Push للهاتف
+// await admin.messaging().send({ token: userFcmToken, notification: { title, body } });
+
+// // 2. حفظ الإشعار في Firestore ليظهر في قائمة التطبيق
+// await admin.firestore()
+//   .collection('notifications')
+//   .doc(String(userId))
+//   .collection('items')
+//   .add({ title, body, is_read: false, created_at: admin.firestore.FieldValue.serverTimestamp() });

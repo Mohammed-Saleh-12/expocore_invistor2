@@ -105,8 +105,10 @@ class WebBookingDetailPage extends StatelessWidget {
                 children: [
                   const Text('الحجز مؤكد',
                       style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
-                  Text('رقم الحجز: #BK-20260715-001',
-                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13)),
+                  Text(
+                    'رقم الحجز: ${booth.bookingNumber.isNotEmpty ? booth.bookingNumber : '#BK-${booth.id}'}',
+                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+                  ),
                 ],
               ),
             ),
@@ -129,11 +131,13 @@ class WebBookingDetailPage extends StatelessWidget {
   Widget _bookingDetailsCard() => _InfoCard(
         title: 'تفاصيل الحجز',
         icon: Icons.event_note_rounded,
-        rows: const [
-          _Row('تاريخ البدء', '2026-07-15'),
-          _Row('تاريخ الانتهاء', '2026-07-20'),
-          _Row('المدة', '5 أيام'),
-          _Row('تاريخ الحجز', '2026-06-01'),
+        rows: [
+          _Row('تاريخ البدء',    booth.startDate.isNotEmpty  ? booth.startDate  : '—'),
+          _Row('تاريخ الانتهاء', booth.endDate.isNotEmpty    ? booth.endDate    : '—'),
+          _Row('المدة',          booth.durationDays > 0
+              ? '${booth.durationDays} أيام'
+              : '—'),
+          _Row('تاريخ الحجز',   booth.bookedAt.isNotEmpty   ? booth.bookedAt   : '—'),
         ],
       );
 
@@ -184,12 +188,17 @@ class WebBookingDetailPage extends StatelessWidget {
             ),
             Divider(color: WebTheme.border, height: 20),
             _payRow('الإيجار الأساسي', '${booth.price.toInt()} ريال'),
-            _payRow('خدمات إضافية', '1,500 ريال'),
+            _payRow('خدمات إضافية', '${booth.servicesPrice.toInt()} ريال'),
             Divider(color: WebTheme.border, height: 16),
-            _payRow('الإجمالي', '${(booth.price + 1500).toInt()} ريال', valueColor: AppColors.orange, bold: true),
+            _payRow(
+              'الإجمالي',
+              '${(booth.totalPrice > 0 ? booth.totalPrice : booth.price + booth.servicesPrice).toInt()} ريال',
+              valueColor: AppColors.orange,
+              bold: true,
+            ),
             const SizedBox(height: 4),
-            _payRow('المدفوع', '${((booth.price + 1500) / 2).toInt()} ريال', valueColor: AppColors.success),
-            _payRow('المتبقي', '${((booth.price + 1500) / 2).toInt()} ريال', valueColor: AppColors.error),
+            _payRow('المدفوع',   '${booth.paidAmount.toInt()} ريال',      valueColor: AppColors.success),
+            _payRow('المتبقي',   '${booth.remainingAmount.toInt()} ريال',  valueColor: AppColors.error),
           ],
         ),
       );
@@ -224,7 +233,7 @@ class WebBookingDetailPage extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: ['واي فاي', 'كهرباء', 'إضاءة مميزة', 'إعلانات الشاشات']
+              children: _resolvedServices()
                   .map((s) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
@@ -284,6 +293,19 @@ class WebBookingDetailPage extends StatelessWidget {
           ),
         ],
       );
+
+  /// يُعيد قائمة الخدمات المحجوزة: من الموديل أولاً، ثم من الخدمات المُختارة،
+  /// ثم يُعود للحقوق الأساسية للجناح كاحتياطي.
+  List<String> _resolvedServices() {
+    if (booth.bookedServices.isNotEmpty) return booth.bookedServices;
+    final selected = <String>[];
+    if (booth.screenService)   selected.add('إعلانات الشاشات');
+    if (booth.setupService)    selected.add('خدمة التجهيز');
+    if (booth.securityService) selected.add('خدمة الأمن');
+    if (booth.cleaningService) selected.add('خدمة التنظيف');
+    if (selected.isNotEmpty) return selected;
+    return booth.amenities.isNotEmpty ? booth.amenities : ['—'];
+  }
 
   Widget _payRow(String label, String val, {Color? valueColor, bool bold = false}) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),

@@ -6,28 +6,35 @@ class BookingData {
 
   BookingData(this.crud);
 
+  /// إنشاء حجز جديد — POST /booths/book
   Future<Map<String, dynamic>> bookBooth({
-    required int boothId,
-    required int durationDays,
+    required int    boothId,
+    required int    durationDays,
     required String notes,
-    required bool screenService,
-    required bool setupService,
-    required bool securityService,
-    required bool cleaningService,
+    required bool   screenService,
+    required bool   setupService,
+    required bool   securityService,
+    required bool   cleaningService,
     required double totalPrice,
   }) async {
     return await crud.postData(AppLink.bookBooth, {
-      'booth_id': boothId,
-      'duration_days': durationDays,
-      'notes': notes,
-      'screen_service': screenService,
-      'setup_service': setupService,
+      'booth_id':         boothId,
+      'duration_days':    durationDays,
+      'notes':            notes,
+      'screen_service':   screenService,
+      'setup_service':    setupService,
       'security_service': securityService,
       'cleaning_service': cleaningService,
-      'total_price': totalPrice,
+      'total_price':      totalPrice,
     });
   }
 
+  /// جلب تفاصيل حجز واحد — GET /investor/bookings/{id}
+  Future<Map<String, dynamic>> getBookingDetail(int bookingId) async {
+    return await crud.getData(AppLink.bookingDetail(bookingId));
+  }
+
+  /// إلغاء حجز — PATCH /investor/bookings/{id}/cancel
   Future<Map<String, dynamic>> cancelBooking(int bookingId) async {
     return await crud.patchData(AppLink.cancelBooking(bookingId), {});
   }
