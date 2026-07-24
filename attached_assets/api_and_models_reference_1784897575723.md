@@ -316,9 +316,39 @@
 | **الميثود** | `GET` |
 | **المسار** | `/exhibitions/{id}` |
 | **الملف** | `ExhibitionsData.getExhibitionDetail()` |
-| **الكنترولر** | `ExhibitionDetailController.onInit()` ← عند فتح صفحة تفاصيل المعرض |
+| **الكنترولر** | `ExhibitionDetailController.onInit()` ← عند فتح صفحة تفاصيل المعرض (طلبان متوازيان: هذا + `getExhibitionBooths`) |
 
-**الاستجابة المتوقعة (`data`):** `ExhibitionModel` — راجع [ExhibitionModel](#exhibitionmodel).
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "id": 1,
+  "name": "معرض التقنية 2026",
+  "description": "string",
+  "images": ["https://cdn.example.com/hero.jpg", "https://cdn.example.com/hall-a.jpg"],
+  "services": ["واي فاي مجاني", "موقف سيارات", "أمن 24/7"],
+  "start_date": "2026-07-15",
+  "end_date": "2026-07-20",
+  "location": "string",
+  "city": "string",
+  "status": "active",
+  "available_booths": 12,
+  "sectors": ["تقنية", "أعمال"],
+  "is_favorite": false,
+  "map_data": {
+    "exhibition_id": 1,
+    "grid_width": 13,
+    "grid_depth": 10,
+    "halls": [{ "id": "A", "name": "القاعة أ", "color": "7A1FFF", "booths": [...] }]
+  },
+  "sponsor_events": [{ "id": 10, "name": "فعالية إعلانية", "type": "banner" }]
+}
+```
+
+> **ملاحظات:**
+> - `images`: قائمة صور — `ExhibitionModel.imageUrl` getter يُعيد `images.first` للتوافق مع الكروت.
+> - `services`: خدمات المعرض الأساسية (ليست خدمات الجناح).
+> - `map_data`: بيانات الخريطة ثلاثية الأبعاد — تُحلَّل مباشرةً بدلاً من طلب `/exhibitions/{id}/map` منفصل.
+> - `sponsor_events`: الفعاليات الإعلانية — لا يُستدعى `EventsController` لجلبها عند عرض تفاصيل المعرض.
 
 ---
 
@@ -328,7 +358,9 @@
 | **الميثود** | `GET` |
 | **المسار** | `/exhibitions/{id}/map` |
 | **الملف** | `ExhibitionMapData.getExhibitionMap()` |
-| **الكنترولر** | `BoothMapController.loadMap()` ← عند فتح صفحة الخريطة ثلاثية الأبعاد |
+| **الكنترولر** | ~~`BoothMapController.loadMap()`~~ — **لم يعد يُستدعى مباشرةً** |
+
+> ⚠️ **هذا الـ endpoint لم يعد نشطاً في التطبيق.** بيانات الخريطة (`map_data`) تأتي الآن مضمَّنةً في رد `GET /exhibitions/{id}` (§4.2)، ويمررها `ExhibitionDetailController` لـ `BoothMapController` عبر `loadFromDetailData(mapJson, booths)`. الملف `ExhibitionMapData.dart` يبقى موجوداً لكن لا يُستدعى.
 
 **الاستجابة المتوقعة (`data`):** `ExhibitionMapModel` — راجع [ExhibitionMapModel](#exhibitionmapmodel).
 
@@ -392,6 +424,48 @@
 | **الكنترولر** | `BoothController` / `BookingController` ← عند فتح صفحة تفاصيل الحجز |
 
 **الاستجابة المتوقعة (`data`):** `BoothModel` (كامل مع حقول الحجز) — راجع [BoothModel](#boothmodel).
+
+---
+
+### 5.5 جلب أجنحة معرض بعينه
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/booths?exhibition_id={id}` |
+| **الملف** | `BoothsData.getExhibitionBooths()` |
+| **الكنترولر** | `ExhibitionDetailController.onInit()` ← طلب ثانٍ متوازٍ مع `getExhibitionDetail` عند فتح صفحة تفاصيل المعرض |
+
+**Query Params:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `exhibition_id` | `int` | معرّف المعرض |
+
+**الاستجابة المتوقعة (`data`):** قائمة `List<BoothModel>` — كل جناح يحوي:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "number": "A01",
+      "status": "available",
+      "price": 18000,
+      "area": 400,
+      "services": { "شاشة عرض إضافية": 500, "إضاءة مميزة": 300 }
+    },
+    {
+      "id": 2,
+      "number": "A02",
+      "status": "booked",
+      "company_name": "تقنية الغد",
+      "company_email": "info@techfuture.sa",
+      "company_initials": "تغ",
+      "services": {}
+    }
+  ]
+}
+```
+
+> الناتج يُخزَّن في `ExhibitionDetailController.exhibitionBooths` ويُمرَّر لـ `BoothMapController.loadFromDetailData()` لربط أجنحة الخريطة ببياناتها الحقيقية.
 
 ---
 
@@ -872,7 +946,22 @@
 }
 ```
 
-> ⚠️ **ملاحظة:** الصورة الشخصية (`avatar`) غير مرسَلة حالياً — `Crud` لا يدعم multipart بعد.
+---
+
+### 12.3 رفع صورة شخصية (Avatar)
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` (multipart) |
+| **المسار** | `/investor/profile/avatar` |
+| **الملف** | `ProfileData.uploadAvatar()` |
+| **الكنترولر** | `ProfileCompanyController` ← زر "تغيير الصورة" |
+
+**Body المرسَل:** `multipart/form-data`
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `avatar` | `File` | ملف الصورة (jpg / png / webp) |
+
+> `Crud.uploadData()` يدعم multipart على الويب والجوال عبر `http.MultipartRequest`. يُرسَل الطلب بـ `method: 'POST'`؛ يُضاف `_method: PUT` تلقائياً لـ method spoofing عند الحاجة.
 
 ---
 
@@ -1099,20 +1188,29 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 
 ### ExhibitionModel
 
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `int` | `id` |
-| 2 | `name` | `String` | `name` |
-| 3 | `description` | `String` | `description` |
-| 4 | `imageUrl` | `String` | `image_url` |
-| 5 | `startDate` | `String` | `start_date` |
-| 6 | `endDate` | `String` | `end_date` |
-| 7 | `location` | `String` | `location` |
-| 8 | `city` | `String` | `city` |
-| 9 | `status` | `String` | `status` | `active` \| `upcoming` \| `ended` |
-| 10 | `availableBooths` | `int` | `available_booths` |
-| 11 | `sectors` | `List<String>` | `sectors` |
-| 12 | `isFavorite` | `bool` | `is_favorite` |
+| # | الحقل | النوع | JSON Key | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | `id` | |
+| 2 | `name` | `String` | `name` | |
+| 3 | `description` | `String` | `description` | |
+| 4 | `images` | `List<String>` | `images` | قائمة روابط الصور |
+| 5 | `services` | `List<String>` | `services` | خدمات المعرض الأساسية (واي فاي، موقف، ...) |
+| 6 | `mapJson` | `Map<String,dynamic>?` | `map_data` | بيانات الخريطة 3D — يُحلَّل داخل الـ response مباشرةً |
+| 7 | `sponsorEvents` | `List<ExhibitionSponsorEvent>` | `sponsor_events` | الفعاليات الإعلانية المضمَّنة في التفاصيل |
+| 8 | `startDate` | `String` | `start_date` | |
+| 9 | `endDate` | `String` | `end_date` | |
+| 10 | `location` | `String` | `location` | |
+| 11 | `city` | `String` | `city` | |
+| 12 | `status` | `String` | `status` | `active` \| `upcoming` \| `ended` |
+| 13 | `availableBooths` | `int` | `available_booths` | |
+| 14 | `sectors` | `List<String>` | `sectors` | |
+| 15 | `isFavorite` | `bool` | `is_favorite` | |
+
+**Getters محسوبة:**
+- `imageUrl` → `images.isNotEmpty ? images.first : ''` — للتوافق مع الكروت الحالية دون تعديلها
+- `statusLabel` → نص عربي حسب الحالة
+
+> **ملاحظة:** `imageUrl` كان حقلاً مباشراً (`image_url`) وأصبح getter يُعيد أول عنصر من `images`. الـ fallback في `fromJson` يقبل `image_url` كمفتاح بديل إذا كانت `images` فارغة.
 
 ---
 
