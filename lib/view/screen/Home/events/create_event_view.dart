@@ -749,7 +749,7 @@ class CreateEventView extends GetView<EventsController> {
 // ════════════════════════════════════════════════════════════
 //  WIDGET  — image thumbnail with remove button
 // ════════════════════════════════════════════════════════════
-class _ImageThumb extends StatelessWidget {
+class _ImageThumb extends StatefulWidget {
   final XFile file;
   final int index;
   final bool isDark;
@@ -758,6 +758,20 @@ class _ImageThumb extends StatelessWidget {
     required this.index,
     required this.isDark,
   });
+
+  @override
+  State<_ImageThumb> createState() => _ImageThumbState();
+}
+
+class _ImageThumbState extends State<_ImageThumb> {
+  // الـ future يُحسب مرة واحدة فقط لمنع إعادة التحميل في كل rebuild
+  late final Future<Uint8List> _bytesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _bytesFuture = widget.file.readAsBytes();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -771,32 +785,50 @@ class _ImageThumb extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Image — XFile works on both web (blob URL) and mobile
+          // الصورة المصغرة
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: FutureBuilder<Uint8List>(
-              future: file.readAsBytes(),
-              builder: (_, snap) => snap.hasData
-                  ? Image.memory(snap.data!,
-                      width: 100, height: 100, fit: BoxFit.cover)
-                  : const SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Center(
-                          child: SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )),
+              future: _bytesFuture,
+              builder: (_, snap) {
+                if (snap.hasData) {
+                  return Image.memory(
+                    snap.data!,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  );
+                }
+                if (snap.hasError) {
+                  return Container(
+                    width: 100,
+                    height: 100,
+                    color: AppColors.darkPrimary.withOpacity(0.1),
+                    child: const Icon(Icons.broken_image_outlined,
+                        color: AppColors.grey),
+                  );
+                }
+                return Container(
+                  width: 100,
+                  height: 100,
+                  color: AppColors.darkPrimary.withOpacity(0.05),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
+                  ),
+                );
+              },
             ),
           ),
-          // Remove button
+          // زر الحذف
           Positioned(
             top: 4,
             left: 4,
             child: GestureDetector(
-              onTap: () => Get.find<EventsController>().removeImage(index),
+              onTap: () => Get.find<EventsController>().removeImage(widget.index),
               child: Container(
                 width: 22,
                 height: 22,
