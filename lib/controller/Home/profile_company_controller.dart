@@ -89,6 +89,11 @@ class ProfileCompanyController extends GetxController {
     isSaving.value = true;
     status.value   = StatusRequest.loading;
 
+    // رفع صورة البروفايل أولاً إن وُجدت (multipart)
+    if (profileImage.value != null) {
+      await _profileData.uploadAvatar(profileImage.value!);
+    }
+
     final result = await _profileData.updateProfile(
       companyName: nameCtrl.text.trim(),
       email: emailCtrl.text.trim(),

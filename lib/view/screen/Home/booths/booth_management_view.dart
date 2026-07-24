@@ -160,84 +160,126 @@ class _BoothInfoCard extends GetView<BoothManagementController> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Stack(
-              children: [
-                Image.network(
-                  b.imageUrl,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 140,
-                    color: AppColors.darkSurface,
-                    child: const Icon(
-                      Icons.store,
-                      size: 48,
-                      color: AppColors.grey,
+            child: Obx(() {
+              final coverFile = controller.boothCoverFile.value;
+              return Stack(
+                children: [
+                  // ── صورة الغلاف (محلية أو من السيرفر) ──────
+                  GestureDetector(
+                    onTap: controller.pickBoothCoverImage,
+                    child: SizedBox(
+                      height: 140,
+                      width: double.infinity,
+                      child: coverFile != null
+                          ? _XFileImage(
+                              file: coverFile,
+                              width: double.infinity,
+                              height: 140,
+                            )
+                          : Image.network(
+                              b.imageUrl,
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 140,
+                                color: AppColors.darkSurface,
+                                child: const Icon(
+                                  Icons.store,
+                                  size: 48,
+                                  color: AppColors.grey,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
-                ),
-                Container(
-                  height: 140,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.55),
+                  // ── تدرج ────────────────────────────────────
+                  IgnorePointer(
+                    child: Container(
+                      height: 140,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.55),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // ── زر تعديل الغلاف ──────────────────────────
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: controller.pickBoothCoverImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // ── اسم الجناح ───────────────────────────────
+                  Positioned(
+                    bottom: 12,
+                    right: 14,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'جناح ${b.number}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          b.exhibitionName,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
                     ),
                   ),
-                ),
-                Positioned(
-                  bottom: 12,
-                  right: 14,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'جناح ${b.number}',
+                  // ── badge الحالة ─────────────────────────────
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _statusColor(b.status).withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'booth_mgmt_active'.tr,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
                         ),
-                      ),
-                      Text(
-                        b.exhibitionName,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _statusColor(b.status).withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'booth_mgmt_active'.tr,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
           Padding(
             padding: const EdgeInsets.all(14),

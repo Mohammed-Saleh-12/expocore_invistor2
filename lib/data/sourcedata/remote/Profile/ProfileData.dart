@@ -1,5 +1,6 @@
 import 'package:expocore_invistor2/core/class/crud.dart';
 import 'package:expocore_invistor2/linkapi.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileData {
   Crud crud;
@@ -36,5 +37,15 @@ class ProfileData {
         'facebook': facebook,
       },
     });
+  }
+
+  /// رفع صورة البروفايل كـ multipart — يعمل على الويب والجوال
+  Future<Map<String, dynamic>> uploadAvatar(XFile image) async {
+    return await crud.uploadData(
+      AppLink.investorProfileAvatar,
+      {},
+      files: [MapEntry('avatar', image)],
+      method: 'POST',
+    );
   }
 }

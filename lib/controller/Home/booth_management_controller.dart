@@ -29,6 +29,23 @@ class BoothManagementController extends GetxController {
 
   final _picker = ImagePicker();
 
+  // ── صورة غلاف الجناح (قابلة للتعديل) ────────────────────
+  final boothCoverFile = Rxn<XFile>();
+
+  Future<void> pickBoothCoverImage() async {
+    try {
+      final x = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        requestFullMetadata: false,
+      );
+      if (x != null) boothCoverFile.value = x;
+    } catch (_) {
+      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
   final profileLinks = [
     'https://linkedin.com/company/myco',
     'https://twitter.com/myco',
@@ -163,13 +180,16 @@ class BoothManagementController extends GetxController {
     status.value   = StatusRequest.loading;
 
     final result = await _boothProfileData.updateBoothProfile(
-      boothId: booth.id,
-      companyNature: companyNatureCtrl.text.trim(),
+      boothId:          booth.id,
+      companyNature:    companyNatureCtrl.text.trim(),
       servicesProducts: servicesProductsCtrl.text.trim(),
-      headquarters: headquartersCtrl.text.trim(),
-      socialLinks: socialLinks.toList(),
-      productImages: productImages.toList(),
-      boothImages: boothImages.toList(),
+      headquarters:     headquartersCtrl.text.trim(),
+      socialLinks:      socialLinks.toList(),
+      productImages:    productImages.toList(),
+      boothImages:      boothImages.toList(),
+      productImageFiles: productImageFiles.toList(),
+      boothImageFiles:   boothImageFiles.toList(),
+      coverImage:        boothCoverFile.value,
     );
 
     if (result['status'] == true) {

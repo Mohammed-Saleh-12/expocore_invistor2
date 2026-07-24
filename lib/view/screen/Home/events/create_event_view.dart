@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../controller/Home/events_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../data/model/booth/booth_model.dart';
@@ -749,7 +750,7 @@ class CreateEventView extends GetView<EventsController> {
 //  WIDGET  — image thumbnail with remove button
 // ════════════════════════════════════════════════════════════
 class _ImageThumb extends StatelessWidget {
-  final File file;
+  final XFile file;
   final int index;
   final bool isDark;
   const _ImageThumb({
@@ -770,10 +771,25 @@ class _ImageThumb extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Image
+          // Image — XFile works on both web (blob URL) and mobile
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.file(file, width: 100, height: 100, fit: BoxFit.cover),
+            child: FutureBuilder<Uint8List>(
+              future: file.readAsBytes(),
+              builder: (_, snap) => snap.hasData
+                  ? Image.memory(snap.data!,
+                      width: 100, height: 100, fit: BoxFit.cover)
+                  : const SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Center(
+                          child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )),
+                    ),
+            ),
           ),
           // Remove button
           Positioned(

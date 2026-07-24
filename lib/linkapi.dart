@@ -43,7 +43,8 @@ class AppLink {
   static String get investorDashboard => '$server/investor/dashboard';
 
   // ── Investor — Profile ───────────────────────────────────
-  static String get investorProfile => '$server/investor/profile';
+  static String get investorProfile       => '$server/investor/profile';
+  static String get investorProfileAvatar => '$server/investor/profile/avatar';
 
   // ── Investor — Bookings ──────────────────────────────────
   static String get investorBookings             => '$server/investor/bookings';
@@ -52,6 +53,7 @@ class AppLink {
 
   // ── Investor — Booth Profile ─────────────────────────────
   static String boothProfile(int boothId)        => '$server/investor/booths/$boothId/profile';
+  static String boothCoverImage(int boothId)     => '$server/investor/booths/$boothId/cover';
 
   // ── Investor — Campaigns ─────────────────────────────────
   static String get investorCampaigns            => '$server/investor/campaigns';

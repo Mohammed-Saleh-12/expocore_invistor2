@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +57,7 @@ class EventsController extends GetxController {
   final formKey             = GlobalKey<FormState>();
 
   // ── Media ─────────────────────────────────────────────────────────────
-  final pickedImages        = <File>[].obs;
+  final pickedImages        = <XFile>[].obs;   // XFile يعمل على الويب والجوال
   final _picker             = ImagePicker();
   static const int _maxImages = 6;
 
@@ -69,8 +68,8 @@ class EventsController extends GetxController {
     final remaining = _maxImages - pickedImages.length;
     final picked = await _picker.pickMultiImage(imageQuality: 80);
     if (picked.isEmpty) return;
-    final limited = picked.take(remaining).map((x) => File(x.path)).toList();
-    pickedImages.addAll(limited);
+    // احتفظ بـ XFile مباشرةً (يعمل على الويب والجوال)
+    pickedImages.addAll(picked.take(remaining));
   }
 
   void removeImage(int index) {
@@ -432,28 +431,29 @@ class EventsController extends GetxController {
 
     final b = selectedBooth.value!;
     final result = await _eventsData.createInvestorEvent(
-      name: nameCtrl.text.trim(),
-      type: selectedType.value,
-      boothId: b.id,
-      boothNumber: b.number,
-      exhibitionName: selectedExhibitionName.value,
-      date: selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
-      time: selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
-      maxParticipants: int.tryParse(maxCtrl.text) ?? 100,
-      description: descCtrl.text.trim(),
-      requiresBooking: ticketType.value != 'general',
-      durationDays: selectedDuration.value,
-      hasBookableSeats: ticketType.value == 'paid',
-      totalSeats: int.tryParse(seatsCtrl.text) ?? 0,
-      ticketPrice: ticketType.value == 'paid'
+      name:               nameCtrl.text.trim(),
+      type:               selectedType.value,
+      boothId:            b.id,
+      boothNumber:        b.number,
+      exhibitionName:     selectedExhibitionName.value,
+      date:               selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
+      time:               selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
+      maxParticipants:    int.tryParse(maxCtrl.text) ?? 100,
+      description:        descCtrl.text.trim(),
+      requiresBooking:    ticketType.value != 'general',
+      durationDays:       selectedDuration.value,
+      hasBookableSeats:   ticketType.value == 'paid',
+      totalSeats:         int.tryParse(seatsCtrl.text) ?? 0,
+      ticketPrice:        ticketType.value == 'paid'
           ? (double.tryParse(ticketPriceCtrl.text) ?? 0)
           : 0,
       isGeneralInvitation: ticketType.value == 'general',
-      ticketType: ticketType.value,
-      freeTicketLimit: ticketType.value == 'free_limited'
+      ticketType:         ticketType.value,
+      freeTicketLimit:    ticketType.value == 'free_limited'
           ? (int.tryParse(freeLimitCtrl.text) ?? 100)
           : 0,
-      videoPromoUrl: videoPromoCtrl.text.trim(),
+      videoPromoUrl:      videoPromoCtrl.text.trim(),
+      images:             pickedImages.toList(),   // ← multipart upload
     );
 
     bool success = false;
@@ -519,17 +519,25 @@ class EventsController extends GetxController {
 
     final dur = selectedSponsorDuration.value!;
     final result = await _eventsData.createSponsorship(
-      eventId: event.id,
+      eventId:               event.id,
       selectedDurationLabel: dur.label,
-      selectedDays: dur.days,
-      price: dur.price,
-      companyName: companyNameCtrl.text.trim(),
-      companyWebsite: companyWebCtrl.text.trim(),
-      companyPhone: companyPhoneCtrl.text.trim(),
-      productNames: productItems
+      selectedDays:          dur.days,
+      price:                 dur.price,
+      companyName:           companyNameCtrl.text.trim(),
+      companyWebsite:        companyWebCtrl.text.trim(),
+      companyPhone:          companyPhoneCtrl.text.trim(),
+      productNames:          productItems
           .map((p) => p.nameCtrl.text.trim())
           .where((n) => n.isNotEmpty)
           .join(', '),
+      // ── multipart media ─────────────────────────────────
+      logo:          logoXFile.value,
+      adImages:      adXFiles.toList(),
+      posterImages:  posterXFiles.toList(),
+      productImages: productItems
+          .where((p) => p.xFile != null)
+          .map((p) => p.xFile!)
+          .toList(),
     );
 
     if (result['status'] == true) {

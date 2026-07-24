@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import '../constant/app_env.dart';
 import '../services/services.dart';
 
@@ -112,20 +113,36 @@ class Crud {
     }
   }
 
-  // ── MULTIPART UPLOAD ──────────────────────────────────────
+  // ── MULTIPART UPLOAD (web + mobile compatible) ───────────
+  /// [method] 'POST' | 'PUT' | 'PATCH'
+  /// PUT/PATCH use method-spoofing field `_method` since HTTP
+  /// multipart only supports POST natively (standard Laravel pattern).
+  /// [files] list of (field-name → XFile) pairs; duplicate keys
+  /// are allowed for array fields, e.g. MapEntry('images[]', xfile).
   Future<Map<String, dynamic>> uploadData(
     String url,
     Map<String, dynamic> fields, {
-    List<MapEntry<String, String>> filePaths = const [],
+    List<MapEntry<String, XFile>> files = const [],
+    String method = 'POST',
   }) async {
     try {
-      if (AppEnv.logEnabled) dev.log('→ UPLOAD $url', name: 'API');
+      if (AppEnv.logEnabled) dev.log('→ UPLOAD($method) $url', name: 'API');
+      final allFields = Map<String, dynamic>.from(fields);
+      if (method == 'PUT')   allFields['_method'] = 'PUT';
+      if (method == 'PATCH') allFields['_method'] = 'PATCH';
+
       final req = http.MultipartRequest('POST', _uri(url))
         ..headers.addAll(_headers(multipart: true));
-      fields.forEach((k, v) => req.fields[k] = v.toString());
-      for (final entry in filePaths) {
+      allFields.forEach((k, v) => req.fields[k] = v.toString());
+      for (final entry in files) {
+        // readAsBytes() works on both web (blob URL) and mobile (file path)
+        final bytes = await entry.value.readAsBytes();
         req.files.add(
-          await http.MultipartFile.fromPath(entry.key, entry.value),
+          http.MultipartFile.fromBytes(
+            entry.key,
+            bytes,
+            filename: entry.value.name,
+          ),
         );
       }
       final streamed = await req.send().timeout(AppEnv.sendTimeout);

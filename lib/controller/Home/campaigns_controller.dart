@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/campaign/campaign_model.dart';
@@ -20,6 +21,32 @@ class CampaignsController extends GetxController {
   final selectedType   = ''.obs;
   final selectedStart  = ''.obs;
   final selectedEnd    = ''.obs;
+
+  // ── وسائط الحملة (صور/فيديو) ─────────────────────────────
+  final mediaFiles = <XFile>[].obs;
+  final _picker    = ImagePicker();
+
+  Future<void> pickCampaignMedia() async {
+    const maxFiles = 5;
+    if (mediaFiles.length >= maxFiles) {
+      Get.snackbar('تنبيه', 'الحد الأقصى $maxFiles ملفات',
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+    try {
+      final remaining = maxFiles - mediaFiles.length;
+      final picked = await _picker.pickMultiImage(imageQuality: 85);
+      if (picked.isEmpty) return;
+      mediaFiles.addAll(picked.take(remaining));
+    } catch (_) {
+      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  void removeCampaignMedia(int index) {
+    if (index < mediaFiles.length) mediaFiles.removeAt(index);
+  }
   final campaignTypes  = [
     'إعلانات على شاشات المعرض',
     'إعلانات على الخريطة 3D',
@@ -49,16 +76,18 @@ class CampaignsController extends GetxController {
     status.value = StatusRequest.loading;
 
     final result = await _campaignsData.createCampaign(
-      title: titleCtrl.text.trim(),
+      title:       titleCtrl.text.trim(),
       description: descCtrl.text.trim(),
-      type: selectedType.value,
-      budget: double.tryParse(budgetCtrl.text) ?? 0,
-      startDate: selectedStart.value,
-      endDate: selectedEnd.value,
+      type:        selectedType.value,
+      budget:      double.tryParse(budgetCtrl.text) ?? 0,
+      startDate:   selectedStart.value,
+      endDate:     selectedEnd.value,
+      mediaFiles:  mediaFiles.toList(),   // ← multipart upload
     );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
+      mediaFiles.clear();
       await _loadCampaigns();
       Get.back();
       Get.snackbar('success'.tr, 'campaign_created_msg'.tr,
@@ -93,6 +122,7 @@ class CampaignsController extends GetxController {
     titleCtrl.dispose();
     descCtrl.dispose();
     budgetCtrl.dispose();
+    mediaFiles.clear();
     super.onClose();
   }
 }
