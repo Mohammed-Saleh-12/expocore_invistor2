@@ -134,11 +134,11 @@ class BookingRequestView extends GetView<BookingController> {
           ),
           const SizedBox(height: 14),
           // مُبدِّل الوضع
-          Obx(() => Row(children: [
+         Row(children: [
                 _modeChip(isDark, 'full',   Icons.calendar_month_outlined, 'حجز بالكامل'),
                 const SizedBox(width: 10),
                 _modeChip(isDark, 'custom', Icons.tune_rounded,             'أيام محددة'),
-              ])),
+              ]),
           const SizedBox(height: 14),
           // المحتوى حسب الوضع
           Obx(() => controller.bookingMode.value == 'full'
