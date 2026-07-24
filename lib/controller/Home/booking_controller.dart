@@ -10,43 +10,124 @@ class BookingController extends GetxController {
 
   final booth        = Rx<BoothModel?>(null);
   final notesCtrl    = TextEditingController();
-  final duration     = 1.obs;
-  final startDate    = ''.obs;
-  final endDate      = ''.obs;
   final status       = StatusRequest.none.obs;
   final isSubmitting = false.obs;
 
+  /// وضع الحجز: 'full' = الفترة كاملة | 'custom' = أيام محددة
+  final bookingMode = 'full'.obs;
+
+  /// نطاق الأيام المحدد في الوضع المخصص
+  final customRangeStart = Rxn<DateTime>();
+  final customRangeEnd   = Rxn<DateTime>();
+
   /// الخدمات الديناميكية — مُنشأة من booth.services عند setBooth
-  /// RxMap<String, bool> — اسم الخدمة → مختار/غير مختار
   final serviceSelections = <String, bool>{}.obs;
 
   VoidCallback? _onWebSuccess;
 
-  // ── Date helpers ──────────────────────────────────────────────
-  void setStartDate(DateTime d) {
-    startDate.value = _fmtDate(d);
-    _syncDuration();
-  }
-
-  void setEndDate(DateTime d) {
-    endDate.value = _fmtDate(d);
-    _syncDuration();
-  }
-
-  void _syncDuration() {
-    final s = DateTime.tryParse(startDate.value);
-    final e = DateTime.tryParse(endDate.value);
-    if (s != null && e != null && !e.isBefore(s)) {
-      duration.value = e.difference(s).inDays + 1;
+  // ── Available days (كل الأيام بين start_date و end_date للجناح) ──
+  List<DateTime> get availableDays {
+    final b = booth.value;
+    if (b == null) return [];
+    final s = DateTime.tryParse(b.startDate);
+    final e = DateTime.tryParse(b.endDate);
+    if (s == null || e == null || e.isBefore(s)) return [];
+    final days = <DateTime>[];
+    DateTime cur = s;
+    while (!cur.isAfter(e)) {
+      days.add(cur);
+      cur = cur.add(const Duration(days: 1));
     }
+    return days;
+  }
+
+  // ── تاريخ البداية الفعلي حسب الوضع ──────────────────────────
+  String get effectiveStartDate {
+    if (bookingMode.value == 'full') return booth.value?.startDate ?? '';
+    final d = customRangeStart.value;
+    return d == null ? '' : _fmtDate(d);
+  }
+
+  // ── تاريخ النهاية الفعلي حسب الوضع ──────────────────────────
+  String get effectiveEndDate {
+    if (bookingMode.value == 'full') return booth.value?.endDate ?? '';
+    final e = customRangeEnd.value;
+    final s = customRangeStart.value;
+    if (e != null) return _fmtDate(e);
+    if (s != null) return _fmtDate(s); // يوم واحد فقط
+    return '';
+  }
+
+  // ── عدد الأيام الفعلية ────────────────────────────────────────
+  int get effectiveDuration {
+    final s = DateTime.tryParse(effectiveStartDate);
+    final e = DateTime.tryParse(effectiveEndDate);
+    if (s == null || e == null) return 0;
+    return e.difference(s).inDays + 1;
+  }
+
+  /// هل اليوم ضمن النطاق المحدد (للعرض البصري)؟
+  bool isDayInRange(DateTime day) {
+    final s = customRangeStart.value;
+    final e = customRangeEnd.value;
+    if (s == null) return false;
+    final d = DateTime(day.year, day.month, day.day);
+    final start = DateTime(s.year, s.month, s.day);
+    if (e == null) return d == start;
+    final end = DateTime(e.year, e.month, e.day);
+    return !d.isBefore(start) && !d.isAfter(end);
+  }
+
+  bool isDayRangeStart(DateTime day) {
+    final s = customRangeStart.value;
+    if (s == null) return false;
+    return _sameDay(day, s);
+  }
+
+  bool isDayRangeEnd(DateTime day) {
+    final e = customRangeEnd.value;
+    if (e == null) return false;
+    return _sameDay(day, e);
+  }
+
+  bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  /// النقر على يوم في الوضع المخصص — يفرض التتالي تلقائياً
+  void tapDay(DateTime day) {
+    final s = customRangeStart.value;
+    if (s == null || (customRangeEnd.value != null)) {
+      // بداية تحديد جديد
+      customRangeStart.value = day;
+      customRangeEnd.value   = null;
+    } else {
+      // البداية محددة، نحتاج نهاية
+      if (_sameDay(day, s) || day.isAfter(s)) {
+        customRangeEnd.value = day;
+      } else {
+        // اليوم قبل البداية — نعيد التحديد من هذا اليوم
+        customRangeStart.value = day;
+        customRangeEnd.value   = null;
+      }
+    }
+    // تحديث الـ UI
+    customRangeStart.refresh();
+    customRangeEnd.refresh();
   }
 
   String _fmtDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
+  // ── إعداد وضع الحجز ──────────────────────────────────────────
+  void setBookingMode(String mode) {
+    bookingMode.value        = mode;
+    customRangeStart.value   = null;
+    customRangeEnd.value     = null;
+  }
+
   // ── Total price (ديناميكي) ────────────────────────────────────
   double get total {
-    final base     = (booth.value?.price ?? 0) * duration.value;
+    final base     = (booth.value?.price ?? 0) * effectiveDuration;
     final services = booth.value?.services ?? {};
     double extras  = 0;
     for (final entry in serviceSelections.entries) {
@@ -65,13 +146,13 @@ class BookingController extends GetxController {
 
   /// تهيئة كاملة (تُستخدم من الويب أو عند إعادة الفتح)
   void resetForBooth(BoothModel b, {VoidCallback? onSuccess}) {
-    booth.value        = b;
-    duration.value     = 1;
-    startDate.value    = '';
-    endDate.value      = '';
-    status.value       = StatusRequest.none;
+    booth.value            = b;
+    bookingMode.value      = 'full';
+    customRangeStart.value = null;
+    customRangeEnd.value   = null;
+    status.value           = StatusRequest.none;
     notesCtrl.clear();
-    _onWebSuccess      = onSuccess;
+    _onWebSuccess = onSuccess;
     _initServices(b);
   }
 
@@ -95,15 +176,36 @@ class BookingController extends GetxController {
   Future<void> submitBooking() async {
     final b = booth.value;
     if (b == null) return;
+
+    // التحقق من تحديد التواريخ في الوضع المخصص
+    if (bookingMode.value == 'custom') {
+      if (customRangeStart.value == null) {
+        Get.snackbar('تنبيه', 'يرجى تحديد يوم البداية',
+            snackPosition: SnackPosition.BOTTOM);
+        return;
+      }
+      // إذا لم تُحدد نهاية نعتبرها نفس البداية (يوم واحد)
+      customRangeEnd.value ??= customRangeStart.value;
+    }
+
+    final sDate = effectiveStartDate;
+    final eDate = effectiveEndDate;
+    if (sDate.isEmpty || eDate.isEmpty) {
+      Get.snackbar('تنبيه', 'يرجى تحديد تواريخ الحجز',
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
     status.value       = StatusRequest.loading;
     isSubmitting.value = true;
 
     final result = await _bookingData.bookBooth(
-      boothId:      b.id,
-      durationDays: duration.value,
-      notes:        notesCtrl.text.trim(),
-      services:     Map<String, bool>.from(serviceSelections),
-      totalPrice:   total,
+      boothId:    b.id,
+      startDate:  sDate,
+      endDate:    eDate,
+      notes:      notesCtrl.text.trim(),
+      services:   Map<String, bool>.from(serviceSelections),
+      totalPrice: total,
     );
 
     if (result['status'] == true) {

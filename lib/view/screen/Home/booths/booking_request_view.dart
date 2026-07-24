@@ -25,9 +25,8 @@ class BookingRequestView extends GetView<BookingController> {
           children: [
             _boothSummary(context, booth),
             const SizedBox(height: 20),
-            _dateSection(context, isDark),
+            _bookingModeSection(context, isDark, booth),
             const SizedBox(height: 20),
-            // ── خدمات ديناميكية من الـ API ─────────────────
             _dynamicServicesSection(context, isDark),
             const SizedBox(height: 20),
             Text('booking_notes_label'.tr,
@@ -53,6 +52,7 @@ class BookingRequestView extends GetView<BookingController> {
     );
   }
 
+  // ── ملخص الجناح ──────────────────────────────────────────────
   Widget _boothSummary(BuildContext context, BoothModel booth) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
@@ -91,7 +91,8 @@ class BookingRequestView extends GetView<BookingController> {
     );
   }
 
-  Widget _dateSection(BuildContext context, bool isDark) {
+  // ── قسم وضع الحجز (كامل / أيام محددة) ───────────────────────
+  Widget _bookingModeSection(BuildContext context, bool isDark, BoothModel booth) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -109,96 +110,261 @@ class BookingRequestView extends GetView<BookingController> {
             Text('booking_dates_label'.tr,
                 style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           ]),
+          // فترة الإتاحة
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.darkPrimary.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(children: [
+              const Icon(Icons.info_outline, size: 14, color: AppColors.darkPrimary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'فترة الإتاحة: ${booth.startDate} → ${booth.endDate}',
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.darkPrimary,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ]),
+          ),
           const SizedBox(height: 14),
-          Row(children: [
-            Expanded(
-                child: _datePickerBox(context, isDark,
-                    label: 'booking_start_date'.tr,
-                    icon: Icons.calendar_today_outlined,
-                    rxValue: controller.startDate,
-                    onPicked: controller.setStartDate)),
-            const SizedBox(width: 12),
-            Expanded(
-                child: _datePickerBox(context, isDark,
-                    label: 'booking_end_date'.tr,
-                    icon: Icons.event_available_outlined,
-                    rxValue: controller.endDate,
-                    onPicked: controller.setEndDate)),
-          ]),
-          Obx(() {
-            if (controller.startDate.value.isEmpty || controller.endDate.value.isEmpty) {
-              return const SizedBox.shrink();
-            }
-            return Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Row(children: [
-                const Icon(Icons.info_outline, size: 14, color: AppColors.darkSecondary),
-                const SizedBox(width: 6),
-                Text('${'booking_duration_days'.tr}: ${controller.duration.value}',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.darkSecondary,
-                        fontWeight: FontWeight.w600)),
-              ]),
-            );
-          }),
+          // مُبدِّل الوضع
+          Obx(() => Row(children: [
+                _modeChip(isDark, 'full',   Icons.calendar_month_outlined, 'حجز بالكامل'),
+                const SizedBox(width: 10),
+                _modeChip(isDark, 'custom', Icons.tune_rounded,             'أيام محددة'),
+              ])),
+          const SizedBox(height: 14),
+          // المحتوى حسب الوضع
+          Obx(() => controller.bookingMode.value == 'full'
+              ? _fullPeriodInfo(isDark, booth)
+              : _customDaysGrid(isDark, booth)),
         ],
       ),
     );
   }
 
-  Widget _datePickerBox(
-    BuildContext context,
-    bool isDark, {
-    required String label,
-    required IconData icon,
-    required RxString rxValue,
-    required void Function(DateTime) onPicked,
-  }) =>
-      GestureDetector(
-        onTap: () async {
-          final now = DateTime.now();
-          final picked = await showDatePicker(
-            context: context,
-            initialDate: now,
-            firstDate: now,
-            lastDate: DateTime(now.year + 2, 12, 31),
-          );
-          if (picked != null) onPicked(picked);
-        },
-        child: Obx(() {
-          final val = rxValue.value;
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+  Widget _modeChip(bool isDark, String mode, IconData icon, String label) {
+    return Obx(() {
+      final sel = controller.bookingMode.value == mode;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => controller.setBookingMode(mode),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkCard : Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              gradient: sel ? AppColors.favoriteGradient : null,
+              color: sel ? null : (isDark ? AppColors.darkCard : Colors.white),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: val.isNotEmpty
-                    ? AppColors.darkPrimary.withOpacity(0.5)
-                    : AppColors.grey.withOpacity(0.3),
+                color: sel ? Colors.transparent : AppColors.darkPrimary.withOpacity(0.3),
+              ),
+              boxShadow: sel
+                  ? [BoxShadow(
+                      color: AppColors.darkPrimary.withOpacity(0.25),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3))]
+                  : null,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 16, color: sel ? Colors.white : AppColors.darkPrimary),
+                const SizedBox(width: 6),
+                Text(label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: sel ? Colors.white : null,
+                    )),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  // ── وضع الحجز الكامل ─────────────────────────────────────────
+  Widget _fullPeriodInfo(bool isDark, BoothModel booth) {
+    return Row(children: [
+      Expanded(child: _dateInfoBox(isDark,
+          label: 'تاريخ البداية', value: booth.startDate,
+          icon: Icons.calendar_today_outlined)),
+      const SizedBox(width: 12),
+      Expanded(child: _dateInfoBox(isDark,
+          label: 'تاريخ النهاية', value: booth.endDate,
+          icon: Icons.event_available_outlined)),
+    ]);
+  }
+
+  Widget _dateInfoBox(bool isDark,
+      {required String label, required String value, required IconData icon}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.darkPrimary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.35)),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 16, color: AppColors.darkPrimary),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: const TextStyle(fontSize: 10, color: AppColors.grey)),
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700,
+                      color: AppColors.darkPrimary)),
+            ],
+          ),
+        ),
+      ]),
+    );
+  }
+
+  // ── وضع الأيام المحددة (شبكة أيام متتالية) ───────────────────
+  Widget _customDaysGrid(bool isDark, BoothModel booth) {
+    final days = controller.availableDays;
+    if (days.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text('لا توجد أيام متاحة لهذا الجناح',
+            style: TextStyle(fontSize: 13, color: AppColors.grey)),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // تعليمات
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.darkSecondary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Row(children: [
+            Icon(Icons.touch_app_outlined, size: 13, color: AppColors.darkSecondary),
+            SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'اختر يوم البداية ثم يوم النهاية — يجب أن تكون الأيام متتالية',
+                style: TextStyle(fontSize: 11, color: AppColors.darkSecondary),
               ),
             ),
+          ]),
+        ),
+        const SizedBox(height: 12),
+        // شبكة الأيام
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: days.map((day) => Obx(() {
+            final isStart  = controller.isDayRangeStart(day);
+            final isEnd    = controller.isDayRangeEnd(day);
+            final inRange  = controller.isDayInRange(day);
+            final dayLabel = '${day.day}/${day.month}';
+            final weekDay  = _weekDayAr(day.weekday);
+
+            Color bg;
+            Color textColor;
+            Border border;
+
+            if (isStart || isEnd) {
+              bg        = AppColors.darkPrimary;
+              textColor = Colors.white;
+              border    = Border.all(color: Colors.transparent);
+            } else if (inRange) {
+              bg        = AppColors.darkPrimary.withOpacity(0.15);
+              textColor = AppColors.darkPrimary;
+              border    = Border.all(color: AppColors.darkPrimary.withOpacity(0.4));
+            } else {
+              bg        = isDark ? AppColors.darkCard : Colors.white;
+              textColor = isDark ? Colors.white70 : Colors.black87;
+              border    = Border.all(color: AppColors.grey.withOpacity(0.3));
+            }
+
+            return GestureDetector(
+              onTap: () => controller.tapDay(day),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 58,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: BorderRadius.circular(10),
+                  border: border,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(weekDay,
+                        style: TextStyle(
+                            fontSize: 9,
+                            color: inRange || isStart || isEnd
+                                ? textColor.withOpacity(0.8)
+                                : AppColors.grey)),
+                    const SizedBox(height: 2),
+                    Text(dayLabel,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: textColor)),
+                  ],
+                ),
+              ),
+            );
+          })).toList(),
+        ),
+        const SizedBox(height: 12),
+        // ملخص النطاق المحدد
+        Obx(() {
+          final sDate = controller.effectiveStartDate;
+          final eDate = controller.effectiveEndDate;
+          if (sDate.isEmpty) return const SizedBox.shrink();
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.darkPrimary.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Row(children: [
-              Icon(icon,
-                  size: 16,
-                  color: val.isNotEmpty ? AppColors.darkPrimary : AppColors.grey),
+              const Icon(Icons.check_circle_outline,
+                  size: 14, color: AppColors.darkPrimary),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  val.isNotEmpty ? val : label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: val.isNotEmpty ? null : AppColors.grey,
-                    fontWeight: val.isNotEmpty ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                  eDate.isEmpty || eDate == sDate
+                      ? 'تم اختيار: $sDate (يوم واحد)'
+                      : 'من: $sDate → إلى: $eDate  (${controller.effectiveDuration} أيام)',
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.darkPrimary,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ]),
           );
         }),
-      );
+      ],
+    );
+  }
+
+  String _weekDayAr(int weekday) {
+    const days = ['', 'الإثنين', 'الثلاثاء', 'الأربعاء',
+                  'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+    return weekday >= 1 && weekday <= 7 ? days[weekday] : '';
+  }
 
   // ── خدمات ديناميكية ─────────────────────────────────────────
   Widget _dynamicServicesSection(BuildContext context, bool isDark) {
@@ -259,11 +425,9 @@ class BookingRequestView extends GetView<BookingController> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Checkbox visual
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
-                        width: 20,
-                        height: 20,
+                        width: 20, height: 20,
                         decoration: BoxDecoration(
                           gradient: selected ? AppColors.favoriteGradient : null,
                           color: selected ? null : Colors.transparent,
@@ -288,11 +452,12 @@ class BookingRequestView extends GetView<BookingController> {
     });
   }
 
-  // ── ملخص التكلفة الديناميكي ──────────────────────────────────
+  // ── ملخص التكلفة ─────────────────────────────────────────────
   Widget _costSummary(BuildContext context) => Obx(() {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final booth  = controller.booth.value;
         final svc    = booth?.services ?? {};
+        final dur    = controller.effectiveDuration;
 
         return Container(
           padding: const EdgeInsets.all(14),
@@ -309,9 +474,8 @@ class BookingRequestView extends GetView<BookingController> {
               const Divider(height: 16),
               _costRow(
                 'booking_base_rent'.tr,
-                '${((booth?.price ?? 0) * controller.duration.value).toInt()} ريال',
+                '${((booth?.price ?? 0) * dur).toInt()} ريال',
               ),
-              // الخدمات المختارة
               ...svc.entries.where((e) =>
                   controller.serviceSelections[e.key] ?? false).map((e) =>
                   _costRow(e.key, '${e.value.toInt()} ريال')),

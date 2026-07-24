@@ -218,6 +218,43 @@ class CreateEventView extends GetView<EventsController> {
               // ── Date & time ────────────────────────────────────────
               _sectionHeader('event_section_datetime'.tr),
               const SizedBox(height: 12),
+              // تلميح نطاق فترة الحجز
+              Obx(() {
+                final booth = controller.selectedBooth.value;
+                if (booth == null ||
+                    booth.startDate.isEmpty ||
+                    booth.endDate.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkSecondary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.darkSecondary.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(children: [
+                      const Icon(Icons.date_range_outlined,
+                          size: 14, color: AppColors.darkSecondary),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'يمكن اختيار الأيام ضمن: ${booth.startDate} → ${booth.endDate}',
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.darkSecondary,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ]),
+                  ),
+                );
+              }),
               // تاريخ البداية / تاريخ النهاية
               Row(
                 children: [
@@ -244,6 +281,30 @@ class CreateEventView extends GetView<EventsController> {
                   ),
                 ],
               ),
+              // ملاحظة التتالي + عدد الأيام
+              Obx(() {
+                final s = controller.selectedDate.value;
+                final e = controller.selectedEndDate.value;
+                if (s.isEmpty) return const SizedBox.shrink();
+                final dur = controller.eventDurationDays;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(children: [
+                    const Icon(Icons.check_circle_outline,
+                        size: 13, color: AppColors.darkSecondary),
+                    const SizedBox(width: 5),
+                    Text(
+                      e.isEmpty || e == s
+                          ? 'فعالية ليوم واحد: $s'
+                          : 'من $s إلى $e ($dur أيام متتالية)',
+                      style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.darkSecondary,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ]),
+                );
+              }),
               const SizedBox(height: 12),
               // الوقت
               _datePicker(
@@ -342,20 +403,56 @@ class CreateEventView extends GetView<EventsController> {
       onTap: () async {
         final ctrl = Get.find<EventsController>();
         if (isDate) {
-          final now = DateTime.now();
+          final booth = ctrl.selectedBooth.value;
+
+          // تحديد أول وآخر تاريخ مسموح به بناءً على فترة حجز الجناح
+          final boothStart = (booth != null && booth.startDate.isNotEmpty)
+              ? DateTime.tryParse(booth.startDate)
+              : null;
+          final boothEnd = (booth != null && booth.endDate.isNotEmpty)
+              ? DateTime.tryParse(booth.endDate)
+              : null;
+
+          final now       = DateTime.now();
+          final firstDate = boothStart ?? now;
+          final lastDate  = boothEnd   ?? DateTime(now.year + 2, 12, 31);
+
+          // للنهاية: لا يمكن اختيار تاريخ قبل البداية
+          DateTime initialDate = firstDate;
+          if (isEnd) {
+            final existingStart = DateTime.tryParse(ctrl.selectedDate.value);
+            if (existingStart != null && !existingStart.isBefore(firstDate)) {
+              initialDate = existingStart;
+            }
+          }
+
           final picked = await showDatePicker(
             context: context,
-            initialDate: now,
-            firstDate: now,
-            lastDate: DateTime(now.year + 2, 12, 31),
+            initialDate: initialDate,
+            firstDate: firstDate,
+            lastDate: lastDate,
           );
+
           if (picked != null) {
             final formatted =
                 '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
             if (isEnd) {
+              // التحقق أن النهاية ليست قبل البداية
+              final startDt = DateTime.tryParse(ctrl.selectedDate.value);
+              if (startDt != null && picked.isBefore(startDt)) {
+                Get.snackbar('تنبيه',
+                    'تاريخ النهاية يجب أن يكون مساوياً للبداية أو بعدها',
+                    snackPosition: SnackPosition.BOTTOM);
+                return;
+              }
               ctrl.selectedEndDate.value = formatted;
             } else {
               ctrl.selectedDate.value = formatted;
+              // إعادة ضبط النهاية إذا أصبحت قبل البداية الجديدة
+              final endDt = DateTime.tryParse(ctrl.selectedEndDate.value);
+              if (endDt != null && endDt.isBefore(picked)) {
+                ctrl.selectedEndDate.value = formatted; // يوم واحد
+              }
             }
           }
         } else {

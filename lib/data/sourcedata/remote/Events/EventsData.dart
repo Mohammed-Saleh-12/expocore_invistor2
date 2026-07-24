@@ -12,18 +12,19 @@ class EventsData {
   }
 
   /// إنشاء فعالية — مع صور اختيارية (multipart) أو بدونها (JSON).
+  /// يُرسَل تاريخ البداية والنهاية بدلاً من عدد الأيام.
   Future<Map<String, dynamic>> createInvestorEvent({
     required String name,
     required String type,
     required int    boothId,
     required String boothNumber,
     required String exhibitionName,
-    required String date,
+    required String startDate,      // 'YYYY-MM-DD'
+    required String endDate,        // 'YYYY-MM-DD' (= startDate إذا يوم واحد)
     required String time,
     required int    maxParticipants,
     required String description,
     required bool   requiresBooking,
-    required int    durationDays,
     required bool   hasBookableSeats,
     required int    totalSeats,
     required double ticketPrice,
@@ -39,12 +40,12 @@ class EventsData {
       'booth_id':              boothId,
       'booth_number':          boothNumber,
       'exhibition_name':       exhibitionName,
-      'date':                  date,
+      'start_date':            startDate,
+      'end_date':              endDate,
       'time':                  time,
       'max_participants':      maxParticipants,
       'description':           description,
       'requires_booking':      requiresBooking,
-      'duration_days':         durationDays,
       'has_bookable_seats':    hasBookableSeats,
       'total_seats':           totalSeats,
       'ticket_price':          ticketPrice,

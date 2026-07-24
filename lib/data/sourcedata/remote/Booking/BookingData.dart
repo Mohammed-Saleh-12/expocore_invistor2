@@ -6,20 +6,23 @@ class BookingData {
   BookingData(this.crud);
 
   /// إنشاء حجز جديد — POST /booths/book
+  /// يُرسَل تاريخ البداية والنهاية بدلاً من عدد الأيام.
   /// [services] : Map<String,bool> — الخدمات المختارة ديناميكياً
   Future<Map<String, dynamic>> bookBooth({
-    required int              boothId,
-    required int              durationDays,
-    required String           notes,
-    required Map<String, bool> services,   // ← ديناميكي (اسم → مختار)
-    required double           totalPrice,
+    required int               boothId,
+    required String            startDate,   // 'YYYY-MM-DD'
+    required String            endDate,     // 'YYYY-MM-DD'
+    required String            notes,
+    required Map<String, bool> services,    // ← ديناميكي (اسم → مختار)
+    required double            totalPrice,
   }) async {
     return await crud.postData(AppLink.bookBooth, {
-      'booth_id':      boothId,
-      'duration_days': durationDays,
-      'notes':         notes,
-      'services':      services,
-      'total_price':   totalPrice,
+      'booth_id':    boothId,
+      'start_date':  startDate,
+      'end_date':    endDate,
+      'notes':       notes,
+      'services':    services,
+      'total_price': totalPrice,
     });
   }
 

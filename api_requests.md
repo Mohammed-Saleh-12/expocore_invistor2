@@ -245,7 +245,8 @@ Body (JSON):
 ```json
 {
   "booth_id": "integer",
-  "duration_days": "integer",
+  "start_date": "string (YYYY-MM-DD)",
+  "end_date": "string (YYYY-MM-DD)",
   "notes": "string",
   "services": {
     "شاشة عرض إضافية": true,
@@ -256,7 +257,18 @@ Body (JSON):
 }
 ```
 
-> **Note:** `services` is a dynamic map of `{ "service name": selected (bool) }`. The available service names and their prices come from `BoothModel.services` (returned by §3.2). This replaces the previous fixed fields `screen_service`, `setup_service`, `security_service`, `cleaning_service`.
+**Booking modes (client-side):**
+
+| Mode | Description | Sent dates |
+|---|---|---|
+| Full period (`full`) | Book the entire availability window | `start_date` and `end_date` taken directly from `BoothModel.startDate` / `endDate` |
+| Specific days (`custom`) | Investor picks a consecutive day range within the availability window | `start_date` = first selected day, `end_date` = last selected day |
+
+> **Notes:**
+> - `duration_days` is **no longer sent**. The backend derives duration from `start_date` and `end_date`.
+> - Consecutive-day constraint is enforced on the client: the investor picks a contiguous range (no gaps).
+> - If only a single day is selected, `start_date` equals `end_date`.
+> - `services` is a dynamic map of `{ "service name": selected (bool) }`. Available service names and prices come from `BoothModel.services` (returned by §3.2).
 
 ---
 
@@ -433,12 +445,12 @@ Body (JSON):
   "booth_id": "integer",
   "booth_number": "string",
   "exhibition_name": "string",
-  "date": "string (date)",
-  "time": "string (time)",
+  "start_date": "string (YYYY-MM-DD)",
+  "end_date": "string (YYYY-MM-DD)",
+  "time": "string (HH:MM)",
   "max_participants": "integer",
   "description": "string",
   "requires_booking": true,
-  "duration_days": "integer",
   "has_bookable_seats": true,
   "total_seats": "integer",
   "ticket_price": "number",
@@ -448,6 +460,15 @@ Body (JSON):
   "video_promo_url": "string"
 }
 ```
+
+**Date selection rules (client-side):**
+
+| Rule | Detail |
+|---|---|
+| Date range | Both `start_date` and `end_date` must fall within the booked booth's availability window (`BoothModel.startDate` → `BoothModel.endDate`) |
+| Consecutive days | The investor picks a contiguous range — no gaps allowed |
+| Single-day event | `start_date` equals `end_date` |
+| Duration | Derived by the backend from `end_date − start_date + 1`; `duration_days` is **no longer sent** |
 
 ---
 

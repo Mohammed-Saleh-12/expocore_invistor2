@@ -76,12 +76,20 @@ class EventsController extends GetxController {
     if (index < pickedImages.length) pickedImages.removeAt(index);
   }
   final selectedType        = ''.obs;
-  final selectedDate        = ''.obs;
-  final selectedEndDate     = ''.obs;
+  final selectedDate        = ''.obs;   // تاريخ بداية الفعالية 'YYYY-MM-DD'
+  final selectedEndDate     = ''.obs;   // تاريخ نهاية الفعالية 'YYYY-MM-DD'
   final selectedTime        = ''.obs;
-  final selectedDuration    = 1.obs;
   final hasBookableSeats    = false.obs;
   final isGeneralInvite     = true.obs;
+
+  // عدد أيام الفعالية (محسوب تلقائياً من تاريخ البداية والنهاية)
+  int get eventDurationDays {
+    final s = DateTime.tryParse(selectedDate.value);
+    final e = DateTime.tryParse(selectedEndDate.value);
+    if (s == null || e == null) return 0;
+    final diff = e.difference(s).inDays + 1;
+    return diff < 1 ? 1 : diff;
+  }
 
   /// نوع التذكرة: 'general' | 'paid' | 'free_limited'
   final ticketType          = 'general'.obs;
@@ -426,22 +434,52 @@ class EventsController extends GetxController {
       _warn('event_booth_required'.tr); return false;
     }
 
+    // التحقق من تحديد تاريخي البداية والنهاية
+    if (selectedDate.value.isEmpty) {
+      _warn('يرجى تحديد تاريخ بداية الفعالية'); return false;
+    }
+    if (selectedEndDate.value.isEmpty) {
+      // إذا لم يُحدد تاريخ النهاية نعتبر الفعالية يوم واحد
+      selectedEndDate.value = selectedDate.value;
+    }
+
+    // التحقق أن النهاية ليست قبل البداية
+    final sDate = DateTime.tryParse(selectedDate.value);
+    final eDate = DateTime.tryParse(selectedEndDate.value);
+    if (sDate != null && eDate != null && eDate.isBefore(sDate)) {
+      _warn('تاريخ النهاية يجب أن يكون بعد تاريخ البداية أو مساوياً له'); return false;
+    }
+
+    // التحقق أن التواريخ ضمن فترة حجز الجناح
+    final b = selectedBooth.value!;
+    if (b.startDate.isNotEmpty && b.endDate.isNotEmpty) {
+      final boothStart = DateTime.tryParse(b.startDate);
+      final boothEnd   = DateTime.tryParse(b.endDate);
+      if (boothStart != null && boothEnd != null) {
+        if (sDate != null && sDate.isBefore(boothStart)) {
+          _warn('تاريخ بداية الفعالية قبل بداية فترة حجز الجناح (${b.startDate})'); return false;
+        }
+        if (eDate != null && eDate.isAfter(boothEnd)) {
+          _warn('تاريخ نهاية الفعالية بعد نهاية فترة حجز الجناح (${b.endDate})'); return false;
+        }
+      }
+    }
+
     isCreating.value = true;
     status.value = StatusRequest.loading;
 
-    final b = selectedBooth.value!;
     final result = await _eventsData.createInvestorEvent(
       name:               nameCtrl.text.trim(),
       type:               selectedType.value,
       boothId:            b.id,
       boothNumber:        b.number,
       exhibitionName:     selectedExhibitionName.value,
-      date:               selectedDate.value.isEmpty ? '2026-07-18' : selectedDate.value,
+      startDate:          selectedDate.value,
+      endDate:            selectedEndDate.value,
       time:               selectedTime.value.isEmpty ? '10:00' : selectedTime.value,
       maxParticipants:    int.tryParse(maxCtrl.text) ?? 100,
       description:        descCtrl.text.trim(),
       requiresBooking:    ticketType.value != 'general',
-      durationDays:       selectedDuration.value,
       hasBookableSeats:   ticketType.value == 'paid',
       totalSeats:         int.tryParse(seatsCtrl.text) ?? 0,
       ticketPrice:        ticketType.value == 'paid'
@@ -660,7 +698,7 @@ class EventsController extends GetxController {
     freeLimitCtrl.clear(); pickedImages.clear();
     selectedType.value = ''; selectedDate.value = ''; selectedEndDate.value = '';
     selectedTime.value = '';
-    selectedDuration.value = 1; hasBookableSeats.value = false;
+    hasBookableSeats.value = false;
     isGeneralInvite.value = true; ticketType.value = 'general';
     selectedExhibitionName.value = ''; selectedBooth.value = null;
   }
