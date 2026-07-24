@@ -3,29 +3,23 @@ import 'package:expocore_invistor2/linkapi.dart';
 
 class BookingData {
   Crud crud;
-
   BookingData(this.crud);
 
   /// إنشاء حجز جديد — POST /booths/book
+  /// [services] : Map<String,bool> — الخدمات المختارة ديناميكياً
   Future<Map<String, dynamic>> bookBooth({
-    required int    boothId,
-    required int    durationDays,
-    required String notes,
-    required bool   screenService,
-    required bool   setupService,
-    required bool   securityService,
-    required bool   cleaningService,
-    required double totalPrice,
+    required int              boothId,
+    required int              durationDays,
+    required String           notes,
+    required Map<String, bool> services,   // ← ديناميكي (اسم → مختار)
+    required double           totalPrice,
   }) async {
     return await crud.postData(AppLink.bookBooth, {
-      'booth_id':         boothId,
-      'duration_days':    durationDays,
-      'notes':            notes,
-      'screen_service':   screenService,
-      'setup_service':    setupService,
-      'security_service': securityService,
-      'cleaning_service': cleaningService,
-      'total_price':      totalPrice,
+      'booth_id':      boothId,
+      'duration_days': durationDays,
+      'notes':         notes,
+      'services':      services,
+      'total_price':   totalPrice,
     });
   }
 

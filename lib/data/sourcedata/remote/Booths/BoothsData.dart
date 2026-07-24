@@ -15,6 +15,15 @@ class BoothsData {
     return await crud.getData(AppLink.bookingDetail(bookingId));
   }
 
+  /// جلب الأجنحة الخاصة بمعرض معين — GET /booths?exhibition_id={id}
+  /// يُستدعى عند الدخول إلى صفحة تفاصيل المعرض
+  Future<Map<String, dynamic>> getExhibitionBooths(int exhibitionId) async {
+    return await crud.getData(AppLink.booths, params: {
+      'exhibition_id': exhibitionId,
+      'per_page':      100,
+    });
+  }
+
   /// جلب الأجنحة المتاحة للحجز — GET /booths
   /// [exhibitionId] : فلتر اختياري للمعرض
   /// [status]       : فلتر الحالة (available, booked, ...)

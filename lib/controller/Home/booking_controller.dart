@@ -7,21 +7,22 @@ import '../../data/sourcedata/remote/Booking/BookingData.dart';
 
 class BookingController extends GetxController {
   final BookingData _bookingData = BookingData(Crud());
-  final booth           = Rx<BoothModel?>(null);
-  final notesCtrl       = TextEditingController();
-  final duration        = 1.obs;
-  final startDate       = ''.obs;
-  final endDate         = ''.obs;
-  final status          = StatusRequest.none.obs;
-  final isSubmitting    = false.obs;
-  final screenService   = false.obs;
-  final setupService    = false.obs;
-  final securitySvc     = false.obs;
-  final cleaningService = false.obs;
+
+  final booth        = Rx<BoothModel?>(null);
+  final notesCtrl    = TextEditingController();
+  final duration     = 1.obs;
+  final startDate    = ''.obs;
+  final endDate      = ''.obs;
+  final status       = StatusRequest.none.obs;
+  final isSubmitting = false.obs;
+
+  /// الخدمات الديناميكية — مُنشأة من booth.services عند setBooth
+  /// RxMap<String, bool> — اسم الخدمة → مختار/غير مختار
+  final serviceSelections = <String, bool>{}.obs;
 
   VoidCallback? _onWebSuccess;
 
-  // ── Date helpers ──────────────────────────────────────────────────────
+  // ── Date helpers ──────────────────────────────────────────────
   void setStartDate(DateTime d) {
     startDate.value = _fmtDate(d);
     _syncDuration();
@@ -43,46 +44,66 @@ class BookingController extends GetxController {
   String _fmtDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
+  // ── Total price (ديناميكي) ────────────────────────────────────
   double get total {
-    final base   = (booth.value?.price ?? 0) * duration.value;
-    final extras = (screenService.value   ? 500.0 : 0) +
-                   (setupService.value    ? 800.0 : 0) +
-                   (securitySvc.value     ? 300.0 : 0) +
-                   (cleaningService.value ? 200.0 : 0);
+    final base     = (booth.value?.price ?? 0) * duration.value;
+    final services = booth.value?.services ?? {};
+    double extras  = 0;
+    for (final entry in serviceSelections.entries) {
+      if (entry.value && services.containsKey(entry.key)) {
+        extras += services[entry.key]!;
+      }
+    }
     return base + extras;
   }
 
-  void setBooth(BoothModel b) => booth.value = b;
-
-  void resetForWeb(BoothModel b, VoidCallback onSuccess) {
-    booth.value           = b;
-    duration.value        = 1;
-    startDate.value       = '';
-    endDate.value         = '';
-    screenService.value   = false;
-    setupService.value    = false;
-    securitySvc.value     = false;
-    cleaningService.value = false;
-    status.value          = StatusRequest.none;
-    notesCtrl.clear();
-    _onWebSuccess         = onSuccess;
+  // ── Set booth + init service selections ──────────────────────
+  void setBooth(BoothModel b) {
+    booth.value = b;
+    _initServices(b);
   }
 
+  /// تهيئة كاملة (تُستخدم من الويب أو عند إعادة الفتح)
+  void resetForBooth(BoothModel b, {VoidCallback? onSuccess}) {
+    booth.value        = b;
+    duration.value     = 1;
+    startDate.value    = '';
+    endDate.value      = '';
+    status.value       = StatusRequest.none;
+    notesCtrl.clear();
+    _onWebSuccess      = onSuccess;
+    _initServices(b);
+  }
+
+  /// لتوافق الكود القديم من الويب
+  void resetForWeb(BoothModel b, VoidCallback onSuccess) =>
+      resetForBooth(b, onSuccess: onSuccess);
+
+  void _initServices(BoothModel b) {
+    serviceSelections.clear();
+    for (final key in b.services.keys) {
+      serviceSelections[key] = false;
+    }
+  }
+
+  /// تبديل حالة خدمة
+  void toggleService(String name) {
+    serviceSelections[name] = !(serviceSelections[name] ?? false);
+  }
+
+  // ── Submit booking ────────────────────────────────────────────
   Future<void> submitBooking() async {
     final b = booth.value;
     if (b == null) return;
-    status.value = StatusRequest.loading;
+    status.value       = StatusRequest.loading;
     isSubmitting.value = true;
 
     final result = await _bookingData.bookBooth(
-      boothId: b.id,
+      boothId:      b.id,
       durationDays: duration.value,
-      notes: notesCtrl.text.trim(),
-      screenService: screenService.value,
-      setupService: setupService.value,
-      securityService: securitySvc.value,
-      cleaningService: cleaningService.value,
-      totalPrice: total,
+      notes:        notesCtrl.text.trim(),
+      services:     Map<String, bool>.from(serviceSelections),
+      totalPrice:   total,
     );
 
     if (result['status'] == true) {
