@@ -99,11 +99,72 @@ POST /auth/refresh
 ```
 GET /exhibitions
 ```
-No params.
+Query params (all optional):
+
+| Param | Type | Description |
+|---|---|---|
+| `page` | integer | Page number |
+| `per_page` | integer | Items per page |
+| `status` | string | `"active"`, `"upcoming"`, `"ended"` |
+| `city` | string | Filter by city |
+| `sector` | string | Filter by sector |
 
 ---
 
-### 2.2 Toggle Favorite Exhibition
+### 2.2 Get Exhibition Detail
+```
+GET /exhibitions/{id}
+```
+No params.
+
+Response includes the following fields beyond the basic listing fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `images` | `string[]` | Ordered list of image URLs (first = hero) |
+| `services` | `string[]` | Exhibition-provided services (e.g. "واي فاي مجاني", "موقف سيارات") |
+| `map_data` | `object \| null` | Full 3D map data — halls and booths layout (see §3.2 note) |
+| `sponsor_events` | `object[]` | Sponsorship events embedded in this exhibition's detail |
+
+Response example:
+```json
+{
+  "id": 1,
+  "name": "معرض التقنية 2026",
+  "images": [
+    "https://cdn.example.com/ex1-hero.jpg",
+    "https://cdn.example.com/ex1-hall-a.jpg"
+  ],
+  "services": ["واي فاي مجاني", "موقف سيارات", "أمن 24/7", "استقبال", "مطاعم"],
+  "map_data": {
+    "exhibition_id": 1,
+    "grid_width": 13,
+    "grid_depth": 10,
+    "halls": [
+      {
+        "id": "A", "name": "القاعة أ", "color": "7A1FFF",
+        "booths": [{ "id": 1, "number": "A01", "col": 0, "row": 0, "width": 2, "depth": 2, "status": "available", "price": 18000, "area": 400 }]
+      }
+    ]
+  },
+  "sponsor_events": [
+    { "id": 10, "name": "حفل افتتاح", "type": "حفل افتتاح", "date": "2026-07-15", "place": "القاعة الرئيسية" }
+  ],
+  "start_date": "2026-07-15",
+  "end_date": "2026-07-20",
+  "location": "مركز الرياض للمعارض",
+  "city": "الرياض",
+  "status": "upcoming",
+  "available_booths": 45,
+  "sectors": ["تقنية", "ذكاء اصطناعي"]
+}
+```
+
+> **Note:** `map_data` is embedded in the exhibition detail response. The separate `GET /exhibitions/{id}/map` endpoint still exists on the server but is no longer called by the client — the map is parsed directly from this response via `ExhibitionModel.mapJson`.
+
+---
+
+### 2.3 Toggle Favorite Exhibition
 ```
 POST   /investor/favorites/exhibitions/{id}     — add to favorites
 DELETE /investor/favorites/exhibitions/{id}     — remove from favorites
@@ -118,11 +179,65 @@ POST body: empty `{}`
 ```
 GET /booths
 ```
-No params.
+Query params (all optional):
+
+| Param | Type | Description |
+|---|---|---|
+| `exhibition_id` | integer | Filter by exhibition |
+| `status` | string | `"available"`, `"booked"` |
+| `page` | integer | Page number |
+| `per_page` | integer | Items per page |
 
 ---
 
-### 3.2 Book a Booth
+### 3.2 Get Exhibition Booths
+```
+GET /booths?exhibition_id={id}
+```
+Returns all booths belonging to a specific exhibition. Called automatically by `ExhibitionDetailController` on opening the exhibition detail page.
+
+Response example:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "number": "A01",
+      "exhibition_name": "معرض التقنية 2026",
+      "area": 400,
+      "price": 18000,
+      "status": "available",
+      "location": "القاعة أ - صف 1",
+      "amenities": ["واي فاي", "كهرباء", "إضاءة"],
+      "services": {
+        "شاشة عرض إضافية": 500,
+        "إضاءة مميزة": 300,
+        "خدمة تجهيز": 800
+      }
+    },
+    {
+      "id": 2,
+      "number": "A02",
+      "status": "booked",
+      "company_name": "تقنية الغد",
+      "company_email": "info@techfuture.sa",
+      "company_initials": "تغ",
+      "services": {}
+    }
+  ]
+}
+```
+
+| Response field | Model field | Notes |
+|---|---|---|
+| `services` | `BoothModel.services: Map<String,double>` | Dynamic map of service name → price |
+| `company_name` | `BoothModel.companyName` | Present only when `status == "booked"` |
+| `company_email` | `BoothModel.companyEmail` | Present only when `status == "booked"` |
+| `company_initials` | `BoothModel.companyInitials` | Present only when `status == "booked"` |
+
+---
+
+### 3.3 Book a Booth
 ```
 POST /booths/book
 ```
@@ -132,17 +247,20 @@ Body (JSON):
   "booth_id": "integer",
   "duration_days": "integer",
   "notes": "string",
-  "screen_service": true,
-  "setup_service": true,
-  "security_service": true,
-  "cleaning_service": true,
+  "services": {
+    "شاشة عرض إضافية": true,
+    "إضاءة مميزة": false,
+    "خدمة تجهيز": true
+  },
   "total_price": "number"
 }
 ```
 
+> **Note:** `services` is a dynamic map of `{ "service name": selected (bool) }`. The available service names and their prices come from `BoothModel.services` (returned by §3.2). This replaces the previous fixed fields `screen_service`, `setup_service`, `security_service`, `cleaning_service`.
+
 ---
 
-### 3.3 Toggle Favorite Booth
+### 3.4 Toggle Favorite Booth
 ```
 POST   /investor/favorites/booths/{id}          — add to favorites
 DELETE /investor/favorites/booths/{id}          — remove from favorites
@@ -505,7 +623,7 @@ No params. Returns exhibitions, booths, and events in one response.
 
 ---
 
-*(Individual toggle endpoints are listed under their respective sections: §2.2, §3.3, §9.6)*
+*(Individual toggle endpoints are listed under their respective sections: §2.3, §3.4, §9.6)*
 
 ---
 
