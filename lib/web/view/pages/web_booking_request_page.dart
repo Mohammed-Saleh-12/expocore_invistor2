@@ -352,123 +352,119 @@ class WebBookingRequestPage extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 14),
-        LayoutBuilder(
-          builder: (_, cons) {
-            final isWide = cons.maxWidth > 500;
-            final services = [
-              (
-                c.screenService,
-                Icons.tv_outlined,
-                'إعلانات على الشاشات',
-                '500',
-              ),
-              (c.setupService, Icons.chair_outlined, 'تجهيزات وأثاث', '800'),
-              (c.securitySvc, Icons.security_outlined, 'أمن خاص', '300'),
-              (
-                c.cleaningService,
-                Icons.cleaning_services_outlined,
-                'خدمة تنظيف',
-                '200',
-              ),
-            ];
-            if (isWide) {
-              return Wrap(
-                spacing: 12,
-                runSpacing: 10,
-                children: services
-                    .map(
-                      (s) => SizedBox(
-                        width: (cons.maxWidth - 12) / 2,
-                        child: _serviceToggle(s.$1, s.$2, s.$3, s.$4),
-                      ),
-                    )
+        Obx(() {
+          final services = c.booth.value?.services ?? {};
+          if (services.isEmpty) {
+            return Text(
+              'لا توجد خدمات إضافية متاحة',
+              style: TextStyle(color: AppColors.grey, fontSize: 13),
+            );
+          }
+          final entries = services.entries.toList();
+          return LayoutBuilder(
+            builder: (_, cons) {
+              final isWide = cons.maxWidth > 500;
+              if (isWide) {
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 10,
+                  children: entries
+                      .map(
+                        (e) => SizedBox(
+                          width: (cons.maxWidth - 12) / 2,
+                          child: _serviceToggle(c, e.key, e.value),
+                        ),
+                      )
+                      .toList(),
+                );
+              }
+              return Column(
+                children: entries
+                    .map((e) => _serviceToggle(c, e.key, e.value))
                     .toList(),
               );
-            }
-            return Column(
-              children: services
-                  .map((s) => _serviceToggle(s.$1, s.$2, s.$3, s.$4))
-                  .toList(),
-            );
-          },
-        ),
+            },
+          );
+        }),
       ],
     ),
   );
 
   Widget _serviceToggle(
-    RxBool val,
-    IconData icon,
-    String label,
-    String price,
+    BookingController c,
+    String serviceName,
+    double price,
   ) => Obx(
-    () => GestureDetector(
-      onTap: () => val.toggle(),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: val.value
-              ? WebTheme.primary.withOpacity(0.12)
-              : WebTheme.surfaceAlt,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: val.value ? WebTheme.primary : WebTheme.border,
+    () {
+      final selected = c.serviceSelections[serviceName] == true;
+      return GestureDetector(
+        onTap: () => c.toggleService(serviceName),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: selected
+                ? WebTheme.primary.withOpacity(0.12)
+                : WebTheme.surfaceAlt,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? WebTheme.primary : WebTheme.border,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.room_service_outlined,
+                size: 20,
+                color: selected ? WebTheme.primary : AppColors.grey,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  serviceName,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: selected ? WebTheme.text : AppColors.grey,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              Text(
+                '${price.toInt()} ر.س',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: selected ? AppColors.orange : AppColors.grey,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  gradient: selected ? AppColors.favoriteGradient : null,
+                  color: selected ? null : WebTheme.surface,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: selected
+                        ? Colors.transparent
+                        : AppColors.grey.withOpacity(0.4),
+                  ),
+                ),
+                child: selected
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 13,
+                      )
+                    : null,
+              ),
+            ],
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: val.value ? WebTheme.primary : AppColors.grey,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: val.value ? WebTheme.text : AppColors.grey,
-                  fontWeight: val.value ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
-            Text(
-              '$price ر.س',
-              style: TextStyle(
-                fontSize: 12,
-                color: val.value ? AppColors.orange : AppColors.grey,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                gradient: val.value ? AppColors.favoriteGradient : null,
-                color: val.value ? null : WebTheme.surface,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: val.value
-                      ? Colors.transparent
-                      : AppColors.grey.withOpacity(0.4),
-                ),
-              ),
-              child: val.value
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 13,
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    ),
+      );
+    },
   );
 
   Widget _notesSection(BookingController c) => Container(
@@ -557,14 +553,12 @@ class WebBookingRequestPage extends StatelessWidget {
             'booking_base_rent'.tr,
             '${((booth?.price ?? 0) * c.duration.value).toInt()} ر.س',
           ),
-          if (c.screenService.value)
-            _costRow('booking_service_screens'.tr, '500 ر.س'),
-          if (c.setupService.value)
-            _costRow('booking_service_setup'.tr, '800 ر.س'),
-          if (c.securitySvc.value)
-            _costRow('booking_service_security'.tr, '300 ر.س'),
-          if (c.cleaningService.value)
-            _costRow('booking_service_cleaning'.tr, '200 ر.س'),
+          ...c.serviceSelections.entries
+              .where((e) => e.value)
+              .map((e) {
+                final price = c.booth.value?.services[e.key] ?? 0;
+                return _costRow(e.key, '${price.toInt()} ر.س');
+              }),
           Divider(color: WebTheme.border, height: 20),
           Row(
             children: [

@@ -298,12 +298,6 @@ class WebBookingDetailPage extends StatelessWidget {
   /// ثم يُعود للحقوق الأساسية للجناح كاحتياطي.
   List<String> _resolvedServices() {
     if (booth.bookedServices.isNotEmpty) return booth.bookedServices;
-    final selected = <String>[];
-    if (booth.screenService)   selected.add('إعلانات الشاشات');
-    if (booth.setupService)    selected.add('خدمة التجهيز');
-    if (booth.securityService) selected.add('خدمة الأمن');
-    if (booth.cleaningService) selected.add('خدمة التنظيف');
-    if (selected.isNotEmpty) return selected;
     return booth.amenities.isNotEmpty ? booth.amenities : ['—'];
   }
 

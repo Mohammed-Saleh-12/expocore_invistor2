@@ -60,7 +60,7 @@ class DummyData {
     ExhibitionModel(
       id: 1, name: 'معرض التقنية 2026',
       description: 'أكبر معرض تقني في المنطقة يجمع أبرز الشركات والمبتكرين في مجال التكنولوجيا والذكاء الاصطناعي.',
-      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+      images: ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'],
       startDate: '2026-07-15', endDate: '2026-07-20',
       location: 'مركز الرياض للمعارض', city: 'الرياض',
       status: 'upcoming', availableBooths: 45,
@@ -70,7 +70,7 @@ class DummyData {
     ExhibitionModel(
       id: 2, name: 'معرض الغذاء والضيافة',
       description: 'المعرض الأشمل لقطاع الغذاء والمطاعم في الشرق الأوسط.',
-      imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800',
+      images: ['https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800'],
       startDate: '2026-08-01', endDate: '2026-08-05',
       location: 'مركز دبي التجاري', city: 'دبي',
       status: 'upcoming', availableBooths: 32,
@@ -80,7 +80,7 @@ class DummyData {
     ExhibitionModel(
       id: 3, name: 'معرض الموضة والأزياء',
       description: 'معرض الموضة العالمي يستقطب أبرز المصممين والعلامات التجارية.',
-      imageUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800',
+      images: ['https://images.unsplash.com/photo-1445205170230-053b83016050?w=800'],
       startDate: '2026-06-10', endDate: '2026-06-14',
       location: 'مركز الملك عبدالله', city: 'جدة',
       status: 'active', availableBooths: 18,
@@ -90,7 +90,7 @@ class DummyData {
     ExhibitionModel(
       id: 4, name: 'معرض الصحة والرفاهية',
       description: 'معرض متكامل يضم أحدث الابتكارات في مجال الصحة والرياضة.',
-      imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
+      images: ['https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'],
       startDate: '2026-04-01', endDate: '2026-04-05',
       location: 'قاعة الأمير سلطان', city: 'الرياض',
       status: 'ended', availableBooths: 0,
@@ -100,7 +100,7 @@ class DummyData {
     ExhibitionModel(
       id: 5, name: 'معرض السيارات الدولي',
       description: 'أحدث موديلات السيارات والمركبات الكهربائية من كبرى الشركات العالمية.',
-      imageUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800',
+      images: ['https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800'],
       startDate: '2026-09-10', endDate: '2026-09-15',
       location: 'مركز قطر الوطني', city: 'الدوحة',
       status: 'upcoming', availableBooths: 60,
@@ -110,7 +110,7 @@ class DummyData {
     ExhibitionModel(
       id: 6, name: 'معرض العقارات والإسكان',
       description: 'أكبر تجمع لشركات التطوير العقاري والمشاريع السكنية الفاخرة.',
-      imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800',
+      images: ['https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800'],
       startDate: '2026-05-20', endDate: '2026-05-25',
       location: 'مركز جدة للمعارض', city: 'جدة',
       status: 'active', availableBooths: 27,
@@ -120,7 +120,7 @@ class DummyData {
     ExhibitionModel(
       id: 7, name: 'معرض التعليم والتدريب',
       description: 'منصة تجمع الجامعات ومراكز التدريب وحلول التعليم الرقمي.',
-      imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800',
+      images: ['https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800'],
       startDate: '2026-10-05', endDate: '2026-10-09',
       location: 'مركز أبوظبي الوطني', city: 'أبوظبي',
       status: 'upcoming', availableBooths: 40,
@@ -130,7 +130,7 @@ class DummyData {
     ExhibitionModel(
       id: 8, name: 'معرض الزراعة المستدامة',
       description: 'حلول الزراعة الذكية والتقنيات الحديثة في الأمن الغذائي.',
-      imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800',
+      images: ['https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800'],
       startDate: '2026-03-12', endDate: '2026-03-16',
       location: 'مركز الرياض للمعارض', city: 'الرياض',
       status: 'ended', availableBooths: 0,
