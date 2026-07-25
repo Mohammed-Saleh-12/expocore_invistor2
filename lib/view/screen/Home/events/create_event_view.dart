@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../controller/Home/events_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../data/model/booth/booth_model.dart';
+import '../../../widget/Home/booth_day_picker_dialog.dart';
 import '../../../widget/Home/custom_app_bar.dart';
 import '../../../widget/Home/custom_button.dart';
 import '../../../widget/Home/custom_text_field.dart';
@@ -403,58 +404,7 @@ class CreateEventView extends GetView<EventsController> {
       onTap: () async {
         final ctrl = Get.find<EventsController>();
         if (isDate) {
-          final booth = ctrl.selectedBooth.value;
-
-          // تحديد أول وآخر تاريخ مسموح به بناءً على فترة حجز الجناح
-          final boothStart = (booth != null && booth.startDate.isNotEmpty)
-              ? DateTime.tryParse(booth.startDate)
-              : null;
-          final boothEnd = (booth != null && booth.endDate.isNotEmpty)
-              ? DateTime.tryParse(booth.endDate)
-              : null;
-
-          final now       = DateTime.now();
-          final firstDate = boothStart ?? now;
-          final lastDate  = boothEnd   ?? DateTime(now.year + 2, 12, 31);
-
-          // للنهاية: لا يمكن اختيار تاريخ قبل البداية
-          DateTime initialDate = firstDate;
-          if (isEnd) {
-            final existingStart = DateTime.tryParse(ctrl.selectedDate.value);
-            if (existingStart != null && !existingStart.isBefore(firstDate)) {
-              initialDate = existingStart;
-            }
-          }
-
-          final picked = await showDatePicker(
-            context: context,
-            initialDate: initialDate,
-            firstDate: firstDate,
-            lastDate: lastDate,
-          );
-
-          if (picked != null) {
-            final formatted =
-                '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
-            if (isEnd) {
-              // التحقق أن النهاية ليست قبل البداية
-              final startDt = DateTime.tryParse(ctrl.selectedDate.value);
-              if (startDt != null && picked.isBefore(startDt)) {
-                Get.snackbar('تنبيه',
-                    'تاريخ النهاية يجب أن يكون مساوياً للبداية أو بعدها',
-                    snackPosition: SnackPosition.BOTTOM);
-                return;
-              }
-              ctrl.selectedEndDate.value = formatted;
-            } else {
-              ctrl.selectedDate.value = formatted;
-              // إعادة ضبط النهاية إذا أصبحت قبل البداية الجديدة
-              final endDt = DateTime.tryParse(ctrl.selectedEndDate.value);
-              if (endDt != null && endDt.isBefore(picked)) {
-                ctrl.selectedEndDate.value = formatted; // يوم واحد
-              }
-            }
-          }
+          await _showBoothDayPicker(context, isDark, isEnd: isEnd);
         } else {
           final picked = await showTimePicker(
             context: context,
@@ -471,6 +421,20 @@ class CreateEventView extends GetView<EventsController> {
         final value = isDate
             ? (isEnd ? ctrl.selectedEndDate.value : ctrl.selectedDate.value)
             : ctrl.selectedTime.value;
+
+        // احسب رقم اليوم لعرضه فوق التاريخ
+        String? dayLabel;
+        if (isDate && value.isNotEmpty && ctrl.selectedBooth.value != null) {
+          final dt = DateTime.tryParse(value);
+          if (dt != null) {
+            final days = ctrl.boothDayDates;
+            final idx = days.indexWhere(
+              (d) => d.year == dt.year && d.month == dt.month && d.day == dt.day,
+            );
+            if (idx >= 0) dayLabel = 'اليوم ${idx + 1}';
+          }
+        }
+
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -487,23 +451,43 @@ class CreateEventView extends GetView<EventsController> {
               Icon(
                 icon,
                 size: 16,
-                color: value.isNotEmpty
-                    ? AppColors.darkPrimary
-                    : AppColors.grey,
+                color: value.isNotEmpty ? AppColors.darkPrimary : AppColors.grey,
               ),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(
-                  value.isNotEmpty ? value : label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: value.isNotEmpty ? null : AppColors.grey,
-                    fontWeight: value.isNotEmpty
-                        ? FontWeight.w600
-                        : FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: value.isNotEmpty
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (dayLabel != null)
+                            Text(
+                              dayLabel,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.darkPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          Text(
+                            value,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      )
+                    : Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.grey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
               ),
             ],
           ),
@@ -511,6 +495,14 @@ class CreateEventView extends GetView<EventsController> {
       }),
     );
   }
+
+  // ── Custom booth-day picker dialog ────────────────────────
+  /// يفوّض المنطق الكامل للدالة المشتركة في booth_day_picker_dialog.dart
+  Future<void> _showBoothDayPicker(
+    BuildContext context,
+    bool isDark, {
+    required bool isEnd,
+  }) => showBoothDayPicker(context, isDark, isEnd: isEnd);
 
   // ── Ticket type — 3 options ───────────────────────────────
   Widget _ticketTypeSelector(bool isDark) {
@@ -765,16 +757,19 @@ class CreateEventView extends GetView<EventsController> {
         // ── Grid of picked images + add button ──────────
         if (hasImages)
           SizedBox(
-            height: 110,
+            height: 90,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                // Existing images
                 ...images.asMap().entries.map(
-                  (e) =>
-                      _ImageThumb(file: e.value, index: e.key, isDark: isDark),
+                  (e) => _ImageTile(
+                    onRemove: () => controller.removeImage(e.key),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: _XFileImage(file: e.value, size: 90),
+                    ),
+                  ),
                 ),
-                // Add more cell
                 if (canAdd)
                   _AddMoreCell(isDark: isDark, onTap: controller.pickImages),
               ],
@@ -844,100 +839,36 @@ class CreateEventView extends GetView<EventsController> {
 }
 
 // ════════════════════════════════════════════════════════════
-//  WIDGET  — image thumbnail with remove button
+//  WIDGET  — image tile with ✕ remove button (booth style)
 // ════════════════════════════════════════════════════════════
-class _ImageThumb extends StatefulWidget {
-  final XFile file;
-  final int index;
-  final bool isDark;
-  const _ImageThumb({
-    required this.file,
-    required this.index,
-    required this.isDark,
-  });
+class _ImageTile extends StatelessWidget {
+  final Widget child;
+  final VoidCallback onRemove;
 
-  @override
-  State<_ImageThumb> createState() => _ImageThumbState();
-}
-
-class _ImageThumbState extends State<_ImageThumb> {
-  // الـ future يُحسب مرة واحدة فقط لمنع إعادة التحميل في كل rebuild
-  late final Future<Uint8List> _bytesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _bytesFuture = widget.file.readAsBytes();
-  }
+  const _ImageTile({required this.child, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 100,
       margin: const EdgeInsets.only(left: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.3)),
-      ),
+      width: 90,
+      height: 90,
       child: Stack(
         children: [
-          // الصورة المصغرة
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: FutureBuilder<Uint8List>(
-              future: _bytesFuture,
-              builder: (_, snap) {
-                if (snap.hasData) {
-                  return Image.memory(
-                    snap.data!,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  );
-                }
-                if (snap.hasError) {
-                  return Container(
-                    width: 100,
-                    height: 100,
-                    color: AppColors.darkPrimary.withOpacity(0.1),
-                    child: const Icon(Icons.broken_image_outlined,
-                        color: AppColors.grey),
-                  );
-                }
-                return Container(
-                  width: 100,
-                  height: 100,
-                  color: AppColors.darkPrimary.withOpacity(0.05),
-                  child: const Center(
-                    child: SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          // زر الحذف
+          SizedBox(width: 90, height: 90, child: child),
           Positioned(
             top: 4,
             left: 4,
             child: GestureDetector(
-              onTap: () => Get.find<EventsController>().removeImage(widget.index),
+              onTap: onRemove,
               child: Container(
-                width: 22,
-                height: 22,
+                padding: const EdgeInsets.all(3),
                 decoration: const BoxDecoration(
-                  color: AppColors.error,
+                  color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  color: Colors.white,
-                  size: 14,
-                ),
+                child: const Icon(Icons.close_rounded,
+                    size: 12, color: Colors.white),
               ),
             ),
           ),
@@ -948,7 +879,46 @@ class _ImageThumbState extends State<_ImageThumb> {
 }
 
 // ════════════════════════════════════════════════════════════
-//  WIDGET  — "add more" cell
+//  WIDGET  — XFile display via FutureBuilder (booth style)
+// ════════════════════════════════════════════════════════════
+class _XFileImage extends StatelessWidget {
+  final XFile file;
+  final double size;
+
+  const _XFileImage({required this.file, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: file.readAsBytes(),
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return Image.memory(
+            snap.data!,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          );
+        }
+        return Container(
+          width: size,
+          height: size,
+          color: AppColors.darkSurface,
+          child: const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  WIDGET  — "add more" cell (booth style)
 // ════════════════════════════════════════════════════════════
 class _AddMoreCell extends StatelessWidget {
   final bool isDark;
@@ -960,32 +930,28 @@ class _AddMoreCell extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
-        height: 100,
+        width: 90,
+        height: 90,
         margin: const EdgeInsets.only(left: 8),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCard : AppColors.lightCard,
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.darkPrimary.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: AppColors.darkPrimary.withOpacity(0.3),
-            width: 1.5,
           ),
         ),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.add_rounded,
-              color: AppColors.darkPrimary.withOpacity(0.7),
-              size: 28,
+              Icons.add_photo_alternate_outlined,
+              color: AppColors.darkPrimary,
+              size: 24,
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               'إضافة',
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColors.darkPrimary.withOpacity(0.7),
-              ),
+              style: TextStyle(fontSize: 11, color: AppColors.darkPrimary),
             ),
           ],
         ),

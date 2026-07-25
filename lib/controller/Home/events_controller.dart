@@ -91,6 +91,23 @@ class EventsController extends GetxController {
     return diff < 1 ? 1 : diff;
   }
 
+  /// قائمة بتواريخ أيام فترة حجز الجناح المختار (اليوم 1، اليوم 2، ...)
+  /// يُعيد قائمة فارغة إذا لم يُختر جناح أو كانت تواريخه غير صالحة.
+  List<DateTime> get boothDayDates {
+    final booth = selectedBooth.value;
+    if (booth == null) return [];
+    final start = DateTime.tryParse(booth.startDate);
+    final end   = DateTime.tryParse(booth.endDate);
+    if (start == null || end == null) return [];
+    final days = <DateTime>[];
+    var current = start;
+    while (!current.isAfter(end)) {
+      days.add(current);
+      current = current.add(const Duration(days: 1));
+    }
+    return days;
+  }
+
   /// نوع التذكرة: 'general' | 'paid' | 'free_limited'
   final ticketType          = 'general'.obs;
 

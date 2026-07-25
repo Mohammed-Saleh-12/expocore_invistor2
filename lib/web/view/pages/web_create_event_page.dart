@@ -1,9 +1,12 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../models/web_theme.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/booth/booth_model.dart';
+import '../../../view/widget/Home/booth_day_picker_dialog.dart';
 import '../../controllers/web_nav_controller.dart';
 
 class WebCreateEventPage extends StatelessWidget {
@@ -389,6 +392,7 @@ class WebCreateEventPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── عداد الصور ──────────────────────────────────────
         Row(
           children: [
             Text(
@@ -399,93 +403,132 @@ class WebCreateEventPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            // الصور المختارة
-            ...List.generate(
-              count,
-              (i) => Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  color: WebTheme.surfaceAlt,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
-                ),
-                child: Stack(
+            const Spacer(),
+            if (count > 0 && count < 6)
+              GestureDetector(
+                onTap: c.pickImages,
+                child: Row(
                   children: [
-                    Center(
-                      child: Icon(
-                        Icons.image_rounded,
-                        color: AppColors.grey,
-                        size: 30,
-                      ),
-                    ),
-                    Positioned(
-                      top: 2,
-                      right: 2,
-                      child: GestureDetector(
-                        onTap: () => c.removeImage(i),
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: AppColors.error,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: WebTheme.text,
-                            size: 14,
-                          ),
-                        ),
-                      ),
+                    Icon(Icons.add_photo_alternate_outlined,
+                        size: 15, color: WebTheme.primary),
+                    const SizedBox(width: 4),
+                    Text(
+                      'إضافة المزيد',
+                      style: TextStyle(fontSize: 12, color: WebTheme.primary),
                     ),
                   ],
                 ),
               ),
-            ),
-            // زر الإضافة
-            if (count < 6)
-              GestureDetector(
-                onTap: c.pickImages,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    color: WebTheme.surfaceAlt,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: WebTheme.primary.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate_outlined,
-                        color: WebTheme.primary,
-                        size: 26,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'event_add_image'.tr,
-                        style: TextStyle(color: WebTheme.primary, fontSize: 11),
-                      ),
-                    ],
+          ],
+        ),
+        const SizedBox(height: 10),
+
+        // ── شبكة الصور ──────────────────────────────────────
+        if (count > 0)
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              // الصور المختارة — تعرض الصورة الفعلية عبر _XFileImage
+              ...c.pickedImages.asMap().entries.map(
+                (e) => _WebImageTile(
+                  width: 100,
+                  height: 80,
+                  onRemove: () => c.removeImage(e.key),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: _XFileImage(
+                        file: e.value, width: 100, height: 80),
                   ),
                 ),
               ),
-          ],
-        ),
+              // زر الإضافة
+              if (count < 6) _buildWebAddButton(c),
+            ],
+          )
+        else
+          // ── حالة فارغة — منطقة السحب والإفلات ──────────
+          GestureDetector(
+            onTap: c.pickImages,
+            child: Container(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                color: WebTheme.surfaceAlt,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: WebTheme.primary.withOpacity(0.35),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.favoriteGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: WebTheme.primary.withOpacity(0.3),
+                          blurRadius: 14,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: Colors.white,
+                      size: 26,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'اضغط لرفع الصور',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: WebTheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'JPG, PNG — حتى 6 صور',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.grey.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   });
+
+  Widget _buildWebAddButton(EventsController c) => GestureDetector(
+        onTap: c.pickImages,
+        child: Container(
+          width: 100,
+          height: 80,
+          decoration: BoxDecoration(
+            color: WebTheme.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: WebTheme.primary.withOpacity(0.3)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_photo_alternate_outlined,
+                  color: WebTheme.primary, size: 26),
+              const SizedBox(height: 4),
+              Text('إضافة',
+                  style: TextStyle(fontSize: 11, color: WebTheme.primary)),
+            ],
+          ),
+        ),
+      );
 
   Widget _title() => Row(
     children: [
@@ -628,82 +671,183 @@ class WebCreateEventPage extends StatelessWidget {
     required bool isDate,
     bool isEnd = false,
     required EventsController c,
-  }) => GestureDetector(
-    onTap: () async {
-      if (isDate) {
-        final now = DateTime.now();
-        final p = await showDatePicker(
-          context: context,
-          initialDate: now,
-          firstDate: now,
-          lastDate: DateTime(now.year + 2, 12, 31),
+  }) {
+    // احسب رقم اليوم لعرضه (فقط لحقول التاريخ بعد الاختيار)
+    String? dayLabel;
+    if (isDate && value.isNotEmpty && c.selectedBooth.value != null) {
+      final dt = DateTime.tryParse(value);
+      if (dt != null) {
+        final days = c.boothDayDates;
+        final idx = days.indexWhere(
+          (d) => d.year == dt.year && d.month == dt.month && d.day == dt.day,
         );
-        if (p != null) {
-          final formatted =
-              '${p.year}-${p.month.toString().padLeft(2, '0')}-${p.day.toString().padLeft(2, '0')}';
-          if (isEnd) {
-            c.selectedEndDate.value = formatted;
-          } else {
-            c.selectedDate.value = formatted;
+        if (idx >= 0) dayLabel = 'اليوم ${idx + 1}';
+      }
+    }
+
+    return GestureDetector(
+      onTap: () async {
+        if (isDate) {
+          // استخدام نافذة أيام الجناح المشتركة
+          await showBoothDayPicker(context, WebTheme.isDark.value, isEnd: isEnd);
+        } else {
+          final p = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.now(),
+          );
+          if (p != null) {
+            c.selectedTime.value =
+                '${p.hour.toString().padLeft(2, '0')}:${p.minute.toString().padLeft(2, '0')}';
           }
         }
-      } else {
-        final p = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );
-        if (p != null) {
-          c.selectedTime.value =
-              '${p.hour.toString().padLeft(2, '0')}:${p.minute.toString().padLeft(2, '0')}';
-        }
-      }
-    },
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: value.isNotEmpty
-            ? WebTheme.primary.withOpacity(0.07)
-            : WebTheme.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: value.isNotEmpty ? WebTheme.primary : WebTheme.border,
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: value.isNotEmpty
+              ? WebTheme.primary.withOpacity(0.07)
+              : WebTheme.surfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: value.isNotEmpty ? WebTheme.primary : WebTheme.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: value.isNotEmpty ? WebTheme.primary : AppColors.grey,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: value.isEmpty
+                  ? Text(
+                      label,
+                      style:
+                          const TextStyle(fontSize: 13, color: AppColors.grey),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (dayLabel != null)
+                          Text(
+                            dayLabel,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: WebTheme.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        Text(
+                          value,
+                          style: TextStyle(
+                            color: WebTheme.text,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ],
         ),
       ),
-      child: Row(
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  WIDGET  — web image tile with ✕ remove button (booth style)
+// ════════════════════════════════════════════════════════════
+class _WebImageTile extends StatelessWidget {
+  final double width;
+  final double height;
+  final Widget child;
+  final VoidCallback onRemove;
+
+  const _WebImageTile({
+    required this.width,
+    required this.height,
+    required this.child,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
         children: [
-          Icon(
-            icon,
-            color: value.isNotEmpty ? WebTheme.primary : AppColors.grey,
-            size: 18,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (value.isEmpty)
-                  Text(
-                    label,
-                    style: const TextStyle(fontSize: 10, color: AppColors.grey),
-                  )
-                else
-                  Text(
-                    value.isEmpty ? '' : value,
-                    style: TextStyle(
-                      color: value.isEmpty ? AppColors.grey : WebTheme.text,
-                      fontSize: 13,
-                      fontWeight: value.isEmpty
-                          ? FontWeight.w400
-                          : FontWeight.w700,
-                    ),
-                  ),
-              ],
+          SizedBox(width: width, height: height, child: child),
+          Positioned(
+            top: 4,
+            left: 4,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 13,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  WIDGET  — XFile display via FutureBuilder (booth style)
+// ════════════════════════════════════════════════════════════
+class _XFileImage extends StatelessWidget {
+  final XFile file;
+  final double width;
+  final double height;
+
+  const _XFileImage({
+    required this.file,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: file.readAsBytes(),
+      builder: (_, snap) {
+        if (snap.hasData) {
+          return Image.memory(
+            snap.data!,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+        }
+        return Container(
+          width: width,
+          height: height,
+          color: WebTheme.surfaceAlt,
+          child: const Center(
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
