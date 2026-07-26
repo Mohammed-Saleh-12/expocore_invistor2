@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
@@ -11,6 +12,8 @@ class ExhibitionsController extends GetxController {
   final FavoritesData   _favoritesData   = FavoritesData(Crud());
 
   final searchCtrl  = TextEditingController();
+  Timer? _searchDebounce;
+
   final exhibitions = <ExhibitionModel>[].obs;
   final filtered    = <ExhibitionModel>[].obs;
   final isLoading   = false.obs;
@@ -54,6 +57,7 @@ class ExhibitionsController extends GetxController {
       status:  _statusApi[statusFilter.value],
       city:    cityFilter.value == 'الكل' ? null : cityFilter.value,
       sector:  sectorFilter.value == 'الكل' ? null : sectorFilter.value,
+      search:  searchCtrl.text.trim().isEmpty ? null : searchCtrl.text.trim(),
     );
     if (result['status'] == true) {
       final body = _body(result['data']);
@@ -126,7 +130,13 @@ class ExhibitionsController extends GetxController {
     _loadExhibitions(reset: true);
   }
 
-  void onSearch(String q) => _applyLocalFilter(query: q);
+  void onSearch(String q) {
+    _applyLocalFilter(query: q);           // فوري محلياً
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      _loadExhibitions(reset: true);       // API call بعد 400ms
+    });
+  }
 
   void _applyLocalFilter({String? query}) {
     final q = (query ?? searchCtrl.text).toLowerCase();
@@ -167,6 +177,7 @@ class ExhibitionsController extends GetxController {
 
   @override
   void onClose() {
+    _searchDebounce?.cancel();
     searchCtrl.dispose();
     super.onClose();
   }

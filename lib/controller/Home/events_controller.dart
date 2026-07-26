@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -117,6 +118,7 @@ class EventsController extends GetxController {
 
   // ── Web: sponsor-events search & filter ──────────────────────────────
   final sponsorSearchCtrl  = TextEditingController();
+  Timer? _sponsorSearchDebounce;
   final sponsorTypeFilter  = 'الكل'.obs;
   /// RangeValues(0,0) = unset (full range)
   final sponsorPriceRange  = const RangeValues(0, 0).obs;
@@ -141,34 +143,18 @@ class EventsController extends GetxController {
     return r.start > 0 || (r.end > 0 && r.end < top);
   }
 
+  /// الفلترة المحلية: السعر فقط (النص + النوع + التاريخ تأتي مفلترةً من الـ API)
   List<ExhibitionSponsorEvent> get filteredSponsorEvents {
-    final q         = sponsorSearchCtrl.text.trim().toLowerCase();
-    final type      = sponsorTypeFilter.value;
-    final top       = sponsorComputedMaxPrice;
-    final r         = sponsorPriceRange.value;
-    final priceMin  = r.start;
-    final priceMax  = (r.start == 0 && r.end == 0) ? top : r.end;
-    final dateStart = sponsorDateStart.value;
-    final dateEnd   = sponsorDateEnd.value;
-
+    if (!_isPriceFiltered) return exhibitionSponsorEvents.toList();
+    final top      = sponsorComputedMaxPrice;
+    final r        = sponsorPriceRange.value;
+    final priceMin = r.start;
+    final priceMax = (r.start == 0 && r.end == 0) ? top : r.end;
     return exhibitionSponsorEvents.where((e) {
-      final matchQ = q.isEmpty || e.name.toLowerCase().contains(q);
-      final matchT = type == 'الكل' || e.type == type;
-
-      // Price: compare event's lowest duration price
       final eventMin = e.durationOptions.isNotEmpty
           ? e.durationOptions.map((d) => d.price).reduce((a, b) => a < b ? a : b)
           : 0.0;
-      final matchP = eventMin >= priceMin && eventMin <= priceMax;
-
-      // Date: string comparison works for ISO format
-      bool matchD = true;
-      if (e.date.isNotEmpty) {
-        if (dateStart.isNotEmpty && e.date.compareTo(dateStart) < 0) matchD = false;
-        if (dateEnd.isNotEmpty   && e.date.compareTo(dateEnd)   > 0) matchD = false;
-      }
-
-      return matchQ && matchT && matchP && matchD;
+      return eventMin >= priceMin && eventMin <= priceMax;
     }).toList();
   }
 
@@ -180,18 +166,26 @@ class EventsController extends GetxController {
       (_isPriceFiltered ? 1 : 0) +
       (sponsorDateStart.value.isNotEmpty || sponsorDateEnd.value.isNotEmpty ? 1 : 0);
 
-  void onSponsorSearch(String _)       => exhibitionSponsorEvents.refresh();
-  void setSponsorType(String v)        { sponsorTypeFilter.value = v; exhibitionSponsorEvents.refresh(); }
+  void onSponsorSearch(String _) {
+    exhibitionSponsorEvents.refresh();          // فوري (فلترة السعر المحلية)
+    _sponsorSearchDebounce?.cancel();
+    _sponsorSearchDebounce = Timer(const Duration(milliseconds: 400), () {
+      refreshSponsorEvents();                    // API call بعد 400ms
+    });
+  }
+
+  void setSponsorType(String v)            { sponsorTypeFilter.value = v; refreshSponsorEvents(); }
   void setSponsorPriceRange(RangeValues v) { sponsorPriceRange.value = v; exhibitionSponsorEvents.refresh(); }
-  void setSponsorDateStart(String v)   { sponsorDateStart.value = v; exhibitionSponsorEvents.refresh(); }
-  void setSponsorDateEnd(String v)     { sponsorDateEnd.value = v; exhibitionSponsorEvents.refresh(); }
+  void setSponsorDateStart(String v)       { sponsorDateStart.value = v; refreshSponsorEvents(); }
+  void setSponsorDateEnd(String v)         { sponsorDateEnd.value = v; refreshSponsorEvents(); }
+
   void clearSponsorFilters() {
     sponsorTypeFilter.value = 'الكل';
     sponsorPriceRange.value = const RangeValues(0, 0);
     sponsorDateStart.value  = '';
     sponsorDateEnd.value    = '';
     sponsorSearchCtrl.clear();
-    exhibitionSponsorEvents.refresh();
+    refreshSponsorEvents();
   }
 
   // ── Sponsorship booking form ──────────────────────────────────────────
@@ -344,11 +338,13 @@ class EventsController extends GetxController {
 
   Future<void> _loadSponsorEvents({int page = 1}) async {
     final result = await _eventsData.getSponsorEvents(
-      page:    page,
-      perPage: 20,
-      type:    sponsorTypeFilter.value == 'الكل' ? null : sponsorTypeFilter.value,
+      page:      page,
+      perPage:   20,
+      type:      sponsorTypeFilter.value == 'الكل' ? null : sponsorTypeFilter.value,
       dateStart: sponsorDateStart.value.isEmpty ? null : sponsorDateStart.value,
       dateEnd:   sponsorDateEnd.value.isEmpty   ? null : sponsorDateEnd.value,
+      search:    sponsorSearchCtrl.text.trim().isEmpty
+                 ? null : sponsorSearchCtrl.text.trim(),
     );
     if (result['status'] == true) {
       final body = result['data'];
@@ -731,6 +727,7 @@ class EventsController extends GetxController {
 
   @override
   void onClose() {
+    _sponsorSearchDebounce?.cancel();
     nameCtrl.dispose(); descCtrl.dispose(); maxCtrl.dispose();
     seatsCtrl.dispose(); ticketPriceCtrl.dispose(); videoPromoCtrl.dispose();
     freeLimitCtrl.dispose();

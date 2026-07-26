@@ -73,6 +73,7 @@ class EventsData {
     String? type,
     String? dateStart,
     String? dateEnd,
+    String? search,
   }) async {
     final params = <String, dynamic>{
       'page':     page,
@@ -81,6 +82,7 @@ class EventsData {
     if (type      != null && type.isNotEmpty)      params['type']       = type;
     if (dateStart != null && dateStart.isNotEmpty) params['date_start'] = dateStart;
     if (dateEnd   != null && dateEnd.isNotEmpty)   params['date_end']   = dateEnd;
+    if (search    != null && search.isNotEmpty)    params['search']     = search;
     return await crud.getData(AppLink.exhibitionSponsorEvents, params: params);
   }
 

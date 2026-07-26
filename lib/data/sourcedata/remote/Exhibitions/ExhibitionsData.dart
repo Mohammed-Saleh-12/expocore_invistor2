@@ -9,12 +9,14 @@ class ExhibitionsData {
   /// [page]    : رقم الصفحة (يبدأ من 1)
   /// [perPage] : عدد العناصر في الصفحة (افتراضي 15)
   /// [status]  : فلتر الحالة اختياري (upcoming | active | ended)
+  /// [search]  : بحث نصي اختياري
   Future<Map<String, dynamic>> getExhibitions({
     int page = 1,
     int perPage = 15,
     String? status,
     String? city,
     String? sector,
+    String? search,
   }) async {
     final params = <String, dynamic>{
       'page':     page,
@@ -22,7 +24,8 @@ class ExhibitionsData {
     };
     if (status != null && status.isNotEmpty) params['status'] = status;
     if (city   != null && city.isNotEmpty)   params['city']   = city;
-    if (sector  != null && sector.isNotEmpty) params['sector'] = sector;
+    if (sector != null && sector.isNotEmpty) params['sector'] = sector;
+    if (search != null && search.isNotEmpty) params['search'] = search;
     return await crud.getData(AppLink.exhibitions, params: params);
   }
 

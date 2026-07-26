@@ -1,0 +1,171 @@
+لمهمة: توحيد الفلترة في المعارض والفعاليات الإعلانية
+المشكلة الحالية
+المعارض	الفعاليات الإعلانية
+فلاتر هيكلية (status/city/sector/type/date)	✅ API call	❌ محلي فقط
+البحث النصي	❌ محلي فقط	❌ محلي فقط
+الهدف
+كلاهما يعمل بنفس المنطق:
+
+كل تغيير في فلتر هيكلي → API call من page 1
+البحث النصي → فلترة محلية فورية + debounce 400ms → API call
+التعديلات المطلوبة
+1. ExhibitionsData.getExhibitions() — إضافة search
+// قبل
+Future<Map<String, dynamic>> getExhibitions({
+  int page = 1, int perPage = 15,
+  String? status, String? city, String? sector,
+}) async {
+  final params = <String, dynamic>{'page': page, 'per_page': perPage};
+  if (status != null && status.isNotEmpty) params['status'] = status;
+  if (city   != null && city.isNotEmpty)   params['city']   = city;
+  if (sector != null && sector.isNotEmpty) params['sector'] = sector;
+  return await crud.getData(AppLink.exhibitions, params: params);
+}
+// بعد
+Future<Map<String, dynamic>> getExhibitions({
+  int page = 1, int perPage = 15,
+  String? status, String? city, String? sector,
+  String? search,                                  // ← جديد
+}) async {
+  final params = <String, dynamic>{'page': page, 'per_page': perPage};
+  if (status != null && status.isNotEmpty) params['status'] = status;
+  if (city   != null && city.isNotEmpty)   params['city']   = city;
+  if (sector != null && sector.isNotEmpty) params['sector'] = sector;
+  if (search != null && search.isNotEmpty) params['search'] = search; // ← جديد
+  return await crud.getData(AppLink.exhibitions, params: params);
+}
+
+2. ExhibitionsController — debounce للبحث النصي
+// إضافات في أعلى الكلاس
+import 'dart:async';
+Timer? _searchDebounce;
+// تعديل _loadExhibitions: تمرير search للـ API
+Future<void> _loadExhibitions({bool reset = false}) async {
+  if (reset) { _currentPage = 1; exhibitions.clear(); }
+  isLoading.value = true;
+  final result = await _exhibitionsData.getExhibitions(
+    page:    _currentPage,
+    perPage: _perPage,
+    status:  _statusApi[statusFilter.value],
+    city:    cityFilter.value == 'الكل' ? null : cityFilter.value,
+    sector:  sectorFilter.value == 'الكل' ? null : sectorFilter.value,
+    search:  searchCtrl.text.trim().isEmpty ? null : searchCtrl.text.trim(), // ← جديد
+  );
+  // ... باقي الكود بدون تغيير
+}
+// تعديل onSearch: فوري محلي + debounce للـ API
+void onSearch(String q) {
+  _applyLocalFilter(query: q);           // ← فوري (لا تغيير هنا)
+  _searchDebounce?.cancel();
+  _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+    _loadExhibitions(reset: true);        // ← API call بعد 400ms
+  });
+}
+// إضافة في onClose
+@override
+void onClose() {
+  _searchDebounce?.cancel();             // ← جديد
+  searchCtrl.dispose();
+  super.onClose();
+}
+
+3. EventsData.getSponsorEvents() — إضافة search
+// قبل
+Future<Map<String, dynamic>> getSponsorEvents({
+  int page = 1, int perPage = 15,
+  String? type, String? dateStart, String? dateEnd,
+}) async { ... }
+// بعد
+Future<Map<String, dynamic>> getSponsorEvents({
+  int page = 1, int perPage = 15,
+  String? type, String? dateStart, String? dateEnd,
+  String? search,                                    // ← جديد
+}) async {
+  final params = <String, dynamic>{'page': page, 'per_page': perPage};
+  if (type      != null && type.isNotEmpty)      params['type']       = type;
+  if (dateStart != null && dateStart.isNotEmpty) params['date_start'] = dateStart;
+  if (dateEnd   != null && dateEnd.isNotEmpty)   params['date_end']   = dateEnd;
+  if (search    != null && search.isNotEmpty)    params['search']     = search;  // ← جديد
+  return await crud.getData(AppLink.exhibitionSponsorEvents, params: params);
+}
+
+4. EventsController — الإصلاح الأكبر
+// إضافات في أعلى الكلاس
+Timer? _sponsorSearchDebounce;
+// ─── تعديل _loadSponsorEvents: تمرير كل الفلاتر للـ API ───
+Future<void> _loadSponsorEvents({int page = 1}) async {
+  final result = await _eventsData.getSponsorEvents(
+    page:      page,
+    perPage:   20,
+    type:      sponsorTypeFilter.value == 'الكل' ? null : sponsorTypeFilter.value,
+    dateStart: sponsorDateStart.value.isEmpty ? null : sponsorDateStart.value,
+    dateEnd:   sponsorDateEnd.value.isEmpty   ? null : sponsorDateEnd.value,
+    search:    sponsorSearchCtrl.text.trim().isEmpty                  // ← جديد
+               ? null : sponsorSearchCtrl.text.trim(),
+  );
+  // ... باقي الكود بدون تغيير
+}
+// ─── تعديل setSponsorType: API call بدل refresh محلي ───
+// قبل
+void setSponsorType(String v) { sponsorTypeFilter.value = v; exhibitionSponsorEvents.refresh(); }
+// بعد
+void setSponsorType(String v) { sponsorTypeFilter.value = v; refreshSponsorEvents(); }
+// ─── تعديل setSponsorDateStart ───
+// قبل
+void setSponsorDateStart(String v) { sponsorDateStart.value = v; exhibitionSponsorEvents.refresh(); }
+// بعد
+void setSponsorDateStart(String v) { sponsorDateStart.value = v; refreshSponsorEvents(); }
+// ─── تعديل setSponsorDateEnd ───
+// قبل
+void setSponsorDateEnd(String v) { sponsorDateEnd.value = v; exhibitionSponsorEvents.refresh(); }
+// بعد
+void setSponsorDateEnd(String v) { sponsorDateEnd.value = v; refreshSponsorEvents(); }
+// ─── تعديل clearSponsorFilters ───
+void clearSponsorFilters() {
+  sponsorTypeFilter.value = 'الكل';
+  sponsorPriceRange.value = const RangeValues(0, 0);
+  sponsorDateStart.value  = '';
+  sponsorDateEnd.value    = '';
+  sponsorSearchCtrl.clear();
+  refreshSponsorEvents();           // ← كان exhibitionSponsorEvents.refresh()
+}
+// ─── تعديل onSponsorSearch: فوري محلي + debounce للـ API ───
+// قبل
+void onSponsorSearch(String _) => exhibitionSponsorEvents.refresh();
+// بعد
+void onSponsorSearch(String _) {
+  exhibitionSponsorEvents.refresh();                 // ← فوري (فلترة السعر المحلية)
+  _sponsorSearchDebounce?.cancel();
+  _sponsorSearchDebounce = Timer(const Duration(milliseconds: 400), () {
+    refreshSponsorEvents();                           // ← API call بعد 400ms
+  });
+}
+// ─── تعديل filteredSponsorEvents getter: يبقى للسعر فقط ───
+// قبل: يفلتر text + type + price + date محلياً
+// بعد: يفلتر السعر فقط (الباقي جاء من الـ API مفلتراً مسبقاً)
+List<ExhibitionSponsorEvent> get filteredSponsorEvents {
+  if (!_isPriceFiltered) return exhibitionSponsorEvents.toList();
+  final top      = sponsorComputedMaxPrice;
+  final r        = sponsorPriceRange.value;
+  final priceMin = r.start;
+  final priceMax = (r.start == 0 && r.end == 0) ? top : r.end;
+  return exhibitionSponsorEvents.where((e) {
+    final eventMin = e.durationOptions.isNotEmpty
+        ? e.durationOptions.map((d) => d.price).reduce((a, b) => a < b ? a : b)
+        : 0.0;
+    return eventMin >= priceMin && eventMin <= priceMax;
+  }).toList();
+}
+// ─── إضافة في onClose ───
+@override
+void onClose() {
+  _sponsorSearchDebounce?.cancel();   // ← جديد
+  // ... باقي dispose
+}
+
+ملخص التغييرات
+الملف	التغيير
+ExhibitionsData.dart	إضافة param search
+ExhibitionsController.dart	debounce + تمرير search للـ API
+EventsData.dart	إضافة param search
+EventsController.dart	setSponsorType/Date → API call، filteredSponsorEvents → سعر فقط، debounce للبحث
