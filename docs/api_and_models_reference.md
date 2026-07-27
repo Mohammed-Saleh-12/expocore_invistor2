@@ -1,6 +1,13 @@
 # ExpoCore Investor — API Requests & Models Reference
 
-> **Base URL:** `https://api.expocore.app/api/v1`  
+> **Base URLs:**
+> | البيئة | الرابط |
+> |---|---|
+> | `dev` (**نشط حالياً**) | `https://api-dev.expocore.app/api/v1` |
+> | `staging` | `https://api-staging.expocore.app/api/v1` |
+> | `prod` | `https://api.expocore.app/api/v1` |
+>
+> يتحكم في البيئة الحقل `_active` داخل `lib/core/constant/app_env.dart`.  
 > **Auth:** كل طلب (ما عدا تسجيل الدخول / التسجيل) يحمل `Authorization: Bearer <token>` يُضاف تلقائياً في `Crud`.  
 > **هيكل الرد الموحَّد:**
 > ```json
@@ -225,6 +232,21 @@
 
 ---
 
+### 1.12 تسجيل FCM Token
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` |
+| **المسار** | `/auth/fcm-token` |
+| **الملف** | `AppLink.fcmToken` (يُستدعى مباشرةً عبر `Crud.postData`) |
+| **متى يُرسَل** | بعد تسجيل الدخول الناجح لتسجيل token الإشعارات |
+
+**Body المرسَل:**
+```json
+{ "fcm_token": "string" }
+```
+
+---
+
 ## 2. Dashboard
 
 ### 2.1 جلب بيانات لوحة التحكم
@@ -295,7 +317,8 @@
 | **المسار** | `/exhibitions` |
 | **الملف** | `ExhibitionsData.getExhibitions()` |
 | **الكنترولر** | `ExhibitionsController.onInit()` ← عند فتح صفحة المعارض |
-| **أيضاً** | `ExhibitionsController.applyFilter()` / `setSector()` / `setCity()` ← عند تغيير أي فلتر |
+| **أيضاً** | `ExhibitionsController.applyFilter()` / `setSector()` / `setCity()` ← عند تغيير أي فلتر هيكلي (API call من page 1) |
+| **أيضاً** | `ExhibitionsController.onSearch()` ← البحث النصي: فلترة محلية فورية + debounce 400ms → API call |
 
 **Query Params (جميعها اختيارية):**
 | المتغير | النوع | الوصف |
@@ -305,6 +328,7 @@
 | `status` | `String?` | `upcoming` \| `active` \| `ended` |
 | `city` | `String?` | اسم المدينة |
 | `sector` | `String?` | القطاع |
+| `search` | `String?` | بحث نصي في اسم المعرض والمدينة |
 
 **الاستجابة المتوقعة (`data`):** قائمة `List<ExhibitionModel>` — راجع [ExhibitionModel](#exhibitionmodel).
 
@@ -316,9 +340,39 @@
 | **الميثود** | `GET` |
 | **المسار** | `/exhibitions/{id}` |
 | **الملف** | `ExhibitionsData.getExhibitionDetail()` |
-| **الكنترولر** | `ExhibitionDetailController.onInit()` ← عند فتح صفحة تفاصيل المعرض |
+| **الكنترولر** | `ExhibitionDetailController.onInit()` ← عند فتح صفحة تفاصيل المعرض (طلبان متوازيان: هذا + `getExhibitionBooths`) |
 
-**الاستجابة المتوقعة (`data`):** `ExhibitionModel` — راجع [ExhibitionModel](#exhibitionmodel).
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "id": 1,
+  "name": "معرض التقنية 2026",
+  "description": "string",
+  "images": ["https://cdn.example.com/hero.jpg", "https://cdn.example.com/hall-a.jpg"],
+  "services": ["واي فاي مجاني", "موقف سيارات", "أمن 24/7"],
+  "start_date": "2026-07-15",
+  "end_date": "2026-07-20",
+  "location": "string",
+  "city": "string",
+  "status": "active",
+  "available_booths": 12,
+  "sectors": ["تقنية", "أعمال"],
+  "is_favorite": false,
+  "map_data": {
+    "exhibition_id": 1,
+    "grid_width": 13,
+    "grid_depth": 10,
+    "halls": [{ "id": "A", "name": "القاعة أ", "color": "7A1FFF", "booths": [...] }]
+  },
+  "sponsor_events": [{ "id": 10, "name": "فعالية إعلانية", "type": "banner" }]
+}
+```
+
+> **ملاحظات:**
+> - `images`: قائمة صور — `ExhibitionModel.imageUrl` getter يُعيد `images.first` للتوافق مع الكروت.
+> - `services`: خدمات المعرض الأساسية (ليست خدمات الجناح).
+> - `map_data`: بيانات الخريطة ثلاثية الأبعاد — تُحلَّل مباشرةً بدلاً من طلب `/exhibitions/{id}/map` منفصل.
+> - `sponsor_events`: الفعاليات الإعلانية — لا يُستدعى `EventsController` لجلبها عند عرض تفاصيل المعرض.
 
 ---
 
@@ -328,7 +382,9 @@
 | **الميثود** | `GET` |
 | **المسار** | `/exhibitions/{id}/map` |
 | **الملف** | `ExhibitionMapData.getExhibitionMap()` |
-| **الكنترولر** | `BoothMapController.loadMap()` ← عند فتح صفحة الخريطة ثلاثية الأبعاد |
+| **الكنترولر** | ~~`BoothMapController.loadMap()`~~ — **لم يعد يُستدعى مباشرةً** |
+
+> ⚠️ **هذا الـ endpoint لم يعد نشطاً في التطبيق.** بيانات الخريطة (`map_data`) تأتي الآن مضمَّنةً في رد `GET /exhibitions/{id}` (§4.2)، ويمررها `ExhibitionDetailController` لـ `BoothMapController` عبر `loadFromDetailData(mapJson, booths)`. الملف `ExhibitionMapData.dart` يبقى موجوداً لكن لا يُستدعى.
 
 **الاستجابة المتوقعة (`data`):** `ExhibitionMapModel` — راجع [ExhibitionMapModel](#exhibitionmapmodel).
 
@@ -371,7 +427,50 @@
 
 ---
 
-### 5.3 جلب تفاصيل جناح واحد
+### 5.3 جلب أجنحة معرض بعينه
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/booths?exhibition_id={id}&per_page=100` |
+| **الملف** | `BoothsData.getExhibitionBooths()` |
+| **الكنترولر** | `ExhibitionDetailController.onInit()` ← طلب ثانٍ متوازٍ مع `getExhibitionDetail` عند فتح صفحة تفاصيل المعرض |
+
+**Query Params:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `exhibition_id` | `int` | معرّف المعرض |
+| `per_page` | `int` | ثابت: 100 |
+
+**الاستجابة المتوقعة (`data`):** قائمة `List<BoothModel>` — كل جناح يحوي:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "number": "A01",
+      "status": "available",
+      "price": 18000,
+      "area": 400,
+      "services": { "شاشة عرض إضافية": 500, "إضاءة مميزة": 300 }
+    },
+    {
+      "id": 2,
+      "number": "A02",
+      "status": "booked",
+      "company_name": "تقنية الغد",
+      "company_email": "info@techfuture.sa",
+      "company_initials": "تغ",
+      "services": {}
+    }
+  ]
+}
+```
+
+> الناتج يُخزَّن في `ExhibitionDetailController.exhibitionBooths` ويُمرَّر لـ `BoothMapController.loadFromDetailData()` لربط أجنحة الخريطة ببياناتها الحقيقية.
+
+---
+
+### 5.4 جلب تفاصيل جناح واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -383,7 +482,7 @@
 
 ---
 
-### 5.4 جلب تفاصيل حجز جناح
+### 5.5 جلب تفاصيل حجز جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -408,16 +507,21 @@
 **Body المرسَل:**
 ```json
 {
-  "booth_id":         1,
-  "duration_days":    5,
-  "notes":            "string",
-  "screen_service":   true,
-  "setup_service":    false,
-  "security_service": true,
-  "cleaning_service": false,
-  "total_price":      16500.0
+  "booth_id":    1,
+  "start_date":  "2026-08-01",
+  "end_date":    "2026-08-05",
+  "notes":       "string",
+  "services":    { "اسم_الخدمة": true, "خدمة_أخرى": false },
+  "total_price": 16500.0
 }
 ```
+
+> **ملاحظات:**
+> - `duration_days` **مُحذوف** — يشتق الباك-إند المدة من `end_date - start_date`.
+> - `start_date` / `end_date` بصيغة `YYYY-MM-DD`.
+> - **وضع الحجز الكامل** ("حجز بالكامل"): تُؤخَذ `start_date` / `end_date` مباشرةً من `BoothModel.startDate` / `endDate` (نافذة الإتاحة).
+> - **وضع الأيام المحددة** ("أيام محددة"): يختار المستثمر نطاقاً متتالياً عبر شبكة الأيام؛ النقرة الأولى = بداية، النقرة الثانية = نهاية، يوم واحد مسموح.
+> - `services`: `Map<String,bool>` — مفاتيحه ديناميكية من `BoothModel.services` (Map<String,double>)؛ يُرسَل كل مفتاح بقيمة `true/false` حسب اختيار المستخدم. لا توجد حقول ثابتة (screen/setup/security/cleaning) بعد الآن.
 
 ---
 
@@ -472,12 +576,12 @@
 ### 7.2 تحديث ملف جناح
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `PUT` |
+| **الميثود** | `PUT` (JSON) / `POST` + `_method=PUT` (multipart) |
 | **المسار** | `/investor/booths/{boothId}/profile` |
 | **الملف** | `BoothProfileData.updateBoothProfile()` |
 | **الكنترولر** | `BoothManagementController.saveProfile()` ← زر "حفظ" في صفحة تحرير ملف الجناح |
 
-**Body المرسَل:**
+**Body المرسَل (بدون ملفات — PUT JSON):**
 ```json
 {
   "company_nature":    "string",
@@ -489,9 +593,37 @@
 }
 ```
 
+**Body المرسَل (مع ملفات — multipart/form-data + `_method=PUT`):**
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `company_nature` | `String` | طبيعة الشركة |
+| `services_products` | `String` | الخدمات والمنتجات |
+| `headquarters` | `String` | المقر |
+| `social_links` | `String` (JSON encoded) | `["https://..."]` |
+| `product_images` | `String` (JSON encoded) | روابط الصور الموجودة |
+| `booth_images` | `String` (JSON encoded) | روابط صور الجناح الموجودة |
+| `product_image_files[]` | `File[]` | ملفات صور المنتجات الجديدة |
+| `booth_image_files[]` | `File[]` | ملفات صور الجناح الجديدة |
+| `cover_image` | `File?` | صورة غلاف الجناح (اختيارية) |
+
 ---
 
-### 7.3 جلب فعاليات جناح
+### 7.3 رفع صورة غلاف الجناح منفردةً
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` (multipart) |
+| **المسار** | `/investor/booths/{boothId}/cover` |
+| **الملف** | `BoothProfileData.uploadBoothCover()` |
+| **الكنترولر** | `BoothManagementController` ← عند اختيار صورة غلاف جديدة للجناح |
+
+**Body المرسَل (multipart/form-data):**
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `cover_image` | `File` | ملف الصورة |
+
+---
+
+### 7.4 جلب فعاليات جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -527,12 +659,12 @@
 ### 8.2 إنشاء حملة جديدة
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `POST` |
+| **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
 | **المسار** | `/investor/campaigns` |
 | **الملف** | `CampaignsData.createCampaign()` |
 | **الكنترولر** | `CampaignsController.createCampaign()` ← زر "إنشاء حملة" في نموذج الحملة |
 
-**Body المرسَل:**
+**Body المرسَل (بدون ملفات — JSON):**
 ```json
 {
   "title":       "string",
@@ -543,6 +675,13 @@
   "end_date":    "2026-07-20"
 }
 ```
+
+**Body المرسَل (مع ملفات — multipart/form-data):**
+> نفس الحقول أعلاه + حقل إضافي:
+
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `media[]` | `File[]` | ملفات الوسائط (صور / فيديو) المرتبطة بالحملة |
 
 ---
 
@@ -575,12 +714,12 @@
 ### 9.2 إنشاء فعالية جديدة
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `POST` |
+| **الميثود** | `POST` (JSON) / `POST` multipart (مع صور) |
 | **المسار** | `/investor/events` |
 | **الملف** | `EventsData.createInvestorEvent()` |
 | **الكنترولر** | `EventsController.createEvent()` ← زر "إنشاء فعالية" في نموذج الفعالية |
 
-**Body المرسَل:**
+**Body المرسَل (بدون صور — JSON):**
 ```json
 {
   "name":                  "string",
@@ -588,12 +727,12 @@
   "booth_id":              1,
   "booth_number":          "B12",
   "exhibition_name":       "string",
-  "date":                  "2026-07-16",
+  "start_date":            "2026-07-16",
+  "end_date":              "2026-07-17",
   "time":                  "14:00",
   "max_participants":      50,
   "description":           "string",
   "requires_booking":      true,
-  "duration_days":         1,
   "has_bookable_seats":    true,
   "total_seats":           50,
   "ticket_price":          150.0,
@@ -604,6 +743,19 @@
 }
 ```
 
+> **ملاحظات:**
+> - يُرسَل `start_date` و`end_date` بدلاً من `date` و`duration_days`.
+> - فعالية يوم واحد: `start_date == end_date`.
+> - **منتقيا التاريخ مقيَّدان** بنافذة حجز الجناح المختار (`BoothModel.startDate` → `BoothModel.endDate`)؛ لا يمكن اختيار تاريخ خارجها.
+> - التحقق قبل الإرسال: `start_date` ≥ `booth.startDate` و`end_date` ≤ `booth.endDate` و`end_date` ≥ `start_date`.
+
+**Body المرسَل (مع صور — multipart/form-data):**
+> نفس الحقول أعلاه + حقل إضافي:
+
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `images[]` | `File[]` | صور ترويجية للفعالية |
+
 ---
 
 ### 9.3 جلب الفعاليات الإعلانية (Sponsor Events)
@@ -613,18 +765,26 @@
 | **المسار** | `/investor/sponsor-events` |
 | **الملف** | `EventsData.getSponsorEvents()` |
 | **الكنترولر** | `EventsController.onInit()` ← عند فتح تبويب "الفعاليات الإعلانية" |
-| **أيضاً** | `EventsController.setSponsorType()` / `setSponsorDateStart()` / `setSponsorDateEnd()` ← عند تغيير أي فلتر |
+| **أيضاً** | `EventsController.setSponsorType()` / `setSponsorDateStart()` / `setSponsorDateEnd()` ← API call من page 1 عند تغيير أي فلتر هيكلي |
+| **أيضاً** | `EventsController.onSponsorSearch()` ← فلترة محلية فورية (السعر) + debounce 400ms → API call |
+| **أيضاً** | `EventsController.clearSponsorFilters()` ← يُعيد ضبط جميع الفلاتر ويستدعي API |
 
 **Query Params (جميعها اختيارية):**
 | المتغير | النوع | الوصف |
 |---|---|---|
 | `page` | `int` | رقم الصفحة (افتراضي: 1) |
-| `per_page` | `int` | العناصر في الصفحة (افتراضي: 15) |
+| `per_page` | `int` | العناصر في الصفحة (افتراضي: 20) |
 | `type` | `String?` | نوع الفعالية |
 | `date_start` | `String?` | فلتر من تاريخ (YYYY-MM-DD) |
 | `date_end` | `String?` | فلتر إلى تاريخ (YYYY-MM-DD) |
+| `search` | `String?` | بحث نصي في اسم الفعالية أو المعرض |
 
 **الاستجابة المتوقعة (`data`):** قائمة `List<ExhibitionSponsorEvent>` — راجع [ExhibitionSponsorEvent](#exhibitionsponsorevent).
+
+> **ملاحظة — منطق الفلترة:**
+> - **API-side:** `type` + `date_start` / `date_end` + `search` — تُرسَل مع كل طلب.
+> - **محلي فقط:** فلترة السعر (`sponsorPriceRange`) تطبَّق على النتائج المُعادة عبر getter `filteredSponsorEvents` في `EventsController` — لا تُرسَل للـ API.
+> - **`setSponsorPriceRange()`** يُحدّث العرض المحلي فوراً دون API call.
 
 ---
 
@@ -643,12 +803,12 @@
 ### 9.5 إنشاء رعاية جديدة
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `POST` |
+| **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
 | **المسار** | `/investor/sponsorships` |
 | **الملف** | `EventsData.createSponsorship()` |
 | **الكنترولر** | `EventsController.createSponsorship()` ← زر "تأكيد الرعاية" في bottom sheet الرعاية |
 
-**Body المرسَل:**
+**Body المرسَل (بدون ملفات — JSON):**
 ```json
 {
   "event_id":                1,
@@ -661,6 +821,18 @@
   "product_names":           "string"
 }
 ```
+
+**Body المرسَل (مع ملفات — multipart/form-data):**
+> نفس الحقول أعلاه + حقول إضافية:
+
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `logo` | `File?` | شعار الشركة |
+| `ad_images[]` | `File[]` | الصور الإعلانية |
+| `poster_images[]` | `File[]` | الملصقات الترويجية |
+| `product_images[]` | `File[]` | صور المنتجات |
+
+> يُرسَل multipart فقط إذا كانت هناك ملفات مرفقة — وإلا يُرسَل JSON عادي.
 
 ---
 
@@ -859,7 +1031,22 @@
 }
 ```
 
-> ⚠️ **ملاحظة:** الصورة الشخصية (`avatar`) غير مرسَلة حالياً — `Crud` لا يدعم multipart بعد.
+---
+
+### 12.3 رفع صورة الملف الشخصي (Avatar)
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` (multipart) |
+| **المسار** | `/investor/profile/avatar` |
+| **الملف** | `ProfileData.uploadAvatar()` |
+| **الكنترولر** | `ProfileCompanyController` ← عند اختيار صورة شخصية جديدة |
+
+**Body المرسَل (multipart/form-data):**
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `avatar` | `File` | ملف الصورة الشخصية (jpg / png / webp) |
+
+> `Crud.uploadData()` يدعم multipart على الويب والجوال عبر `http.MultipartRequest`.
 
 ---
 
@@ -872,19 +1059,19 @@
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | Firestore Stream |
-| **المسار** | `conversations` where `investor_id == userId` |
+| **المسار** | `conversations` where `investor_id == userId` orderBy `last_time` desc |
 | **الملف** | `MessagesFirebaseData.conversationsStream()` |
 | **الكنترولر** | `MessagesController.onInit()` ← تلقائي عند فتح صفحة الرسائل |
 
 **الحقول المقروءة من Firestore:**
 | الحقل | النوع | الوصف |
 |---|---|---|
-| `id` | `String` (doc ID) | معرّف المحادثة |
+| `id` | `String` (doc ID → `int`) | معرّف المحادثة — يُحوَّل لـ `int` عبر `_toInt()` (int.tryParse أو hashCode) |
 | `investor_id` | `int` | معرّف المستثمر |
 | `exhibition_id` | `int` | معرّف المعرض |
 | `exhibition_name` | `String` | اسم المعرض |
 | `exhibition_initials` | `String` | الأحرف الأولى |
-| `color` | `String` | لون hex |
+| `color` | `String` (hex) | لون hex (مثال: `FF7A1FFF`) — يُحوَّل لـ `int` |
 | `unread_count` | `int` | عدد الرسائل غير المقروءة |
 | `last_message` | `String` | آخر رسالة |
 | `last_time` | `Timestamp` | وقت آخر رسالة |
@@ -896,6 +1083,8 @@
 |---|---|
 | **الملف** | `MessagesFirebaseData.messagesStream()` |
 | **الكنترولر** | `MessagesController` ← عند فتح نافذة محادثة معينة |
+
+**المسار:** `conversations/{conversationId}/messages` orderBy `time` asc
 
 **الحقول المقروءة من Firestore:**
 ```
@@ -910,7 +1099,9 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 | **الملف** | `MessagesFirebaseData.sendMessage()` |
 | **الكنترولر** | `MessagesController.sendMessage()` ← زر إرسال في نافذة المحادثة |
 
-**الحقول المكتوبة إلى Firestore:**
+**الحقول المكتوبة إلى Firestore (batch write):**
+
+رسالة جديدة في `conversations/{id}/messages/{auto-id}`:
 ```json
 {
   "id":        "auto-doc-id",
@@ -922,6 +1113,14 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 }
 ```
 
+تحديث المحادثة في `conversations/{id}` (ضمن نفس الـ batch):
+```json
+{
+  "last_message": "string",
+  "last_time":    "ServerTimestamp"
+}
+```
+
 ---
 
 ### 13.4 إنشاء محادثة جديدة مع معرض
@@ -929,6 +1128,20 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 |---|---|
 | **الملف** | `MessagesFirebaseData.createConversation()` |
 | **الكنترولر** | `MessagesController` ← عند مراسلة معرض للمرة الأولى |
+
+**الحقول المكتوبة إلى `conversations/{auto-id}`:**
+```json
+{
+  "investor_id":         1,
+  "exhibition_id":       5,
+  "exhibition_name":     "string",
+  "exhibition_initials": "string",
+  "color":               "FF7A1FFF",
+  "unread_count":        0,
+  "last_message":        "",
+  "last_time":           "ServerTimestamp"
+}
+```
 
 ---
 
@@ -938,11 +1151,14 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 | **الملف** | `MessagesFirebaseData.markConversationRead()` |
 | **الكنترولر** | `MessagesController` ← عند فتح المحادثة |
 
+> يُعيِّن `unread_count = 0` في وثيقة المحادثة.
+
 ---
 
 ## 14. Visitor Messages (Firebase)
 
-> **Firestore Collection:** `visitor_conversations/{conversationId}`
+> **Firestore Collection:** `visitor_conversations/{conversationId}`  
+> **Sub-collection:** `visitor_conversations/{conversationId}/messages/{messageId}`
 
 ### 14.1 Stream محادثات الزوار
 | الخاصية | القيمة |
@@ -950,18 +1166,68 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 | **الملف** | `VisitorMessagesFirebaseData.conversationsStream()` |
 | **الكنترولر** | `VisitorMessagesController.onInit()` ← عند فتح صفحة محادثات الزوار |
 
+**المسار:** `visitor_conversations` where `investor_id == investorId` orderBy `last_time` desc
+
 **الحقول المقروءة:**
-```
-id, visitor_name, visitor_initials, color, unread_count, last_message, last_time, messages[]
-```
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `id` | `int` (من doc.id) | يُحوَّل من String |
+| `visitor_name` | `String` | اسم الزائر |
+| `visitor_initials` | `String` | الأحرف الأولى |
+| `color` | `String` (hex) | يُحوَّل لـ `int` |
+| `unread_count` | `int` | عدد الرسائل غير المقروءة |
+| `messages` | `List<MessageModel>` | الرسائل المدمجة |
+
+> **getters محسوبة:** `lastMessage` و`lastTime` تُستخرجان من آخر عنصر في `messages`.
 
 ---
 
-### 14.2 إرسال رسالة لزائر
+### 14.2 Stream رسائل محادثة زائر
+| الخاصية | القيمة |
+|---|---|
+| **الملف** | `VisitorMessagesFirebaseData.messagesStream()` |
+| **الكنترولر** | `VisitorMessagesController` ← عند فتح محادثة زائر معين |
+
+**المسار:** `visitor_conversations/{conversationId}/messages` orderBy `time` asc
+
+---
+
+### 14.3 إرسال رسالة لزائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.sendMessage()` |
 | **الكنترولر** | `VisitorMessagesController.sendMessage()` ← زر إرسال |
+
+**الحقول المكتوبة (batch write):**
+
+رسالة في `visitor_conversations/{id}/messages/{auto-id}`:
+```json
+{
+  "id":      "auto-doc-id",
+  "text":    "string",
+  "is_me":   true,
+  "time":    "ServerTimestamp",
+  "is_read": false
+}
+```
+
+تحديث في `visitor_conversations/{id}`:
+```json
+{
+  "last_message": "string",
+  "last_time":    "ServerTimestamp"
+}
+```
+
+---
+
+### 14.4 تعليم محادثة زائر كمقروءة
+| الخاصية | القيمة |
+|---|---|
+| **الملف** | `VisitorMessagesFirebaseData.markConversationRead()` |
+| **الكنترولر** | `VisitorMessagesController` ← عند فتح المحادثة |
+
+> يُعيِّن `unread_count = 0` في وثيقة المحادثة.
 
 ---
 
@@ -975,9 +1241,11 @@ id, visitor_name, visitor_initials, color, unread_count, last_message, last_time
 | **الملف** | `NotificationsFirebaseData.notificationsStream()` |
 | **الكنترولر** | `NotificationsController.onInit()` ← عند فتح صفحة الإشعارات |
 
+**المسار:** `notifications/{userId}/items` orderBy `time` desc
+
 **الحقول المقروءة:**
 ```
-id (doc ID), title, body|message, type, time|created_at, is_read, route?
+id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 ```
 
 ---
@@ -988,6 +1256,8 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | **الملف** | `NotificationsFirebaseData.markRead()` |
 | **الكنترولر** | `NotificationsController.markRead()` ← الضغط على إشعار |
 
+> يُحدِّث `notifications/{userId}/items/{notifId}.is_read = true`.
+
 ---
 
 ### 15.3 تعليم جميع الإشعارات كمقروءة
@@ -995,6 +1265,8 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 |---|---|
 | **الملف** | `NotificationsFirebaseData.markAllRead()` |
 | **الكنترولر** | `NotificationsController.markAllRead()` ← زر "تعليم الكل كمقروء" |
+
+> يُحدِّث جميع الوثائق التي `is_read == false` باستخدام Firestore batch write.
 
 ---
 
@@ -1011,6 +1283,13 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 2 | `data` | `T?` | `data` | البيانات الفعلية |
 | 3 | `message` | `String` | `message` | رسالة الخادم |
 | 4 | `statusCode` | `int` | `code` | كود HTTP |
+
+**factory methods:** `ApiResponse.ok()`, `ApiResponse.fail()`, `ApiResponse.fromMap()`
+
+**Getters مساعدة:**
+- `isUnauthorized` → `statusCode == 401`
+- `isNotFound` → `statusCode == 404`
+- `isServerError` → `statusCode >= 500`
 
 ---
 
@@ -1037,27 +1316,31 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 4 | `imageUrl` | `String` | `image_url` | |
 | 5 | `area` | `double` | `area` | المساحة م² |
 | 6 | `status` | `String` | `status` | `available` \| `booked` \| `pending` \| `rejected` \| `ended` |
-| 7 | `price` | `double` | `price` | سعر الجناح |
-| 8 | `startDate` | `String` | `start_date` | تاريخ بدء الحجز |
-| 9 | `endDate` | `String` | `end_date` | تاريخ انتهاء الحجز |
+| 7 | `price` | `double` | `price` | سعر الجناح (لليوم الواحد) |
+| 8 | `startDate` | `String` | `start_date` | بداية نافذة الإتاحة / الحجز |
+| 9 | `endDate` | `String` | `end_date` | نهاية نافذة الإتاحة / الحجز |
 | 10 | `location` | `String` | `location` | الموقع داخل المعرض |
 | 11 | `amenities` | `List<String>` | `amenities` | الحقوق الأساسية |
 | 12 | `isFavorite` | `bool` | `is_favorite` | |
+| 13 | `services` | `Map<String,double>` | `services` | الخدمات الإضافية المتاحة: اسم الخدمة → سعرها — ديناميكي من الـ API |
+| — | **حقول الشركة المستأجرة** (تُملأ حين يكون الجناح محجوزاً) | | | |
+| 14 | `companyName` | `String?` | `company_name` | اسم شركة المستأجر |
+| 15 | `companyEmail` | `String?` | `company_email` | بريد شركة المستأجر |
+| 16 | `companyInitials` | `String?` | `company_initials` | اختصار اسم الشركة |
 | — | **حقول الحجز** (تُملأ من `/investor/bookings`) | | | |
-| 13 | `bookingId` | `int` | `booking_id` | معرّف الحجز |
-| 14 | `bookingNumber` | `String` | `booking_number` | رقم الحجز (BK-2026-001) |
-| 15 | `bookedAt` | `String` | `booked_at` | تاريخ إجراء الحجز |
-| 16 | `durationDays` | `int` | `duration_days` | المدة بالأيام |
-| 17 | `servicesPrice` | `double` | `services_price` | سعر الخدمات الإضافية |
-| 18 | `totalPrice` | `double` | `total_price` | الإجمالي |
-| 19 | `paidAmount` | `double` | `paid_amount` | المدفوع |
-| 20 | `remainingAmount` | `double` | `remaining_amount` | المتبقي |
-| 21 | `screenService` | `bool` | `screen_service` | إعلانات الشاشات |
-| 22 | `setupService` | `bool` | `setup_service` | خدمة التجهيز |
-| 23 | `securityService` | `bool` | `security_service` | خدمة الأمن |
-| 24 | `cleaningService` | `bool` | `cleaning_service` | خدمة التنظيف |
-| 25 | `notes` | `String` | `notes` | ملاحظات الحجز |
-| 26 | `bookedServices` | `List<String>` | `booked_services` | أسماء الخدمات المحجوزة |
+| 17 | `bookingId` | `int` | `booking_id` | معرّف الحجز |
+| 18 | `bookingNumber` | `String` | `booking_number` | رقم الحجز (BK-2026-001) |
+| 19 | `bookedAt` | `String` | `booked_at` | تاريخ إجراء الحجز |
+| 20 | `durationDays` | `int` | `duration_days` | المدة بالأيام (للقراءة فقط من الـ API — لا يُرسَل في الطلبات) |
+| 21 | `servicesPrice` | `double` | `services_price` | سعر الخدمات الإضافية |
+| 22 | `totalPrice` | `double` | `total_price` | الإجمالي |
+| 23 | `paidAmount` | `double` | `paid_amount` | المدفوع |
+| 24 | `remainingAmount` | `double` | `remaining_amount` | المتبقي |
+| 25 | `bookedServices` | `List<String>` | `booked_services` | أسماء الخدمات المحجوزة |
+| 26 | `notes` | `String` | `notes` | ملاحظات الحجز |
+
+> ⚠️ **الخدمات الثابتة المُحذوفة:** `screenService` / `setupService` / `securityService` / `cleaningService` — استُبدلت بـ `services: Map<String,double>` الديناميكية.  
+> `startDate` / `endDate` تؤدي دوراً مزدوجاً: نافذة الإتاحة للأجنحة المتاحة، ونافذة الحجز للأجنحة المحجوزة (من `/investor/bookings`).
 
 ---
 
@@ -1082,20 +1365,27 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 
 ### ExhibitionModel
 
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `int` | `id` |
-| 2 | `name` | `String` | `name` |
-| 3 | `description` | `String` | `description` |
-| 4 | `imageUrl` | `String` | `image_url` |
-| 5 | `startDate` | `String` | `start_date` |
-| 6 | `endDate` | `String` | `end_date` |
-| 7 | `location` | `String` | `location` |
-| 8 | `city` | `String` | `city` |
-| 9 | `status` | `String` | `status` | `active` \| `upcoming` \| `ended` |
-| 10 | `availableBooths` | `int` | `available_booths` |
-| 11 | `sectors` | `List<String>` | `sectors` |
-| 12 | `isFavorite` | `bool` | `is_favorite` |
+| # | الحقل | النوع | JSON Key | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | `id` | |
+| 2 | `name` | `String` | `name` | |
+| 3 | `description` | `String` | `description` | |
+| 4 | `images` | `List<String>` | `images` | قائمة روابط الصور — يقبل أيضاً `image_url` (string قديم) ويحوّله لقائمة |
+| 5 | `services` | `List<String>` | `services` | خدمات المعرض المتاحة (واي فاي، موقف، ...) |
+| 6 | `mapJson` | `Map<String,dynamic>?` | `map_data` | بيانات الخريطة 3D المضمَّنة في رد التفاصيل |
+| 7 | `sponsorEvents` | `List<ExhibitionSponsorEvent>` | `sponsor_events` | الفعاليات الإعلانية المضمَّنة في رد التفاصيل |
+| 8 | `startDate` | `String` | `start_date` | |
+| 9 | `endDate` | `String` | `end_date` | |
+| 10 | `location` | `String` | `location` | |
+| 11 | `city` | `String` | `city` | |
+| 12 | `status` | `String` | `status` | `active` \| `upcoming` \| `ended` |
+| 13 | `availableBooths` | `int` | `available_booths` | |
+| 14 | `sectors` | `List<String>` | `sectors` | |
+| 15 | `isFavorite` | `bool` | `is_favorite` | |
+
+**Getters محسوبة:**
+- `imageUrl` → أول عنصر في `images` أو `''` — للتوافق مع الكود القديم دون تعديله
+- `statusLabel` → نص عربي: `active` → `'جارٍ'` \| `upcoming` → `'قادم'` \| غير ذلك → `'منتهٍ'`
 
 ---
 
@@ -1108,30 +1398,34 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 3 | `type` | `String` | `type` | |
 | 4 | `boothNumber` | `String` | `booth_number` | |
 | 5 | `exhibitionName` | `String` | `exhibition_name` | |
-| 6 | `date` | `String` | `date` | |
-| 7 | `time` | `String` | `time` | |
-| 8 | `maxParticipants` | `int` | `max_participants` | |
-| 9 | `registeredCount` | `int` | `registered_count` | |
-| 10 | `status` | `String` | `status` | `upcoming` \| `active` \| `ended` |
-| 11 | `description` | `String` | `description` | |
-| 12 | `requiresBooking` | `bool` | `requires_booking` | |
-| 13 | `isFavorite` | `bool` | `is_favorite` | |
-| 14 | `place` | `String` | `place` | |
-| 15 | `durationDays` | `int` | `duration_days` | افتراضي: 1 |
-| 16 | `hasBookableSeats` | `bool` | `has_bookable_seats` | |
-| 17 | `totalSeats` | `int` | `total_seats` | |
-| 18 | `bookedSeats` | `int` | `booked_seats` | |
-| 19 | `soldTickets` | `int` | `sold_tickets` | |
-| 20 | `ticketPrice` | `double` | `ticket_price` | |
-| 21 | `isGeneralInvitation` | `bool` | `is_general_invitation` | افتراضي: true |
-| 22 | `videoPromoUrl` | `String` | `video_promo_url` | |
-| 23 | `companyImages` | `List<String>` | `company_images` | |
-| 24 | `currentDay` | `int` | `current_day` | اليوم الحالي |
-| 25 | `totalEventDays` | `int` | `total_event_days` | |
-| 26 | `dailyAttendees` | `List<int>` | `daily_attendees` | |
-| 27 | `scannedCount` | `int` | `scanned_count` | |
+| 6 | `date` | `String` | `date` | تاريخ الفعالية (للعرض من الـ API) |
+| 7 | `startDate` | `String` | `start_date` | تاريخ بدء الفعالية `YYYY-MM-DD` — يُرسَل عند الإنشاء |
+| 8 | `endDate` | `String` | `end_date` | تاريخ نهاية الفعالية `YYYY-MM-DD` — يُرسَل عند الإنشاء (= `start_date` لفعالية يوم واحد) |
+| 9 | `time` | `String` | `time` | |
+| 10 | `maxParticipants` | `int` | `max_participants` | |
+| 11 | `registeredCount` | `int` | `registered_count` | |
+| 12 | `status` | `String` | `status` | `upcoming` \| `active` \| `ended` |
+| 13 | `description` | `String` | `description` | |
+| 14 | `requiresBooking` | `bool` | `requires_booking` | |
+| 15 | `isFavorite` | `bool` | `is_favorite` | |
+| 16 | `place` | `String` | `place` | |
+| 17 | `durationDays` | `int` | `duration_days` | افتراضي: 1 — من الرد فقط، **لا يُرسَل** عند الإنشاء |
+| 18 | `hasBookableSeats` | `bool` | `has_bookable_seats` | |
+| 19 | `totalSeats` | `int` | `total_seats` | |
+| 20 | `bookedSeats` | `int` | `booked_seats` | |
+| 21 | `soldTickets` | `int` | `sold_tickets` | |
+| 22 | `ticketPrice` | `double` | `ticket_price` | |
+| 23 | `isGeneralInvitation` | `bool` | `is_general_invitation` | افتراضي: true |
+| 24 | `videoPromoUrl` | `String` | `video_promo_url` | |
+| 25 | `companyImages` | `List<String>` | `company_images` | |
+| 26 | `currentDay` | `int` | `current_day` | اليوم الحالي |
+| 27 | `totalEventDays` | `int` | `total_event_days` | |
+| 28 | `dailyAttendees` | `List<int>` | `daily_attendees` | |
+| 29 | `scannedCount` | `int` | `scanned_count` | |
 
-**getter محسوب:** `ticketCategory` → `'paid'` \| `'free'` \| `'none'`
+**getters محسوبة:**
+- `ticketCategory` → `'paid'` \| `'free'` \| `'none'`
+- `eventDurationDays` → `end_date.difference(start_date).inDays + 1` (للعرض المحلي)
 
 ---
 
@@ -1187,9 +1481,10 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 17 | `currentDay` | `int` | `current_day` |
 | 18 | `totalDays` | `int` | `total_days` |
 
-**getter محسوب:** `statusLabel` → نص عربي حسب الحالة
+**getter محسوب:** `statusLabel` → نص عربي حسب الحالة (`approved`/`confirmed`/`active` → "مقبول"، `pending` → "قيد المراجعة"، `rejected` → "مرفوض")
 
-**`toJson()` يُرسَل عند الإنشاء:** `event_id, selected_duration_label, selected_days, price`
+**`toJson()` يُرسَل عبر الموديل (4 حقول):** `event_id, selected_duration_label, selected_days, price`  
+> الحقول الإضافية (`company_name`, `company_website`, `company_phone`, `product_names`, والملفات) تُرسَل مباشرةً من `EventsData.createSponsorship()` وليس عبر `toJson()`.
 
 ---
 
@@ -1203,9 +1498,9 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 | 4 | `requesterPhone` | `String` | `requester_phone` |
 | 5 | `requesterEmail` | `String` | `requester_email` |
 | 6 | `requestedAt` | `String` | `requested_at` |
-| 7 | `status` | `String` | `status` | `pending` \| `approved` \| `rejected` |
-| 8 | `qrCodeData` | `String?` | `qr_code_data` | nullable |
-| 9 | `ticketNumber` | `String?` | `ticket_number` | nullable |
+| 7 | `status` | `String` (mutable) | `status` | `pending` \| `approved` \| `rejected` |
+| 8 | `qrCodeData` | `String?` (mutable) | `qr_code_data` | nullable |
+| 9 | `ticketNumber` | `String?` (mutable) | `ticket_number` | nullable |
 
 ---
 
@@ -1234,8 +1529,8 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 |---|---|---|---|
 | 1 | `exhibitionId` | `int` | `exhibition_id` |
 | 2 | `exhibitionName` | `String` | `exhibition_name` |
-| 3 | `gridWidth` | `int` | `grid_width` |
-| 4 | `gridDepth` | `int` | `grid_depth` |
+| 3 | `gridWidth` | `int` | `grid_width` | (افتراضي: 12) |
+| 4 | `gridDepth` | `int` | `grid_depth` | (افتراضي: 10) |
 | 5 | `halls` | `List<MapHallModel>` | `halls` |
 
 #### MapHallModel (nested)
@@ -1244,53 +1539,67 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 |---|---|---|---|
 | 1 | `id` | `String` | `id` |
 | 2 | `name` | `String` | `name` |
-| 3 | `colorHex` | `String` | `color` |
+| 3 | `colorHex` | `String` | `color` | hex بدون `#` (افتراضي: `7A1FFF`) |
 | 4 | `booths` | `List<MapBoothModel>` | `booths` |
+
+**getter محسوب:** `color` → `Color` من `colorHex`
 
 #### MapBoothModel (nested)
 
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `int` | `id` |
-| 2 | `number` | `String` | `number` |
-| 3 | `col` | `int` | `col` |
-| 4 | `row` | `int` | `row` |
-| 5 | `gridWidth` | `int` | `width` |
-| 6 | `gridDepth` | `int` | `depth` |
-| 7 | `height` | `double` | `height` |
-| 8 | `status` | `String` | `status` | `available` \| `booked` |
-| 9 | `price` | `double` | `price` |
-| 10 | `area` | `double` | `area` |
-| 11 | `hallId` | `String` | *(يُمرَّر من الأب)* |
-| 12 | `hallName` | `String` | *(يُمرَّر من الأب)* |
-| 13 | `amenities` | `List<String>` | `amenities` |
+| # | الحقل | النوع | JSON Key | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | `id` | |
+| 2 | `number` | `String` | `number` | |
+| 3 | `col` | `int` | `col` | |
+| 4 | `row` | `int` | `row` | |
+| 5 | `gridWidth` | `int` | `width` | |
+| 6 | `gridDepth` | `int` | `depth` | |
+| 7 | `height` | `double` | `height` | |
+| 8 | `status` | `String` (mutable) | `status` | `available` \| `booked` |
+| 9 | `price` | `double` | `price` | |
+| 10 | `area` | `double` | `area` | |
+| 11 | `hallId` | `String` | *(يُمرَّر من الأب `MapHallModel.id`)* | |
+| 12 | `hallName` | `String` | *(يُمرَّر من الأب `MapHallModel.name`)* | |
+| 13 | `amenities` | `List<String>` | `amenities` | |
+
+**Getters محسوبة:** `isAvailable` → `status == 'available'` \| `isBooked` → `status == 'booked'`
 
 ---
 
 ### ConversationModel (Firebase)
 
-| # | الحقل | النوع | Firestore Field |
-|---|---|---|---|
-| 1 | `id` | `int` | doc.id |
-| 2 | `exhibitionId` | `int` | `exhibition_id` |
-| 3 | `exhibitionName` | `String` | `exhibition_name` |
-| 4 | `exhibitionInitials` | `String` | `exhibition_initials` |
-| 5 | `color` | `int` | `color` (hex string) |
-| 6 | `messages` | `List<MessageModel>` | `messages[]` |
-| 7 | `unreadCount` | `int` | `unread_count` |
+| # | الحقل | النوع | Firestore Field | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | doc.id | يُحوَّل من String عبر `_toInt()` → `int.tryParse` أو `hashCode` |
+| 2 | `exhibitionId` | `int` | `exhibition_id` | |
+| 3 | `exhibitionName` | `String` | `exhibition_name` | |
+| 4 | `exhibitionInitials` | `String` | `exhibition_initials` | |
+| 5 | `color` | `int` | `color` (hex string) | يُحوَّل من String hex لـ `int` |
+| 6 | `messages` | `List<MessageModel>` | `messages[]` | |
+| 7 | `unreadCount` | `int` (mutable) | `unread_count` | |
+
+**Getters محسوبة:**
+- `lastMessageObj` → آخر `MessageModel` في `messages` أو `null`
+- `lastMessage` → `lastMessageObj?.text ?? ''`
+- `lastTime` → `lastMessageObj?.time ?? ''`
 
 ---
 
 ### VisitorConversationModel (Firebase)
 
-| # | الحقل | النوع | Firestore Field |
-|---|---|---|---|
-| 1 | `id` | `int` | doc.id |
-| 2 | `visitorName` | `String` | `visitor_name` |
-| 3 | `visitorInitials` | `String` | `visitor_initials` |
-| 4 | `color` | `int` | `color` (hex string) |
-| 5 | `messages` | `List<MessageModel>` | `messages[]` |
-| 6 | `unreadCount` | `int` | `unread_count` |
+| # | الحقل | النوع | Firestore Field | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | doc.id | يُحوَّل من String عبر `_toIntId()` |
+| 2 | `visitorName` | `String` | `visitor_name` | |
+| 3 | `visitorInitials` | `String` | `visitor_initials` | |
+| 4 | `color` | `int` | `color` (hex string) | افتراضي: `0xFFFF1592` |
+| 5 | `messages` | `List<MessageModel>` | `messages[]` | |
+| 6 | `unreadCount` | `int` (mutable) | `unread_count` | |
+
+**Getters محسوبة:**
+- `lastMessageObj` → آخر `MessageModel` في `messages` أو `null`
+- `lastMessage` → `lastMessageObj?.text ?? ''`
+- `lastTime` → `lastMessageObj?.time ?? ''`
 
 ---
 
@@ -1310,7 +1619,7 @@ id (doc ID), title, body|message, type, time|created_at, is_read, route?
 
 | # | الحقل | النوع | Firestore Field |
 |---|---|---|---|
-| 1 | `id` | `int` | doc.id |
+| 1 | `id` | `int` | doc.id (يُحوَّل من String) |
 | 2 | `title` | `String` | `title` |
 | 3 | `body` | `String` | `body` \| `message` |
 | 4 | `type` | `String` | `type` |
