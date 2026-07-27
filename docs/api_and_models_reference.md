@@ -1,13 +1,7 @@
 # ExpoCore Investor — API Requests & Models Reference
 
-> **Base URLs:**
-> | البيئة | الرابط |
-> |---|---|
-> | `dev` (**نشط حالياً**) | `https://api-dev.expocore.app/api/v1` |
-> | `staging` | `https://api-staging.expocore.app/api/v1` |
-> | `prod` | `https://api.expocore.app/api/v1` |
+> **Base URLs:**`https://api.expocore.app/api/` |
 >
-> يتحكم في البيئة الحقل `_active` داخل `lib/core/constant/app_env.dart`.  
 > **Auth:** كل طلب (ما عدا تسجيل الدخول / التسجيل) يحمل `Authorization: Bearer <token>` يُضاف تلقائياً في `Crud`.  
 > **هيكل الرد الموحَّد:**
 > ```json
@@ -1423,10 +1417,6 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | 28 | `dailyAttendees` | `List<int>` | `daily_attendees` | |
 | 29 | `scannedCount` | `int` | `scanned_count` | |
 
-**getters محسوبة:**
-- `ticketCategory` → `'paid'` \| `'free'` \| `'none'`
-- `eventDurationDays` → `end_date.difference(start_date).inDays + 1` (للعرض المحلي)
-
 ---
 
 ### ExhibitionSponsorEvent
@@ -1481,7 +1471,6 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | 17 | `currentDay` | `int` | `current_day` |
 | 18 | `totalDays` | `int` | `total_days` |
 
-**getter محسوب:** `statusLabel` → نص عربي حسب الحالة (`approved`/`confirmed`/`active` → "مقبول"، `pending` → "قيد المراجعة"، `rejected` → "مرفوض")
 
 **`toJson()` يُرسَل عبر الموديل (4 حقول):** `event_id, selected_duration_label, selected_days, price`  
 > الحقول الإضافية (`company_name`, `company_website`, `company_phone`, `product_names`, والملفات) تُرسَل مباشرةً من `EventsData.createSponsorship()` وليس عبر `toJson()`.
