@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../controller/Home/home_billboard_controller.dart';
+import '../../../controller/Home/latest_exhibitions_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../widgets/web_exhibition_card.dart';
@@ -16,9 +17,10 @@ class WebDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c         = Get.find<DashboardController>();
-    final events    = Get.find<EventsController>();
-    final billboard = Get.find<HomeBillboardController>();
+    final c           = Get.find<DashboardController>();
+    final events      = Get.find<EventsController>();
+    final billboard   = Get.find<HomeBillboardController>();
+    final latestExhib = Get.find<LatestExhibitionsController>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +66,7 @@ class WebDashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Obx(() {
-                  final list = c.featuredExhibitions.toList();
+                  final list = latestExhib.exhibitions.toList();
                   if (list.isEmpty) return _emptyHint('لا توجد معارض حالياً');
                   return Wrap(
                     spacing: 20,

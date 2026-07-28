@@ -17,6 +17,7 @@
    - [2.1 اللوحة الإعلانية للمعارض المميّزة](#21-اللوحة-الإعلانية-للمعارض-المميّزة-home-billboard)
    - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
    - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
+   - [2.4 أحدث المعارض (ويب فقط)](#24-أحدث-المعارض-ويب-فقط)
 3. [التحليلات — Analytics](#3-analytics)
 4. [المعارض — Exhibitions](#4-exhibitions)
 5. [الأجنحة — Booths](#5-booths)
@@ -394,6 +395,62 @@
   "visitors_trend":     [120, 180, 250, 310, 400, 380, 420],
   "top_booths":         [ { "booth_number": "B12", "visitors": 320 } ]
 }
+```
+
+### 2.4 أحدث المعارض (ويب فقط)
+
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/exhibitions/latest` |
+| **الملف** | `LatestExhibitionsData.getLatestExhibitions()` — `lib/data/sourcedata/remote/Dashboard/latest_exhibitions_data.dart` |
+| **الكنترولر** | `LatestExhibitionsController.fetchLatestExhibitions()` — `lib/controller/Home/latest_exhibitions_controller.dart` |
+| **متى يُرسَل** | عند `onInit` — يجلب القائمة الكاملة دفعةً واحدة |
+| **النطاق** | ويب فقط — مُسجَّل في `InitialBindings` داخل `if (GetPlatform.isWeb)` |
+
+**Query Params:** لا يوجد — طلب بسيط بدون Pagination.
+
+**الاستجابة المتوقعة (`data`):**
+```json
+[
+  {
+    "id": 5,
+    "name": "معرض الغذاء والضيافة",
+    "description": "معرض سنوي لقطاع الغذاء",
+    "images": ["https://cdn.example.com/food-expo.jpg"],
+    "services": ["واي فاي", "قاعات اجتماعات"],
+    "start_date": "2026-08-01",
+    "end_date": "2026-08-05",
+    "location": "مركز المعارض الدولي",
+    "city": "جدة",
+    "status": "upcoming",
+    "available_booths": 30,
+    "sectors": ["غذاء", "ضيافة"],
+    "is_favorite": false
+  }
+]
+```
+
+> يقبل الـ parser أيضاً هيكل `{ "data": [ ... ] }` — الـ controller يستخرج القائمة تلقائياً.
+
+**الموديل المستخدم:** `ExhibitionModel`
+
+**حالة الـ Controller:**
+
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `exhibitions` | `RxList<ExhibitionModel>` | قائمة أحدث المعارض |
+| `isLoading` | `RxBool` | `true` أثناء الجلب |
+
+**الاستخدام في الواجهة:**
+```dart
+// lib/web/view/pages/web_dashboard_page.dart
+final latestExhib = Get.find<LatestExhibitionsController>();
+
+Obx(() {
+  final list = latestExhib.exhibitions.toList();
+  // يُعرض في Wrap بعرض 280 لكل بطاقة
+});
 ```
 
 ---

@@ -42,6 +42,10 @@ class AppLink {
   // ── Home Billboard (Paginated, 5 per call) ───────────────
   /// GET /exhibitions/featured?page=&per_page=
   static String get featuredExhibitionsBillboard => '$server/exhibitions/featured';
+
+  // ── Latest Exhibitions (ويب — بدون Pagination) ───────────
+  /// GET /exhibitions/latest
+  static String get latestExhibitions => '$server/exhibitions/latest';
   /// GET /investor/sponsor-events/featured?page=&per_page=
   static String get featuredSponsorEventsBillboard => '$server/investor/sponsor-events/featured';
 
