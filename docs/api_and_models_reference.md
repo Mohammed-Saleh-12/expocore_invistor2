@@ -13,7 +13,10 @@
 ## الفهرس
 
 1. [طلبات المصادقة — Auth](#1-auth)
-2. [لوحة التحكم — Dashboard](#2-dashboard)
+2. [لوحة التحكم واللوحات الإعلانية — Dashboard & Home Billboard](#2-dashboard)
+   - [2.1 اللوحة الإعلانية للمعارض المميّزة](#21-اللوحة-الإعلانية-للمعارض-المميّزة-home-billboard)
+   - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
+   - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
 3. [التحليلات — Analytics](#3-analytics)
 4. [المعارض — Exhibitions](#4-exhibitions)
 5. [الأجنحة — Booths](#5-booths)
@@ -243,7 +246,131 @@
 
 ## 2. Dashboard
 
-### 2.1 جلب بيانات لوحة التحكم
+### 2.1 اللوحة الإعلانية للمعارض المميّزة (Home Billboard)
+
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/exhibitions/featured` |
+| **الملف** | `HomeBillboardData.getFeaturedExhibitions()` |
+| **الكنترولر** | `HomeBillboardController._fetchExhibitions()` |
+| **متى يُرسَل** | عند `onInit` — يجلب الصفحة 1 تلقائياً (5 عناصر) |
+| **تحميل المزيد** | `HomeBillboardController.loadMoreExhibitions()` — يُستدعى عند الوصول للشريحة الأخيرة في الكاروسيل |
+
+**Query Params:**
+
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `page` | `integer` | رقم الصفحة (يبدأ من 1) |
+| `per_page` | `integer` | عدد العناصر في كل صفحة — ثابت عند **5** |
+
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "معرض التقنية 2026",
+      "images": ["https://cdn.example.com/ex1.jpg"],
+      "start_date": "2026-07-15",
+      "end_date": "2026-07-20",
+      "location": "مركز الرياض للمعارض",
+      "city": "الرياض",
+      "status": "upcoming",
+      "available_booths": 45,
+      "sectors": ["تقنية"]
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 3,
+    "per_page": 5,
+    "total": 14
+  }
+}
+```
+
+**الموديل المستخدم:** `ExhibitionModel`
+
+**حالة الـ Controller:**
+
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `featuredExhibitions` | `RxList<ExhibitionModel>` | القائمة المتراكمة من كل الصفحات المحمَّلة |
+| `isLoadingExhibitions` | `RxBool` | `true` أثناء تحميل الصفحة الأولى |
+| `isLoadingMoreExhibitions` | `RxBool` | `true` أثناء تحميل الصفحات التالية |
+| `hasMoreExhibitions` | `bool` | `true` إذا كانت هناك صفحات إضافية |
+
+---
+
+### 2.2 اللوحة الإعلانية للفعاليات الإعلانية المميّزة (Home Billboard)
+
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/investor/sponsor-events/featured` |
+| **الملف** | `HomeBillboardData.getFeaturedSponsorEvents()` |
+| **الكنترولر** | `HomeBillboardController._fetchSponsorEvents()` |
+| **متى يُرسَل** | عند `onInit` — يجلب الصفحة 1 تلقائياً (5 عناصر) |
+| **تحميل المزيد** | `HomeBillboardController.loadMoreSponsorEvents()` — يُستدعى عند الوصول للشريحة الأخيرة في الكاروسيل |
+
+**Query Params:**
+
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `page` | `integer` | رقم الصفحة (يبدأ من 1) |
+| `per_page` | `integer` | عدد العناصر في كل صفحة — ثابت عند **5** |
+
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "data": [
+    {
+      "id": 10,
+      "name": "حفل افتتاح معرض التقنية",
+      "type": "حفل افتتاح",
+      "exhibition_id": 1,
+      "exhibition_name": "معرض التقنية 2026",
+      "exhibition_image_url": "https://cdn.example.com/ex1.jpg",
+      "date": "2026-07-15",
+      "start_time": "10:00",
+      "end_time": "13:00",
+      "place": "القاعة الرئيسية",
+      "listing_days": 3,
+      "description": "فرصة إعلانية في حفل الافتتاح",
+      "duration_options": [
+        { "label": "يوم واحد", "days": 1, "price": 1500.0 },
+        { "label": "3 أيام",   "days": 3, "price": 3500.0 }
+      ],
+      "is_favorite": false
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 2,
+    "per_page": 5,
+    "total": 9
+  }
+}
+```
+
+**الموديل المستخدم:** `ExhibitionSponsorEvent`
+
+**حالة الـ Controller:**
+
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `featuredSponsorEvents` | `RxList<ExhibitionSponsorEvent>` | القائمة المتراكمة من كل الصفحات المحمَّلة |
+| `isLoadingSponsorEvents` | `RxBool` | `true` أثناء تحميل الصفحة الأولى |
+| `isLoadingMoreSponsorEvents` | `RxBool` | `true` أثناء تحميل الصفحات التالية |
+| `hasMoreSponsorEvents` | `bool` | `true` إذا كانت هناك صفحات إضافية |
+
+> **ملاحظة:** كلا الطلبين يُرسَلان بالتوازي (`Future.wait`) عند فتح الصفحة الرئيسية لأول مرة.  
+> مبدأ تحميل المزيد: عندما يصل المستخدم للشريحة الأخيرة في الكاروسيل، يُستدعى `loadMore*` تلقائياً فتُضاف الصفحة التالية (5 عناصر) لنهاية القائمة.
+
+---
+
+### 2.3 جلب بيانات لوحة التحكم
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |

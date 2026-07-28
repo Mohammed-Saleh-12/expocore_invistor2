@@ -7,8 +7,15 @@ import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 class EventBillboard extends StatelessWidget {
   final List<ExhibitionSponsorEvent> events;
   final void Function(ExhibitionSponsorEvent)? onTap;
+  /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
+  final VoidCallback? onNearEnd;
 
-  const EventBillboard({super.key, required this.events, this.onTap});
+  const EventBillboard({
+    super.key,
+    required this.events,
+    this.onTap,
+    this.onNearEnd,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,10 @@ class EventBillboard extends StatelessWidget {
               child: PageView.builder(
                 controller: ctrl.pageCtrl,
                 itemCount: events.length,
-                onPageChanged: ctrl.onPageChanged,
+                onPageChanged: (index) {
+                  ctrl.onPageChanged(index);
+                  if (index == events.length - 1) onNearEnd?.call();
+                },
                 itemBuilder: (_, index) => GestureDetector(
                   onTap: () => onTap?.call(events[index]),
                   child: _EventBillboardSlide(event: events[index]),

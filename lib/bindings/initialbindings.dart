@@ -29,6 +29,7 @@ import '../controller/Home/booth_detail_controller.dart';
 import '../controller/Home/exhibition_detail_controller.dart';
 import '../controller/Home/exhibition_billboard_controller.dart';
 import '../controller/Home/event_billboard_controller.dart';
+import '../controller/Home/home_billboard_controller.dart';
 import '../web/controllers/web_auth_controller.dart';
 import '../web/controllers/web_billboard_controller.dart';
 import '../web/controllers/web_scanner_controller.dart';
@@ -74,6 +75,7 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ExhibitionDetailController(),     fenix: true);
     Get.lazyPut(() => ExhibitionBillboardController(),  fenix: true);
     Get.lazyPut(() => EventBillboardController(),       fenix: true);
+    Get.lazyPut(() => HomeBillboardController(),        fenix: true);
 
     if (GetPlatform.isWeb) {
       Get.lazyPut(() => WebBillboardController(),  fenix: true);

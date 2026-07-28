@@ -8,7 +8,9 @@ import '../../models/web_theme.dart';
 
 class WebBillboard extends StatelessWidget {
   final List<ExhibitionModel> items;
-  const WebBillboard({super.key, required this.items});
+  /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
+  final VoidCallback? onNearEnd;
+  const WebBillboard({super.key, required this.items, this.onNearEnd});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,10 @@ class WebBillboard extends StatelessWidget {
               child: PageView.builder(
                 controller: ctrl.pageCtrl,
                 itemCount: items.length,
-                onPageChanged: ctrl.onPageChanged,
+                onPageChanged: (i) {
+                  ctrl.onPageChanged(i);
+                  if (i == items.length - 1) onNearEnd?.call();
+                },
                 itemBuilder: (_, i) => _AdCard(item: items[i], ctrl: ctrl),
               ),
             ),

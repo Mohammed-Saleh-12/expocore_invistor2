@@ -8,7 +8,9 @@ import '../../models/web_theme.dart';
 
 class WebEventBillboard extends StatelessWidget {
   final List<ExhibitionSponsorEvent> events;
-  const WebEventBillboard({super.key, required this.events});
+  /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
+  final VoidCallback? onNearEnd;
+  const WebEventBillboard({super.key, required this.events, this.onNearEnd});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,10 @@ class WebEventBillboard extends StatelessWidget {
               child: PageView.builder(
                 controller: ctrl.pageCtrl,
                 itemCount: events.length,
-                onPageChanged: ctrl.onPageChanged,
+                onPageChanged: (i) {
+                  ctrl.onPageChanged(i);
+                  if (i == events.length - 1) onNearEnd?.call();
+                },
                 itemBuilder: (_, i) =>
                     _EventSlide(event: events[i], ctrl: ctrl),
               ),

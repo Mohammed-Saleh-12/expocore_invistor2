@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
+import '../../../controller/Home/home_billboard_controller.dart';
 import '../../../controller/Home/notifications_controller.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
@@ -19,8 +20,9 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final notifCtrl = Get.find<NotificationsController>();
-    final eventsCtrl = Get.find<EventsController>();
+    final notifCtrl    = Get.find<NotificationsController>();
+    final eventsCtrl   = Get.find<EventsController>();
+    final billboardCtrl = Get.find<HomeBillboardController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SwipeNavWrapper(
       child: Scaffold(
@@ -108,12 +110,13 @@ class DashboardView extends GetView<DashboardController> {
                     children: [
                       Obx(
                         () => ExhibitionBillboard(
-                          key: ValueKey(controller.featuredExhibitions.length),
-                          exhibitions: controller.featuredExhibitions.toList(),
+                          key: ValueKey(billboardCtrl.featuredExhibitions.length),
+                          exhibitions: billboardCtrl.featuredExhibitions.toList(),
                           onTap: (e) => Get.toNamed(
                             AppRoutes.EXHIBITION_DETAIL,
                             arguments: e,
                           ),
+                          onNearEnd: () => billboardCtrl.loadMoreExhibitions(),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -124,11 +127,12 @@ class DashboardView extends GetView<DashboardController> {
                       Obx(
                         () => EventBillboard(
                           key: ValueKey(
-                            eventsCtrl.exhibitionSponsorEvents.length,
+                            billboardCtrl.featuredSponsorEvents.length,
                           ),
-                          events: eventsCtrl.exhibitionSponsorEvents.toList(),
+                          events: billboardCtrl.featuredSponsorEvents.toList(),
                           onTap: (ev) =>
                               _showSponsorSheet(context, ev, eventsCtrl),
+                          onNearEnd: () => billboardCtrl.loadMoreSponsorEvents(),
                         ),
                       ),
                       const SizedBox(height: 24),

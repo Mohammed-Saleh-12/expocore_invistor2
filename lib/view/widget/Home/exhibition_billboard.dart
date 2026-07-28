@@ -7,8 +7,15 @@ import '../../../data/model/exhibition/exhibition_model.dart';
 class ExhibitionBillboard extends StatelessWidget {
   final List<ExhibitionModel> exhibitions;
   final void Function(ExhibitionModel)? onTap;
+  /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
+  final VoidCallback? onNearEnd;
 
-  const ExhibitionBillboard({super.key, required this.exhibitions, this.onTap});
+  const ExhibitionBillboard({
+    super.key,
+    required this.exhibitions,
+    this.onTap,
+    this.onNearEnd,
+  });
 
   String _statusLabel(String status) {
     switch (status) {
@@ -52,7 +59,10 @@ class ExhibitionBillboard extends StatelessWidget {
               child: PageView.builder(
                 controller: ctrl.pageCtrl,
                 itemCount: exhibitions.length,
-                onPageChanged: ctrl.onPageChanged,
+                onPageChanged: (index) {
+                  ctrl.onPageChanged(index);
+                  if (index == exhibitions.length - 1) onNearEnd?.call();
+                },
                 itemBuilder: (_, index) {
                   final ex = exhibitions[index];
                   return GestureDetector(

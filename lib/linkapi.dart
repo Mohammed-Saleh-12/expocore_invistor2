@@ -39,6 +39,12 @@ class AppLink {
   static String boothDetail(int id)    => '$server/booths/$id';
   static String get bookBooth          => '$server/booths/book';
 
+  // ── Home Billboard (Paginated, 5 per call) ───────────────
+  /// GET /exhibitions/featured?page=&per_page=
+  static String get featuredExhibitionsBillboard => '$server/exhibitions/featured';
+  /// GET /investor/sponsor-events/featured?page=&per_page=
+  static String get featuredSponsorEventsBillboard => '$server/investor/sponsor-events/featured';
+
   // ── Investor — Dashboard ─────────────────────────────────
   static String get investorDashboard => '$server/investor/dashboard';
 

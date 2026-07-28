@@ -3,6 +3,7 @@ import '../../models/web_theme.dart';
 import 'package:get/get.dart';
 import '../../../controller/Home/dashboard_controller.dart';
 import '../../../controller/Home/events_controller.dart';
+import '../../../controller/Home/home_billboard_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../widgets/web_exhibition_card.dart';
@@ -15,8 +16,9 @@ class WebDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<DashboardController>();
-    final events = Get.find<EventsController>();
+    final c         = Get.find<DashboardController>();
+    final events    = Get.find<EventsController>();
+    final billboard = Get.find<HomeBillboardController>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,7 +32,7 @@ class WebDashboardPage extends StatelessWidget {
               children: [
                 // ── Exhibitions billboard ─────────────────
                 Obx(() {
-                  final ads = c.featuredExhibitions.toList();
+                  final ads = billboard.featuredExhibitions.toList();
                   if (ads.isEmpty) return const SizedBox.shrink();
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -39,7 +41,11 @@ class WebDashboardPage extends StatelessWidget {
                       children: [
                         _sectionTitle('المعارض المميّزة'),
                         const SizedBox(height: 14),
-                        WebBillboard(items: ads),
+                        WebBillboard(
+                          items: ads,
+                          onNearEnd: () =>
+                              billboard.loadMoreExhibitions(),
+                        ),
                       ],
                     ),
                   );
@@ -76,7 +82,7 @@ class WebDashboardPage extends StatelessWidget {
                 const SizedBox(height: 32),
                 // ── Events billboard ──────────────────────
                 Obx(() {
-                  final evs = events.exhibitionSponsorEvents.toList();
+                  final evs = billboard.featuredSponsorEvents.toList();
                   if (evs.isEmpty) return const SizedBox.shrink();
                   return Padding(
                     padding: const EdgeInsets.only(top: 28, bottom: 10),
@@ -84,9 +90,12 @@ class WebDashboardPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _sectionTitle('فعاليات المعارض الإعلانية'),
-
                         const SizedBox(height: 14),
-                        WebEventBillboard(events: evs),
+                        WebEventBillboard(
+                          events: evs,
+                          onNearEnd: () =>
+                              billboard.loadMoreSponsorEvents(),
+                        ),
                       ],
                     ),
                   );
