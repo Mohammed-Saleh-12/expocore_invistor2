@@ -370,20 +370,6 @@
 
 ---
 
-### 4.3 جلب خريطة المعرض ثلاثية الأبعاد
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `GET` |
-| **المسار** | `/exhibitions/{id}/map` |
-| **الملف** | `ExhibitionMapData.getExhibitionMap()` |
-| **الكنترولر** | ~~`BoothMapController.loadMap()`~~ — **لم يعد يُستدعى مباشرةً** |
-
-> ⚠️ **هذا الـ endpoint لم يعد نشطاً في التطبيق.** بيانات الخريطة (`map_data`) تأتي الآن مضمَّنةً في رد `GET /exhibitions/{id}` (§4.2)، ويمررها `ExhibitionDetailController` لـ `BoothMapController` عبر `loadFromDetailData(mapJson, booths)`. الملف `ExhibitionMapData.dart` يبقى موجوداً لكن لا يُستدعى.
-
-**الاستجابة المتوقعة (`data`):** `ExhibitionMapModel` — راجع [ExhibitionMapModel](#exhibitionmapmodel).
-
----
-
 ## 5. Booths
 
 ### 5.1 جلب أجنحتي (حجوزاتي)
