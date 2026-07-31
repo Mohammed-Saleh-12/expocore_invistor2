@@ -18,20 +18,18 @@
    - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
    - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
    - [2.4 أحدث المعارض (ويب فقط)](#24-أحدث-المعارض-ويب-فقط)
-3. [التحليلات — Analytics](#3-analytics)
-4. [المعارض — Exhibitions](#4-exhibitions)
-5. [الأجنحة — Booths](#5-booths)
-6. [الحجز — Booking](#6-booking)
-7. [ملف الجناح — Booth Profile](#7-booth-profile)
-8. [الحملات — Campaigns](#8-campaigns)
-9. [الفعاليات — Events](#9-events)
-10. [التقارير — Reports](#10-reports)
-11. [المفضلة — Favorites](#11-favorites)
-12. [الملف الشخصي — Profile](#12-profile)
-13. [الرسائل مع المعارض — Messages (Firebase)](#13-messages-firebase)
-14. [الرسائل مع الزوار — Visitor Messages (Firebase)](#14-visitor-messages-firebase)
-15. [الإشعارات — Notifications (Firebase)](#15-notifications-firebase)
-16. [الموديلات — Models](#16-models)
+3. [المعارض — Exhibitions](#4-exhibitions)
+4. [الأجنحة — Booths](#5-booths)
+5. [الحجز — Booking](#6-booking)
+6. [ملف الجناح — Booth Profile](#7-booth-profile)
+7. [الفعاليات — Events](#9-events)
+8. [التقارير — Reports](#10-reports)
+9. [المفضلة — Favorites](#11-favorites)
+10. [الملف الشخصي — Profile](#12-profile)
+11. [الرسائل مع المعارض — Messages (Firebase)](#13-messages-firebase)
+12. [الرسائل مع الزوار — Visitor Messages (Firebase)](#14-visitor-messages-firebase)
+13. [الإشعارات — Notifications (Firebase)](#15-notifications-firebase)
+14. [الموديلات — Models](#16-models)
 
 ---
 
@@ -59,7 +57,6 @@
 {
   "token":        "string",
   "id":           1,
-  "name":         "string",
   "email":        "string",
   "company_name": "string",
   "avatar_url":   "string"
@@ -388,12 +385,10 @@
 **الاستجابة المتوقعة (`data`):**
 ```json
 {
-  "total_visitors":     1234,
-  "total_bookings":     56,
-  "total_campaigns":    12,
-  "total_revenue":      45000.0,
-  "visitors_trend":     [120, 180, 250, 310, 400, 380, 420],
-  "top_booths":         [ { "booth_number": "B12", "visitors": 320 } ]
+  "total_bookings":12,
+  "active_booths":3,
+  "published_events":8,
+  "total_engagement":24900
 }
 ```
 
@@ -455,40 +450,9 @@ Obx(() {
 
 ---
 
-## 3. Analytics
+## 3. Exhibitions
 
-### 3.1 جلب بيانات التحليلات
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `GET` |
-| **المسار** | `/investor/analytics?period={period}` |
-| **الملف** | `AnalyticsData.getAnalytics()` |
-| **الكنترولر** | `AnalyticsController.onInit()` ← عند فتح صفحة التحليلات |
-| **أيضاً** | `AnalyticsController.changePeriod()` ← عند تغيير الفترة |
-
-**Query Params:**
-| المتغير | النوع | الوصف |
-|---|---|---|
-| `period` | `String` | `day` \| `week` \| `month` |
-
-**الاستجابة المتوقعة (`data`):**
-```json
-{
-  "total_visitors":      4500,
-  "total_scans":         1200,
-  "avg_visit_duration":  "14 دقيقة",
-  "conversion_rate":     32.5,
-  "visitors_chart":      [120, 250, 380, 450, 520, 610, 700],
-  "top_events":          [ { "name": "ورشة AI", "visitors": 420 } ],
-  "engagement_by_hour":  { "09": 120, "10": 250 }
-}
-```
-
----
-
-## 4. Exhibitions
-
-### 4.1 جلب قائمة المعارض
+### 3.1 جلب قائمة المعارض
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -512,7 +476,7 @@ Obx(() {
 
 ---
 
-### 4.2 جلب تفاصيل معرض واحد
+### 3.2 جلب تفاصيل معرض واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -554,9 +518,9 @@ Obx(() {
 
 ---
 
-## 5. Booths
+## 4. Booths
 
-### 5.1 جلب أجنحتي (حجوزاتي)
+### 4.1 جلب أجنحتي (حجوزاتي)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -571,7 +535,7 @@ Obx(() {
 
 ---
 
-### 5.2 جلب الأجنحة المتاحة
+### 4.2 جلب الأجنحة المتاحة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -591,7 +555,7 @@ Obx(() {
 
 ---
 
-### 5.3 جلب أجنحة معرض بعينه
+### 4.3 جلب أجنحة معرض بعينه
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -634,7 +598,7 @@ Obx(() {
 
 ---
 
-### 5.4 جلب تفاصيل جناح واحد
+### 4.4 جلب تفاصيل جناح واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -646,7 +610,7 @@ Obx(() {
 
 ---
 
-### 5.5 جلب تفاصيل حجز جناح
+### 4.5 جلب تفاصيل حجز جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -658,9 +622,9 @@ Obx(() {
 
 ---
 
-## 6. Booking
+## 5. Booking
 
-### 6.1 إنشاء حجز جديد
+### 5.1 إنشاء حجز جديد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` |
@@ -689,7 +653,7 @@ Obx(() {
 
 ---
 
-### 6.2 إلغاء حجز
+### 5.2 إلغاء حجز
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -701,7 +665,7 @@ Obx(() {
 
 ---
 
-### 6.3 جلب تفاصيل حجز
+### 5.3 جلب تفاصيل حجز
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -713,9 +677,9 @@ Obx(() {
 
 ---
 
-## 7. Booth Profile
+## 6. Booth Profile
 
-### 7.1 جلب ملف جناح
+### 6.1 جلب ملف جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -737,7 +701,7 @@ Obx(() {
 
 ---
 
-### 7.2 تحديث ملف جناح
+### 6.2 تحديث ملف جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PUT` (JSON) / `POST` + `_method=PUT` (multipart) |
@@ -772,7 +736,7 @@ Obx(() {
 
 ---
 
-### 7.3 رفع صورة غلاف الجناح منفردةً
+### 6.3 رفع صورة غلاف الجناح منفردةً
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (multipart) |
@@ -787,7 +751,7 @@ Obx(() {
 
 ---
 
-### 7.4 جلب فعاليات جناح
+### 6.4 جلب فعاليات جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -804,64 +768,9 @@ Obx(() {
 
 ---
 
-## 8. Campaigns
+## 8. Events
 
-### 8.1 جلب قائمة الحملات
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `GET` |
-| **المسار** | `/investor/campaigns` |
-| **الملف** | `CampaignsData.getCampaigns()` |
-| **الكنترولر** | `CampaignsController.onInit()` ← عند فتح صفحة الحملات |
-
-**لا توجد Query Params.**
-
-**الاستجابة المتوقعة (`data`):** قائمة `List<CampaignModel>` — راجع [CampaignModel](#campaignmodel).
-
----
-
-### 8.2 إنشاء حملة جديدة
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
-| **المسار** | `/investor/campaigns` |
-| **الملف** | `CampaignsData.createCampaign()` |
-| **الكنترولر** | `CampaignsController.createCampaign()` ← زر "إنشاء حملة" في نموذج الحملة |
-
-**Body المرسَل (بدون ملفات — JSON):**
-```json
-{
-  "title":       "string",
-  "description": "string",
-  "type":        "string",
-  "budget":      5000.0,
-  "start_date":  "2026-07-15",
-  "end_date":    "2026-07-20"
-}
-```
-
-**Body المرسَل (مع ملفات — multipart/form-data):**
-> نفس الحقول أعلاه + حقل إضافي:
-
-| الحقل | النوع | الوصف |
-|---|---|---|
-| `media[]` | `File[]` | ملفات الوسائط (صور / فيديو) المرتبطة بالحملة |
-
----
-
-### 8.3 حذف حملة
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `DELETE` |
-| **المسار** | `/investor/campaigns/{id}` |
-| **الملف** | `CampaignsData.deleteCampaign()` |
-| **الكنترولر** | `CampaignsController.deleteCampaign()` ← زر "حذف" على بطاقة الحملة |
-
----
-
-## 9. Events
-
-### 9.1 جلب فعاليات المستثمر
+### 8.1 جلب فعاليات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -875,7 +784,7 @@ Obx(() {
 
 ---
 
-### 9.2 إنشاء فعالية جديدة
+### 8.2 إنشاء فعالية جديدة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (JSON) / `POST` multipart (مع صور) |
@@ -922,7 +831,7 @@ Obx(() {
 
 ---
 
-### 9.3 جلب الفعاليات الإعلانية (Sponsor Events)
+### 8.3 جلب الفعاليات الإعلانية (Sponsor Events)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -952,7 +861,7 @@ Obx(() {
 
 ---
 
-### 9.4 جلب رعايات المستثمر
+### 8.4 جلب رعايات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -964,7 +873,7 @@ Obx(() {
 
 ---
 
-### 9.5 إنشاء رعاية جديدة
+### 8.5 إنشاء رعاية جديدة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
@@ -1000,7 +909,7 @@ Obx(() {
 
 ---
 
-### 9.6 إلغاء رعاية
+### 8.6 إلغاء رعاية
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -1012,7 +921,7 @@ Obx(() {
 
 ---
 
-### 9.7 جلب طلبات تذاكر فعالية
+### 8.7 جلب طلبات تذاكر فعالية
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1024,7 +933,7 @@ Obx(() {
 
 ---
 
-### 9.8 قبول / رفض طلب تذكرة
+### 8.8 قبول / رفض طلب تذكرة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -1040,9 +949,9 @@ Obx(() {
 
 ---
 
-## 10. Reports
+## 9. Reports
 
-### 10.1 جلب قائمة التقارير
+### 9.1 جلب قائمة التقارير
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1056,7 +965,7 @@ Obx(() {
 
 ---
 
-### 10.2 جلب تفاصيل تقرير واحد
+### 9.2 جلب تفاصيل تقرير واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1068,7 +977,7 @@ Obx(() {
 
 ---
 
-### 10.3 تنزيل تقرير
+### 9.3 تنزيل تقرير
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` (رابط مباشر) |
@@ -1083,9 +992,9 @@ Obx(() {
 
 ---
 
-## 11. Favorites
+## 10. Favorites
 
-### 11.1 جلب المفضلة
+### 10.1 جلب المفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1104,7 +1013,7 @@ Obx(() {
 
 ---
 
-### 11.2 إضافة عنصر للمفضلة
+### 10.2 إضافة عنصر للمفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` |
@@ -1121,7 +1030,7 @@ Obx(() {
 
 ---
 
-### 11.3 حذف عنصر من المفضلة
+### 10.3 حذف عنصر من المفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `DELETE` |
@@ -1136,9 +1045,9 @@ Obx(() {
 
 ---
 
-## 12. Profile
+## 11. Profile
 
-### 12.1 جلب الملف الشخصي
+### 11.1 جلب الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1169,7 +1078,7 @@ Obx(() {
 
 ---
 
-### 12.2 تحديث الملف الشخصي
+### 11.2 تحديث الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PUT` |
@@ -1197,7 +1106,7 @@ Obx(() {
 
 ---
 
-### 12.3 رفع صورة الملف الشخصي (Avatar)
+### 11.3 رفع صورة الملف الشخصي (Avatar)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (multipart) |
@@ -1214,12 +1123,12 @@ Obx(() {
 
 ---
 
-## 13. Messages (Firebase)
+## 12. Messages (Firebase)
 
 > **Firestore Collection:** `conversations/{conversationId}`  
 > **Sub-collection:** `conversations/{conversationId}/messages/{messageId}`
 
-### 13.1 Stream محادثات المستثمر
+### 12.1 Stream محادثات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | Firestore Stream |
@@ -1242,7 +1151,7 @@ Obx(() {
 
 ---
 
-### 13.2 Stream رسائل محادثة
+### 12.2 Stream رسائل محادثة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.messagesStream()` |
@@ -1257,7 +1166,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.3 إرسال رسالة
+### 12.3 إرسال رسالة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.sendMessage()` |
@@ -1287,7 +1196,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.4 إنشاء محادثة جديدة مع معرض
+### 12.4 إنشاء محادثة جديدة مع معرض
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.createConversation()` |
@@ -1309,7 +1218,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.5 تعليم المحادثة كمقروءة
+### 12.5 تعليم المحادثة كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.markConversationRead()` |
@@ -1319,12 +1228,12 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-## 14. Visitor Messages (Firebase)
+## 13. Visitor Messages (Firebase)
 
 > **Firestore Collection:** `visitor_conversations/{conversationId}`  
 > **Sub-collection:** `visitor_conversations/{conversationId}/messages/{messageId}`
 
-### 14.1 Stream محادثات الزوار
+### 13.1 Stream محادثات الزوار
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.conversationsStream()` |
@@ -1346,7 +1255,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 14.2 Stream رسائل محادثة زائر
+### 13.2 Stream رسائل محادثة زائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.messagesStream()` |
@@ -1356,7 +1265,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 14.3 إرسال رسالة لزائر
+### 13.3 إرسال رسالة لزائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.sendMessage()` |
@@ -1385,7 +1294,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 14.4 تعليم محادثة زائر كمقروءة
+### 13.4 تعليم محادثة زائر كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.markConversationRead()` |
@@ -1395,11 +1304,11 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-## 15. Notifications (Firebase)
+## 14. Notifications (Firebase)
 
 > **Firestore Collection:** `notifications/{userId}/items/{notifId}`
 
-### 15.1 Stream الإشعارات
+### 14.1 Stream الإشعارات
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.notificationsStream()` |
@@ -1414,7 +1323,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-### 15.2 تعليم إشعار كمقروء
+### 14.2 تعليم إشعار كمقروء
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.markRead()` |
@@ -1424,7 +1333,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-### 15.3 تعليم جميع الإشعارات كمقروءة
+### 14.3 تعليم جميع الإشعارات كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.markAllRead()` |
@@ -1434,7 +1343,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-## 16. Models
+## 15. Models
 
 ---
 
@@ -1462,7 +1371,6 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | # | الحقل | النوع | JSON Key |
 |---|---|---|---|
 | 1 | `id` | `int` | `id` |
-| 2 | `name` | `String` | `name` |
 | 3 | `email` | `String` | `email` |
 | 4 | `token` | `String` | `token` |
 | 5 | `companyName` | `String` | `company_name` |
@@ -1505,25 +1413,6 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 > ⚠️ **الخدمات الثابتة المُحذوفة:** `screenService` / `setupService` / `securityService` / `cleaningService` — استُبدلت بـ `services: Map<String,double>` الديناميكية.  
 > `startDate` / `endDate` تؤدي دوراً مزدوجاً: نافذة الإتاحة للأجنحة المتاحة، ونافذة الحجز للأجنحة المحجوزة (من `/investor/bookings`).
-
----
-
-### CampaignModel
-
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `int` | `id` |
-| 2 | `title` | `String` | `title` |
-| 3 | `description` | `String` | `description` |
-| 4 | `type` | `String` | `type` |
-| 5 | `startDate` | `String` | `start_date` |
-| 6 | `endDate` | `String` | `end_date` |
-| 7 | `reach` | `int` | `reach` |
-| 8 | `status` | `String` | `status` | `active` \| `ended` \| `pending` |
-| 9 | `budget` | `double` | `budget` |
-| 10 | `weeklyTrend` | `List<double>` | `weekly_trend` |
-
-**`toJson()` يُرسَل عند الإنشاء:** `title, description, type, start_date, end_date, budget`
 
 ---
 

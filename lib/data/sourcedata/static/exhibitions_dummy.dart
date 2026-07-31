@@ -1,13 +1,11 @@
 import 'package:expocore_invistor2/data/model/message/conversation_model.dart';
 import 'package:expocore_invistor2/data/model/message/visitor_conversation_model.dart';
-
 import '../../model/exhibition/exhibition_model.dart';
 import '../../model/event/event_model.dart';
 import '../../model/event/exhibition_sponsor_event_model.dart';
 import '../../model/event/sponsorship_booking_model.dart';
 import '../../model/event/ticket_request_model.dart';
 import '../../model/booth/booth_model.dart';
-import '../../model/campaign/campaign_model.dart';
 import '../../model/report/report_model.dart';
 import '../../model/message/message_model.dart';
 import '../../model/notification/notification_model.dart';
@@ -408,30 +406,6 @@ class DummyData {
       ),
     ],
   };
-
-  static List<CampaignModel> campaigns = [
-    CampaignModel(
-      id: 1, title: 'حملة عرض الصيف',
-      type: 'إعلانات على شاشات المعرض',
-      startDate: '2026-07-15', endDate: '2026-07-20',
-      reach: 15420, status: 'active', budget: 5000,
-      weeklyTrend: [120, 250, 380, 450, 520, 610, 700],
-    ),
-    CampaignModel(
-      id: 2, title: 'حملة منتجاتنا الجديدة',
-      type: 'إعلانات على الخريطة 3D',
-      startDate: '2026-07-16', endDate: '2026-07-18',
-      reach: 8900, status: 'active', budget: 3000,
-      weeklyTrend: [80, 160, 200, 320, 400, 350, 410],
-    ),
-    CampaignModel(
-      id: 3, title: 'عروض خاصة للزوار',
-      type: 'عروض خاصة لزوار المعرض',
-      startDate: '2026-06-10', endDate: '2026-06-14',
-      reach: 22100, status: 'ended', budget: 8000,
-      weeklyTrend: [300, 450, 600, 750, 900, 850, 800],
-    ),
-  ];
 
   static List<ReportModel> reports = [
     ReportModel(

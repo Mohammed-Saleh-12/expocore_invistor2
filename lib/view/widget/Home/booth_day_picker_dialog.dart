@@ -44,8 +44,9 @@ Future<void> showBoothDayPicker(
 
   // تحديد اليوم المحدد مسبقاً (إن وجد)
   int? initialIndex;
-  final currentStr =
-      isEnd ? ctrl.selectedEndDate.value : ctrl.selectedDate.value;
+  final currentStr = isEnd
+      ? ctrl.selectedEndDate.value
+      : ctrl.selectedDate.value;
   if (currentStr.isNotEmpty) {
     final currentDt = DateTime.tryParse(currentStr);
     if (currentDt != null) {
@@ -126,8 +127,18 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
 
   static const _monthNames = [
     '',
-    'يناير', 'فبراير', 'مارس',   'أبريل',  'مايو',   'يونيو',
-    'يوليو', 'أغسطس',  'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
   ];
 
   @override
@@ -141,15 +152,14 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark   = widget.isDark;
-    final cardBg   = isDark ? AppColors.darkCard : AppColors.lightCard;
+    final isDark = widget.isDark;
+    final cardBg = isDark ? AppColors.darkCard : AppColors.lightCard;
     final dialogBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
 
     return Dialog(
       backgroundColor: dialogBg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding:
-          const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -170,14 +180,16 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                 const Expanded(
                   child: Text(
                     'اختر اليوم',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close_rounded,
-                      size: 20, color: AppColors.grey),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: AppColors.grey,
+                  ),
                 ),
               ],
             ),
@@ -189,9 +201,7 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                 style: TextStyle(fontSize: 11, color: AppColors.grey),
               ),
             ),
-            const SizedBox(height: 12),
-            const Divider(height: 1),
-            const SizedBox(height: 10),
+            const SizedBox(height: 22),
 
             // ── Days list ────────────────────────────────────────
             ConstrainedBox(
@@ -201,7 +211,7 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                 itemCount: widget.days.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 6),
                 itemBuilder: (_, i) {
-                  final day        = widget.days[i];
+                  final day = widget.days[i];
                   final isSelected = _selectedIndex == i;
                   final isDisabled = i < widget.minIndex;
 
@@ -212,15 +222,17 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.darkPrimary.withOpacity(0.10)
                             : isDisabled
-                                ? (isDark
-                                    ? Colors.white.withOpacity(0.03)
-                                    : Colors.black.withOpacity(0.03))
-                                : cardBg,
+                            ? (isDark
+                                  ? Colors.white.withOpacity(0.03)
+                                  : Colors.black.withOpacity(0.03))
+                            : cardBg,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
@@ -242,9 +254,8 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                               color: isSelected
                                   ? null
                                   : isDisabled
-                                      ? AppColors.grey.withOpacity(0.15)
-                                      : AppColors.darkPrimary
-                                          .withOpacity(0.10),
+                                  ? AppColors.grey.withOpacity(0.15)
+                                  : AppColors.darkPrimary.withOpacity(0.10),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -256,8 +267,8 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                                   color: isSelected
                                       ? Colors.white
                                       : isDisabled
-                                          ? AppColors.grey
-                                          : AppColors.darkPrimary,
+                                      ? AppColors.grey
+                                      : AppColors.darkPrimary,
                                 ),
                               ),
                             ),
@@ -284,10 +295,11 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                             duration: const Duration(milliseconds: 200),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color:
-                                    AppColors.darkPrimary.withOpacity(0.12),
+                                color: AppColors.darkPrimary.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -303,8 +315,11 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
 
                           if (isDisabled) ...[
                             const SizedBox(width: 6),
-                            const Icon(Icons.lock_outline_rounded,
-                                size: 14, color: AppColors.grey),
+                            const Icon(
+                              Icons.lock_outline_rounded,
+                              size: 14,
+                              color: AppColors.grey,
+                            ),
                           ],
                         ],
                       ),
@@ -323,13 +338,15 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                          color: AppColors.grey.withOpacity(0.4)),
+                      side: BorderSide(color: AppColors.grey.withOpacity(0.4)),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: const Text('إلغاء',
-                        style: TextStyle(color: AppColors.grey)),
+                    child: const Text(
+                      'إلغاء',
+                      style: TextStyle(color: AppColors.grey),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -341,13 +358,16 @@ class _BoothDayPickerDialogState extends State<BoothDayPickerDialog> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.darkPrimary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor:
-                          AppColors.darkPrimary.withOpacity(0.3),
+                      disabledBackgroundColor: AppColors.darkPrimary
+                          .withOpacity(0.3),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: const Text('تأكيد',
-                        style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'تأكيد',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ],

@@ -1,6 +1,5 @@
 class UserModel {
   final int    id;
-  final String name;
   final String email;
   final String token;
   final String companyName;
@@ -8,7 +7,6 @@ class UserModel {
 
   UserModel({
     required this.id,
-    required this.name,
     required this.email,
     required this.token,
     required this.companyName,
@@ -17,7 +15,6 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> j) => UserModel(
     id:          j['id'],
-    name:        j['name'] ?? '',
     email:       j['email'] ?? '',
     token:       j['token'] ?? '',
     companyName: j['company_name'] ?? '',

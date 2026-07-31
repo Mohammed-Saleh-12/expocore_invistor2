@@ -12,8 +12,6 @@ import '../controller/Home/booth_controller.dart';
 import '../controller/Home/favorites_controller.dart';
 import '../controller/Home/reports_controller.dart';
 import '../controller/Home/events_controller.dart';
-import '../controller/Home/campaigns_controller.dart';
-import '../controller/Home/analytics_controller.dart';
 import '../controller/Home/messages_controller.dart';
 import '../controller/Home/visitor_messages_controller.dart';
 import '../controller/Home/notifications_controller.dart';
@@ -59,8 +57,6 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => FavoritesController(),        fenix: true);
     Get.lazyPut(() => ReportsController(),          fenix: true);
     Get.lazyPut(() => EventsController(),           fenix: true);
-    Get.lazyPut(() => CampaignsController(),        fenix: true);
-    Get.lazyPut(() => AnalyticsController(),        fenix: true);
     Get.lazyPut(() => MessagesController(),         fenix: true);
     Get.lazyPut(() => VisitorMessagesController(),  fenix: true);
     Get.lazyPut(() => NotificationsController(),    fenix: true);
