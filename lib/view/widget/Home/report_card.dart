@@ -152,9 +152,13 @@ class ReportCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '+${report.trend}%',
-                  style: const TextStyle(
-                    color: AppColors.success,
+                  report.trend >= 0
+                      ? '+${report.trend}%'
+                      : '${report.trend}%',
+                  style: TextStyle(
+                    color: report.trend >= 0
+                        ? AppColors.success
+                        : AppColors.error,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),

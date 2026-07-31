@@ -17,12 +17,10 @@ class WebDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<DashboardController>();
-    final events = Get.find<EventsController>();
-    final billboard = Get.find<HomeBillboardController>();
-    LatestExhibitionsController latestExhib = Get.put(
-      LatestExhibitionsController(),
-    );
+    final c           = Get.find<DashboardController>();
+    final events      = Get.find<EventsController>();
+    final billboard   = Get.find<HomeBillboardController>();
+    final latestExhib = Get.find<LatestExhibitionsController>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +45,8 @@ class WebDashboardPage extends StatelessWidget {
                         const SizedBox(height: 14),
                         WebBillboard(
                           items: ads,
-                          onNearEnd: () => billboard.loadMoreExhibitions(),
+                          onNearEnd: () =>
+                              billboard.loadMoreExhibitions(),
                         ),
                       ],
                     ),
@@ -96,7 +95,8 @@ class WebDashboardPage extends StatelessWidget {
                         const SizedBox(height: 14),
                         WebEventBillboard(
                           events: evs,
-                          onNearEnd: () => billboard.loadMoreSponsorEvents(),
+                          onNearEnd: () =>
+                              billboard.loadMoreSponsorEvents(),
                         ),
                       ],
                     ),
