@@ -18,13 +18,13 @@
    - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
    - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
    - [2.4 أحدث المعارض (ويب فقط)](#24-أحدث-المعارض-ويب-فقط)
-3. [المعارض — Exhibitions](#3-exhibitions)
-4. [الأجنحة — Booths](#4-booths)
-5. [الحجز — Booking](#5-booking)
-6. [ملف الجناح — Booth Profile](#6-booth-profile)
-7. [الفعاليات — Events](#7-events)
-8. [الرعايات والفعاليات الإعلانية — Sponsorships](#8-sponsorships)
-9. [التحليلات — Analytics](#9-analytics)
+3. [التحليلات — Analytics](#3-analytics)
+4. [المعارض — Exhibitions](#4-exhibitions)
+5. [الأجنحة — Booths](#5-booths)
+6. [الحجز — Booking](#6-booking)
+7. [ملف الجناح — Booth Profile](#7-booth-profile)
+8. [الحملات — Campaigns](#8-campaigns)
+9. [الفعاليات — Events](#9-events)
 10. [التقارير — Reports](#10-reports)
 11. [المفضلة — Favorites](#11-favorites)
 12. [الملف الشخصي — Profile](#12-profile)
@@ -59,6 +59,7 @@
 {
   "token":        "string",
   "id":           1,
+  "name":         "string",
   "email":        "string",
   "company_name": "string",
   "avatar_url":   "string"
@@ -387,10 +388,12 @@
 **الاستجابة المتوقعة (`data`):**
 ```json
 {
-  "total_bookings":12,
-  "active_booths":3,
-  "published_events":8,
-  "total_engagement":24900
+  "total_visitors":     1234,
+  "total_bookings":     56,
+  "total_campaigns":    12,
+  "total_revenue":      45000.0,
+  "visitors_trend":     [120, 180, 250, 310, 400, 380, 420],
+  "top_booths":         [ { "booth_number": "B12", "visitors": 320 } ]
 }
 ```
 
@@ -452,9 +455,40 @@ Obx(() {
 
 ---
 
-## 3. Exhibitions
+## 3. Analytics
 
-### 3.1 جلب قائمة المعارض
+### 3.1 جلب بيانات التحليلات
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/investor/analytics?period={period}` |
+| **الملف** | `AnalyticsData.getAnalytics()` |
+| **الكنترولر** | `AnalyticsController.onInit()` ← عند فتح صفحة التحليلات |
+| **أيضاً** | `AnalyticsController.changePeriod()` ← عند تغيير الفترة |
+
+**Query Params:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `period` | `String` | `day` \| `week` \| `month` |
+
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "total_visitors":      4500,
+  "total_scans":         1200,
+  "avg_visit_duration":  "14 دقيقة",
+  "conversion_rate":     32.5,
+  "visitors_chart":      [120, 250, 380, 450, 520, 610, 700],
+  "top_events":          [ { "name": "ورشة AI", "visitors": 420 } ],
+  "engagement_by_hour":  { "09": 120, "10": 250 }
+}
+```
+
+---
+
+## 4. Exhibitions
+
+### 4.1 جلب قائمة المعارض
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -478,7 +512,7 @@ Obx(() {
 
 ---
 
-### 3.2 جلب تفاصيل معرض واحد
+### 4.2 جلب تفاصيل معرض واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -520,9 +554,9 @@ Obx(() {
 
 ---
 
-## 4. Booths
+## 5. Booths
 
-### 4.1 جلب أجنحتي (حجوزاتي)
+### 5.1 جلب أجنحتي (حجوزاتي)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -537,7 +571,7 @@ Obx(() {
 
 ---
 
-### 4.2 جلب الأجنحة المتاحة
+### 5.2 جلب الأجنحة المتاحة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -557,7 +591,7 @@ Obx(() {
 
 ---
 
-### 4.3 جلب أجنحة معرض بعينه
+### 5.3 جلب أجنحة معرض بعينه
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -600,7 +634,7 @@ Obx(() {
 
 ---
 
-### 4.4 جلب تفاصيل جناح واحد
+### 5.4 جلب تفاصيل جناح واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -612,7 +646,7 @@ Obx(() {
 
 ---
 
-### 4.5 جلب تفاصيل حجز جناح
+### 5.5 جلب تفاصيل حجز جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -624,9 +658,9 @@ Obx(() {
 
 ---
 
-## 5. Booking
+## 6. Booking
 
-### 5.1 إنشاء حجز جديد
+### 6.1 إنشاء حجز جديد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` |
@@ -655,7 +689,7 @@ Obx(() {
 
 ---
 
-### 5.2 إلغاء حجز
+### 6.2 إلغاء حجز
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -667,7 +701,7 @@ Obx(() {
 
 ---
 
-### 5.3 جلب تفاصيل حجز
+### 6.3 جلب تفاصيل حجز
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -679,9 +713,9 @@ Obx(() {
 
 ---
 
-## 6. Booth Profile
+## 7. Booth Profile
 
-### 6.1 جلب ملف جناح
+### 7.1 جلب ملف جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -703,7 +737,7 @@ Obx(() {
 
 ---
 
-### 6.2 تحديث ملف جناح
+### 7.2 تحديث ملف جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PUT` (JSON) / `POST` + `_method=PUT` (multipart) |
@@ -738,7 +772,7 @@ Obx(() {
 
 ---
 
-### 6.3 رفع صورة غلاف الجناح منفردةً
+### 7.3 رفع صورة غلاف الجناح منفردةً
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (multipart) |
@@ -753,7 +787,7 @@ Obx(() {
 
 ---
 
-### 6.4 جلب فعاليات جناح
+### 7.4 جلب فعاليات جناح
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -770,9 +804,64 @@ Obx(() {
 
 ---
 
-## 8. Events
+## 8. Campaigns
 
-### 8.1 جلب فعاليات المستثمر
+### 8.1 جلب قائمة الحملات
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/investor/campaigns` |
+| **الملف** | `CampaignsData.getCampaigns()` |
+| **الكنترولر** | `CampaignsController.onInit()` ← عند فتح صفحة الحملات |
+
+**لا توجد Query Params.**
+
+**الاستجابة المتوقعة (`data`):** قائمة `List<CampaignModel>` — راجع [CampaignModel](#campaignmodel).
+
+---
+
+### 8.2 إنشاء حملة جديدة
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
+| **المسار** | `/investor/campaigns` |
+| **الملف** | `CampaignsData.createCampaign()` |
+| **الكنترولر** | `CampaignsController.createCampaign()` ← زر "إنشاء حملة" في نموذج الحملة |
+
+**Body المرسَل (بدون ملفات — JSON):**
+```json
+{
+  "title":       "string",
+  "description": "string",
+  "type":        "string",
+  "budget":      5000.0,
+  "start_date":  "2026-07-15",
+  "end_date":    "2026-07-20"
+}
+```
+
+**Body المرسَل (مع ملفات — multipart/form-data):**
+> نفس الحقول أعلاه + حقل إضافي:
+
+| الحقل | النوع | الوصف |
+|---|---|---|
+| `media[]` | `File[]` | ملفات الوسائط (صور / فيديو) المرتبطة بالحملة |
+
+---
+
+### 8.3 حذف حملة
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `DELETE` |
+| **المسار** | `/investor/campaigns/{id}` |
+| **الملف** | `CampaignsData.deleteCampaign()` |
+| **الكنترولر** | `CampaignsController.deleteCampaign()` ← زر "حذف" على بطاقة الحملة |
+
+---
+
+## 9. Events
+
+### 9.1 جلب فعاليات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -786,7 +875,7 @@ Obx(() {
 
 ---
 
-### 8.2 إنشاء فعالية جديدة
+### 9.2 إنشاء فعالية جديدة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (JSON) / `POST` multipart (مع صور) |
@@ -833,7 +922,7 @@ Obx(() {
 
 ---
 
-### 8.3 جلب الفعاليات الإعلانية (Sponsor Events)
+### 9.3 جلب الفعاليات الإعلانية (Sponsor Events)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -863,7 +952,7 @@ Obx(() {
 
 ---
 
-### 8.4 جلب رعايات المستثمر
+### 9.4 جلب رعايات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -875,7 +964,7 @@ Obx(() {
 
 ---
 
-### 8.5 إنشاء رعاية جديدة
+### 9.5 إنشاء رعاية جديدة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (JSON) / `POST` multipart (مع وسائط) |
@@ -911,7 +1000,7 @@ Obx(() {
 
 ---
 
-### 8.6 إلغاء رعاية
+### 9.6 إلغاء رعاية
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -923,7 +1012,7 @@ Obx(() {
 
 ---
 
-### 8.7 جلب طلبات تذاكر فعالية
+### 9.7 جلب طلبات تذاكر فعالية
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -935,7 +1024,7 @@ Obx(() {
 
 ---
 
-### 8.8 قبول / رفض طلب تذكرة
+### 9.8 قبول / رفض طلب تذكرة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PATCH` |
@@ -951,58 +1040,6 @@ Obx(() {
 
 ---
 
-## 9. Analytics
-
-### 9.1 جلب بيانات التحليلات
-| الخاصية | القيمة |
-|---|---|
-| **الميثود** | `GET` |
-| **المسار** | `/investor/analytics` |
-| **الملف** | `AnalyticsData.getAnalytics()` — `lib/data/sourcedata/remote/Analytics/AnalyticsData.dart` |
-| **الكنترولر** | `AnalyticsController._loadAnalytics()` ← عند `onInit` وعند تغيير الفترة |
-| **أيضاً** | `AnalyticsController.changePeriod()` ← عند اختيار فترة زمنية جديدة |
-
-**Query Params:**
-| المتغير | النوع | الوصف |
-|---|---|---|
-| `period` | `String` | قيمة الفترة الزمنية المختارة من الواجهة (مثال: `هذا الشهر` \| `آخر 3 أشهر` \| `هذا العام` \| `مخصص`) |
-
-**الاستجابة المتوقعة (`data`):**
-```json
-{
-  "total_visits":        2450,
-  "product_views":       8920,
-  "event_participants":  148,
-  "total_engagement":    24850,
-  "visits_trend":        12.5,
-  "views_trend":         8.3,
-  "events_trend":        22.1,
-  "engagement_trend":    15.7,
-  "visitors_chart":      [120, 180, 250, 310, 400, 380, 420],
-  "engagement_chart":    [80, 120, 160, 200, 240, 280, 320]
-}
-```
-
-**حالة الـ Controller:**
-| المتغير | النوع | الوصف |
-|---|---|---|
-| `selectedPeriod` | `RxString` | الفترة المختارة حالياً — الافتراضي: `هذا الشهر` |
-| `isLoading` | `RxBool` | `true` أثناء الجلب |
-| `totalVisits` | `RxInt` | إجمالي الزيارات |
-| `productViews` | `RxInt` | مشاهدات المنتجات |
-| `eventParticipants` | `RxInt` | المشاركون في الفعاليات |
-| `totalEngagement` | `RxInt` | إجمالي التفاعل |
-| `visitsTrend` | `RxDouble` | نسبة نمو الزيارات % |
-| `viewsTrend` | `RxDouble` | نسبة نمو المشاهدات % |
-| `eventsTrend` | `RxDouble` | نسبة نمو الفعاليات % |
-| `engagementTrend` | `RxDouble` | نسبة نمو التفاعل % |
-| `visitorsData` | `RxList<double>` | نقاط الرسم البياني للزوار |
-| `engagementData` | `RxList<double>` | نقاط الرسم البياني للتفاعل |
-
-> **Fallback:** عند فشل الطلب يُحمَّل `_loadFallback()` بأرقام ثابتة للعرض — لا يظهر خطأ للمستخدم.
-
----
-
 ## 10. Reports
 
 ### 10.1 جلب قائمة التقارير
@@ -1010,34 +1047,12 @@ Obx(() {
 |---|---|
 | **الميثود** | `GET` |
 | **المسار** | `/investor/reports` |
-| **الملف** | `ReportsData.getReports()` — `lib/data/sourcedata/remote/Reports/ReportsData.dart` |
-| **الكنترولر** | `ReportsController._loadReports()` ← عند `onInit` وعند `refresh()` |
+| **الملف** | `ReportsData.getReports()` |
+| **الكنترولر** | `ReportsController.onInit()` ← عند فتح صفحة التقارير |
 
-**لا توجد Query Params** — الفلترة تحدث كلياً على الكلايانت بعد جلب القائمة الكاملة.
+**لا توجد Query Params.**
 
 **الاستجابة المتوقعة (`data`):** قائمة `List<ReportModel>` — راجع [ReportModel](#reportmodel).
-
-**حالة الـ Controller:**
-| المتغير | النوع | الوصف |
-|---|---|---|
-| `reports` | `RxList<ReportModel>` | القائمة الكاملة المجلوبة من API |
-| `filtered` | `RxList<ReportModel>` | القائمة بعد تطبيق الفلاتر — هذه هي التي تعرضها الشاشة |
-| `selectedType` | `RxString` | نوع الفلتر المختار — الافتراضي: `الكل` |
-| `dateFrom` / `dateTo` | `Rx<DateTime?>` | نطاق تاريخ الفلترة |
-| `isDownloading` | `RxBool` | `true` أثناء تنزيل تقرير |
-| `downloadProgress` | `RxDouble` | تقدم شريط التنزيل (0.0 → 1.0) |
-| `statusRequest` | `Rx<StatusRequest>` | حالة طلب API |
-
-**فلاتر النوع (على الكلايانت):**
-| تسمية الواجهة | قيمة `type` في الـ API |
-|---|---|
-| الكل | *(لا فلتر)* |
-| الزوار | `visitors` |
-| الأداء | `performance` |
-| الفعاليات | `events` |
-| الرعايات | `campaigns` |
-
-> **Fallback:** عند فشل الطلب يُعرض `DummyData.reports` (بيانات ثابتة في `exhibitions_dummy.dart`) مع حالة `StatusRequest.failure`.
 
 ---
 
@@ -1051,36 +1066,20 @@ Obx(() {
 
 **الاستجابة المتوقعة (`data`):** `ReportModel` — راجع [ReportModel](#reportmodel).
 
-> **ملاحظة:** في التطبيق الحالي، صفحة التفاصيل (`ReportDetailView`) تستقبل `ReportModel` كاملاً عبر `Get.arguments` مباشرةً من القائمة — طلب 10.2 متاح لكنه غير مستخدم حتى الآن (المودل مكتمل من طلب 10.1).
-
 ---
 
 ### 10.3 تنزيل تقرير
 | الخاصية | القيمة |
 |---|---|
+| **الميثود** | `GET` (رابط مباشر) |
 | **المسار** | `/investor/reports/{id}/download?format={format}` |
 | **الملف** | `ReportsData.getDownloadUrl()` — يُعيد URL كـ String |
-| **الكنترولر** | `ReportsController.downloadReport(id, format)` |
+| **الكنترولر** | `ReportsController` ← زر "تنزيل" → يُمرَّر لـ `DownloadService` |
 
 **Query Params:**
 | المتغير | النوع | الوصف |
 |---|---|---|
-| `format` | `String` | `pdf` \| `excel` |
-
-> **⚠️ ملاحظة مهمة — تقسيم المسؤولية بين الكلايانت والباك-اند:**
->
-> | الصيغة | من يولّدها؟ | الآلية |
-> |---|---|---|
-> | **PDF** | **الفرونت-اند** (الكلايانت) | `PdfExportService.printReport()` يبني HTML+SVG ويفتح نافذة طباعة المتصفح — **لا يُرسَل طلب للباك-اند** |
-> | **Excel** | **الباك-اند** | `DownloadService.downloadUrl()` يفتح رابط `/download?format=excel` مباشرةً لتنزيله |
->
-> `csv` **غير مدعوم** حالياً في الفرونت-اند.
-
-**تفاصيل توليد PDF (كلايانت):**
-- يُحمَّل خط `assets/fonts/Cairo-Regular.ttf` ويُضمَّن في HTML بتشفير Base64
-- يُستخدم `ReportTypeHelper.of(report)` لاشتقاق KPIs، جدول البيانات، والتوصيات من حقول `ReportModel`
-- الرسم البياني SVG يُحسَب من `sparklineData` الفعلية (منحنى cubic-bezier)
-- تعرض القيم السالبة لـ `trend` باللون الأحمر، الموجبة باللون الأخضر
+| `format` | `String` | `pdf` \| `excel` \| `csv` |
 
 ---
 
@@ -1139,7 +1138,7 @@ Obx(() {
 
 ## 12. Profile
 
-### 15.1 جلب الملف الشخصي
+### 12.1 جلب الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1170,7 +1169,7 @@ Obx(() {
 
 ---
 
-### 15.2 تحديث الملف الشخصي
+### 12.2 تحديث الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PUT` |
@@ -1198,7 +1197,7 @@ Obx(() {
 
 ---
 
-### 15.3 رفع صورة الملف الشخصي (Avatar)
+### 12.3 رفع صورة الملف الشخصي (Avatar)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (multipart) |
@@ -1220,7 +1219,7 @@ Obx(() {
 > **Firestore Collection:** `conversations/{conversationId}`  
 > **Sub-collection:** `conversations/{conversationId}/messages/{messageId}`
 
-### 15.1 Stream محادثات المستثمر
+### 13.1 Stream محادثات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | Firestore Stream |
@@ -1243,7 +1242,7 @@ Obx(() {
 
 ---
 
-### 15.2 Stream رسائل محادثة
+### 13.2 Stream رسائل محادثة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.messagesStream()` |
@@ -1258,7 +1257,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.3 إرسال رسالة
+### 13.3 إرسال رسالة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.sendMessage()` |
@@ -1288,7 +1287,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.4 إنشاء محادثة جديدة مع معرض
+### 13.4 إنشاء محادثة جديدة مع معرض
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.createConversation()` |
@@ -1310,7 +1309,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.5 تعليم المحادثة كمقروءة
+### 13.5 تعليم المحادثة كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.markConversationRead()` |
@@ -1325,7 +1324,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 > **Firestore Collection:** `visitor_conversations/{conversationId}`  
 > **Sub-collection:** `visitor_conversations/{conversationId}/messages/{messageId}`
 
-### 15.1 Stream محادثات الزوار
+### 14.1 Stream محادثات الزوار
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.conversationsStream()` |
@@ -1347,7 +1346,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.2 Stream رسائل محادثة زائر
+### 14.2 Stream رسائل محادثة زائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.messagesStream()` |
@@ -1357,7 +1356,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.3 إرسال رسالة لزائر
+### 14.3 إرسال رسالة لزائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.sendMessage()` |
@@ -1386,7 +1385,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 15.4 تعليم محادثة زائر كمقروءة
+### 14.4 تعليم محادثة زائر كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.markConversationRead()` |
@@ -1463,6 +1462,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | # | الحقل | النوع | JSON Key |
 |---|---|---|---|
 | 1 | `id` | `int` | `id` |
+| 2 | `name` | `String` | `name` |
 | 3 | `email` | `String` | `email` |
 | 4 | `token` | `String` | `token` |
 | 5 | `companyName` | `String` | `company_name` |
@@ -1505,6 +1505,25 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 > ⚠️ **الخدمات الثابتة المُحذوفة:** `screenService` / `setupService` / `securityService` / `cleaningService` — استُبدلت بـ `services: Map<String,double>` الديناميكية.  
 > `startDate` / `endDate` تؤدي دوراً مزدوجاً: نافذة الإتاحة للأجنحة المتاحة، ونافذة الحجز للأجنحة المحجوزة (من `/investor/bookings`).
+
+---
+
+### CampaignModel
+
+| # | الحقل | النوع | JSON Key |
+|---|---|---|---|
+| 1 | `id` | `int` | `id` |
+| 2 | `title` | `String` | `title` |
+| 3 | `description` | `String` | `description` |
+| 4 | `type` | `String` | `type` |
+| 5 | `startDate` | `String` | `start_date` |
+| 6 | `endDate` | `String` | `end_date` |
+| 7 | `reach` | `int` | `reach` |
+| 8 | `status` | `String` | `status` | `active` \| `ended` \| `pending` |
+| 9 | `budget` | `double` | `budget` |
+| 10 | `weeklyTrend` | `List<double>` | `weekly_trend` |
+
+**`toJson()` يُرسَل عند الإنشاء:** `title, description, type, start_date, end_date, budget`
 
 ---
 
@@ -1646,30 +1665,20 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ### ReportModel
 
-| # | الحقل | النوع | JSON Key | ملاحظة |
-|---|---|---|---|---|
-| 1 | `id` | `String` | `id` | يُحوَّل بـ `toString()` |
-| 2 | `title` | `String` | `title` | |
-| 3 | `type` | `String` | `type` | `visitors` \| `performance` \| `events` \| `campaigns` \| `monthly` \| `compare` |
-| 4 | `description` | `String` | `description` | |
-| 5 | `period` | `String` | `period` | نص حر مثل `يوليو 2026` |
-| 6 | `boothName` | `String` | `booth_name` | |
-| 7 | `exhibitionName` | `String` | `exhibition_name` | |
-| 8 | `createdAt` | `String` | `created_at` | صيغة `YYYY-MM-DD` — يُستخدم للفلترة بالتاريخ |
-| 9 | `mainValue` | `double` | `main_value` | الرقم الرئيسي للتقرير (زوار، نقاط، إلخ) |
-| 10 | `mainLabel` | `String` | `main_label` | وصف `mainValue` (مثال: `إجمالي الزوار`) |
-| 11 | `trend` | `double` | `trend` | نسبة التغير % — يمكن أن تكون سالبة |
-| 12 | `sparklineData` | `List<double>` | `sparkline_data` | نقاط الرسم البياني الصغير — تُستخدم أيضاً لبناء جدول البيانات في التفاصيل والـ PDF |
-
-**قيم `type` وتأثيرها:**
-| القيمة | ما يعرضه `ReportTypeHelper` |
-|---|---|
-| `visitors` | KPIs: إجمالي الزوار / زوار جدد / متوسط وقت الزيارة — جدول: يوم + زوار + ذروة الساعة + معدل الإعادة |
-| `performance` | KPIs: مؤشر الأداء / عملاء محتملون / تحويلات — جدول: يوم + مؤشر الأداء + العملاء + التحويلات |
-| `events` | KPIs: إجمالي المسجلين / الحضور الفعلي / تقييم الفعاليات — جدول: فعالية + مسجلون + حضور + تقييم |
-| `campaigns` | KPIs: إجمالي الوصول / النقرات / التحويلات — جدول: حملة + وصول + نقرات + معدل النقر |
-| `monthly` | KPIs: نسبة الإنجاز / التقييم الشامل / الترتيب — جدول: مؤشر + هدف + محقق + نسبة الإنجاز |
-| `compare` | نفس `monthly` مع تسمية "المقارنة" |
+| # | الحقل | النوع | JSON Key |
+|---|---|---|---|
+| 1 | `id` | `String` | `id` (toString) |
+| 2 | `title` | `String` | `title` |
+| 3 | `type` | `String` | `type` | `visitors` \| `revenue` \| ... |
+| 4 | `description` | `String` | `description` |
+| 5 | `period` | `String` | `period` |
+| 6 | `boothName` | `String` | `booth_name` |
+| 7 | `exhibitionName` | `String` | `exhibition_name` |
+| 8 | `createdAt` | `String` | `created_at` |
+| 9 | `mainValue` | `double` | `main_value` |
+| 10 | `mainLabel` | `String` | `main_label` |
+| 11 | `trend` | `double` | `trend` | نسبة التغير % |
+| 12 | `sparklineData` | `List<double>` | `sparkline_data` |
 
 ---
 
