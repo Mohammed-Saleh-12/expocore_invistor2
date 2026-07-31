@@ -18,18 +18,18 @@
    - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
    - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
    - [2.4 أحدث المعارض (ويب فقط)](#24-أحدث-المعارض-ويب-فقط)
-3. [المعارض — Exhibitions](#4-exhibitions)
-4. [الأجنحة — Booths](#5-booths)
-5. [الحجز — Booking](#6-booking)
-6. [ملف الجناح — Booth Profile](#7-booth-profile)
-7. [الفعاليات — Events](#9-events)
-8. [التقارير — Reports](#10-reports)
-9. [المفضلة — Favorites](#11-favorites)
-10. [الملف الشخصي — Profile](#12-profile)
-11. [الرسائل مع المعارض — Messages (Firebase)](#13-messages-firebase)
-12. [الرسائل مع الزوار — Visitor Messages (Firebase)](#14-visitor-messages-firebase)
-13. [الإشعارات — Notifications (Firebase)](#15-notifications-firebase)
-14. [الموديلات — Models](#16-models)
+3. [المعارض — Exhibitions](#3-exhibitions)
+4. [الأجنحة — Booths](#4-booths)
+5. [الحجز — Booking](#5-booking)
+6. [ملف الجناح — Booth Profile](#6-booth-profile)
+7. [الفعاليات — Events](#8-events)
+8. [التقارير — Reports](#9-reports)
+9. [المفضلة — Favorites](#10-favorites)
+10. [الملف الشخصي — Profile](#11-profile)
+11. [الرسائل مع المعارض — Messages (Firebase)](#12-messages-firebase)
+12. [الرسائل مع الزوار — Visitor Messages (Firebase)](#13-visitor-messages-firebase)
+13. [الإشعارات — Notifications (Firebase)](#14-notifications-firebase)
+14. [الموديلات — Models](#15-models)
 
 ---
 
@@ -951,21 +951,21 @@ Obx(() {
 
 ## 9. Reports
 
-### 9.1 جلب قائمة التقارير
+### 10.1 جلب قائمة التقارير
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
 | **المسار** | `/investor/reports` |
-| **الملف** | `ReportsData.getReports()` |
-| **الكنترولر** | `ReportsController.onInit()` ← عند فتح صفحة التقارير |
+| **الملف** | `ReportsData.getReports()` — `lib/data/sourcedata/remote/Reports/ReportsData.dart` |
+| **الكنترولر** | `ReportsController._loadReports()` ← عند `onInit` وعند `refresh()` |
 
-**لا توجد Query Params.**
+**لا توجد Query Params** — الفلترة تحدث كلياً على الكلايانت بعد جلب القائمة الكاملة.
 
 **الاستجابة المتوقعة (`data`):** قائمة `List<ReportModel>` — راجع [ReportModel](#reportmodel).
 
 ---
 
-### 9.2 جلب تفاصيل تقرير واحد
+### 10.2 جلب تفاصيل تقرير واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -975,20 +975,28 @@ Obx(() {
 
 **الاستجابة المتوقعة (`data`):** `ReportModel` — راجع [ReportModel](#reportmodel).
 
+> **ملاحظة:** في التطبيق الحالي، صفحة التفاصيل (`ReportDetailView`) تستقبل `ReportModel` كاملاً عبر `Get.arguments` مباشرةً من القائمة — طلب 10.2 متاح لكنه غير مستخدم حتى الآن (المودل مكتمل من طلب 10.1).
+
 ---
 
-### 9.3 تنزيل تقرير
+### 10.3 تنزيل تقرير
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `GET` (رابط مباشر) |
 | **المسار** | `/investor/reports/{id}/download?format={format}` |
 | **الملف** | `ReportsData.getDownloadUrl()` — يُعيد URL كـ String |
-| **الكنترولر** | `ReportsController` ← زر "تنزيل" → يُمرَّر لـ `DownloadService` |
+| **الكنترولر** | `ReportsController.downloadReport(id, format)` |
 
 **Query Params:**
 | المتغير | النوع | الوصف |
 |---|---|---|
-| `format` | `String` | `pdf` \| `excel` \| `csv` |
+| `format` | `String` | `pdf` \| `excel` |
+
+> **⚠️ ملاحظة مهمة — تقسيم المسؤولية بين الكلايانت والباك-اند:**
+>
+> | الصيغة | من يولّدها؟ | الآلية |
+> |---|---|---|
+> | **PDF** | **الفرونت-اند** | `PdfExportService.printReport()` يبني HTML+SVG ويفتح نافذة طباعة المتصفح — **لا يُرسَل طلب للباك-اند** |
+> | **Excel** | **الباك-اند** | `DownloadService.downloadUrl()` يفتح رابط `/download?format=excel` مباشرةً لتنزيله |
 
 ---
 
@@ -1554,20 +1562,30 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ### ReportModel
 
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `String` | `id` (toString) |
-| 2 | `title` | `String` | `title` |
-| 3 | `type` | `String` | `type` | `visitors` \| `revenue` \| ... |
-| 4 | `description` | `String` | `description` |
-| 5 | `period` | `String` | `period` |
-| 6 | `boothName` | `String` | `booth_name` |
-| 7 | `exhibitionName` | `String` | `exhibition_name` |
-| 8 | `createdAt` | `String` | `created_at` |
-| 9 | `mainValue` | `double` | `main_value` |
-| 10 | `mainLabel` | `String` | `main_label` |
-| 11 | `trend` | `double` | `trend` | نسبة التغير % |
-| 12 | `sparklineData` | `List<double>` | `sparkline_data` |
+| # | الحقل | النوع | JSON Key | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `String` | `id` | يُحوَّل بـ `toString()` |
+| 2 | `title` | `String` | `title` | |
+| 3 | `type` | `String` | `type` | `visitors` \| `performance` \| `events` \| `campaigns` \| `monthly` \| `compare` |
+| 4 | `description` | `String` | `description` | |
+| 5 | `period` | `String` | `period` | نص حر مثل `يوليو 2026` |
+| 6 | `boothName` | `String` | `booth_name` | |
+| 7 | `exhibitionName` | `String` | `exhibition_name` | |
+| 8 | `createdAt` | `String` | `created_at` | صيغة `YYYY-MM-DD` — يُستخدم للفلترة بالتاريخ |
+| 9 | `mainValue` | `double` | `main_value` | الرقم الرئيسي للتقرير (زوار، نقاط، إلخ) |
+| 10 | `mainLabel` | `String` | `main_label` | وصف `mainValue` (مثال: `إجمالي الزوار`) |
+| 11 | `trend` | `double` | `trend` | نسبة التغير % — يمكن أن تكون سالبة |
+| 12 | `sparklineData` | `List<double>` | `sparkline_data` | نقاط الرسم البياني الصغير — تُستخدم أيضاً لبناء جدول البيانات في التفاصيل والـ PDF |
+
+**قيم `type` وتأثيرها:**
+| القيمة | ما يعرضه `ReportTypeHelper` |
+|---|---|
+| `visitors` | KPIs: إجمالي الزوار / زوار جدد / متوسط وقت الزيارة — جدول: يوم + زوار + ذروة الساعة + معدل الإعادة |
+| `performance` | KPIs: مؤشر الأداء / عملاء محتملون / تحويلات — جدول: يوم + مؤشر الأداء + العملاء + التحويلات |
+| `events` | KPIs: إجمالي المسجلين / الحضور الفعلي / تقييم الفعاليات — جدول: فعالية + مسجلون + حضور + تقييم |
+| `campaigns` | KPIs: إجمالي الوصول / النقرات / التحويلات — جدول: حملة + وصول + نقرات + معدل النقر |
+| `monthly` | KPIs: نسبة الإنجاز / التقييم الشامل / الترتيب — جدول: مؤشر + هدف + محقق + نسبة الإنجاز |
+| `compare` | نفس `monthly` مع تسمية "المقارنة" |
 
 ---
 
