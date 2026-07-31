@@ -383,13 +383,19 @@ class _ReportRow extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.15),
+                color: report.trend >= 0
+                    ? AppColors.success.withOpacity(0.15)
+                    : AppColors.error.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                '+${report.trend}%',
+                report.trend >= 0
+                    ? '+${report.trend}%'
+                    : '${report.trend}%',
                 style: TextStyle(
-                  color: AppColors.success,
+                  color: report.trend >= 0
+                      ? AppColors.success
+                      : AppColors.error,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),

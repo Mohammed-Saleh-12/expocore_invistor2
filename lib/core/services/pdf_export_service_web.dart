@@ -27,7 +27,7 @@ class PdfExportService {
   static Future<String?> _loadFontBase64() async {
     try {
       final data = await rootBundle.load(
-        'assets/fonts/Cairo/Cairo[slnt,wght].ttf',
+        'assets/fonts/Cairo-Regular.ttf',
       );
       return base64Encode(data.buffer.asUint8List());
     } catch (_) {
@@ -259,7 +259,42 @@ class PdfExportService {
       .replaceAll("'", '&#39;');
 
   // Returns only the <svg> element — the caller wraps it in .section
+  // Builds a smooth cubic-bezier sparkline from the actual [data] values.
   static String _svgChart(List<double> data, String accent) {
+    if (data.length < 2) return '';
+
+    const double xMin  = 10;
+    const double xMax  = 490;
+    const double yMin  = 10;   // top of chart area
+    const double yMax  = 120;  // bottom of chart area
+    const double yFill = 132;  // fill extends a little below chart area
+
+    final maxVal = data.reduce((a, b) => a > b ? a : b);
+    final minVal = data.reduce((a, b) => a < b ? a : b);
+    final range  = (maxVal - minVal) == 0 ? 1.0 : maxVal - minVal;
+    final n      = data.length;
+
+    // Compute (x, y) for each data point
+    final pts = List.generate(n, (i) {
+      final x = xMin + (xMax - xMin) * i / (n - 1);
+      final y = yMax - (yMax - yMin) * (data[i] - minVal) / range;
+      return [x, y];
+    });
+
+    // Build smooth cubic-bezier path
+    final sb = StringBuffer();
+    sb.write('M${_f(pts[0][0])},${_f(pts[0][1])}');
+    for (int i = 1; i < pts.length; i++) {
+      final cp1x = (pts[i - 1][0] + pts[i][0]) / 2;
+      final cp1y = pts[i - 1][1];
+      final cp2x = (pts[i - 1][0] + pts[i][0]) / 2;
+      final cp2y = pts[i][1];
+      sb.write(' C${_f(cp1x)},${_f(cp1y)} ${_f(cp2x)},${_f(cp2y)} ${_f(pts[i][0])},${_f(pts[i][1])}');
+    }
+    final linePath = sb.toString();
+    final fillPath =
+        '$linePath L${_f(pts.last[0])},$yFill L${_f(pts.first[0])},$yFill Z';
+
     return '''<svg viewBox="0 0 500 140" width="100%" height="180"
         role="img" aria-label="Sparkline chart">
       <defs>
@@ -269,15 +304,16 @@ class PdfExportService {
         </linearGradient>
       </defs>
       <!-- grid lines -->
-      <line x1="10" y1="40"  x2="490" y2="40"  stroke="#e0e0ee" stroke-width="1"/>
-      <line x1="10" y1="80"  x2="490" y2="80"  stroke="#e0e0ee" stroke-width="1"/>
-      <line x1="10" y1="120" x2="490" y2="120" stroke="#e0e0ee" stroke-width="1"/>
-      <!-- trend line (cubic) -->
-      <path d="M10,120 C160,20 340,20 490,120"
-            fill="none" stroke="$accent" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- fill -->
-      <path d="M10,120 C160,20 340,20 490,120 L490,135 L10,135 Z"
-            fill="url(#chartGrad)"/>
+      <line x1="10" y1="43"  x2="490" y2="43"  stroke="#e0e0ee" stroke-width="1"/>
+      <line x1="10" y1="76"  x2="490" y2="76"  stroke="#e0e0ee" stroke-width="1"/>
+      <line x1="10" y1="109" x2="490" y2="109" stroke="#e0e0ee" stroke-width="1"/>
+      <!-- fill area -->
+      <path d="$fillPath" fill="url(#chartGrad)"/>
+      <!-- trend line -->
+      <path d="$linePath"
+            fill="none" stroke="$accent" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>''';
   }
+
+  static String _f(double v) => v.toStringAsFixed(1);
 }
