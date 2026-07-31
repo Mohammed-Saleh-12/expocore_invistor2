@@ -18,18 +18,20 @@
    - [2.2 اللوحة الإعلانية للفعاليات المميّزة](#22-اللوحة-الإعلانية-للفعاليات-الإعلانية-المميّزة-home-billboard)
    - [2.3 جلب بيانات لوحة التحكم](#23-جلب-بيانات-لوحة-التحكم)
    - [2.4 أحدث المعارض (ويب فقط)](#24-أحدث-المعارض-ويب-فقط)
-3. [المعارض — Exhibitions](#4-exhibitions)
-4. [الأجنحة — Booths](#5-booths)
-5. [الحجز — Booking](#6-booking)
-6. [ملف الجناح — Booth Profile](#7-booth-profile)
-7. [الفعاليات — Events](#9-events)
-8. [التقارير — Reports](#10-reports)
-9. [المفضلة — Favorites](#11-favorites)
-10. [الملف الشخصي — Profile](#12-profile)
-11. [الرسائل مع المعارض — Messages (Firebase)](#13-messages-firebase)
-12. [الرسائل مع الزوار — Visitor Messages (Firebase)](#14-visitor-messages-firebase)
-13. [الإشعارات — Notifications (Firebase)](#15-notifications-firebase)
-14. [الموديلات — Models](#16-models)
+3. [المعارض — Exhibitions](#3-exhibitions)
+4. [الأجنحة — Booths](#4-booths)
+5. [الحجز — Booking](#5-booking)
+6. [ملف الجناح — Booth Profile](#6-booth-profile)
+7. [الفعاليات — Events](#7-events)
+8. [الرعايات والفعاليات الإعلانية — Sponsorships](#8-sponsorships)
+9. [التحليلات — Analytics](#9-analytics)
+10. [التقارير — Reports](#10-reports)
+11. [المفضلة — Favorites](#11-favorites)
+12. [الملف الشخصي — Profile](#12-profile)
+13. [الرسائل مع المعارض — Messages (Firebase)](#13-messages-firebase)
+14. [الرسائل مع الزوار — Visitor Messages (Firebase)](#14-visitor-messages-firebase)
+15. [الإشعارات — Notifications (Firebase)](#15-notifications-firebase)
+16. [الموديلات — Models](#16-models)
 
 ---
 
@@ -949,23 +951,97 @@ Obx(() {
 
 ---
 
-## 9. Reports
+## 9. Analytics
 
-### 9.1 جلب قائمة التقارير
+### 9.1 جلب بيانات التحليلات
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `GET` |
+| **المسار** | `/investor/analytics` |
+| **الملف** | `AnalyticsData.getAnalytics()` — `lib/data/sourcedata/remote/Analytics/AnalyticsData.dart` |
+| **الكنترولر** | `AnalyticsController._loadAnalytics()` ← عند `onInit` وعند تغيير الفترة |
+| **أيضاً** | `AnalyticsController.changePeriod()` ← عند اختيار فترة زمنية جديدة |
+
+**Query Params:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `period` | `String` | قيمة الفترة الزمنية المختارة من الواجهة (مثال: `هذا الشهر` \| `آخر 3 أشهر` \| `هذا العام` \| `مخصص`) |
+
+**الاستجابة المتوقعة (`data`):**
+```json
+{
+  "total_visits":        2450,
+  "product_views":       8920,
+  "event_participants":  148,
+  "total_engagement":    24850,
+  "visits_trend":        12.5,
+  "views_trend":         8.3,
+  "events_trend":        22.1,
+  "engagement_trend":    15.7,
+  "visitors_chart":      [120, 180, 250, 310, 400, 380, 420],
+  "engagement_chart":    [80, 120, 160, 200, 240, 280, 320]
+}
+```
+
+**حالة الـ Controller:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `selectedPeriod` | `RxString` | الفترة المختارة حالياً — الافتراضي: `هذا الشهر` |
+| `isLoading` | `RxBool` | `true` أثناء الجلب |
+| `totalVisits` | `RxInt` | إجمالي الزيارات |
+| `productViews` | `RxInt` | مشاهدات المنتجات |
+| `eventParticipants` | `RxInt` | المشاركون في الفعاليات |
+| `totalEngagement` | `RxInt` | إجمالي التفاعل |
+| `visitsTrend` | `RxDouble` | نسبة نمو الزيارات % |
+| `viewsTrend` | `RxDouble` | نسبة نمو المشاهدات % |
+| `eventsTrend` | `RxDouble` | نسبة نمو الفعاليات % |
+| `engagementTrend` | `RxDouble` | نسبة نمو التفاعل % |
+| `visitorsData` | `RxList<double>` | نقاط الرسم البياني للزوار |
+| `engagementData` | `RxList<double>` | نقاط الرسم البياني للتفاعل |
+
+> **Fallback:** عند فشل الطلب يُحمَّل `_loadFallback()` بأرقام ثابتة للعرض — لا يظهر خطأ للمستخدم.
+
+---
+
+## 10. Reports
+
+### 10.1 جلب قائمة التقارير
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
 | **المسار** | `/investor/reports` |
-| **الملف** | `ReportsData.getReports()` |
-| **الكنترولر** | `ReportsController.onInit()` ← عند فتح صفحة التقارير |
+| **الملف** | `ReportsData.getReports()` — `lib/data/sourcedata/remote/Reports/ReportsData.dart` |
+| **الكنترولر** | `ReportsController._loadReports()` ← عند `onInit` وعند `refresh()` |
 
-**لا توجد Query Params.**
+**لا توجد Query Params** — الفلترة تحدث كلياً على الكلايانت بعد جلب القائمة الكاملة.
 
 **الاستجابة المتوقعة (`data`):** قائمة `List<ReportModel>` — راجع [ReportModel](#reportmodel).
 
+**حالة الـ Controller:**
+| المتغير | النوع | الوصف |
+|---|---|---|
+| `reports` | `RxList<ReportModel>` | القائمة الكاملة المجلوبة من API |
+| `filtered` | `RxList<ReportModel>` | القائمة بعد تطبيق الفلاتر — هذه هي التي تعرضها الشاشة |
+| `selectedType` | `RxString` | نوع الفلتر المختار — الافتراضي: `الكل` |
+| `dateFrom` / `dateTo` | `Rx<DateTime?>` | نطاق تاريخ الفلترة |
+| `isDownloading` | `RxBool` | `true` أثناء تنزيل تقرير |
+| `downloadProgress` | `RxDouble` | تقدم شريط التنزيل (0.0 → 1.0) |
+| `statusRequest` | `Rx<StatusRequest>` | حالة طلب API |
+
+**فلاتر النوع (على الكلايانت):**
+| تسمية الواجهة | قيمة `type` في الـ API |
+|---|---|
+| الكل | *(لا فلتر)* |
+| الزوار | `visitors` |
+| الأداء | `performance` |
+| الفعاليات | `events` |
+| الرعايات | `campaigns` |
+
+> **Fallback:** عند فشل الطلب يُعرض `DummyData.reports` (بيانات ثابتة في `exhibitions_dummy.dart`) مع حالة `StatusRequest.failure`.
+
 ---
 
-### 9.2 جلب تفاصيل تقرير واحد
+### 10.2 جلب تفاصيل تقرير واحد
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -975,26 +1051,42 @@ Obx(() {
 
 **الاستجابة المتوقعة (`data`):** `ReportModel` — راجع [ReportModel](#reportmodel).
 
+> **ملاحظة:** في التطبيق الحالي، صفحة التفاصيل (`ReportDetailView`) تستقبل `ReportModel` كاملاً عبر `Get.arguments` مباشرةً من القائمة — طلب 10.2 متاح لكنه غير مستخدم حتى الآن (المودل مكتمل من طلب 10.1).
+
 ---
 
-### 9.3 تنزيل تقرير
+### 10.3 تنزيل تقرير
 | الخاصية | القيمة |
 |---|---|
-| **الميثود** | `GET` (رابط مباشر) |
 | **المسار** | `/investor/reports/{id}/download?format={format}` |
 | **الملف** | `ReportsData.getDownloadUrl()` — يُعيد URL كـ String |
-| **الكنترولر** | `ReportsController` ← زر "تنزيل" → يُمرَّر لـ `DownloadService` |
+| **الكنترولر** | `ReportsController.downloadReport(id, format)` |
 
 **Query Params:**
 | المتغير | النوع | الوصف |
 |---|---|---|
-| `format` | `String` | `pdf` \| `excel` \| `csv` |
+| `format` | `String` | `pdf` \| `excel` |
+
+> **⚠️ ملاحظة مهمة — تقسيم المسؤولية بين الكلايانت والباك-اند:**
+>
+> | الصيغة | من يولّدها؟ | الآلية |
+> |---|---|---|
+> | **PDF** | **الفرونت-اند** (الكلايانت) | `PdfExportService.printReport()` يبني HTML+SVG ويفتح نافذة طباعة المتصفح — **لا يُرسَل طلب للباك-اند** |
+> | **Excel** | **الباك-اند** | `DownloadService.downloadUrl()` يفتح رابط `/download?format=excel` مباشرةً لتنزيله |
+>
+> `csv` **غير مدعوم** حالياً في الفرونت-اند.
+
+**تفاصيل توليد PDF (كلايانت):**
+- يُحمَّل خط `assets/fonts/Cairo-Regular.ttf` ويُضمَّن في HTML بتشفير Base64
+- يُستخدم `ReportTypeHelper.of(report)` لاشتقاق KPIs، جدول البيانات، والتوصيات من حقول `ReportModel`
+- الرسم البياني SVG يُحسَب من `sparklineData` الفعلية (منحنى cubic-bezier)
+- تعرض القيم السالبة لـ `trend` باللون الأحمر، الموجبة باللون الأخضر
 
 ---
 
-## 10. Favorites
+## 11. Favorites
 
-### 10.1 جلب المفضلة
+### 11.1 جلب المفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1013,7 +1105,7 @@ Obx(() {
 
 ---
 
-### 10.2 إضافة عنصر للمفضلة
+### 11.2 إضافة عنصر للمفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` |
@@ -1030,7 +1122,7 @@ Obx(() {
 
 ---
 
-### 10.3 حذف عنصر من المفضلة
+### 11.3 حذف عنصر من المفضلة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `DELETE` |
@@ -1045,9 +1137,9 @@ Obx(() {
 
 ---
 
-## 11. Profile
+## 12. Profile
 
-### 11.1 جلب الملف الشخصي
+### 15.1 جلب الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `GET` |
@@ -1078,7 +1170,7 @@ Obx(() {
 
 ---
 
-### 11.2 تحديث الملف الشخصي
+### 15.2 تحديث الملف الشخصي
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `PUT` |
@@ -1106,7 +1198,7 @@ Obx(() {
 
 ---
 
-### 11.3 رفع صورة الملف الشخصي (Avatar)
+### 15.3 رفع صورة الملف الشخصي (Avatar)
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` (multipart) |
@@ -1123,12 +1215,12 @@ Obx(() {
 
 ---
 
-## 12. Messages (Firebase)
+## 13. Messages (Firebase)
 
 > **Firestore Collection:** `conversations/{conversationId}`  
 > **Sub-collection:** `conversations/{conversationId}/messages/{messageId}`
 
-### 12.1 Stream محادثات المستثمر
+### 15.1 Stream محادثات المستثمر
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | Firestore Stream |
@@ -1151,7 +1243,7 @@ Obx(() {
 
 ---
 
-### 12.2 Stream رسائل محادثة
+### 15.2 Stream رسائل محادثة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.messagesStream()` |
@@ -1166,7 +1258,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 12.3 إرسال رسالة
+### 15.3 إرسال رسالة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.sendMessage()` |
@@ -1196,7 +1288,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 12.4 إنشاء محادثة جديدة مع معرض
+### 15.4 إنشاء محادثة جديدة مع معرض
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.createConversation()` |
@@ -1218,7 +1310,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 12.5 تعليم المحادثة كمقروءة
+### 15.5 تعليم المحادثة كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `MessagesFirebaseData.markConversationRead()` |
@@ -1228,12 +1320,12 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-## 13. Visitor Messages (Firebase)
+## 14. Visitor Messages (Firebase)
 
 > **Firestore Collection:** `visitor_conversations/{conversationId}`  
 > **Sub-collection:** `visitor_conversations/{conversationId}/messages/{messageId}`
 
-### 13.1 Stream محادثات الزوار
+### 15.1 Stream محادثات الزوار
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.conversationsStream()` |
@@ -1255,7 +1347,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.2 Stream رسائل محادثة زائر
+### 15.2 Stream رسائل محادثة زائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.messagesStream()` |
@@ -1265,7 +1357,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.3 إرسال رسالة لزائر
+### 15.3 إرسال رسالة لزائر
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.sendMessage()` |
@@ -1294,7 +1386,7 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-### 13.4 تعليم محادثة زائر كمقروءة
+### 15.4 تعليم محادثة زائر كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `VisitorMessagesFirebaseData.markConversationRead()` |
@@ -1304,11 +1396,11 @@ id, text, is_me, sender_id, time (Timestamp), is_read
 
 ---
 
-## 14. Notifications (Firebase)
+## 15. Notifications (Firebase)
 
 > **Firestore Collection:** `notifications/{userId}/items/{notifId}`
 
-### 14.1 Stream الإشعارات
+### 15.1 Stream الإشعارات
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.notificationsStream()` |
@@ -1323,7 +1415,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-### 14.2 تعليم إشعار كمقروء
+### 15.2 تعليم إشعار كمقروء
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.markRead()` |
@@ -1333,7 +1425,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-### 14.3 تعليم جميع الإشعارات كمقروءة
+### 15.3 تعليم جميع الإشعارات كمقروءة
 | الخاصية | القيمة |
 |---|---|
 | **الملف** | `NotificationsFirebaseData.markAllRead()` |
@@ -1343,7 +1435,7 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-## 15. Models
+## 16. Models
 
 ---
 
@@ -1554,20 +1646,30 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ### ReportModel
 
-| # | الحقل | النوع | JSON Key |
-|---|---|---|---|
-| 1 | `id` | `String` | `id` (toString) |
-| 2 | `title` | `String` | `title` |
-| 3 | `type` | `String` | `type` | `visitors` \| `revenue` \| ... |
-| 4 | `description` | `String` | `description` |
-| 5 | `period` | `String` | `period` |
-| 6 | `boothName` | `String` | `booth_name` |
-| 7 | `exhibitionName` | `String` | `exhibition_name` |
-| 8 | `createdAt` | `String` | `created_at` |
-| 9 | `mainValue` | `double` | `main_value` |
-| 10 | `mainLabel` | `String` | `main_label` |
-| 11 | `trend` | `double` | `trend` | نسبة التغير % |
-| 12 | `sparklineData` | `List<double>` | `sparkline_data` |
+| # | الحقل | النوع | JSON Key | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `String` | `id` | يُحوَّل بـ `toString()` |
+| 2 | `title` | `String` | `title` | |
+| 3 | `type` | `String` | `type` | `visitors` \| `performance` \| `events` \| `campaigns` \| `monthly` \| `compare` |
+| 4 | `description` | `String` | `description` | |
+| 5 | `period` | `String` | `period` | نص حر مثل `يوليو 2026` |
+| 6 | `boothName` | `String` | `booth_name` | |
+| 7 | `exhibitionName` | `String` | `exhibition_name` | |
+| 8 | `createdAt` | `String` | `created_at` | صيغة `YYYY-MM-DD` — يُستخدم للفلترة بالتاريخ |
+| 9 | `mainValue` | `double` | `main_value` | الرقم الرئيسي للتقرير (زوار، نقاط، إلخ) |
+| 10 | `mainLabel` | `String` | `main_label` | وصف `mainValue` (مثال: `إجمالي الزوار`) |
+| 11 | `trend` | `double` | `trend` | نسبة التغير % — يمكن أن تكون سالبة |
+| 12 | `sparklineData` | `List<double>` | `sparkline_data` | نقاط الرسم البياني الصغير — تُستخدم أيضاً لبناء جدول البيانات في التفاصيل والـ PDF |
+
+**قيم `type` وتأثيرها:**
+| القيمة | ما يعرضه `ReportTypeHelper` |
+|---|---|
+| `visitors` | KPIs: إجمالي الزوار / زوار جدد / متوسط وقت الزيارة — جدول: يوم + زوار + ذروة الساعة + معدل الإعادة |
+| `performance` | KPIs: مؤشر الأداء / عملاء محتملون / تحويلات — جدول: يوم + مؤشر الأداء + العملاء + التحويلات |
+| `events` | KPIs: إجمالي المسجلين / الحضور الفعلي / تقييم الفعاليات — جدول: فعالية + مسجلون + حضور + تقييم |
+| `campaigns` | KPIs: إجمالي الوصول / النقرات / التحويلات — جدول: حملة + وصول + نقرات + معدل النقر |
+| `monthly` | KPIs: نسبة الإنجاز / التقييم الشامل / الترتيب — جدول: مؤشر + هدف + محقق + نسبة الإنجاز |
+| `compare` | نفس `monthly` مع تسمية "المقارنة" |
 
 ---
 
