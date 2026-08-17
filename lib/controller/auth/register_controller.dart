@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/StatusRequest.dart';
@@ -43,6 +44,13 @@ class RegisterController extends GetxController {
     }
     status.value = StatusRequest.loading;
 
+    String? fcmToken;
+    try {
+      fcmToken = await FirebaseMessaging.instance.getToken();
+    } catch (_) {
+      fcmToken = null;
+    }
+
     final result = await _registerData.register(
       companyName: companyCtrl.text.trim(),
       tradeName: tradeCtrl.text.trim(),
@@ -53,6 +61,7 @@ class RegisterController extends GetxController {
       password: passCtrl.text,
       passwordConfirmation: confirmCtrl.text,
       activityType: activityType.value,
+      fcmToken: fcmToken,
     );
 
     if (result['status'] == true) {

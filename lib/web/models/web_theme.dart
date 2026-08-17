@@ -26,7 +26,7 @@ class WebTheme {
 
   // ── ألوان البنية ─────────────────────────────────────────
   static Color get bg =>
-      isDark.value ? const Color(0xFF13112A) : const Color(0xFFF3F3F8);
+      isDark.value ? const Color(0xFF13112A) : const Color.fromARGB(255, 243, 243, 248);
   static Color get surface =>
       isDark.value ? const Color(0xFF1C1936) : Colors.white;
   static Color get surfaceAlt =>

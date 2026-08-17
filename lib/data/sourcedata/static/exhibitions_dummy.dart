@@ -1,13 +1,11 @@
 import 'package:expocore_invistor2/data/model/message/conversation_model.dart';
 import 'package:expocore_invistor2/data/model/message/visitor_conversation_model.dart';
-
 import '../../model/exhibition/exhibition_model.dart';
 import '../../model/event/event_model.dart';
 import '../../model/event/exhibition_sponsor_event_model.dart';
 import '../../model/event/sponsorship_booking_model.dart';
 import '../../model/event/ticket_request_model.dart';
 import '../../model/booth/booth_model.dart';
-import '../../model/campaign/campaign_model.dart';
 import '../../model/report/report_model.dart';
 import '../../model/message/message_model.dart';
 import '../../model/notification/notification_model.dart';
@@ -409,30 +407,6 @@ class DummyData {
     ],
   };
 
-  static List<CampaignModel> campaigns = [
-    CampaignModel(
-      id: 1, title: 'حملة عرض الصيف',
-      type: 'إعلانات على شاشات المعرض',
-      startDate: '2026-07-15', endDate: '2026-07-20',
-      reach: 15420, status: 'active', budget: 5000,
-      weeklyTrend: [120, 250, 380, 450, 520, 610, 700],
-    ),
-    CampaignModel(
-      id: 2, title: 'حملة منتجاتنا الجديدة',
-      type: 'إعلانات على الخريطة 3D',
-      startDate: '2026-07-16', endDate: '2026-07-18',
-      reach: 8900, status: 'active', budget: 3000,
-      weeklyTrend: [80, 160, 200, 320, 400, 350, 410],
-    ),
-    CampaignModel(
-      id: 3, title: 'عروض خاصة للزوار',
-      type: 'عروض خاصة لزوار المعرض',
-      startDate: '2026-06-10', endDate: '2026-06-14',
-      reach: 22100, status: 'ended', budget: 8000,
-      weeklyTrend: [300, 450, 600, 750, 900, 850, 800],
-    ),
-  ];
-
   static List<ReportModel> reports = [
     ReportModel(
       id: 'r1', title: 'تقرير الزوار اليومي',
@@ -486,13 +460,11 @@ class DummyData {
   ];
 
   static List<NotificationModel> notifications = [
-    NotificationModel(id: 1, title: 'تم قبول طلب الحجز', body: 'تم قبول طلب حجز الجناح B12 في معرض التقنية 2026', type: 'booking_accepted', time: 'منذ ساعة', isRead: false, route: '/booths/booking-detail'),
-    NotificationModel(id: 2, title: 'معرض جديد متاح', body: 'معرض التقنية 2026 متاح الآن للتسجيل. سارع بحجز جناحك!', type: 'new_exhibition', time: 'منذ 3 ساعات', isRead: false, route: '/exhibitions/detail'),
-    NotificationModel(id: 3, title: 'حملتك نشطة الآن', body: 'حملة "عرض الصيف" بدأت الآن وتصل لآلاف الزوار', type: 'campaign_active', time: 'منذ 5 ساعات', isRead: true, route: '/campaigns'),
-    NotificationModel(id: 4, title: 'رسالة جديدة', body: 'رسالة جديدة من إدارة معرض التقنية 2026', type: 'new_message', time: 'أمس', isRead: true, route: '/messages'),
-    NotificationModel(id: 5, title: 'تقريرك الشهري جاهز', body: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', time: 'أمس', isRead: true, route: '/reports'),
-    NotificationModel(id: 6, title: 'تذكير: فعاليتك تبدأ قريباً', body: 'ورشة عمل الذكاء الاصطناعي تبدأ خلال ساعة', type: 'event_reminder', time: 'منذ يومين', isRead: true, route: '/events'),
-NotificationModel(id: 7, title: 'معرض مفضّل بدأ التسجيل', body: 'معرض الغذاء والضيافة المحفوظ في مفضلاتك فتح باب التسجيل', type: 'favorite_update', time: 'منذ 3 أيام', isRead: true, route: '/favorites'),
+    NotificationModel(id: 1, userId: 1, title: 'تم قبول طلب الحجز', message: 'تم قبول طلب حجز الجناح B12 في معرض التقنية 2026', type: 'booking_accepted', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/booths/booking-detail'),
+    NotificationModel(id: 2, userId: 1, title: 'معرض جديد متاح', message: 'معرض التقنية 2026 متاح الآن للتسجيل. سارع بحجز جناحك!', type: 'new_exhibition', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/exhibitions/detail'),
+    NotificationModel(id: 3, userId: 1, title: 'حملتك نشطة الآن', message: 'حملة "عرض الصيف" بدأت الآن وتصل لآلاف الزوار', type: 'campaign_active', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/campaigns'),
+    NotificationModel(id: 4, userId: 1, title: 'رسالة جديدة', message: 'رسالة جديدة من إدارة معرض التقنية 2026', type: 'new_message', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/messages'),
+    NotificationModel(id: 5, userId: 1, title: 'تقريرك الشهري جاهز', message: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/reports'),
   ];
 
   static List<VisitorConversationModel> visitorConversations = [

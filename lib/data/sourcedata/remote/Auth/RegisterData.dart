@@ -16,8 +16,9 @@ class RegisterData {
     required String password,
     required String passwordConfirmation,
     required String activityType,
+    String? fcmToken,
   }) async {
-    return await crud.postData(AppLink.register, {
+    final body = <String, dynamic>{
       'company_name': companyName,
       'trade_name': tradeName,
       'email': email,
@@ -27,6 +28,9 @@ class RegisterData {
       'password': password,
       'password_confirmation': passwordConfirmation,
       'activity_type': activityType,
-    });
+      if ((fcmToken ?? '').isNotEmpty) 'fcm_token': fcmToken,
+    };
+
+    return await crud.postData(AppLink.register, body);
   }
 }

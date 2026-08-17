@@ -84,9 +84,12 @@
   "website":                "string",
   "password":               "string",
   "password_confirmation":  "string",
-  "activity_type":          "string"
+  "activity_type":          "string",
+  "fcm_token":              "string (اختياري)"
 }
 ```
+
+> **ملاحظة مهمة:** عند إنشاء الحساب، يُجمع `FirebaseMessaging.instance.getToken()` تلقائياً من العميل ويُرسَل داخل الطلب إذا كان متاحاً، كما يظهر في `RegisterController.register()` و`RegisterData.register()`.
 
 **الاستجابة المتوقعة (`data`):** رسالة نجاح أو بيانات المستخدم (راجع UserModel).
 
@@ -227,18 +230,61 @@
 
 ---
 
-### 1.12 تسجيل FCM Token
+### 1.12 مزامنة Firebase Auth مع الجلسة
 | الخاصية | القيمة |
 |---|---|
 | **الميثود** | `POST` |
-| **المسار** | `/auth/fcm-token` |
+| **المسار** | `/auth/firebase-sync` |
+| **الملف** | `AppLink.firebaseSync` |
+| **الكنترولر/الخدمة** | `AuthService.login()` → `_syncFirebaseAuth()` → `Crud.postData(AppLink.firebaseSync, ...)` |
+| **متى يُرسَل** | بعد تسجيل الدخول إلى Laravel بنجاح، لكي تتم مزامنة الـ Firebase UID مع حساب المستثمر |
+
+**Body المرسَل:**
+```json
+{
+  "user_id": 12,
+  "email": "investor@example.com",
+  "firebase_uid": "abcd1234xyz",
+  "firebase_provider": "email"
+}
+```
+
+> **ملاحظة مهمة:** هذا ليس تسجيل دخول بديل؛ التطبيق يحقن Firebase Auth فقط بعد نجاح تسجيل الدخول إلى الـ Backend، ويعيد استخدام `signInWithEmailAndPassword()` إذا لم يكن هناك مستخدم مسجّل حاليًا.
+
+---
+
+### 1.13 تسجيل FCM Token
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `POST` |
+| **المسار** | `/notifications/fcm-token` |
 | **الملف** | `AppLink.fcmToken` (يُستدعى مباشرةً عبر `Crud.postData`) |
-| **متى يُرسَل** | بعد تسجيل الدخول الناجح لتسجيل token الإشعارات |
+| **متى يُرسَل** | بعد الحصول على token من Firebase، سواء أثناء التهيئة أو بعد التسجيل/تسجيل الدخول |
 
 **Body المرسَل:**
 ```json
 { "fcm_token": "string" }
 ```
+
+> **ملاحظة:** هذا المسار يختلف عن `/auth/register`؛ في تسجيل الحساب يرسل التطبيق `fcm_token` كجزء من جسم الطلب إذا كان موجوداً، أما بعد ذلك يتم إرسال token بشكل مستقل عبر `/notifications/fcm-token` عند تهيئة FCM أو عند تحديث token.
+
+---
+
+### 1.14 تسجيل الخروج من Firebase Auth
+| الخاصية | القيمة |
+|---|---|
+| **الميثود** | `async` داخل التطبيق |
+| **المسار** | لا يوجد endpoint — يتم محلياً |
+| **الملف** | `AuthService.logout()` و `FirebaseAuthSyncService.signOutFirebase()` |
+| **متى يُستدعى** | عند تسجيل الخروج من التطبيق |
+
+**الإجراء:**
+```dart
+await _auth.signOut();
+await Get.find<Services>().clearSession();
+```
+
+> عند تسجيل الخروج، يتم تسجيل الخروج من Firebase Auth محلياً بالإضافة إلى إنهاء الجلسة المحلية والخادمية.
 
 ---
 
@@ -1379,10 +1425,13 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | # | الحقل | النوع | JSON Key |
 |---|---|---|---|
 | 1 | `id` | `int` | `id` |
+| 2 | `name` | `String` | `name` |
 | 3 | `email` | `String` | `email` |
 | 4 | `token` | `String` | `token` |
 | 5 | `companyName` | `String` | `company_name` |
 | 6 | `avatarUrl` | `String` | `avatar_url` |
+
+> الحقل `name` موجود فعلياً في التطبيق ويُقرأ من الـ API عند تسجيل الدخول أو إنشاء الحساب.
 
 ---
 
@@ -1459,30 +1508,33 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | 3 | `type` | `String` | `type` | |
 | 4 | `boothNumber` | `String` | `booth_number` | |
 | 5 | `exhibitionName` | `String` | `exhibition_name` | |
-| 6 | `date` | `String` | `date` | تاريخ الفعالية (للعرض من الـ API) |
-| 7 | `startDate` | `String` | `start_date` | تاريخ بدء الفعالية `YYYY-MM-DD` — يُرسَل عند الإنشاء |
-| 8 | `endDate` | `String` | `end_date` | تاريخ نهاية الفعالية `YYYY-MM-DD` — يُرسَل عند الإنشاء (= `start_date` لفعالية يوم واحد) |
-| 9 | `time` | `String` | `time` | |
-| 10 | `maxParticipants` | `int` | `max_participants` | |
-| 11 | `registeredCount` | `int` | `registered_count` | |
-| 12 | `status` | `String` | `status` | `upcoming` \| `active` \| `ended` |
-| 13 | `description` | `String` | `description` | |
-| 14 | `requiresBooking` | `bool` | `requires_booking` | |
-| 15 | `isFavorite` | `bool` | `is_favorite` | |
-| 16 | `place` | `String` | `place` | |
-| 17 | `durationDays` | `int` | `duration_days` | افتراضي: 1 — من الرد فقط، **لا يُرسَل** عند الإنشاء |
-| 18 | `hasBookableSeats` | `bool` | `has_bookable_seats` | |
-| 19 | `totalSeats` | `int` | `total_seats` | |
-| 20 | `bookedSeats` | `int` | `booked_seats` | |
-| 21 | `soldTickets` | `int` | `sold_tickets` | |
-| 22 | `ticketPrice` | `double` | `ticket_price` | |
-| 23 | `isGeneralInvitation` | `bool` | `is_general_invitation` | افتراضي: true |
-| 24 | `videoPromoUrl` | `String` | `video_promo_url` | |
-| 25 | `companyImages` | `List<String>` | `company_images` | |
-| 26 | `currentDay` | `int` | `current_day` | اليوم الحالي |
-| 27 | `totalEventDays` | `int` | `total_event_days` | |
-| 28 | `dailyAttendees` | `List<int>` | `daily_attendees` | |
-| 29 | `scannedCount` | `int` | `scanned_count` | |
+| 6 | `date` | `String` | `date` | تاريخ العرض في الرد |
+| 7 | `time` | `String` | `time` | |
+| 8 | `maxParticipants` | `int` | `max_participants` | |
+| 9 | `registeredCount` | `int` | `registered_count` | |
+| 10 | `status` | `String` | `status` | `upcoming` \| `active` \| `ended` |
+| 11 | `description` | `String` | `description` | |
+| 12 | `requiresBooking` | `bool` | `requires_booking` | |
+| 13 | `isFavorite` | `bool` | `is_favorite` | |
+| 14 | `place` | `String` | `place` | |
+| 15 | `durationDays` | `int` | `duration_days` | افتراضي: `1` |
+| 16 | `hasBookableSeats` | `bool` | `has_bookable_seats` | |
+| 17 | `totalSeats` | `int` | `total_seats` | |
+| 18 | `bookedSeats` | `int` | `booked_seats` | |
+| 19 | `soldTickets` | `int` | `sold_tickets` | |
+| 20 | `ticketPrice` | `double` | `ticket_price` | |
+| 21 | `isGeneralInvitation` | `bool` | `is_general_invitation` | افتراضي: `true` |
+| 22 | `videoPromoUrl` | `String` | `video_promo_url` | |
+| 23 | `companyImages` | `List<String>` | `company_images` | |
+| 24 | `currentDay` | `int` | `current_day` | |
+| 25 | `totalEventDays` | `int` | `total_event_days` | |
+| 26 | `dailyAttendees` | `List<int>` | `daily_attendees` | |
+| 27 | `scannedCount` | `int` | `scanned_count` | |
+
+**Getter محسوب:**
+- `ticketCategory` → `paid` إذا كان `ticketPrice > 0`, وإلا `free` إذا `hasBookableSeats || requiresBooking`, وإلا `none`
+
+> ملاحظة: في الكود الحالي لا يوجد حقل `startDate` / `endDate` في `EventModel`; هذه الحقول ليست موجودة فعلياً في النموذج المستخدم في التطبيق.
 
 ---
 
@@ -1598,6 +1650,16 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 | 3 | `gridWidth` | `int` | `grid_width` | (افتراضي: 12) |
 | 4 | `gridDepth` | `int` | `grid_depth` | (افتراضي: 10) |
 | 5 | `halls` | `List<MapHallModel>` | `halls` |
+| 6 | `floors` | `List<MapSceneFloor>` | `scene.floors` | يدعم الخرائط 3D العامة |
+| 7 | `assets` | `Map<String,dynamic>` | `assets` | أصول المشهد 3D |
+| 8 | `sceneInstances` | `List<MapSceneInstance>` | `instances` | مثيلات المشهد 3D |
+
+**أنواع إضافية متاحة في الكود:**
+- `MapSceneVector3`
+- `MapSceneFloor`
+- `MapSceneInstance`
+
+> عند وجود `scene` أو `instances` في الاستجابة، يقوم النموذج بتحميل نسخة 3D عامة بدل هيكل `halls` التقليدي.
 
 #### MapHallModel (nested)
 
@@ -1681,16 +1743,24 @@ id (doc.id → int), title, body|message, type, time|created_at, is_read, route?
 
 ---
 
-### NotificationModel (Firebase)
+### NotificationModel
 
-| # | الحقل | النوع | Firestore Field |
-|---|---|---|---|
-| 1 | `id` | `int` | doc.id (يُحوَّل من String) |
-| 2 | `title` | `String` | `title` |
-| 3 | `body` | `String` | `body` \| `message` |
-| 4 | `type` | `String` | `type` |
-| 5 | `time` | `String` | `time` \| `created_at` |
-| 6 | `isRead` | `bool` | `is_read` |
-| 7 | `route` | `String?` | `route` (nullable) |
+| # | الحقل | النوع | JSON / Firestore Field | ملاحظة |
+|---|---|---|---|---|
+| 1 | `id` | `int` | `id` / `doc.id` | يُحوّل من `String` عند القراءة |
+| 2 | `userId` | `int` | `user_id` | افتراضي: `0` |
+| 3 | `title` | `String` | `title` | |
+| 4 | `message` | `String` | `message` \| `body` | الحقل الاسمي الحقيقي في الكود |
+| 5 | `type` | `String` | `type` | |
+| 6 | `isRead` | `bool` | `is_read` \| `read` | |
+| 7 | `createdAt` | `DateTime` | `created_at` \| `time` | يُحوّل إلى `DateTime` |
+| 8 | `payload` | `Map<String,dynamic>` | `payload` | خريطة بيانات إضافية |
+| 9 | `route` | `String?` | `route` | nullable |
+
+**Getters محسوبة:**
+- `body` → نفس قيمة `message`
+- `time` → `createdAt.toLocal().toString()`
+
+> ملاحظة: في التطبيق، الحقل الفعلي هو `message` وليس `body` كـ property أساسية، بينما `body` و `time` تم توفيرهما كتعبيرات مساعدة فقط.
 
 ---

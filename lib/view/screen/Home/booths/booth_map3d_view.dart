@@ -7,7 +7,8 @@ import '../../../../data/model/booth/booth_model.dart';
 import '../../../../data/model/map/exhibition_map_model.dart';
 import '../../../widget/Home/custom_app_bar.dart';
 import '../../../widget/Home/custom_button.dart';
-import '../../../widget/Home/isometric_map_painter.dart';
+import '../../../widget/Home/exhibition_scene_3d.dart';
+// import '../../../widget/Home/isometric_map_painter.dart';
 
 class BoothMap3dView extends StatelessWidget {
   const BoothMap3dView({super.key});
@@ -52,10 +53,11 @@ class BoothMap3dView extends StatelessWidget {
                   );
                   return Stack(
                     children: [
-                      _MapCanvas(
-                        ctrl: ctrl,
+                      Exhibition3DScene(
                         mapModel: mapModel,
+                        selectedBooth: ctrl.selectedBooth.value,
                         isDark: isDark,
+                        onBoothTapped: (booth) => ctrl.onBoothTapped(booth),
                       ),
                       Obx(() {
                         final booth = ctrl.selectedBooth.value;
@@ -189,57 +191,57 @@ class _LegendRow extends StatelessWidget {
 
 // ─────────────────────────────────────── Canvas ──────────────────────────────
 
-class _MapCanvas extends StatelessWidget {
-  final BoothMapController ctrl;
-  final ExhibitionMapModel mapModel;
-  final bool isDark;
-  const _MapCanvas({
-    required this.ctrl,
-    required this.mapModel,
-    required this.isDark,
-  });
+// class _MapCanvas extends StatelessWidget {
+//   final BoothMapController ctrl;
+//   final ExhibitionMapModel mapModel;
+//   final bool isDark;
+//   const _MapCanvas({
+//     required this.ctrl,
+//     required this.mapModel,
+//     required this.isDark,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return ClipRect(
-      child: InteractiveViewer(
-        transformationController: ctrl.transformationController,
-        minScale: 0.45,
-        maxScale: 3.5,
-        boundaryMargin: const EdgeInsets.all(200),
-        child: Center(
-          child: GestureDetector(
-            onTapUp: (details) => _handleTap(details.localPosition),
-            child: Obx(
-              () => CustomPaint(
-                size: const Size(900, 700),
-                painter: IsometricMapPainter(
-                  mapModel: mapModel,
-                  selectedBooth: ctrl.selectedBooth.value,
-                  hitAreas: ctrl.hitAreas,
-                  isDark: isDark,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipRect(
+//       child: InteractiveViewer(
+//         transformationController: ctrl.transformationController,
+//         minScale: 0.45,
+//         maxScale: 3.5,
+//         boundaryMargin: const EdgeInsets.all(200),
+//         child: Center(
+//           child: GestureDetector(
+//             onTapUp: (details) => _handleTap(details.localPosition),
+//             child: Obx(
+//               () => CustomPaint(
+//                 size: const Size(900, 700),
+//                 painter: IsometricMapPainter(
+//                   mapModel: mapModel,
+//                   selectedBooth: ctrl.selectedBooth.value,
+//                   hitAreas: ctrl.hitAreas,
+//                   isDark: isDark,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  void _handleTap(Offset tapInWidget) {
-    final matrix = ctrl.transformationController.value;
-    final inverted = Matrix4.inverted(matrix);
-    final tapInCanvas = MatrixUtils.transformPoint(inverted, tapInWidget);
-    for (final area in ctrl.hitAreas.reversed) {
-      if (area.topFacePath.contains(tapInCanvas)) {
-        ctrl.onBoothTapped(area.booth, screenPosition: tapInWidget);
-        return;
-      }
-    }
-    ctrl.clearSelection();
-  }
-}
+//   void _handleTap(Offset tapInWidget) {
+//     final matrix = ctrl.transformationController.value;
+//     final inverted = Matrix4.inverted(matrix);
+//     final tapInCanvas = MatrixUtils.transformPoint(inverted, tapInWidget);
+//     for (final area in ctrl.hitAreas.reversed) {
+//       if (area.topFacePath.contains(tapInCanvas)) {
+//         ctrl.onBoothTapped(area.booth, screenPosition: tapInWidget);
+//         return;
+//       }
+//     }
+//     ctrl.clearSelection();
+//   }
+// }
 
 // ───────────────────────── Company Info Dialog (overlay) ─────────────────────
 

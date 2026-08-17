@@ -20,7 +20,7 @@ class WebDashboardPage extends StatelessWidget {
     final c           = Get.find<DashboardController>();
     final events      = Get.find<EventsController>();
     final billboard   = Get.find<HomeBillboardController>();
-    final latestExhib = Get.find<LatestExhibitionsController>();
+    final LatestExhibitionsController latestExhib = Get.put(LatestExhibitionsController());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

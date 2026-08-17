@@ -12,7 +12,7 @@ class BoothCompanyInfo {
   final String name;
   final String email;
   final String initials;
-  final Color  color;
+  final Color color;
   const BoothCompanyInfo({
     required this.name,
     required this.email,
@@ -24,11 +24,11 @@ class BoothCompanyInfo {
 class BoothMapController extends GetxController {
   final ExhibitionMapData _mapData = ExhibitionMapData(Crud());
 
-  final mapData               = Rxn<ExhibitionMapModel>();
-  final selectedBooth         = Rxn<MapBoothModel>();
+  final mapData = Rxn<ExhibitionMapModel>();
+  final selectedBooth = Rxn<MapBoothModel>();
   final selectedBoothPosition = Rxn<Offset>();
-  final isLoading             = true.obs;
-  final allBooths             = <MapBoothModel>[].obs;
+  final isLoading = true.obs;
+  final allBooths = <MapBoothModel>[].obs;
 
   final transformationController = TransformationController();
   final hitAreas = <BoothHitArea>[];
@@ -37,6 +37,7 @@ class BoothMapController extends GetxController {
 
   // ── ربط id الجناح في الخريطة بـ BoothModel الحقيقي ──────────
   final _boothById = <int, BoothModel>{};
+  final _sceneInstanceById = <String, MapSceneInstance>{};
 
   @override
   void onInit() {
@@ -67,7 +68,6 @@ class BoothMapController extends GetxController {
     Map<String, dynamic>? mapJson,
     List<BoothModel> booths,
   ) {
-    // بناء جدول البحث السريع id → BoothModel
     _boothById.clear();
     for (final b in booths) {
       _boothById[b.id] = b;
@@ -75,17 +75,54 @@ class BoothMapController extends GetxController {
 
     if (mapJson != null && mapJson.isNotEmpty) {
       final model = ExhibitionMapModel.fromJson(mapJson);
-      mapData.value   = model;
-      final flat      = model.halls.expand((h) => h.booths).toList();
-      // مزامنة حالة كل جناح من الخريطة مع الـ API
-      for (final mb in flat) {
-        final real = _boothById[mb.id];
-        if (real != null) mb.status = real.status;
+      mapData.value = model;
+      _sceneInstanceById.clear();
+      for (final instance in model.sceneInstances) {
+        _sceneInstanceById[instance.id] = instance;
       }
-      allBooths.value = flat;
+
+      if (model.halls.isNotEmpty) {
+        final flat = model.halls.expand((h) => h.booths).toList();
+        for (final mb in flat) {
+          final real = _boothById[mb.id];
+          if (real != null) mb.status = real.status;
+        }
+        allBooths.value = flat;
+      } else if (model.sceneInstances.isNotEmpty) {
+        final flat = model.sceneInstances
+            .where(
+              (i) =>
+                  i.type.toLowerCase() == 'booth' ||
+                  i.type.toLowerCase() == 'wing',
+            )
+            .map((i) {
+              final boothId =
+                  int.tryParse(i.id.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+              final boothStatus = _boothById[boothId]?.status ?? 'available';
+              return MapBoothModel(
+                id: boothId,
+                number: i.label ?? i.id,
+                col: 0,
+                row: 0,
+                gridWidth: 1,
+                gridDepth: 1,
+                height: i.height ?? 1.0,
+                status: boothStatus,
+                price: _boothById[boothId]?.price ?? 0,
+                area: _boothById[boothId]?.area ?? 0,
+                hallId: i.floorId ?? 'floor',
+                hallName: i.label ?? 'Map Section',
+                amenities: _boothById[boothId]?.amenities ?? const [],
+              );
+            })
+            .where((booth) => booth.id != 0)
+            .toList();
+        allBooths.value = flat;
+      } else {
+        allBooths.value = const [];
+      }
       isLoading.value = false;
     } else if (mapData.value == null) {
-      // fallback إذا لم تأت بيانات خريطة من التفاصيل
       loadMapData();
     }
   }
@@ -113,10 +150,43 @@ class BoothMapController extends GetxController {
         final body = result['data'] is Map
             ? (result['data'] as Map<String, dynamic>)
             : <String, dynamic>{};
-        final model     = ExhibitionMapModel.fromJson(body);
-        mapData.value   = model;
-        final flat      = model.halls.expand((h) => h.booths).toList();
-        // مزامنة الحالات إذا توفرت بيانات الأجنحة
+        final model = ExhibitionMapModel.fromJson(body);
+        mapData.value = model;
+        _sceneInstanceById.clear();
+        for (final instance in model.sceneInstances) {
+          _sceneInstanceById[instance.id] = instance;
+        }
+        final flat = model.halls.isNotEmpty
+            ? model.halls.expand((h) => h.booths).toList()
+            : model.sceneInstances
+                  .where(
+                    (i) =>
+                        i.type.toLowerCase() == 'booth' ||
+                        i.type.toLowerCase() == 'wing',
+                  )
+                  .map((i) {
+                    final boothId =
+                        int.tryParse(i.id.replaceAll(RegExp(r'[^0-9]'), '')) ??
+                        0;
+                    final real = _boothById[boothId];
+                    return MapBoothModel(
+                      id: boothId,
+                      number: i.label ?? i.id,
+                      col: 0,
+                      row: 0,
+                      gridWidth: 1,
+                      gridDepth: 1,
+                      height: i.height ?? 1.0,
+                      status: real?.status ?? 'available',
+                      price: real?.price ?? 0,
+                      area: real?.area ?? 0,
+                      hallId: i.floorId ?? 'floor',
+                      hallName: i.label ?? 'Map Section',
+                      amenities: real?.amenities ?? const [],
+                    );
+                  })
+                  .where((booth) => booth.id != 0)
+                  .toList();
         for (final mb in flat) {
           final real = _boothById[mb.id];
           if (real != null) mb.status = real.status;
@@ -126,35 +196,37 @@ class BoothMapController extends GetxController {
         return;
       }
     }
-    // fallback بيانات ثابتة
-    final model     = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
-    mapData.value   = model;
+    final model = ExhibitionMapModel.fromJson(DummyData.exhibitionMap);
+    mapData.value = model;
+    _sceneInstanceById.clear();
+    for (final instance in model.sceneInstances) {
+      _sceneInstanceById[instance.id] = instance;
+    }
     allBooths.value = model.halls.expand((h) => h.booths).toList();
     isLoading.value = false;
   }
 
   // ── الجناح الحقيقي المرتبط بـ MapBoothModel ──────────────────
-  BoothModel? linkedBooth(MapBoothModel mapBooth) =>
-      _boothById[mapBooth.id];
+  BoothModel? linkedBooth(MapBoothModel mapBooth) => _boothById[mapBooth.id];
 
   // ── معلومات الشركة الحاجزة (من الـ API) ─────────────────────
   BoothCompanyInfo? companyForBooth(MapBoothModel booth) {
     final real = _boothById[booth.id];
     if (real != null && (real.companyName?.isNotEmpty ?? false)) {
       return BoothCompanyInfo(
-        name:     real.companyName!,
-        email:    real.companyEmail    ?? '',
+        name: real.companyName!,
+        email: real.companyEmail ?? '',
         initials: real.companyInitials ?? real.companyName![0],
-        color:    const Color(0xFF7A1FFF),
+        color: const Color(0xFF7A1FFF),
       );
     }
     // fallback: اسم افتراضي إذا كان الجناح محجوزاً
     if (booth.isBooked) {
       return const BoothCompanyInfo(
-        name:     'شركة محجوزة',
-        email:    '—',
+        name: 'شركة محجوزة',
+        email: '—',
         initials: 'ش',
-        color:    Color(0xFF7A1FFF),
+        color: Color(0xFF7A1FFF),
       );
     }
     return null;
@@ -163,14 +235,133 @@ class BoothMapController extends GetxController {
   void onBoothTapped(MapBoothModel booth, {Offset? screenPosition}) {
     if (selectedBooth.value?.id == booth.id) {
       clearSelection();
-    } else {
-      selectedBooth.value         = booth;
-      selectedBoothPosition.value = screenPosition;
+      return;
+    }
+
+    selectedBooth.value = booth;
+    selectedBoothPosition.value = screenPosition;
+
+    final realBooth = linkedBooth(booth);
+    if (realBooth != null && realBooth.status == 'available') {
+      Future.microtask(() {
+        Get.bottomSheet(
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.event_available_rounded,
+                        color: Colors.deepPurple,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'الجناح ${booth.number} - ${booth.hallName}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'الحالة: متاح للحجز',
+                    style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        proceedToBooking();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7A1FFF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('الحجز الآن'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          isScrollControlled: true,
+        );
+      });
+    } else if (realBooth != null && realBooth.status == 'booked') {
+      Future.microtask(() {
+        Get.bottomSheet(
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.event_busy_rounded,
+                        color: Color(0xFF3A3650),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'الجناح ${booth.number} - ${booth.hallName}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'الحالة: محجوز',
+                    style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  if ((realBooth.companyName ?? '').isNotEmpty)
+                    Text(
+                      'مُشغَّل: ${realBooth.companyName}',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          isScrollControlled: true,
+        );
+      });
     }
   }
 
   void clearSelection() {
-    selectedBooth.value         = null;
+    selectedBooth.value = null;
     selectedBoothPosition.value = null;
   }
 
@@ -183,19 +374,21 @@ class BoothMapController extends GetxController {
     if (mapBooth == null || mapBooth.isBooked) return;
 
     // استخدم BoothModel الحقيقي إن وُجد (يحمل خدماته الديناميكية)
-    final boothModel = _boothById[mapBooth.id] ?? BoothModel(
-      id:             mapBooth.id,
-      number:         mapBooth.number,
-      exhibitionName: mapBooth.hallName,
-      imageUrl:       '',
-      area:           mapBooth.area,
-      status:         'available',
-      price:          mapBooth.price,
-      endDate:        '',
-      location:       '${mapBooth.hallName} - صف ${mapBooth.row + 1}',
-      amenities:      mapBooth.amenities,
-      isFavorite:     false,
-    );
+    final boothModel =
+        _boothById[mapBooth.id] ??
+        BoothModel(
+          id: mapBooth.id,
+          number: mapBooth.number,
+          exhibitionName: mapBooth.hallName,
+          imageUrl: '',
+          area: mapBooth.area,
+          status: 'available',
+          price: mapBooth.price,
+          endDate: '',
+          location: '${mapBooth.hallName} - صف ${mapBooth.row + 1}',
+          amenities: mapBooth.amenities,
+          isFavorite: false,
+        );
     Get.toNamed(AppRoutes.BOOKING_REQUEST, arguments: boothModel);
   }
 

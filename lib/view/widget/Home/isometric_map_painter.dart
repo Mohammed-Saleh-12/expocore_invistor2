@@ -13,8 +13,8 @@ class IsometricMapPainter extends CustomPainter {
   final List<BoothHitArea> hitAreas;
   final bool isDark;
 
-  static const double tileW   = 72.0;
-  static const double tileH   = 36.0;
+  static const double tileW = 72.0;
+  static const double tileH = 36.0;
   static const double boxUnit = 28.0;
 
   IsometricMapPainter({
@@ -36,6 +36,11 @@ class IsometricMapPainter extends CustomPainter {
 
     final origin = Offset(size.width / 2, size.height * 0.18);
 
+    if (mapModel.isGenericScene && mapModel.sceneInstances.isNotEmpty) {
+      _drawGenericScene(canvas, origin);
+      return;
+    }
+
     _drawGround(canvas, size, origin);
     _drawHallLabels(canvas, origin);
 
@@ -54,14 +59,141 @@ class IsometricMapPainter extends CustomPainter {
     _drawEntrance(canvas, origin);
   }
 
+  void _drawGenericScene(Canvas canvas, Offset origin) {
+    final items = List<MapSceneInstance>.from(mapModel.sceneInstances)
+      ..sort(
+        (a, b) => (a.position.x + a.position.z).compareTo(
+          b.position.x + b.position.z,
+        ),
+      );
+
+    for (final item in items) {
+      final baseColor = _parseColor(item.color ?? item.fill ?? '#7A1FFF');
+      final isSelected =
+          selectedBooth?.id.toString() == item.id ||
+          selectedBooth?.number == item.id;
+      _drawSceneInstance(
+        canvas,
+        item,
+        baseColor,
+        origin,
+        isSelected: isSelected,
+      );
+    }
+  }
+
+  void _drawSceneInstance(
+    Canvas canvas,
+    MapSceneInstance item,
+    Color baseColor,
+    Offset origin, {
+    required bool isSelected,
+  }) {
+    final x = item.position.x;
+    final z = item.position.z;
+    final y = item.position.y;
+    final sx = item.scale.x == 0 ? 1.0 : item.scale.x;
+    final sy = item.scale.y == 0 ? 1.0 : item.scale.y;
+    final sz = item.scale.z == 0 ? 1.0 : item.scale.z;
+    final w = (item.width ?? 1.0) * sx;
+    final h = (item.height ?? 1.0) * sy;
+    final d = (item.depth ?? 1.0) * sz;
+
+    final A = _iso(x, z, y + h, origin);
+    final B = _iso(x + w, z, y + h, origin);
+    final C = _iso(x + w, z + d, y + h, origin);
+    final D = _iso(x, z + d, y + h, origin);
+    final B0 = _iso(x + w, z, y, origin);
+    final C0 = _iso(x + w, z + d, y, origin);
+    final D0 = _iso(x, z + d, y, origin);
+
+    final topFace = Path()
+      ..moveTo(A.dx, A.dy)
+      ..lineTo(B.dx, B.dy)
+      ..lineTo(C.dx, C.dy)
+      ..lineTo(D.dx, D.dy)
+      ..close();
+
+    final southFace = Path()
+      ..moveTo(D.dx, D.dy)
+      ..lineTo(C.dx, C.dy)
+      ..lineTo(C0.dx, C0.dy)
+      ..lineTo(D0.dx, D0.dy)
+      ..close();
+
+    final eastFace = Path()
+      ..moveTo(B.dx, B.dy)
+      ..lineTo(C.dx, C.dy)
+      ..lineTo(C0.dx, C0.dy)
+      ..lineTo(B0.dx, B0.dy)
+      ..close();
+
+    final glow = Paint()
+      ..color = (isSelected ? const Color(0xFFFFD700) : baseColor).withOpacity(
+        isSelected ? 0.35 : 0.18,
+      )
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, isSelected ? 14 : 6);
+    canvas.drawPath(topFace, glow);
+
+    canvas.drawPath(
+      southFace,
+      Paint()
+        ..color = _darken(baseColor, 0.22)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(
+      eastFace,
+      Paint()
+        ..color = _darken(baseColor, 0.4)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(
+      topFace,
+      Paint()
+        ..color = baseColor
+        ..style = PaintingStyle.fill,
+    );
+
+    final outline = Paint()
+      ..color = isSelected
+          ? const Color(0xFFFFD700)
+          : Colors.black.withOpacity(0.2)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isSelected ? 1.8 : 0.7;
+    canvas.drawPath(topFace, outline);
+
+    final labelText = item.label ?? item.id;
+    final labelPos = _iso(x + w / 2, z + d / 2, y + h + 0.2, origin);
+    final tp = TextPainter(
+      text: TextSpan(
+        text: labelText,
+        style: TextStyle(
+          color: Colors.white.withOpacity(isSelected ? 1 : 0.9),
+          fontSize: isSelected ? 9.5 : 8.5,
+          fontWeight: FontWeight.w700,
+          shadows: const [Shadow(color: Colors.black45, blurRadius: 3)],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, labelPos - Offset(tp.width / 2, tp.height / 2));
+  }
+
+  Color _parseColor(String? raw) {
+    var value = (raw ?? '#7A1FFF').replaceAll('#', '');
+    if (value.length == 6) value = 'FF$value';
+    if (value.length == 8) {
+      return Color(int.parse(value, radix: 16));
+    }
+    return const Color(0xFF7A1FFF);
+  }
+
   void _drawGround(Canvas canvas, Size size, Offset origin) {
     final w = mapModel.gridWidth.toDouble();
     final d = mapModel.gridDepth.toDouble();
 
     final groundPaint = Paint()
-      ..color = isDark
-          ? const Color(0xFF1E1B35)
-          : const Color(0xFFEAEAF0)
+      ..color = isDark ? const Color(0xFF1E1B35) : const Color(0xFFEAEAF0)
       ..style = PaintingStyle.fill;
 
     final groundPath = Path()
@@ -80,12 +212,12 @@ class IsometricMapPainter extends CustomPainter {
 
     for (int c = 0; c <= mapModel.gridWidth; c++) {
       final start = _iso(c.toDouble(), 0, 0, origin);
-      final end   = _iso(c.toDouble(), d, 0, origin);
+      final end = _iso(c.toDouble(), d, 0, origin);
       canvas.drawLine(start, end, gridPaint);
     }
     for (int r = 0; r <= mapModel.gridDepth; r++) {
       final start = _iso(0, r.toDouble(), 0, origin);
-      final end   = _iso(w, r.toDouble(), 0, origin);
+      final end = _iso(w, r.toDouble(), 0, origin);
       canvas.drawLine(start, end, gridPaint);
     }
   }
@@ -96,55 +228,55 @@ class IsometricMapPainter extends CustomPainter {
     Color hallColor,
     Offset origin,
   ) {
-    final c  = booth.col.toDouble();
-    final r  = booth.row.toDouble();
+    final c = booth.col.toDouble();
+    final r = booth.row.toDouble();
     final bw = booth.gridWidth.toDouble();
     final bd = booth.gridDepth.toDouble();
-    final h  = booth.height;
+    final h = booth.height;
     final isSelected = selectedBooth?.id == booth.id;
 
     Color topColor, leftColor, rightColor, outlineColor;
 
     if (isSelected && booth.isBooked) {
-      topColor    = isDark ? const Color(0xFF52407A) : const Color(0xFFDDD0F5);
-      leftColor   = isDark ? const Color(0xFF3D2E60) : const Color(0xFFCCBCEE);
-      rightColor  = isDark ? const Color(0xFF2E2250) : const Color(0xFFBBADE0);
+      topColor = isDark ? const Color(0xFF52407A) : const Color(0xFFDDD0F5);
+      leftColor = isDark ? const Color(0xFF3D2E60) : const Color(0xFFCCBCEE);
+      rightColor = isDark ? const Color(0xFF2E2250) : const Color(0xFFBBADE0);
       outlineColor = const Color(0xFF9B59F5);
     } else if (isSelected) {
-      topColor    = const Color(0xFF9B59F5);
-      leftColor   = const Color(0xFF7A1FFF);
-      rightColor  = const Color(0xFF5D0FCC);
+      topColor = const Color(0xFF9B59F5);
+      leftColor = const Color(0xFF7A1FFF);
+      rightColor = const Color(0xFF5D0FCC);
       outlineColor = const Color(0xFFFFD700);
     } else if (booth.isBooked) {
-      topColor    = isDark ? const Color(0xFF3A3650) : const Color(0xFFCCCCCC);
-      leftColor   = isDark ? const Color(0xFF2A2640) : const Color(0xFFBBBBBB);
-      rightColor  = isDark ? const Color(0xFF222035) : const Color(0xFFAAAAAA);
+      topColor = isDark ? const Color(0xFF3A3650) : const Color(0xFFCCCCCC);
+      leftColor = isDark ? const Color(0xFF2A2640) : const Color(0xFFBBBBBB);
+      rightColor = isDark ? const Color(0xFF222035) : const Color(0xFFAAAAAA);
       outlineColor = Colors.transparent;
     } else {
-      topColor    = hallColor.withOpacity(0.85);
-      leftColor   = _darken(hallColor, 0.25);
-      rightColor  = _darken(hallColor, 0.42);
+      topColor = hallColor.withOpacity(0.85);
+      leftColor = _darken(hallColor, 0.25);
+      rightColor = _darken(hallColor, 0.42);
       outlineColor = Colors.transparent;
     }
 
-    final A  = _iso(c,      r,      h, origin);
-    final B  = _iso(c + bw, r,      h, origin);
-    final C  = _iso(c + bw, r + bd, h, origin);
-    final D  = _iso(c,      r + bd, h, origin);
+    final A = _iso(c, r, h, origin);
+    final B = _iso(c + bw, r, h, origin);
+    final C = _iso(c + bw, r + bd, h, origin);
+    final D = _iso(c, r + bd, h, origin);
     final C0 = _iso(c + bw, r + bd, 0, origin);
-    final D0 = _iso(c,      r + bd, 0, origin);
-    final B0 = _iso(c + bw, r,      0, origin);
+    final D0 = _iso(c, r + bd, 0, origin);
+    final B0 = _iso(c + bw, r, 0, origin);
 
     final southFace = Path()
-      ..moveTo(D.dx,  D.dy)
-      ..lineTo(C.dx,  C.dy)
+      ..moveTo(D.dx, D.dy)
+      ..lineTo(C.dx, C.dy)
       ..lineTo(C0.dx, C0.dy)
       ..lineTo(D0.dx, D0.dy)
       ..close();
 
     final eastFace = Path()
-      ..moveTo(B.dx,  B.dy)
-      ..lineTo(C.dx,  C.dy)
+      ..moveTo(B.dx, B.dy)
+      ..lineTo(C.dx, C.dy)
       ..lineTo(C0.dx, C0.dy)
       ..lineTo(B0.dx, B0.dy)
       ..close();
@@ -159,27 +291,45 @@ class IsometricMapPainter extends CustomPainter {
     if (isSelected) {
       final glowPaint = Paint()
         ..color = const Color(0xFFFFD700).withOpacity(0.35)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 14);
       canvas.drawPath(topFace, glowPaint);
     }
 
-    canvas.drawPath(southFace, Paint()..color = leftColor..style = PaintingStyle.fill);
-    canvas.drawPath(eastFace,  Paint()..color = rightColor..style = PaintingStyle.fill);
-    canvas.drawPath(topFace,   Paint()..color = topColor..style = PaintingStyle.fill);
+    canvas.drawPath(
+      southFace,
+      Paint()
+        ..color = leftColor
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(
+      eastFace,
+      Paint()
+        ..color = rightColor
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(
+      topFace,
+      Paint()
+        ..color = topColor
+        ..style = PaintingStyle.fill,
+    );
 
     if (isSelected) {
-      canvas.drawPath(topFace, Paint()
-        ..color = outlineColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.8);
+      canvas.drawPath(
+        topFace,
+        Paint()
+          ..color = outlineColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.8,
+      );
     } else {
       final edgePaint = Paint()
         ..color = Colors.black.withOpacity(0.18)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.8;
       canvas.drawPath(southFace, edgePaint);
-      canvas.drawPath(eastFace,  edgePaint);
-      canvas.drawPath(topFace,   edgePaint);
+      canvas.drawPath(eastFace, edgePaint);
+      canvas.drawPath(topFace, edgePaint);
     }
 
     // Only show label on available booths (or selected booked booth)
@@ -217,7 +367,9 @@ class IsometricMapPainter extends CustomPainter {
       }
       final avgCol = sumCol / hall.booths.length;
       final avgRow = sumRow / hall.booths.length;
-      final maxH = hall.booths.map((b) => b.height).reduce((a, b) => a > b ? a : b);
+      final maxH = hall.booths
+          .map((b) => b.height)
+          .reduce((a, b) => a > b ? a : b);
       final labelPos = _iso(avgCol, avgRow, maxH + 0.6, origin);
 
       final bgPaint = Paint()
@@ -258,13 +410,13 @@ class IsometricMapPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final path = Path()
-      ..moveTo(entranceCenter.dx,       entranceCenter.dy - 10)
-      ..lineTo(entranceCenter.dx + 8,   entranceCenter.dy + 4)
-      ..lineTo(entranceCenter.dx + 3,   entranceCenter.dy + 4)
-      ..lineTo(entranceCenter.dx + 3,   entranceCenter.dy + 12)
-      ..lineTo(entranceCenter.dx - 3,   entranceCenter.dy + 12)
-      ..lineTo(entranceCenter.dx - 3,   entranceCenter.dy + 4)
-      ..lineTo(entranceCenter.dx - 8,   entranceCenter.dy + 4)
+      ..moveTo(entranceCenter.dx, entranceCenter.dy - 10)
+      ..lineTo(entranceCenter.dx + 8, entranceCenter.dy + 4)
+      ..lineTo(entranceCenter.dx + 3, entranceCenter.dy + 4)
+      ..lineTo(entranceCenter.dx + 3, entranceCenter.dy + 12)
+      ..lineTo(entranceCenter.dx - 3, entranceCenter.dy + 12)
+      ..lineTo(entranceCenter.dx - 3, entranceCenter.dy + 4)
+      ..lineTo(entranceCenter.dx - 8, entranceCenter.dy + 4)
       ..close();
 
     canvas.drawPath(path, arrowPaint);
@@ -280,10 +432,7 @@ class IsometricMapPainter extends CustomPainter {
       ),
       textDirection: TextDirection.rtl,
     )..layout();
-    tp.paint(
-      canvas,
-      entranceCenter + Offset(-tp.width / 2, 14),
-    );
+    tp.paint(canvas, entranceCenter + Offset(-tp.width / 2, 14));
   }
 
   Color _darken(Color color, double amount) {
@@ -295,6 +444,5 @@ class IsometricMapPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(IsometricMapPainter old) =>
-      old.selectedBooth?.id != selectedBooth?.id ||
-      old.isDark != isDark;
+      old.selectedBooth?.id != selectedBooth?.id || old.isDark != isDark;
 }
