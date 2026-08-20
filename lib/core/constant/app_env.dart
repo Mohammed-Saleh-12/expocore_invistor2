@@ -9,7 +9,7 @@ class AppEnv {
   static const _Env _env = _Env.dev;
 
   // ── Base URLs ────────────────────────────────────────────
-  static const String _devUrl     = 'https://api-dev.expocore.app/api/v1';
+  static const String _devUrl     = 'http://192.168.43.47:8000/api/v1';
   static const String _stagingUrl = 'https://api-staging.expocore.app/api/v1';
   static const String _prodUrl    = 'https://api.expocore.app/api/v1';
 
