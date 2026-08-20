@@ -87,8 +87,29 @@ class _StepDetails extends StatelessWidget {
         const SizedBox(height: 8),
         _detailRow(Icons.category_outlined, 'النوع', event.type),
         _detailRow(Icons.store_outlined, 'المعرض', event.exhibitionName),
-        _detailRow(Icons.calendar_today_outlined, 'التاريخ', event.date),
-        _detailRow(Icons.location_on_outlined, 'المكان', event.place),
+        _detailRow(
+          Icons.calendar_today_outlined,
+          'التاريخ',
+          event.date.isEmpty ? 'غير محدد' : event.date,
+        ),
+        _detailRow(
+          Icons.location_on_outlined,
+          'المكان',
+          event.place.isEmpty ? 'غير محدد' : event.place,
+        ),
+        _detailRow(Icons.groups_outlined, 'السعة', '${event.capacity}'),
+        _detailRow(
+          Icons.how_to_reg_outlined,
+          'المسجلون والحضور',
+          '${event.registeredCount} / ${event.scannedCount}',
+        ),
+        _detailRow(
+          Icons.confirmation_num_outlined,
+          'التذاكر',
+          event.ticketType == 'paid'
+              ? 'مدفوعة - ${event.ticketPrice.toStringAsFixed(2)} ﷼'
+              : 'دعوات مجانية',
+        ),
         _detailRow(
           Icons.access_time_outlined,
           'الوقت',
@@ -106,22 +127,53 @@ class _StepDetails extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          event.description,
+          event.description.isEmpty ? 'لا يوجد وصف للفعالية' : event.description,
           style: const TextStyle(
             fontSize: 13,
             color: AppColors.grey,
             height: 1.7,
           ),
         ),
+        if (event.activities.isNotEmpty) ...[
+          const SizedBox(height: 18),
+          const Text(
+            'برنامج الفعالية',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          ...event.activities.map(
+            (activity) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.circle, size: 7, color: AppColors.darkPrimary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${activity['title'] ?? ''} (${activity['start_time'] ?? ''} - ${activity['end_time'] ?? ''})',
+                      style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 20),
         const Text(
           'خيارات المشاركة الإعلانية',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 10),
-        Obx(
-          () => Column(
-            children: event.durationOptions.map((opt) {
+        if (event.durationOptions.isEmpty)
+          const Text(
+            'لا توجد خيارات رعاية محددة لهذه الفعالية.',
+            style: TextStyle(fontSize: 12, color: AppColors.grey),
+          ),
+        Column(
+          children: event.durationOptions.map((opt) {
+            return Obx(() {
               final isSelected = ctrl.selectedSponsorDuration.value == opt;
               return GestureDetector(
                 onTap: () => ctrl.selectedSponsorDuration.value = opt,
@@ -181,6 +233,16 @@ class _StepDetails extends StatelessWidget {
                                     : AppColors.grey,
                               ),
                             ),
+                            if (opt.startDate != null && opt.endDate != null)
+                              Text(
+                                '${opt.startDate} إلى ${opt.endDate}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isSelected
+                                      ? Colors.white70
+                                      : AppColors.grey,
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -196,8 +258,8 @@ class _StepDetails extends StatelessWidget {
                   ),
                 ),
               );
-            }).toList(),
-          ),
+            });
+          }).toList(),
         ),
         const SizedBox(height: 24),
       ],

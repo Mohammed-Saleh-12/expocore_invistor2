@@ -48,9 +48,8 @@ Future<void> initFCM() async {
   // 5. الإشعارات عند فتح التطبيق (Foreground)
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     final notification = message.notification;
-    final android = message.notification?.android;
 
-    if (notification != null && android != null) {
+    if (notification != null) {
       _localNotifications.show(
         notification.hashCode,
         notification.title,
@@ -64,6 +63,7 @@ Future<void> initFCM() async {
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
           ),
+          iOS: const DarwinNotificationDetails(),
         ),
       );
     }
@@ -78,15 +78,20 @@ Future<void> initFCM() async {
 // ── إرسال FCM Token للـ backend ───────────────────────────
 Future<void> _sendTokenToBackend(String token) async {
   final storage = GetStorage();
-  final savedToken = storage.read<String>('fcmToken');
+  final savedToken = storage.read<String>('fcm_token');
 
   // لا ترسل إذا كان نفس الـ Token
   if (savedToken == token) return;
 
   final crud = Crud();
-  await crud.postData(AppLink.fcmToken, {'fcm_token': token});
+  final result = await crud.postData(AppLink.fcmToken, {
+    'fcm_token': token,
+    'device': 'flutter',
+  });
 
-  storage.write('fcmToken', token);
+  if (result['status'] == true) {
+    await storage.write('fcm_token', token);
+  }
 }
 
 // ── إعداد flutter_local_notifications ────────────────────

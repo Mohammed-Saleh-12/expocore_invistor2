@@ -1,5 +1,5 @@
 class NotificationModel {
-  final int id;
+  final String id;
   final int userId;
   final String title;
   final String message;
@@ -25,10 +25,10 @@ class NotificationModel {
   String get time => createdAt.toLocal().toString();
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    final payload = json['payload'];
+    final payload = json['data'] ?? json['payload'];
     return NotificationModel(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      userId: (json['user_id'] as num?)?.toInt() ?? 0,
+      id: (json['id'] ?? '').toString(),
+      userId: _parseInt(json['userId'] ?? json['user_id']),
       title: (json['title'] ?? '').toString(),
       message: (json['message'] ?? json['body'] ?? '').toString(),
       type: (json['type'] ?? '').toString(),
@@ -39,9 +39,12 @@ class NotificationModel {
       payload: payload is Map
           ? Map<String, dynamic>.from(payload)
           : const <String, dynamic>{},
-      route: json['route']?.toString(),
+      route: (json['actionUrl'] ?? json['route'])?.toString(),
     );
   }
+
+  static int _parseInt(dynamic value) =>
+      value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? 0;
 
   static DateTime _parseDate(dynamic value) {
     if (value is DateTime) return value;

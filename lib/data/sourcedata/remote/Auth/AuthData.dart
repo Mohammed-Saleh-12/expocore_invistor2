@@ -6,12 +6,12 @@ class AuthData {
   AuthData(this.crud);
 
   /// التحقق من OTP بعد التسجيل
-  Future<Map<String, dynamic>> verifyOtp(String otp) async {
-    return await crud.postData(AppLink.verifyOtp, {'otp': otp});
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    return await crud.postData(AppLink.verifyOtp, {'email': email, 'otp': otp});
   }
 
   /// إعادة إرسال OTP (التسجيل)
-  Future<Map<String, dynamic>> resendOtp() async {
-    return await crud.postData(AppLink.resendOtp, {});
+  Future<Map<String, dynamic>> resendOtp(String email) async {
+    return await crud.postData(AppLink.resendOtp, {'email': email});
   }
 }

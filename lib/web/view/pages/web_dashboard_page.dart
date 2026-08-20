@@ -17,10 +17,12 @@ class WebDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c           = Get.find<DashboardController>();
-    final events      = Get.find<EventsController>();
-    final billboard   = Get.find<HomeBillboardController>();
-    final LatestExhibitionsController latestExhib = Get.put(LatestExhibitionsController());
+    final c = Get.find<DashboardController>();
+    final events = Get.find<EventsController>();
+    final billboard = Get.find<HomeBillboardController>();
+    final LatestExhibitionsController latestExhib = Get.put(
+      LatestExhibitionsController(),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,8 +47,7 @@ class WebDashboardPage extends StatelessWidget {
                         const SizedBox(height: 14),
                         WebBillboard(
                           items: ads,
-                          onNearEnd: () =>
-                              billboard.loadMoreExhibitions(),
+                          onNearEnd: () => billboard.loadMoreExhibitions(),
                         ),
                       ],
                     ),
@@ -95,8 +96,7 @@ class WebDashboardPage extends StatelessWidget {
                         const SizedBox(height: 14),
                         WebEventBillboard(
                           events: evs,
-                          onNearEnd: () =>
-                              billboard.loadMoreSponsorEvents(),
+                          onNearEnd: () => billboard.loadMoreSponsorEvents(),
                         ),
                       ],
                     ),
@@ -178,28 +178,28 @@ class WebDashboardPage extends StatelessWidget {
             '${c.totalBookings.value}',
             Icons.bookmark_rounded,
             WebTheme.primary,
-            '+8.5%',
+            _formatGrowth(c.bookingsGrowth.value),
           ),
           _StatData(
             'الأجنحة النشطة',
             '${c.activeBooths.value}',
             Icons.grid_view_rounded,
             WebTheme.secondary,
-            '+12%',
+            _formatGrowth(c.boothsGrowth.value),
           ),
           _StatData(
             'الفعاليات المنشورة',
             '${c.publishedEvents.value}',
             Icons.event_rounded,
             WebTheme.accent,
-            '+22%',
+            _formatGrowth(c.eventsGrowth.value),
           ),
           _StatData(
             'إجمالي التفاعل',
             c.formatEngagement(c.totalEngagement.value),
             Icons.trending_up_rounded,
             WebTheme.pink,
-            '+15.7%',
+            _formatGrowth(c.engagementGrowth.value),
           ),
         ];
         return LayoutBuilder(
@@ -221,6 +221,9 @@ class WebDashboardPage extends StatelessWidget {
       }),
     ],
   );
+
+  String _formatGrowth(double value) =>
+      '${value >= 0 ? '+' : ''}${value.toStringAsFixed(1)}%';
 
   // ── Section titles ─────────────────────────────────────────
   Widget _sectionTitle(String t) => Row(

@@ -593,6 +593,7 @@ class _ProfileSummaryCard extends StatelessWidget {
             // ── Avatar ──
             ProfileAvatar(
               image: p.profileImage.value,
+              imageUrl: p.profileImageUrl.value,
               fallbackLetter: p.nameCtrl.text.isNotEmpty
                   ? p.nameCtrl.text[0]
                   : 'ش',

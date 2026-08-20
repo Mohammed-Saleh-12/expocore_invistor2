@@ -22,7 +22,7 @@ class NotificationData {
     return <NotificationModel>[];
   }
 
-  Future<bool> markAsRead(int notificationId) async {
+  Future<bool> markAsRead(String notificationId) async {
     final result = await _crud.patchData(
       AppLink.notificationRead(notificationId),
       <String, dynamic>{},
@@ -31,14 +31,14 @@ class NotificationData {
   }
 
   Future<bool> markAllAsRead() async {
-    final result = await _crud.patchData(
+    final result = await _crud.postData(
       AppLink.notificationsReadAll,
       <String, dynamic>{},
     );
     return result['status'] == true;
   }
 
-  Future<bool> deleteNotification(int notificationId) async {
+  Future<bool> deleteNotification(String notificationId) async {
     final result = await _crud.deleteData(
       AppLink.notificationDetail(notificationId),
     );
@@ -48,8 +48,10 @@ class NotificationData {
   List<NotificationModel> _parseList(dynamic raw) {
     if (raw is! List) return <NotificationModel>[];
     return raw
-        .whereType<Map<String, dynamic>>()
-        .map(NotificationModel.fromJson)
+        .whereType<Map>()
+        .map(
+          (item) => NotificationModel.fromJson(Map<String, dynamic>.from(item)),
+        )
         .toList();
   }
 }

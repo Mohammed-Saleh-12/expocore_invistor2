@@ -100,11 +100,18 @@ class MySponsorshipDetailView extends StatelessWidget {
                         _detailRow(Icons.store_outlined, 'المعرض',
                             booking.exhibitionName),
                         _detailRow(Icons.calendar_today_outlined,
-                            'التاريخ', booking.date),
+                          'الفترة', '${booking.startDate} إلى ${booking.endDate}'),
                         _detailRow(Icons.access_time_outlined, 'الوقت',
                             booking.time),
                         _detailRow(Icons.location_on_outlined, 'المكان',
                             booking.place),
+                        _detailRow(Icons.groups_outlined, 'السعة', '${booking.capacity}'),
+                        _detailRow(Icons.how_to_reg_outlined, 'المسجلون والحضور',
+                          '${booking.registeredCount} / ${booking.scannedCount}'),
+                        _detailRow(Icons.confirmation_num_outlined, 'التذكرة',
+                          booking.ticketType == 'paid'
+                            ? '${booking.ticketPrice.toStringAsFixed(2)} ﷼'
+                            : 'دعوات مجانية'),
                       ],
                     ),
                   ),
@@ -127,6 +134,47 @@ class MySponsorshipDetailView extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 14),
+                  if (booking.eventImages.isNotEmpty)
+                    _card(
+                      isDark,
+                      child: SizedBox(
+                        height: 160,
+                        child: PageView(
+                          children: booking.eventImages
+                              .map((url) => ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      url,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Center(
+                                        child: Icon(Icons.broken_image_outlined),
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  if (booking.activities.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _card(
+                      isDark,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _sectionTitle('برنامج الفعالية'),
+                          ...booking.activities.map((activity) => Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Text(
+                                  '${activity['title'] ?? ''} (${activity['start_time'] ?? ''} - ${activity['end_time'] ?? ''})',
+                                  style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 14),
                   // Analytics
                   _card(

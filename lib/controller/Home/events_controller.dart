@@ -42,6 +42,7 @@ class EventsController extends GetxController {
   // ── UI state ─────────────────────────────────────────────────────────
   final selectedTab  = 0.obs;
   final isLoading    = false.obs;
+  final isLoadingSponsorEvents = false.obs;
   final isCreating   = false.obs;
   final isBooking    = false.obs;
   final status       = StatusRequest.none.obs;
@@ -337,6 +338,7 @@ class EventsController extends GetxController {
   }
 
   Future<void> _loadSponsorEvents({int page = 1}) async {
+    isLoadingSponsorEvents.value = true;
     final result = await _eventsData.getSponsorEvents(
       page:      page,
       perPage:   20,
@@ -349,9 +351,16 @@ class EventsController extends GetxController {
     if (result['status'] == true) {
       final body = result['data'];
       final list = _asList(body is Map ? (body['data'] ?? body) : body);
+      debugPrint('[SponsorEvents] response=${body.runtimeType}, items=${list.length}');
+      for (final item in list) {
+        if (item is Map) {
+          debugPrint('[SponsorEvents] id=${item['id']} options=${item['duration_options'] ?? item['durationOptions']}');
+        }
+      }
       if (page == 1) {
         exhibitionSponsorEvents.value =
             list.map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
+        debugPrint('[SponsorEvents] parsed=${exhibitionSponsorEvents.length}, options=${exhibitionSponsorEvents.isEmpty ? 0 : exhibitionSponsorEvents.first.durationOptions.length}');
       } else {
         exhibitionSponsorEvents
             .addAll(list.map((e) => ExhibitionSponsorEvent.fromJson(e)));
@@ -366,6 +375,7 @@ class EventsController extends GetxController {
         exhibitionSponsorEvents.value = List.from(DummyData.exhibitionSponsorEvents);
       }
     }
+    isLoadingSponsorEvents.value = false;
   }
 
   // ── Sponsor Events Pagination ──────────────────────────────────────────
@@ -718,7 +728,13 @@ class EventsController extends GetxController {
 
   List _asList(dynamic data) {
     if (data is List) return data;
-    if (data is Map && data['data'] is List) return data['data'];
+    if (data is Map) {
+      if (data['data'] is List) return data['data'];
+      if (data['data'] is Map) return _asList(data['data']);
+      if (data['pagination'] is Map && data['pagination']['data'] is List) {
+        return data['pagination']['data'];
+      }
+    }
     return [];
   }
 

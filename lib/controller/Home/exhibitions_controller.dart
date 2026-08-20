@@ -6,29 +6,31 @@ import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
 import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import 'favorites_controller.dart';
 
 class ExhibitionsController extends GetxController {
   final ExhibitionsData _exhibitionsData = ExhibitionsData(Crud());
-  final FavoritesData   _favoritesData   = FavoritesData(Crud());
+  final FavoritesData _favoritesData = FavoritesData(Crud());
 
-  final searchCtrl  = TextEditingController();
+  final searchCtrl = TextEditingController();
   Timer? _searchDebounce;
+  Timer? _statusRefreshTimer;
 
   final exhibitions = <ExhibitionModel>[].obs;
-  final filtered    = <ExhibitionModel>[].obs;
-  final isLoading   = false.obs;
+  final filtered = <ExhibitionModel>[].obs;
+  final isLoading = false.obs;
   final isLoadingMore = false.obs;
 
   // ── Pagination ────────────────────────────────────────────
-  int  _currentPage = 1;
-  int  _totalPages  = 1;
+  int _currentPage = 1;
+  int _totalPages = 1;
   static const int _perPage = 15;
   bool get hasMore => _currentPage < _totalPages;
 
   // ── Filters ───────────────────────────────────────────────
   final statusFilter = 'الكل'.obs;
   final sectorFilter = 'الكل'.obs;
-  final cityFilter   = 'الكل'.obs;
+  final cityFilter = 'الكل'.obs;
 
   final filters = ['الكل', 'قادم', 'جارٍ', 'منتهٍ'];
 
@@ -42,6 +44,11 @@ class ExhibitionsController extends GetxController {
   @override
   void onInit() {
     _loadExhibitions(reset: true);
+    _statusRefreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (!isLoading.value && !isLoadingMore.value) {
+        _loadExhibitions(reset: true);
+      }
+    });
     super.onInit();
   }
 
@@ -52,12 +59,12 @@ class ExhibitionsController extends GetxController {
     }
     isLoading.value = true;
     final result = await _exhibitionsData.getExhibitions(
-      page:    _currentPage,
+      page: _currentPage,
       perPage: _perPage,
-      status:  _statusApi[statusFilter.value],
-      city:    cityFilter.value == 'الكل' ? null : cityFilter.value,
-      sector:  sectorFilter.value == 'الكل' ? null : sectorFilter.value,
-      search:  searchCtrl.text.trim().isEmpty ? null : searchCtrl.text.trim(),
+      status: _statusApi[statusFilter.value],
+      city: cityFilter.value == 'الكل' ? null : cityFilter.value,
+      sector: sectorFilter.value == 'الكل' ? null : sectorFilter.value,
+      search: searchCtrl.text.trim().isEmpty ? null : searchCtrl.text.trim(),
     );
     if (result['status'] == true) {
       final body = _body(result['data']);
@@ -89,13 +96,18 @@ class ExhibitionsController extends GetxController {
 
   // ── Dynamic filter options (extracted from loaded data) ───
   List<String> get availableCities {
-    final set = exhibitions.map((e) => e.city).where((c) => c.isNotEmpty).toSet();
+    final set = exhibitions
+        .map((e) => e.city)
+        .where((c) => c.isNotEmpty)
+        .toSet();
     return ['الكل', ...set];
   }
 
   List<String> get availableSectors {
     final set = <String>{};
-    for (final e in exhibitions) { set.addAll(e.sectors); }
+    for (final e in exhibitions) {
+      set.addAll(e.sectors);
+    }
     return ['الكل', ...set];
   }
 
@@ -103,7 +115,7 @@ class ExhibitionsController extends GetxController {
     var n = 0;
     if (statusFilter.value != 'الكل') n++;
     if (sectorFilter.value != 'الكل') n++;
-    if (cityFilter.value   != 'الكل') n++;
+    if (cityFilter.value != 'الكل') n++;
     return n;
   }
 
@@ -126,22 +138,23 @@ class ExhibitionsController extends GetxController {
   void clearFilters() {
     statusFilter.value = 'الكل';
     sectorFilter.value = 'الكل';
-    cityFilter.value   = 'الكل';
+    cityFilter.value = 'الكل';
     _loadExhibitions(reset: true);
   }
 
   void onSearch(String q) {
-    _applyLocalFilter(query: q);           // فوري محلياً
+    _applyLocalFilter(query: q); // فوري محلياً
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {
-      _loadExhibitions(reset: true);       // API call بعد 400ms
+      _loadExhibitions(reset: true); // API call بعد 400ms
     });
   }
 
   void _applyLocalFilter({String? query}) {
     final q = (query ?? searchCtrl.text).toLowerCase();
     filtered.value = exhibitions.where((e) {
-      final matchQuery = q.isEmpty ||
+      final matchQuery =
+          q.isEmpty ||
           e.name.toLowerCase().contains(q) ||
           e.city.toLowerCase().contains(q);
       return matchQuery;
@@ -156,8 +169,20 @@ class ExhibitionsController extends GetxController {
     filtered.refresh();
     if (wasFav) {
       _favoritesData.removeFavorite(e.id, FavoriteType.exhibition);
+      if (Get.isRegistered<FavoritesController>()) {
+        Get.find<FavoritesController>().favoriteExhibitions.removeWhere(
+          (item) => item.id == e.id,
+        );
+      }
     } else {
       _favoritesData.addFavorite(e.id, FavoriteType.exhibition);
+      if (Get.isRegistered<FavoritesController>()) {
+        final favoritesController = Get.find<FavoritesController>();
+        if (!favoritesController.isExhibitionFavorited(e.id)) {
+          e.isFavorite = true;
+          favoritesController.favoriteExhibitions.add(e);
+        }
+      }
     }
   }
 
@@ -166,8 +191,8 @@ class ExhibitionsController extends GetxController {
   List _asList(dynamic data) {
     if (data is List) return data;
     if (data is Map) {
-      if (data['data']         is List) return data['data'];
-      if (data['exhibitions']  is List) return data['exhibitions'];
+      if (data['data'] is List) return data['data'];
+      if (data['exhibitions'] is List) return data['exhibitions'];
     }
     return [];
   }
@@ -178,6 +203,7 @@ class ExhibitionsController extends GetxController {
   @override
   void onClose() {
     _searchDebounce?.cancel();
+    _statusRefreshTimer?.cancel();
     searchCtrl.dispose();
     super.onClose();
   }

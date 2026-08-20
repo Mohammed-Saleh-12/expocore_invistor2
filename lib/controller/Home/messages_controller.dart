@@ -19,26 +19,26 @@ import '../../data/sourcedata/static/exhibitions_dummy.dart';
 class MessagesController extends GetxController {
   final MessagesFirebaseData _firebaseData = MessagesFirebaseData();
 
-  final conversations        = <ConversationModel>[].obs;
+  final conversations = <ConversationModel>[].obs;
+
   /// id المحادثة النشطة — نفس النوع الذي تستخدمه الواجهة (int)
   final activeConversationId = Rxn<int>();
-  final inputCtrl            = TextEditingController();
-  final isLoading            = false.obs;
-  final isSending            = false.obs;
+  final inputCtrl = TextEditingController();
+  final isLoading = false.obs;
+  final isSending = false.obs;
 
   /// رسائل المحادثة المفتوحة (مُحدَّثة عبر Stream)
   final activeMessages = <MessageModel>[].obs;
 
   StreamSubscription<List<ConversationModel>>? _convSub;
-  StreamSubscription<List<MessageModel>>?      _msgSub;
+  StreamSubscription<List<MessageModel>>? _msgSub;
 
   /// خريطة int-id → Firestore doc-id
   final _firestoreIds = <int, String>{};
 
   int _investorId = 0;
 
-  int get totalUnread =>
-      conversations.fold(0, (sum, c) => sum + c.unreadCount);
+  int get totalUnread => conversations.fold(0, (sum, c) => sum + c.unreadCount);
 
   /// المحادثة النشطة كنموذج كامل (تستخدمها الواجهة المحمولة)
   ConversationModel? get activeConversation {
@@ -61,19 +61,21 @@ class MessagesController extends GetxController {
       return;
     }
     isLoading.value = true;
-    _convSub = _firebaseData.conversationsStream(_investorId).listen(
-      (list) {
-        conversations.value = list;
-        isLoading.value = false;
-      },
-      onError: (e) {
-        debugPrint('[Messages] Firestore error: $e');
-        if (conversations.isEmpty) {
-          conversations.value = List.from(DummyData.conversations);
-        }
-        isLoading.value = false;
-      },
-    );
+    _convSub = _firebaseData
+        .conversationsStream(_investorId)
+        .listen(
+          (list) {
+            conversations.value = list;
+            isLoading.value = false;
+          },
+          onError: (e) {
+            debugPrint('[Messages] Firestore error: $e');
+            if (conversations.isEmpty) {
+              conversations.value = List.from(DummyData.conversations);
+            }
+            isLoading.value = false;
+          },
+        );
   }
 
   // ── فتح محادثة (mobile: تمرَّر conv.id من النوع int) ───────
@@ -91,10 +93,12 @@ class MessagesController extends GetxController {
       }
       return;
     }
-    _msgSub = _firebaseData.messagesStream(firestoreId).listen(
-      (msgs) => activeMessages.value = msgs,
-      onError: (e) => debugPrint('[Messages] msg stream: $e'),
-    );
+    _msgSub = _firebaseData
+        .messagesStream(firestoreId)
+        .listen(
+          (msgs) => activeMessages.value = msgs,
+          onError: (e) => debugPrint('[Messages] msg stream: $e'),
+        );
     _firebaseData.markConversationRead(firestoreId).ignore();
   }
 
@@ -109,7 +113,7 @@ class MessagesController extends GetxController {
   Future<void> sendMessage() async {
     final text = inputCtrl.text.trim();
     if (text.isEmpty) return;
-    final convId      = activeConversationId.value;
+    final convId = activeConversationId.value;
     final firestoreId = convId != null ? _firestoreIds[convId] : null;
     inputCtrl.clear();
 
@@ -117,22 +121,24 @@ class MessagesController extends GetxController {
       isSending.value = true;
       await _firebaseData.sendMessage(
         conversationId: firestoreId,
-        senderId:       _investorId,
-        text:           text,
-        isMe:           true,
+        senderId: _investorId,
+        text: text,
+        isMe: true,
       );
       isSending.value = false;
     } else {
       // fallback optimistic (بيانات ثابتة)
       final idx = conversations.indexWhere((c) => c.id == convId);
       if (idx != -1) {
-        conversations[idx].messages.add(MessageModel(
-          id: DateTime.now().millisecondsSinceEpoch,
-          text: text,
-          isMe: true,
-          time: _now(),
-          isRead: false,
-        ));
+        conversations[idx].messages.add(
+          MessageModel(
+            id: DateTime.now().millisecondsSinceEpoch,
+            text: text,
+            isMe: true,
+            time: _now(),
+            isRead: false,
+          ),
+        );
         conversations.refresh();
         if (activeConversationId.value == convId) {
           activeMessages.add(conversations[idx].messages.last);
@@ -162,11 +168,11 @@ class MessagesController extends GetxController {
   Future<void> _createAndOpen({required String exhibitionName}) async {
     if (_investorId == 0) return;
     final firestoreId = await _firebaseData.createConversation(
-      investorId:         _investorId,
-      exhibitionId:       0,
-      exhibitionName:     exhibitionName,
+      investorId: _investorId,
+      exhibitionId: 0,
+      exhibitionName: exhibitionName,
       exhibitionInitials: _initials(exhibitionName),
-      color:              0xFF7A1FFF,
+      color: 0xFF7A1FFF,
     );
     final intId = firestoreId.hashCode.abs();
     _firestoreIds[intId] = firestoreId;

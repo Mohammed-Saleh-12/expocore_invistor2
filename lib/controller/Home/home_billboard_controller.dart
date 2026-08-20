@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
@@ -123,6 +124,10 @@ class HomeBillboardController extends GetxController {
       final list   = _asList(body is Map ? (body['data'] ?? body) : body);
       final models =
           list.map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
+      debugPrint(
+        '[FeaturedSponsorEvents] raw=${list.length}, parsed=${models.length}, '
+        'options=${models.fold<int>(0, (sum, event) => sum + event.durationOptions.length)}',
+      );
 
       if (isFirst) {
         featuredSponsorEvents.value = models;

@@ -1,22 +1,44 @@
+import 'dart:convert';
+
 class SponsorDurationOption {
   final String label;
   final int    days;
+  final String? startDate;
+  final String? endDate;
   final double price;
 
   SponsorDurationOption({
     required this.label,
     required this.days,
+    this.startDate,
+    this.endDate,
     required this.price,
   });
 
   factory SponsorDurationOption.fromJson(Map<String, dynamic> j) =>
       SponsorDurationOption(
         label: j['label'] ?? '',
-        days:  j['days']  ?? 1,
-        price: (j['price'] ?? 0).toDouble(),
+        days: _toInt(j['days'], 1),
+        startDate: j['start_date'] ?? j['startDate'],
+        endDate: j['end_date'] ?? j['endDate'],
+        price: _toDouble(j['price']),
       );
 
-  Map<String, dynamic> toJson() => {'label': label, 'days': days, 'price': price};
+  static int _toInt(dynamic value, [int fallback = 0]) => value is num
+      ? value.toInt()
+      : int.tryParse(value?.toString() ?? '') ?? fallback;
+
+  static double _toDouble(dynamic value) => value is num
+      ? value.toDouble()
+      : double.tryParse(value?.toString() ?? '') ?? 0;
+
+  Map<String, dynamic> toJson() => {
+    'label': label,
+    'days': days,
+    'start_date': startDate,
+    'end_date': endDate,
+    'price': price,
+  };
 }
 
 class ExhibitionSponsorEvent {
@@ -32,6 +54,15 @@ class ExhibitionSponsorEvent {
   final String place;
   final int    listingDays;
   final String description;
+  final int capacity;
+  final int registeredCount;
+  final int scannedCount;
+  final String ticketType;
+  final double ticketPrice;
+  final String status;
+  final String? publishDate;
+  final List<String> images;
+  final List<Map<String, dynamic>> activities;
   final List<SponsorDurationOption> durationOptions;
   bool isFavorite;
 
@@ -48,27 +79,107 @@ class ExhibitionSponsorEvent {
     required this.place,
     required this.listingDays,
     required this.description,
+    this.capacity = 0,
+    this.registeredCount = 0,
+    this.scannedCount = 0,
+    this.ticketType = 'invitation',
+    this.ticketPrice = 0,
+    this.status = 'upcoming',
+    this.publishDate,
+    this.images = const [],
+    this.activities = const [],
     required this.durationOptions,
     this.isFavorite = false,
   });
 
-  factory ExhibitionSponsorEvent.fromJson(Map<String, dynamic> j) =>
-      ExhibitionSponsorEvent(
-        id:                 j['id'] ?? 0,
-        name:               j['name'] ?? '',
-        type:               j['type'] ?? '',
-        exhibitionId:       j['exhibition_id'] ?? 0,
-        exhibitionName:     j['exhibition_name'] ?? '',
-        exhibitionImageUrl: j['exhibition_image_url'] ?? '',
-        date:               j['date'] ?? '',
-        startTime:          j['start_time'] ?? '',
-        endTime:            j['end_time'] ?? '',
-        place:              j['place'] ?? '',
-        listingDays:        j['listing_days'] ?? 1,
-        description:        j['description'] ?? '',
-        durationOptions: (j['duration_options'] as List? ?? [])
-            .map((o) => SponsorDurationOption.fromJson(o))
+  factory ExhibitionSponsorEvent.fromJson(Map<String, dynamic> json) {
+    final nested = json['event'] is Map
+        ? Map<String, dynamic>.from(json['event'])
+        : <String, dynamic>{};
+    final j = {...nested, ...json};
+    final images = j['images'] ?? j['event_images'] ?? j['photos'] ?? [];
+    final activities = j['activities'] ?? j['programs'] ?? [];
+    dynamic options = j['duration_options'] ?? j['durationOptions'] ?? j['sponsorshipOptions'] ?? [];
+    if (options is String && options.trim().isNotEmpty) {
+      try {
+        options = jsonDecode(options);
+      } catch (_) {
+        options = const [];
+      }
+    }
+    if (options is! List || options.isEmpty) {
+      final days = SponsorDurationOption._toInt(
+        j['listing_days'] ?? j['duration_days'] ?? j['durationDays'],
+      );
+      final dailyPrice = SponsorDurationOption._toDouble(
+        j['daily_price'] ?? j['dailyPrice'],
+      );
+      if (days > 0 && dailyPrice > 0) {
+        options = List.generate(days, (index) {
+          final optionDays = index + 1;
+          return {
+            'days': optionDays,
+            'start_date': j['date'] ?? j['start_date'],
+            'end_date': j['date'] ?? j['start_date'],
+            'price': dailyPrice * optionDays,
+          };
+        });
+      }
+    }
+    final start = (j['start_time'] ?? j['startAt'] ?? '').toString();
+    final end = (j['end_time'] ?? j['endAt'] ?? '').toString();
+    return ExhibitionSponsorEvent(
+        id:                 SponsorDurationOption._toInt(j['id']),
+        name:               (j['name'] ?? j['title'] ?? '').toString(),
+        type:               (j['type'] ?? '').toString(),
+        exhibitionId:       SponsorDurationOption._toInt(j['exhibition_id'] ?? j['exhibitionId']),
+        exhibitionName:     (j['exhibition_name'] ?? j['exhibitionName'] ?? j['exhibition'] ?? '').toString(),
+        exhibitionImageUrl: _validUrl(j['exhibition_image_url'] ?? j['exhibitionImageUrl']),
+        date:               _dateOnly(j['date'] ?? j['start_date'] ?? start),
+        startTime:          _timeOnly(start),
+        endTime:            _timeOnly(end),
+        place:              (j['place'] ?? j['venueName'] ?? '').toString(),
+        listingDays:        SponsorDurationOption._toInt(j['listing_days'] ?? j['duration_days'] ?? j['durationDays'], 1),
+        description:        (j['description'] ?? '').toString(),
+        capacity:           SponsorDurationOption._toInt(j['capacity'] ?? j['max_participants']),
+        registeredCount:    SponsorDurationOption._toInt(j['registered_count'] ?? j['registered']),
+        scannedCount:       SponsorDurationOption._toInt(j['scanned_count'] ?? j['attended']),
+        ticketType:         (j['ticket_type'] ?? j['ticketType'] ?? 'invitation').toString(),
+        ticketPrice:        SponsorDurationOption._toDouble(j['ticket_price'] ?? j['ticketPrice']),
+        status:             (j['status'] ?? 'upcoming').toString(),
+        publishDate:        (j['publish_date'] ?? j['publishedAt'])?.toString(),
+        images:             (images is List ? images : const []).map((image) {
+          if (image is Map) return (image['url'] ?? '').toString();
+          return image.toString();
+        }).where((image) => image.isNotEmpty).toList(),
+        activities:         (activities is List ? activities : const []).whereType<Map>().map(Map<String, dynamic>.from).toList(),
+        durationOptions: (options is List ? options : const [])
+          .whereType<Map>()
+          .map((o) => SponsorDurationOption.fromJson(Map<String, dynamic>.from(o)))
             .toList(),
         isFavorite: j['is_favorite'] ?? false,
       );
+  }
+
+  static String _validUrl(dynamic value) {
+    final url = value?.toString().trim() ?? '';
+    final parsed = Uri.tryParse(url);
+    return parsed != null && parsed.hasScheme && parsed.host.isNotEmpty
+        ? url
+        : '';
+  }
+
+  static String _dateOnly(dynamic value) {
+    final raw = value?.toString() ?? '';
+    final parsed = DateTime.tryParse(raw);
+    return parsed == null ? raw : raw.length >= 10 ? raw.substring(0, 10) : raw;
+  }
+
+  static String _timeOnly(String value) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    final hour = parsed.hour.toString().padLeft(2, '0');
+    final minute = parsed.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
 }

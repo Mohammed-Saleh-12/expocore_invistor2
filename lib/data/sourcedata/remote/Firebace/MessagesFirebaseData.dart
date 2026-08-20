@@ -20,9 +20,16 @@ class MessagesFirebaseData {
         .where('investor_id', isEqualTo: investorId)
         .orderBy('last_time', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => ConversationModel.fromJson({...d.data(), 'id': _toInt(d.id)}))
-            .toList());
+        .map(
+          (snap) => snap.docs
+              .map(
+                (d) => ConversationModel.fromJson({
+                  ...d.data(),
+                  'id': _toInt(d.id),
+                }),
+              )
+              .toList(),
+        );
   }
 
   /// Stream لرسائل محادثة واحدة
@@ -32,27 +39,29 @@ class MessagesFirebaseData {
         .collection('messages')
         .orderBy('time')
         .snapshots()
-        .map((snap) =>
-            snap.docs.map((d) => MessageModel.fromJson(d.data())).toList());
+        .map(
+          (snap) =>
+              snap.docs.map((d) => MessageModel.fromJson(d.data())).toList(),
+        );
   }
 
   /// إنشاء محادثة جديدة مع معرض
   Future<String> createConversation({
-    required int    investorId,
-    required int    exhibitionId,
+    required int investorId,
+    required int exhibitionId,
     required String exhibitionName,
     required String exhibitionInitials,
-    required int    color,
+    required int color,
   }) async {
     final ref = await _conv.add({
-      'investor_id':          investorId,
-      'exhibition_id':        exhibitionId,
-      'exhibition_name':      exhibitionName,
-      'exhibition_initials':  exhibitionInitials,
-      'color':                color.toRadixString(16).toUpperCase(),
-      'unread_count':         0,
-      'last_message':         '',
-      'last_time':            FieldValue.serverTimestamp(),
+      'investor_id': investorId,
+      'exhibition_id': exhibitionId,
+      'exhibition_name': exhibitionName,
+      'exhibition_initials': exhibitionInitials,
+      'color': color.toRadixString(16).toUpperCase(),
+      'unread_count': 0,
+      'last_message': '',
+      'last_time': FieldValue.serverTimestamp(),
     });
     return ref.id;
   }
@@ -60,23 +69,23 @@ class MessagesFirebaseData {
   /// إرسال رسالة
   Future<void> sendMessage({
     required String conversationId,
-    required int    senderId,
+    required int senderId,
     required String text,
-    required bool   isMe,
+    required bool isMe,
   }) async {
     final batch = _db.batch();
     final msgRef = _conv.doc(conversationId).collection('messages').doc();
     batch.set(msgRef, {
-      'id':        msgRef.id,
-      'text':      text,
-      'is_me':     isMe,
+      'id': msgRef.id,
+      'text': text,
+      'is_me': isMe,
       'sender_id': senderId,
-      'time':      FieldValue.serverTimestamp(),
-      'is_read':   false,
+      'time': FieldValue.serverTimestamp(),
+      'is_read': false,
     });
     batch.update(_conv.doc(conversationId), {
       'last_message': text,
-      'last_time':    FieldValue.serverTimestamp(),
+      'last_time': FieldValue.serverTimestamp(),
     });
     await batch.commit();
   }

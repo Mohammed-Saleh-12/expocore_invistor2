@@ -18,12 +18,12 @@ class AuthController extends GetxController {
 
   // ── مفاتيح التخزين المحلي ────────────────────────────────
   static const _kPending = 'pendingVerification';
-  static const _kEmail   = 'pendingEmail';
-  static const _kOtp     = 'pendingOtp';
+  static const _kEmail = 'pendingEmail';
+  static const _kOtp = 'pendingOtp';
 
   // ── State ─────────────────────────────────────────────────
-  final isLoading    = false.obs;
-  final status       = StatusRequest.none.obs;
+  final isLoading = false.obs;
+  final status = StatusRequest.none.obs;
   final errorMessage = ''.obs;
 
   // ── إشارة التنقل للويب (يراقبها WebAuthController) ────────
@@ -34,20 +34,20 @@ class AuthController extends GetxController {
   void resetWebStep() => webStep.value = -1;
 
   // ── Form controllers (التسجيل) ───────────────────────────
-  final companyCtrl  = TextEditingController();
-  final tradeCtrl    = TextEditingController();
-  final emailCtrl    = TextEditingController();
+  final companyCtrl = TextEditingController();
+  final tradeCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
   final locationCtrl = TextEditingController();
-  final phoneCtrl    = TextEditingController();
-  final websiteCtrl  = TextEditingController();
-  final passCtrl     = TextEditingController();
-  final confirmCtrl  = TextEditingController();
-  final formKey      = GlobalKey<FormState>();
+  final phoneCtrl = TextEditingController();
+  final websiteCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+  final confirmCtrl = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
-  final obscurePass    = true.obs;
-  final obscureConf    = true.obs;
-  final termsAccepted  = false.obs;
-  final activityType   = ''.obs;
+  final obscurePass = true.obs;
+  final obscureConf = true.obs;
+  final termsAccepted = false.obs;
+  final activityType = ''.obs;
 
   final activityTypes = [
     'تقنية',
@@ -59,14 +59,14 @@ class AuthController extends GetxController {
   ];
 
   // ── Getters: جلسة التحقق المعلّقة ───────────────────────
-  bool   get hasPendingVerification => _box.read<bool>(_kPending) ?? false;
-  String get pendingEmail           => _box.read<String>(_kEmail) ?? '';
+  bool get hasPendingVerification => _box.read<bool>(_kPending) ?? false;
+  String get pendingEmail => _box.read<String>(_kEmail) ?? '';
 
   @override
   void onInit() {
     super.onInit();
     final crud = Crud();
-    _authData     = AuthData(crud);
+    _authData = AuthData(crud);
     _registerData = RegisterData(crud);
   }
 
@@ -78,26 +78,26 @@ class AuthController extends GetxController {
       return;
     }
     isLoading.value = true;
-    status.value    = StatusRequest.loading;
+    status.value = StatusRequest.loading;
     errorMessage.value = '';
 
     final result = await _registerData.register(
-      companyName:          companyCtrl.text.trim(),
-      tradeName:            tradeCtrl.text.trim(),
-      email:                emailCtrl.text.trim(),
-      location:             locationCtrl.text.trim(),
-      phone:                phoneCtrl.text.trim(),
-      website:              websiteCtrl.text.trim(),
-      password:             passCtrl.text,
+      companyName: companyCtrl.text.trim(),
+      tradeName: tradeCtrl.text.trim(),
+      email: emailCtrl.text.trim(),
+      location: locationCtrl.text.trim(),
+      phone: phoneCtrl.text.trim(),
+      website: websiteCtrl.text.trim(),
+      password: passCtrl.text,
       passwordConfirmation: confirmCtrl.text,
-      activityType:         activityType.value,
+      activityType: activityType.value,
     );
 
     if (result['status'] == true) {
       // حفظ جلسة التحقق المعلّقة
       final otp = _extractOtp(result);
       _box.write(_kPending, true);
-      _box.write(_kEmail,   emailCtrl.text.trim());
+      _box.write(_kEmail, emailCtrl.text.trim());
       if (otp != null) _box.write(_kOtp, otp);
 
       status.value = StatusRequest.success;
@@ -116,30 +116,30 @@ class AuthController extends GetxController {
   // ── التحقق من OTP ─────────────────────────────────────────
   Future<void> verifyOtp(String otp) async {
     isLoading.value = true;
-    status.value    = StatusRequest.loading;
+    status.value = StatusRequest.loading;
 
     // مقارنة محلية أولاً
     final stored = _box.read<String>(_kOtp);
     if (stored != null && stored.isNotEmpty && otp != stored) {
       isLoading.value = false;
-      status.value    = StatusRequest.failure;
+      status.value = StatusRequest.failure;
       _showError('الرمز الذي أدخلته غير صحيح');
       return;
     }
 
-    final result = await _authData.verifyOtp(otp);
+    final result = await _authData.verifyOtp(pendingEmail, otp);
     if (result['status'] == true) {
       // حفظ بيانات الجلسة
-      final token   = _extractToken(result);
+      final token = _extractToken(result);
       final company = _extractCompany(result);
-      final email   = _extractEmail(result);
-      final userId  = _extractUserId(result);
+      final email = _extractEmail(result);
+      final userId = _extractUserId(result);
       if (token != null) {
         await Get.find<Services>().saveUserData(
-          token:   token,
+          token: token,
           company: company ?? companyCtrl.text.trim(),
-          email:   email   ?? pendingEmail,
-          userId:  userId  ?? 0,
+          email: email ?? pendingEmail,
+          userId: userId ?? 0,
         );
       }
 
@@ -161,7 +161,7 @@ class AuthController extends GetxController {
   Future<void> resendOtp() async {
     isLoading.value = true;
     try {
-      final result = await _authData.resendOtp();
+      final result = await _authData.resendOtp(pendingEmail);
       _box.remove(_kOtp); // OTP قديم لم يعد صالحاً
       if (result['status'] == true) {
         _showSuccess('تم إرسال رمز جديد إلى بريدك الإلكتروني');
@@ -220,25 +220,25 @@ class AuthController extends GetxController {
   }
 
   void _showError(String msg) => Get.snackbar(
-        'خطأ',
-        msg,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE53935).withOpacity(0.9),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        duration: const Duration(seconds: 3),
-      );
+    'خطأ',
+    msg,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: const Color(0xFFE53935).withOpacity(0.9),
+    colorText: Colors.white,
+    margin: const EdgeInsets.all(16),
+    borderRadius: 12,
+    duration: const Duration(seconds: 3),
+  );
 
   void _showSuccess(String msg) => Get.snackbar(
-        'تم',
-        msg,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+    'تم',
+    msg,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
+    colorText: Colors.white,
+    margin: const EdgeInsets.all(16),
+    borderRadius: 12,
+  );
 
   @override
   void onClose() {

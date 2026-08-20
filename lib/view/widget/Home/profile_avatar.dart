@@ -10,15 +10,17 @@ import '../../../core/constant/appcolors.dart';
 //  • زر كاميرا للتعديل عند editable = true
 // ════════════════════════════════════════════════════════════
 class ProfileAvatar extends StatelessWidget {
-  final XFile?      image;
-  final String      fallbackLetter;
-  final double      size;
-  final bool        editable;
+  final XFile? image;
+  final String? imageUrl;
+  final String fallbackLetter;
+  final double size;
+  final bool editable;
   final VoidCallback? onEdit;
 
   const ProfileAvatar({
     super.key,
     required this.image,
+    this.imageUrl,
     required this.fallbackLetter,
     this.size = 80,
     this.editable = false,
@@ -36,16 +38,27 @@ class ProfileAvatar extends StatelessWidget {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              gradient: image == null ? AppColors.darkCTAGradient : null,
+              gradient: image == null && (imageUrl == null || imageUrl!.isEmpty)
+                  ? AppColors.darkCTAGradient
+                  : null,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: AppColors.darkPrimary.withOpacity(0.4), blurRadius: 18)],
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.darkPrimary.withOpacity(0.4),
+                  blurRadius: 18,
+                ),
+              ],
             ),
             clipBehavior: Clip.antiAlias,
-            child: image == null
+            child: image == null && (imageUrl == null || imageUrl!.isEmpty)
                 ? Center(
                     child: Text(
                       fallbackLetter.isNotEmpty ? fallbackLetter : 'ش',
-                      style: TextStyle(color: Colors.white, fontSize: size * 0.4, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: size * 0.4,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   )
                 : _buildImage(),
@@ -62,7 +75,11 @@ class ProfileAvatar extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.darkBg, width: 2),
                 ),
-                child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: size * 0.18),
+                child: Icon(
+                  Icons.camera_alt_rounded,
+                  color: Colors.white,
+                  size: size * 0.18,
+                ),
               ),
             ),
         ],
@@ -82,13 +99,36 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildImage() {
+    if (image == null) {
+      return Image.network(
+        imageUrl!,
+        fit: BoxFit.cover,
+        width: size,
+        height: size,
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.person, color: Colors.white),
+      );
+    }
+
     // على الويب: المسار blob/URL → Image.network
     // على الجوال: ملف محلي → Image.file
     if (kIsWeb) {
-      return Image.network(image!.path, fit: BoxFit.cover, width: size, height: size,
-          errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white));
+      return Image.network(
+        image!.path,
+        fit: BoxFit.cover,
+        width: size,
+        height: size,
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.person, color: Colors.white),
+      );
     }
-    return Image.file(File(image!.path), fit: BoxFit.cover, width: size, height: size,
-        errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white));
+    return Image.file(
+      File(image!.path),
+      fit: BoxFit.cover,
+      width: size,
+      height: size,
+      errorBuilder: (_, __, ___) =>
+          const Icon(Icons.person, color: Colors.white),
+    );
   }
 }

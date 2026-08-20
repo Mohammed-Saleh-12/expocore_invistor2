@@ -1,11 +1,11 @@
 import 'message_model.dart';
 
 class ConversationModel {
-  final int    id;
-  final int    exhibitionId;
+  final int id;
+  final int exhibitionId;
   final String exhibitionName;
   final String exhibitionInitials;
-  final int    color;
+  final int color;
   final List<MessageModel> messages;
   int unreadCount;
 
@@ -21,15 +21,16 @@ class ConversationModel {
 
   factory ConversationModel.fromJson(Map<String, dynamic> j) =>
       ConversationModel(
-        id:                  j['id'] ?? 0,
-        exhibitionId:        j['exhibition_id'] ?? 0,
-        exhibitionName:      j['exhibition_name'] ?? '',
-        exhibitionInitials:  j['exhibition_initials'] ?? '',
-        color: int.tryParse(
-                  (j['color'] as String? ?? 'FF7A1FFF').replaceFirst('#', ''),
-                  radix: 16,
-                ) ??
-                0xFF7A1FFF,
+        id: j['id'] ?? 0,
+        exhibitionId: j['exhibition_id'] ?? 0,
+        exhibitionName: j['exhibition_name'] ?? '',
+        exhibitionInitials: j['exhibition_initials'] ?? '',
+        color:
+            int.tryParse(
+              (j['color'] as String? ?? 'FF7A1FFF').replaceFirst('#', ''),
+              radix: 16,
+            ) ??
+            0xFF7A1FFF,
         messages: (j['messages'] as List? ?? [])
             .map((m) => MessageModel.fromJson(m))
             .toList(),
@@ -40,5 +41,5 @@ class ConversationModel {
       messages.isNotEmpty ? messages.last : null;
 
   String get lastMessage => lastMessageObj?.text ?? '';
-  String get lastTime    => lastMessageObj?.time ?? '';
+  String get lastTime => lastMessageObj?.time ?? '';
 }

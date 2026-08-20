@@ -48,22 +48,7 @@ class SponsorEventCard extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  Image.network(
-                    event.exhibitionImageUrl,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      height: 150,
-                      width: double.infinity,
-                      color: AppColors.darkSurface,
-                      child: Icon(
-                        Icons.image,
-                        size: 48,
-                        color: AppColors.grey.withOpacity(0.4),
-                      ),
-                    ),
-                  ),
+                  _EventImages(event: event),
 
                   if (onFavorite != null)
                     Positioned(
@@ -137,10 +122,32 @@ class SponsorEventCard extends StatelessWidget {
                     Icons.schedule_outlined,
                     'مدة الإدراج: ${event.listingDays} أيام',
                   ),
+                  const SizedBox(height: 4),
+                  _infoRow(
+                    Icons.groups_outlined,
+                    'السعة: ${event.capacity} • المسجلون: ${event.registeredCount} • الحضور: ${event.scannedCount}',
+                  ),
+                  const SizedBox(height: 4),
+                  _infoRow(
+                    Icons.confirmation_num_outlined,
+                    event.ticketType == 'paid'
+                        ? 'تذكرة مدفوعة: ${event.ticketPrice.toStringAsFixed(2)} ﷼'
+                        : 'الدخول: دعوات مجانية',
+                  ),
+                  if (event.description.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      event.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Container(
+                      if (event.durationOptions.isNotEmpty)
+                        Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
@@ -218,4 +225,78 @@ class SponsorEventCard extends StatelessWidget {
       ),
     ],
   );
+}
+
+class _EventImages extends StatefulWidget {
+  final ExhibitionSponsorEvent event;
+  const _EventImages({required this.event});
+
+  @override
+  State<_EventImages> createState() => _EventImagesState();
+}
+
+class _EventImagesState extends State<_EventImages> {
+  final PageController _controller = PageController();
+  int _index = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.event.images.isNotEmpty
+        ? widget.event.images
+        : (widget.event.exhibitionImageUrl.isNotEmpty
+            ? [widget.event.exhibitionImageUrl]
+            : const <String>[]);
+    if (images.isEmpty) {
+      return Container(
+        height: 150,
+        color: AppColors.darkSurface,
+        child: const Center(child: Icon(Icons.image, size: 48, color: AppColors.grey)),
+      );
+    }
+    return SizedBox(
+      height: 150,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _controller,
+            itemCount: images.length,
+            onPageChanged: (index) => setState(() => _index = index),
+            itemBuilder: (_, index) => Image.network(
+              images[index],
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: AppColors.darkSurface,
+                child: const Icon(Icons.broken_image_outlined, size: 48, color: AppColors.grey),
+              ),
+            ),
+          ),
+          if (images.length > 1)
+            Positioned(
+              bottom: 8,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(images.length, (dot) => Container(
+                  width: dot == _index ? 16 : 6,
+                  height: 6,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: dot == _index ? Colors.white : Colors.white54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                )),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

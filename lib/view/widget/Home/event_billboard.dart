@@ -136,14 +136,7 @@ class _EventBillboardSlide extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              event.exhibitionImageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: AppColors.darkSurface,
-                child: const Icon(Icons.image, size: 84, color: AppColors.grey),
-              ),
-            ),
+            _BillboardImage(event: event),
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -265,24 +258,25 @@ class _EventBillboardSlide extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withOpacity(0.85),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'من ${event.durationOptions.first.price.toStringAsFixed(0)} ﷼',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                        if (event.durationOptions.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withOpacity(0.85),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'من ${event.durationOptions.first.price.toStringAsFixed(0)} ﷼',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${event.listingDays} أيام إعلانية',
@@ -299,6 +293,32 @@ class _EventBillboardSlide extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _BillboardImage extends StatelessWidget {
+  final ExhibitionSponsorEvent event;
+  const _BillboardImage({required this.event});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = event.images.isNotEmpty
+        ? event.images.first
+        : event.exhibitionImageUrl;
+    if (url.isEmpty) {
+      return Container(
+        color: AppColors.darkSurface,
+        child: const Icon(Icons.image, size: 84, color: AppColors.grey),
+      );
+    }
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: AppColors.darkSurface,
+        child: const Icon(Icons.broken_image_outlined, size: 84, color: AppColors.grey),
       ),
     );
   }

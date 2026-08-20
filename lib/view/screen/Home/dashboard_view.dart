@@ -20,8 +20,8 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final notifCtrl    = Get.find<NotificationsController>();
-    final eventsCtrl   = Get.find<EventsController>();
+    final notifCtrl = Get.find<NotificationsController>();
+    final eventsCtrl = Get.find<EventsController>();
     final billboardCtrl = Get.find<HomeBillboardController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SwipeNavWrapper(
@@ -110,8 +110,11 @@ class DashboardView extends GetView<DashboardController> {
                     children: [
                       Obx(
                         () => ExhibitionBillboard(
-                          key: ValueKey(billboardCtrl.featuredExhibitions.length),
-                          exhibitions: billboardCtrl.featuredExhibitions.toList(),
+                          key: ValueKey(
+                            billboardCtrl.featuredExhibitions.length,
+                          ),
+                          exhibitions: billboardCtrl.featuredExhibitions
+                              .toList(),
                           onTap: (e) => Get.toNamed(
                             AppRoutes.EXHIBITION_DETAIL,
                             arguments: e,
@@ -132,7 +135,8 @@ class DashboardView extends GetView<DashboardController> {
                           events: billboardCtrl.featuredSponsorEvents.toList(),
                           onTap: (ev) =>
                               _showSponsorSheet(context, ev, eventsCtrl),
-                          onNearEnd: () => billboardCtrl.loadMoreSponsorEvents(),
+                          onNearEnd: () =>
+                              billboardCtrl.loadMoreSponsorEvents(),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -271,28 +275,28 @@ class DashboardView extends GetView<DashboardController> {
                 value: '${controller.totalBookings}',
                 icon: Icons.bookmark_outlined,
                 iconColor: AppColors.darkPrimary,
-                trend: 8.5,
+                trend: controller.bookingsGrowth.value,
               ),
               StatsCard(
                 label: 'الأجنحة النشطة',
                 value: '${controller.activeBooths}',
                 icon: Icons.grid_view,
                 iconColor: AppColors.darkSecondary,
-                trend: 12.0,
+                trend: controller.boothsGrowth.value,
               ),
               StatsCard(
                 label: 'الفعاليات المنشورة',
                 value: '${controller.publishedEvents}',
                 icon: Icons.event,
                 iconColor: AppColors.darkSecondary,
-                trend: 22.1,
+                trend: controller.eventsGrowth.value,
               ),
               StatsCard(
                 label: 'إجمالي التفاعل',
                 value: _fmt(controller.totalEngagement.value),
                 icon: Icons.trending_up,
                 iconColor: AppColors.orange,
-                trend: 15.7,
+                trend: controller.engagementGrowth.value,
               ),
             ],
           ),

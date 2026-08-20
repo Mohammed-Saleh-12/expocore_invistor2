@@ -30,6 +30,7 @@ import '../controller/Home/exhibition_billboard_controller.dart';
 import '../controller/Home/event_billboard_controller.dart';
 import '../controller/Home/home_billboard_controller.dart';
 import '../controller/Home/latest_exhibitions_controller.dart';
+import '../core/services/notification_service.dart';
 import '../web/controllers/web_auth_controller.dart';
 import '../web/controllers/web_billboard_controller.dart';
 import '../web/controllers/web_scanner_controller.dart';
@@ -37,12 +38,14 @@ import '../web/controllers/web_scanner_controller.dart';
 class InitialBindings extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut(() => NotificationService(), fenix: true);
+
     // ── Auth controllers (shared: mobile + web) ──────────────
-    Get.lazyPut(() => LoginController(),          fenix: true);
-    Get.lazyPut(() => RegisterController(),       fenix: true);
-    Get.lazyPut(() => AuthController(),           fenix: true);
+    Get.lazyPut(() => LoginController(), fenix: true);
+    Get.lazyPut(() => RegisterController(), fenix: true);
+    Get.lazyPut(() => AuthController(), fenix: true);
     Get.lazyPut(() => ForgotPasswordController(), fenix: true);
-    Get.lazyPut(() => ResetPasswordController(),  fenix: true);
+    Get.lazyPut(() => ResetPasswordController(), fenix: true);
 
     // ── Web auth orchestration (web only) ────────────────────
     // Must be registered after the four auth controllers above
@@ -52,38 +55,38 @@ class InitialBindings extends Bindings {
     }
 
     // ── Home controllers ─────────────────────────────────────
-    Get.lazyPut(() => DashboardController(),        fenix: true);
-    Get.lazyPut(() => ExhibitionsController(),      fenix: true);
-    Get.lazyPut(() => BoothController(),            fenix: true);
-    Get.lazyPut(() => FavoritesController(),        fenix: true);
-    Get.lazyPut(() => ReportsController(),          fenix: true);
-    Get.lazyPut(() => EventsController(),           fenix: true);
-    Get.lazyPut(() => AnalyticsController(),        fenix: true);
-    Get.lazyPut(() => MessagesController(),         fenix: true);
-    Get.lazyPut(() => VisitorMessagesController(),  fenix: true);
-    Get.lazyPut(() => NotificationsController(),    fenix: true);
-    Get.lazyPut(() => SettingsController(),         fenix: true);
-    Get.lazyPut(() => ProfileCompanyController(),   fenix: true);
-    Get.lazyPut(() => BookingController(),          fenix: true);
-    Get.lazyPut(() => BoothMapController(),            fenix: true);
-    Get.lazyPut(() => BoothManagementController(),     fenix: true);
-    Get.lazyPut(() => SplashController(),              fenix: true);
-    Get.lazyPut(() => OnboardingController(),           fenix: true);
-    Get.lazyPut(() => QrScannerController(),            fenix: true);
-    Get.lazyPut(() => BoothDetailController(),          fenix: true);
-    Get.lazyPut(() => ExhibitionDetailController(),     fenix: true);
-    Get.lazyPut(() => ExhibitionBillboardController(),  fenix: true);
-    Get.lazyPut(() => EventBillboardController(),       fenix: true);
-    Get.lazyPut(() => HomeBillboardController(),          fenix: true);
+    Get.lazyPut(() => DashboardController(), fenix: true);
+    Get.lazyPut(() => ExhibitionsController(), fenix: true);
+    Get.lazyPut(() => BoothController(), fenix: true);
+    Get.lazyPut(() => FavoritesController(), fenix: true);
+    Get.lazyPut(() => ReportsController(), fenix: true);
+    Get.lazyPut(() => EventsController(), fenix: true);
+    Get.lazyPut(() => AnalyticsController(), fenix: true);
+    Get.lazyPut(() => MessagesController(), fenix: true);
+    Get.lazyPut(() => VisitorMessagesController(), fenix: true);
+    Get.lazyPut(() => NotificationsController(), fenix: true);
+    Get.lazyPut(() => SettingsController(), fenix: true);
+    Get.lazyPut(() => ProfileCompanyController(), fenix: true);
+    Get.lazyPut(() => BookingController(), fenix: true);
+    Get.lazyPut(() => BoothMapController(), fenix: true);
+    Get.lazyPut(() => BoothManagementController(), fenix: true);
+    Get.lazyPut(() => SplashController(), fenix: true);
+    Get.lazyPut(() => OnboardingController(), fenix: true);
+    Get.lazyPut(() => QrScannerController(), fenix: true);
+    Get.lazyPut(() => BoothDetailController(), fenix: true);
+    Get.lazyPut(() => ExhibitionDetailController(), fenix: true);
+    Get.lazyPut(() => ExhibitionBillboardController(), fenix: true);
+    Get.lazyPut(() => EventBillboardController(), fenix: true);
+    Get.lazyPut(() => HomeBillboardController(), fenix: true);
 
     if (GetPlatform.isWeb) {
       Get.lazyPut(() => LatestExhibitionsController(), fenix: true);
-      Get.lazyPut(() => WebBillboardController(),      fenix: true);
-      Get.lazyPut(() => WebScannerController(),        fenix: true);
+      Get.lazyPut(() => WebBillboardController(), fenix: true);
+      Get.lazyPut(() => WebScannerController(), fenix: true);
     }
   }
-  
 }
+
 class ChangePasswordBinding extends Bindings {
   @override
   void dependencies() {
@@ -108,6 +111,8 @@ class ForgotPasswordBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ForgotPasswordController>(
-        () => ForgotPasswordController(), fenix: true);
+      () => ForgotPasswordController(),
+      fenix: true,
+    );
   }
 }

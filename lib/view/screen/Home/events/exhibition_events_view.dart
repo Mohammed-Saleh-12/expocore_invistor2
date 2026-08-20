@@ -15,6 +15,10 @@ class ExhibitionEventsView extends GetView<EventsController> {
     return Scaffold(
       appBar: const CustomAppBar(title: 'فعاليات المعارض الإعلانية'),
       body: Obx(() {
+        if (controller.isLoadingSponsorEvents.value &&
+            controller.exhibitionSponsorEvents.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (controller.exhibitionSponsorEvents.isEmpty) {
           return const EmptyWidget(
               message: 'لا توجد فعاليات إعلانية متاحة حالياً');

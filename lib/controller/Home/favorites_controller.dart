@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
+import 'exhibitions_controller.dart';
 import '../../data/model/exhibition/exhibition_model.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/model/event/exhibition_sponsor_event_model.dart';
@@ -10,16 +11,16 @@ class FavoritesController extends GetxController {
   final FavoritesData _favoritesData = FavoritesData(Crud());
 
   final favoriteExhibitions = <ExhibitionModel>[].obs;
-  final favoriteEvents      = <ExhibitionSponsorEvent>[].obs;
-  final favoriteBooths      = <BoothModel>[].obs;
-  final selectedTab         = 0.obs;
-  final isLoading           = false.obs;
-  final sortBy              = 'تاريخ الإضافة'.obs;
-  final sortOptions         = ['تاريخ الإضافة', 'الاسم', 'الحالة'];
+  final favoriteEvents = <ExhibitionSponsorEvent>[].obs;
+  final favoriteBooths = <BoothModel>[].obs;
+  final selectedTab = 0.obs;
+  final isLoading = false.obs;
+  final sortBy = 'تاريخ الإضافة'.obs;
+  final sortOptions = ['تاريخ الإضافة', 'الاسم', 'الحالة'];
 
   // ── Web filter bar ─────────────────────────────────────────
   static const webFilters = ['معارض', 'فعاليات', 'أجنحة'];
-  final webCategoryFilter  = 'معارض'.obs;
+  final webCategoryFilter = 'معارض'.obs;
 
   void setWebFilter(String f) => webCategoryFilter.value = f;
 
@@ -34,22 +35,25 @@ class FavoritesController extends GetxController {
     final result = await _favoritesData.getFavorites();
     if (result['status'] == true) {
       final d = _body(result['data']);
-      favoriteExhibitions.value = _asList(d['exhibitions'])
-          .map((e) => ExhibitionModel.fromJson(e))
-          .toList();
-      favoriteBooths.value = _asList(d['booths'])
-          .map((e) => BoothModel.fromJson(e))
-          .toList();
-      favoriteEvents.value = _asList(d['events'])
-          .map((e) => ExhibitionSponsorEvent.fromJson(e))
-          .toList();
+      favoriteExhibitions.value = _asList(
+        d['exhibitions'],
+      ).map((e) => ExhibitionModel.fromJson(e)).toList();
+      favoriteBooths.value = _asList(
+        d['booths'],
+      ).map((e) => BoothModel.fromJson(e)).toList();
+      favoriteEvents.value = _asList(
+        d['events'],
+      ).map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
     } else {
-      favoriteExhibitions.value =
-          DummyData.exhibitions.where((e) => e.isFavorite).toList();
-      favoriteEvents.value =
-          DummyData.exhibitionSponsorEvents.where((e) => e.isFavorite).toList();
-      favoriteBooths.value =
-          DummyData.myBooths.where((b) => b.isFavorite).toList();
+      favoriteExhibitions.value = DummyData.exhibitions
+          .where((e) => e.isFavorite)
+          .toList();
+      favoriteEvents.value = DummyData.exhibitionSponsorEvents
+          .where((e) => e.isFavorite)
+          .toList();
+      favoriteBooths.value = DummyData.myBooths
+          .where((b) => b.isFavorite)
+          .toList();
     }
     isLoading.value = false;
   }
@@ -94,21 +98,41 @@ class FavoritesController extends GetxController {
 
   // ── Remove ────────────────────────────────────────────────
   void removeExhibition(ExhibitionModel e) {
-    favoriteExhibitions.remove(e);
+    // Remove by id because the favorites list and exhibitions list may hold
+    // different model instances for the same exhibition.
+    favoriteExhibitions.removeWhere((item) => item.id == e.id);
+    favoriteExhibitions.refresh();
     e.isFavorite = false;
+    _syncExhibitionsList(e.id, false);
     _favoritesData.removeFavorite(e.id, FavoriteType.exhibition);
-    Get.snackbar('fav_removed_title'.tr,
-        'fav_removed_item_msg'.trParams({'name': e.name}),
-        snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(
+      'fav_removed_title'.tr,
+      'fav_removed_item_msg'.trParams({'name': e.name}),
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _syncExhibitionsList(int exhibitionId, bool isFavorite) {
+    if (!Get.isRegistered<ExhibitionsController>()) return;
+    final exhibitionsController = Get.find<ExhibitionsController>();
+    for (final exhibition in exhibitionsController.exhibitions) {
+      if (exhibition.id == exhibitionId) {
+        exhibition.isFavorite = isFavorite;
+      }
+    }
+    exhibitionsController.exhibitions.refresh();
+    exhibitionsController.filtered.refresh();
   }
 
   void removeEvent(ExhibitionSponsorEvent e) {
     favoriteEvents.remove(e);
     e.isFavorite = false;
     _favoritesData.removeFavorite(e.id, FavoriteType.event);
-    Get.snackbar('fav_removed_title'.tr,
-        'fav_removed_item_msg'.trParams({'name': e.name}),
-        snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(
+      'fav_removed_title'.tr,
+      'fav_removed_item_msg'.trParams({'name': e.name}),
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
 
   void removeBooth(BoothModel b) {
@@ -121,9 +145,11 @@ class FavoritesController extends GetxController {
     }
     b.isFavorite = false;
     _favoritesData.removeFavorite(b.id, FavoriteType.booth);
-    Get.snackbar('fav_removed_title'.tr,
-        'fav_removed_booth_msg'.trParams({'number': b.number}),
-        snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(
+      'fav_removed_title'.tr,
+      'fav_removed_booth_msg'.trParams({'number': b.number}),
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
 
   Future<void> refresh() => _loadFavorites();

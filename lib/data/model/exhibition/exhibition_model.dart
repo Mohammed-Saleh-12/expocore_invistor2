@@ -1,13 +1,13 @@
 import '../event/exhibition_sponsor_event_model.dart';
 
 class ExhibitionModel {
-  final int    id;
+  final int id;
   final String name;
   final String description;
   // ── Multi-image support ──────────────────────────────────────
-  final List<String> images;          // قائمة الصور (الأولى تُعرض في الكرت)
+  final List<String> images; // قائمة الصور (الأولى تُعرض في الكرت)
   // ── Dynamic services from API ────────────────────────────────
-  final List<String> services;        // خدمات المعرض من الـ API
+  final List<String> services; // خدمات المعرض من الـ API
   // ── Map data embedded in detail response ─────────────────────
   final Map<String, dynamic>? mapJson; // بيانات الخريطة 3D
   // ── Sponsor events embedded in detail response ───────────────
@@ -18,7 +18,7 @@ class ExhibitionModel {
   final String location;
   final String city;
   final String status;
-  final int    availableBooths;
+  final int availableBooths;
   final List<String> sectors;
   bool isFavorite;
 
@@ -26,8 +26,8 @@ class ExhibitionModel {
     required this.id,
     required this.name,
     required this.description,
-    this.images        = const [],
-    this.services      = const [],
+    this.images = const [],
+    this.services = const [],
     this.mapJson,
     this.sponsorEvents = const [],
     required this.startDate,
@@ -47,11 +47,53 @@ class ExhibitionModel {
   // ── Domain helpers ────────────────────────────────────────────
   String get statusLabel {
     switch (status) {
-      case 'active':   return 'جارٍ';
-      case 'upcoming': return 'قادم';
-      default:         return 'منتهٍ';
+      case 'active':
+        return 'جارٍ';
+      case 'upcoming':
+        return 'قادم';
+      default:
+        return 'منتهٍ';
     }
   }
+
+  static String normalizeStatus(
+    dynamic value, {
+    String? startDate,
+    String? endDate,
+  }) {
+    switch (value?.toString().trim().toLowerCase()) {
+      case 'active':
+      case 'ongoing':
+      case 'live':
+        return 'active';
+      case 'upcoming':
+      case 'scheduled':
+      case 'pending':
+      case 'planned':
+      case 'not_started':
+      case 'not-started':
+        return 'upcoming';
+      case 'ended':
+      case 'finished':
+      case 'completed':
+        return 'ended';
+      default:
+        final start = DateTime.tryParse(startDate ?? '');
+        final end = DateTime.tryParse(endDate ?? '');
+        final today = DateTime.now();
+        final date = DateTime(today.year, today.month, today.day);
+        if (start != null && date.isBefore(_dateOnly(start))) {
+          return 'upcoming';
+        }
+        if (end != null && !date.isAfter(_dateOnly(end))) {
+          return 'active';
+        }
+        return 'ended';
+    }
+  }
+
+  static DateTime _dateOnly(DateTime value) =>
+      DateTime(value.year, value.month, value.day);
 
   factory ExhibitionModel.fromJson(Map<String, dynamic> j) {
     // ── Images: يقبل images (list) أو image_url (string قديم) ──
@@ -68,28 +110,34 @@ class ExhibitionModel {
     List<ExhibitionSponsorEvent> events = [];
     if (j['sponsor_events'] is List) {
       events = (j['sponsor_events'] as List)
-          .map((e) => ExhibitionSponsorEvent.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => ExhibitionSponsorEvent.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
 
     return ExhibitionModel(
-      id:              j['id'] ?? 0,
-      name:            j['name'] ?? '',
-      description:     j['description'] ?? '',
-      images:          imgs,
-      services:        List<String>.from(j['services'] ?? []),
-      mapJson:         j['map_data'] is Map<String, dynamic>
-                           ? j['map_data'] as Map<String, dynamic>
-                           : null,
-      sponsorEvents:   events,
-      startDate:       j['start_date'] ?? '',
-      endDate:         j['end_date'] ?? '',
-      location:        j['location'] ?? '',
-      city:            j['city'] ?? '',
-      status:          j['status'] ?? 'upcoming',
+      id: j['id'] ?? 0,
+      name: j['name'] ?? '',
+      description: j['description'] ?? '',
+      images: imgs,
+      services: List<String>.from(j['services'] ?? []),
+      mapJson: j['map_data'] is Map<String, dynamic>
+          ? j['map_data'] as Map<String, dynamic>
+          : null,
+      sponsorEvents: events,
+      startDate: j['start_date'] ?? '',
+      endDate: j['end_date'] ?? '',
+      location: j['location'] ?? '',
+      city: j['city'] ?? '',
+      status: normalizeStatus(
+        j['status'],
+        startDate: j['start_date']?.toString(),
+        endDate: j['end_date']?.toString(),
+      ),
       availableBooths: j['available_booths'] ?? 0,
-      sectors:         List<String>.from(j['sectors'] ?? []),
-      isFavorite:      j['is_favorite'] ?? false,
+      sectors: List<String>.from(j['sectors'] ?? []),
+      isFavorite: j['is_favorite'] ?? false,
     );
   }
 }

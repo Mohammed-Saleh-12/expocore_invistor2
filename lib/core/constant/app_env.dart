@@ -9,26 +9,29 @@ class AppEnv {
   static const _Env _env = _Env.dev;
 
   // ── Base URLs ────────────────────────────────────────────
-  static const String _devUrl     = 'http://192.168.43.47:8000/api';
+  static const String _devUrl = 'http://127.0.0.1:8000/api';
   static const String _stagingUrl = 'https://api-staging.expocore.app/api/v1';
-  static const String _prodUrl    = 'https://api.expocore.app/api/v1';
+  static const String _prodUrl = 'https://api.expocore.app/api/v1';
 
   static String get baseUrl {
     switch (_env) {
-      case _Env.dev:     return _devUrl;
-      case _Env.staging: return _stagingUrl;
-      case _Env.prod:    return _prodUrl;
+      case _Env.dev:
+        return _devUrl;
+      case _Env.staging:
+        return _stagingUrl;
+      case _Env.prod:
+        return _prodUrl;
     }
   }
 
   // ── Flags ────────────────────────────────────────────────
-  static bool get isDev     => _env == _Env.dev;
+  static bool get isDev => _env == _Env.dev;
   static bool get isStaging => _env == _Env.staging;
-  static bool get isProd    => _env == _Env.prod;
+  static bool get isProd => _env == _Env.prod;
   static bool get logEnabled => !isProd;
 
   // ── Timeouts ─────────────────────────────────────────────
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 30);
-  static const Duration sendTimeout    = Duration(seconds: 30);
+  static const Duration sendTimeout = Duration(seconds: 30);
 }

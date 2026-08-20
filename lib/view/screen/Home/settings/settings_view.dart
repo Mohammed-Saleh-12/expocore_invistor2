@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../controller/Home/profile_company_controller.dart';
 import '../../../../controller/Home/settings_controller.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../widget/Home/bottom_nav_custom.dart';
+import '../../../widget/Home/profile_avatar.dart';
 import '../../../widget/Home/swipe_nav_wrapper.dart';
 
 class SettingsView extends GetView<SettingsController> {
@@ -12,6 +14,7 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final profile = Get.find<ProfileCompanyController>();
     return SwipeNavWrapper(
       child: Scaffold(
         bottomNavigationBar: const BottomNavCustom(),
@@ -19,7 +22,7 @@ class SettingsView extends GetView<SettingsController> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _profileSection(context, isDark),
+                _profileSection(context, isDark, profile),
                 const SizedBox(height: 8),
                 _settingsList(context, isDark),
               ],
@@ -30,75 +33,85 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _profileSection(BuildContext context, bool isDark) => Container(
-    width: double.infinity,
-    margin: EdgeInsets.only(right: 16, left: 16, top: 6),
-    padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      gradient: isDark ? AppColors.darkCardGradient : null,
-      color: isDark ? null : AppColors.lightCard,
-    ),
-    child: Row(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            gradient: AppColors.darkCTAGradient,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.darkPrimary.withOpacity(0.4),
-                blurRadius: 16,
+  Widget _profileSection(
+    BuildContext context,
+    bool isDark,
+    ProfileCompanyController profile,
+  ) => Obx(() {
+    profile.profileLoaded.value;
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(right: 16, left: 16, top: 6),
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: isDark ? AppColors.darkCardGradient : null,
+        color: isDark ? null : AppColors.lightCard,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: AppColors.darkCTAGradient,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.darkPrimary.withOpacity(0.4),
+                  blurRadius: 16,
+                ),
+              ],
+            ),
+            child: ProfileAvatar(
+              image: profile.profileImage.value,
+              imageUrl: profile.profileImageUrl.value,
+              fallbackLetter: profile.nameCtrl.text.isNotEmpty
+                  ? profile.nameCtrl.text[0]
+                  : 'ش',
+              size: 60,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile.nameCtrl.text.isEmpty
+                    ? 'اسم الشركة'
+                    : profile.nameCtrl.text,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                profile.emailCtrl.text.isEmpty ? '—' : profile.emailCtrl.text,
+                style: TextStyle(fontSize: 12, color: AppColors.grey),
+              ),
+              const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'مستثمر نشط',
+                  style: TextStyle(
+                    color: AppColors.success,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
-          child: const Center(
-            child: Text(
-              'ش',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'شركة المستقبل التقنية',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 3),
-            const Text(
-              'info@futuretech.sa',
-              style: TextStyle(fontSize: 12, color: AppColors.grey),
-            ),
-            const SizedBox(height: 5),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                'مستثمر نشط',
-                style: TextStyle(
-                  color: AppColors.success,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  });
 
   Widget _settingsList(BuildContext context, bool isDark) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -334,7 +347,6 @@ class SettingsView extends GetView<SettingsController> {
       ),
     );
   }
-
 
   Widget _sectionTitle(String t) => Align(
     alignment: Alignment.centerRight,

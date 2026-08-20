@@ -137,20 +137,28 @@ class ExhibitionMapModel {
   bool get isGenericScene => sceneInstances.isNotEmpty || assets.isNotEmpty;
 
   factory ExhibitionMapModel.fromJson(Map<String, dynamic> json) {
-    final genericScene = json['scene'] is Map || json['instances'] is List;
+    final payload =
+        json['data'] is Map &&
+            json['scene'] is! Map &&
+            json['instances'] is! List &&
+            json['halls'] is! List
+        ? Map<String, dynamic>.from(json['data'] as Map)
+        : json;
+    final genericScene =
+        payload['scene'] is Map || payload['instances'] is List;
     if (genericScene) {
-      final sceneMap = json['scene'] is Map
-          ? Map<String, dynamic>.from(json['scene'] as Map)
+      final sceneMap = payload['scene'] is Map
+          ? Map<String, dynamic>.from(payload['scene'] as Map)
           : <String, dynamic>{};
-      final assetMap = json['assets'] is Map
-          ? Map<String, dynamic>.from(json['assets'] as Map)
+      final assetMap = payload['assets'] is Map
+          ? Map<String, dynamic>.from(payload['assets'] as Map)
           : <String, dynamic>{};
       final floorList = (sceneMap['floors'] as List? ?? [])
           .map(
             (f) => MapSceneFloor.fromJson(Map<String, dynamic>.from(f as Map)),
           )
           .toList();
-      final instanceList = (json['instances'] as List? ?? [])
+      final instanceList = (payload['instances'] as List? ?? [])
           .map(
             (item) => MapSceneInstance.fromJson(
               Map<String, dynamic>.from(item as Map),
@@ -160,8 +168,12 @@ class ExhibitionMapModel {
 
       return ExhibitionMapModel(
         exhibitionId:
-            json['map_id'] as int? ?? json['exhibition_id'] as int? ?? 0,
-        exhibitionName: json['exhibition_name']?.toString() ?? 'Exhibition Map',
+            int.tryParse(
+              (payload['map_id'] ?? payload['exhibition_id'] ?? 0).toString(),
+            ) ??
+            0,
+        exhibitionName:
+            payload['exhibition_name']?.toString() ?? 'Exhibition Map',
         gridWidth: (sceneMap['width'] as num?)?.toInt() ?? 1200,
         gridDepth: (sceneMap['height'] as num?)?.toInt() ?? 800,
         halls: const [],
@@ -172,11 +184,11 @@ class ExhibitionMapModel {
     }
 
     return ExhibitionMapModel(
-      exhibitionId: json['exhibition_id'] ?? 0,
-      exhibitionName: json['exhibition_name'] ?? '',
-      gridWidth: json['grid_width'] ?? 12,
-      gridDepth: json['grid_depth'] ?? 10,
-      halls: (json['halls'] as List<dynamic>? ?? [])
+      exhibitionId: payload['exhibition_id'] ?? 0,
+      exhibitionName: payload['exhibition_name'] ?? '',
+      gridWidth: payload['grid_width'] ?? 12,
+      gridDepth: payload['grid_depth'] ?? 10,
+      halls: (payload['halls'] as List<dynamic>? ?? [])
           .map((h) => MapHallModel.fromJson(h as Map<String, dynamic>))
           .toList(),
     );

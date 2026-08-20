@@ -23,13 +23,14 @@ class HomeBillboardData {
   }
 
   // ── الفعاليات الإعلانية المميزة ───────────────────────────────────────
-  /// GET /investor/sponsor-events/featured?page=&per_page=
+  /// Use the same normalized sponsor-event contract as the events screen.
+  /// This keeps duration_options identical on mobile and web.
   Future<Map<String, dynamic>> getFeaturedSponsorEvents({
     int page    = 1,
     int perPage = 5,
   }) async {
     return await crud.getData(
-      AppLink.featuredSponsorEventsBillboard,
+      AppLink.exhibitionSponsorEvents,
       params: {
         'page':     page,
         'per_page': perPage,

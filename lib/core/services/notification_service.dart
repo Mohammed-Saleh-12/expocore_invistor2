@@ -10,7 +10,7 @@ class NotificationService extends GetxService {
     return _data.fetchNotifications();
   }
 
-  Future<bool> markAsRead(int notificationId) async {
+  Future<bool> markAsRead(String notificationId) async {
     return _data.markAsRead(notificationId);
   }
 
@@ -18,7 +18,7 @@ class NotificationService extends GetxService {
     return _data.markAllAsRead();
   }
 
-  Future<bool> deleteNotification(int notificationId) async {
+  Future<bool> deleteNotification(String notificationId) async {
     return _data.deleteNotification(notificationId);
   }
 }

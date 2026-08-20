@@ -62,7 +62,7 @@ class WebForgotPasswordOtpPage extends StatelessWidget {
 
 // ── Internal timer + OTP controller ─────────────────────────
 class _WebForgotOtpController extends GetxController {
-  final otp     = ''.obs;
+  final otp = ''.obs;
   final seconds = 60.obs;
   Timer? _timer;
 
@@ -173,44 +173,46 @@ class _OtpForm extends StatelessWidget {
         const SizedBox(height: 32),
 
         // ── Resend / Timer ────────────────────────────────────
-        Obx(() => ctrl.seconds.value > 0
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.timer_outlined,
-                    size: 16,
-                    color: AppColors.grey.withOpacity(0.7),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '${'fotp_resend_wait'.tr} ${ctrl.seconds.value} ${'fotp_seconds'.tr}',
-                    style: TextStyle(
-                      fontSize: 13,
+        Obx(
+          () => ctrl.seconds.value > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 16,
                       color: AppColors.grey.withOpacity(0.7),
                     ),
-                  ),
-                ],
-              )
-            : GestureDetector(
-                onTap: () => ctrl.resend(fpCtrl),
-                child: Text(
-                  'fotp_resend'.tr,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: WebTheme.primary,
-                    fontWeight: FontWeight.w700,
-                    decoration: TextDecoration.underline,
-                    decorationColor: WebTheme.primary,
+                    const SizedBox(width: 6),
+                    Text(
+                      '${'fotp_resend_wait'.tr} ${ctrl.seconds.value} ${'fotp_seconds'.tr}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.grey.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                )
+              : GestureDetector(
+                  onTap: () => ctrl.resend(fpCtrl),
+                  child: Text(
+                    'fotp_resend'.tr,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: WebTheme.primary,
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: WebTheme.primary,
+                    ),
                   ),
                 ),
-              )),
+        ),
         const SizedBox(height: 28),
 
         // ── Confirm button ────────────────────────────────────
         Obx(() {
           final loading = fpCtrl.status.value == StatusRequest.loading;
-          final ready   = ctrl.otp.value.length == 6;
+          final ready = ctrl.otp.value.length == 6;
           return SizedBox(
             width: double.infinity,
             height: 52,
@@ -231,7 +233,11 @@ class _OtpForm extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.arrow_back_rounded, color: WebTheme.primary, size: 16),
+                Icon(
+                  Icons.arrow_back_rounded,
+                  color: WebTheme.primary,
+                  size: 16,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'fotp_back'.tr,
@@ -262,65 +268,79 @@ class _WebOtpRow extends StatefulWidget {
 class _WebOtpRowState extends State<_WebOtpRow> {
   static const _length = 6;
   final _controllers = List.generate(_length, (_) => TextEditingController());
-  final _focusNodes  = List.generate(_length, (_) => FocusNode());
+  final _focusNodes = List.generate(_length, (_) => FocusNode());
 
   @override
   void dispose() {
     for (final c in _controllers) c.dispose();
-    for (final f in _focusNodes)  f.dispose();
+    for (final f in _focusNodes) f.dispose();
     super.dispose();
   }
 
   void _onChanged(int i, String val) {
-    if (val.length == 1 && i < _length - 1) _focusNodes[i + 1].requestFocus();
-    if (val.isEmpty   && i > 0)             _focusNodes[i - 1].requestFocus();
+    if (val.length > 1) {
+      final digits = val.substring(0, val.length.clamp(0, _length - i));
+      for (var offset = 0; offset < digits.length; offset++) {
+        _controllers[i + offset].text = digits[offset];
+      }
+      for (var index = i + digits.length; index < _length; index++) {
+        _controllers[index].clear();
+      }
+      final nextIndex = i + digits.length;
+      _focusNodes[nextIndex < _length ? nextIndex : _length - 1].requestFocus();
+    } else if (val.length == 1 && i < _length - 1) {
+      _focusNodes[i + 1].requestFocus();
+    }
+    if (val.isEmpty && i > 0) _focusNodes[i - 1].requestFocus();
     final code = _controllers.map((c) => c.text).join();
     if (code.length == _length) widget.onCompleted(code);
-    if (code.length < _length)  widget.onCompleted(code);
+    if (code.length < _length) widget.onCompleted(code);
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(_length, (i) => Container(
-        width: 52,
-        height: 60,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        child: TextField(
-          controller: _controllers[i],
-          focusNode: _focusNodes[i],
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          maxLength: 1,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            color: WebTheme.text,
-          ),
-          onChanged: (val) => _onChanged(i, val),
-          decoration: InputDecoration(
-            counterText: '',
-            filled: true,
-            fillColor: WebTheme.surfaceAlt,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+      children: List.generate(
+        _length,
+        (i) => Container(
+          width: 52,
+          height: 60,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          child: TextField(
+            controller: _controllers[i],
+            focusNode: _focusNodes[i],
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: WebTheme.text,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: WebTheme.primary.withOpacity(0.25),
+            onChanged: (val) => _onChanged(i, val),
+            decoration: InputDecoration(
+              counterText: '',
+              filled: true,
+              fillColor: WebTheme.surfaceAlt,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: WebTheme.primary, width: 2),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: WebTheme.primary.withOpacity(0.25),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: WebTheme.primary, width: 2),
+              ),
             ),
           ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -342,11 +362,13 @@ class _OtpBrand extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: -80, left: -60,
+            top: -80,
+            left: -60,
             child: _blob(300, const Color(0xFF7A1FFF).withOpacity(0.25)),
           ),
           Positioned(
-            bottom: -60, right: -40,
+            bottom: -60,
+            right: -40,
             child: _blob(240, const Color(0xFFFF1592).withOpacity(0.18)),
           ),
           Padding(
@@ -367,7 +389,8 @@ class _OtpBrand extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 ShaderMask(
-                  shaderCallback: (b) => AppColors.favoriteGradient.createShader(b),
+                  shaderCallback: (b) =>
+                      AppColors.favoriteGradient.createShader(b),
                   child: Text(
                     'fotp_brand_title'.tr,
                     style: const TextStyle(
@@ -396,7 +419,8 @@ class _OtpBrand extends StatelessWidget {
   }
 
   Widget _blob(double s, Color c) => Container(
-    width: s, height: s,
+    width: s,
+    height: s,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       color: c,
@@ -405,20 +429,21 @@ class _OtpBrand extends StatelessWidget {
   );
 
   Widget _stepDot({bool done = false, bool active = false}) => Container(
-    width: 32, height: 32,
+    width: 32,
+    height: 32,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       color: done
           ? AppColors.success.withOpacity(0.2)
           : active
-              ? const Color(0xFF7A1FFF).withOpacity(0.35)
-              : Colors.white.withOpacity(0.08),
+          ? const Color(0xFF7A1FFF).withOpacity(0.35)
+          : Colors.white.withOpacity(0.08),
       border: Border.all(
         color: done
             ? AppColors.success
             : active
-                ? const Color(0xFF7A1FFF)
-                : Colors.white.withOpacity(0.2),
+            ? const Color(0xFF7A1FFF)
+            : Colors.white.withOpacity(0.2),
         width: 2,
       ),
     ),
@@ -428,8 +453,8 @@ class _OtpBrand extends StatelessWidget {
       color: done
           ? AppColors.success
           : active
-              ? const Color(0xFF7A1FFF)
-              : Colors.white.withOpacity(0.3),
+          ? const Color(0xFF7A1FFF)
+          : Colors.white.withOpacity(0.3),
     ),
   );
 
@@ -481,8 +506,12 @@ class _GradientButton extends StatelessWidget {
           alignment: Alignment.center,
           child: loading
               ? const SizedBox(
-                  width: 22, height: 22,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
                 )
               : Text(
                   label,

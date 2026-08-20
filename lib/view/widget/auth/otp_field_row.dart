@@ -16,7 +16,7 @@ class _OtpFieldRowController extends GetxController {
   void onInit() {
     super.onInit();
     controllers = List.generate(length, (_) => TextEditingController());
-    focusNodes  = List.generate(length, (_) => FocusNode());
+    focusNodes = List.generate(length, (_) => FocusNode());
   }
 
   @override
@@ -27,7 +27,23 @@ class _OtpFieldRowController extends GetxController {
   }
 
   void onChanged(int i, String val, ValueChanged<String> onCompleted) {
-    if (val.length == 1 && i < length - 1) focusNodes[i + 1].requestFocus();
+    if (val.length > 1) {
+      final digits = val.substring(0, val.length.clamp(0, length - i));
+      for (var offset = 0; offset < digits.length; offset++) {
+        controllers[i + offset].text = digits[offset];
+      }
+      for (var index = i + digits.length; index < length; index++) {
+        controllers[index].clear();
+      }
+      final nextIndex = i + digits.length;
+      if (nextIndex < length) {
+        focusNodes[nextIndex].requestFocus();
+      } else {
+        focusNodes[length - 1].requestFocus();
+      }
+    } else if (val.length == 1 && i < length - 1) {
+      focusNodes[i + 1].requestFocus();
+    }
     if (val.isEmpty && i > 0) focusNodes[i - 1].requestFocus();
     final code = controllers.map((c) => c.text).join();
     if (code.length == length) onCompleted(code);
@@ -48,11 +64,7 @@ class OtpFieldRow extends StatelessWidget {
   final int length;
   final ValueChanged<String> onCompleted;
 
-  const OtpFieldRow({
-    super.key,
-    this.length = 6,
-    required this.onCompleted,
-  });
+  const OtpFieldRow({super.key, this.length = 6, required this.onCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +84,6 @@ class OtpFieldRow extends StatelessWidget {
               focusNode: ctrl.focusNodes[i],
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
-              maxLength: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               onChanged: (val) => ctrl.onChanged(i, val, onCompleted),
@@ -94,8 +105,10 @@ class OtpFieldRow extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: Color(0xFF7A1FFF), width: 2),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF7A1FFF),
+                    width: 2,
+                  ),
                 ),
               ),
             ),

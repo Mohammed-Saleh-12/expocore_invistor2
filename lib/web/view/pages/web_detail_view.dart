@@ -361,7 +361,10 @@ class _ExhibitionDetail extends StatelessWidget {
         if (e.services.isEmpty)
           Text(
             'لا توجد خدمات مُدرجة لهذا المعرض',
-            style: TextStyle(color: AppColors.grey.withOpacity(0.8), fontSize: 13),
+            style: TextStyle(
+              color: AppColors.grey.withOpacity(0.8),
+              fontSize: 13,
+            ),
           )
         else
           ...e.services.map(
@@ -369,7 +372,11 @@ class _ExhibitionDetail extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_outline_rounded, size: 20, color: WebTheme.primary),
+                  Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 20,
+                    color: WebTheme.primary,
+                  ),
                   const SizedBox(width: 12),
                   Text(s, style: TextStyle(color: WebTheme.text, fontSize: 14)),
                 ],
@@ -384,7 +391,10 @@ class _ExhibitionDetail extends StatelessWidget {
         if (e.sponsorEvents.isEmpty)
           Text(
             'لا توجد فعاليات إعلانية لهذا المعرض حالياً',
-            style: TextStyle(color: AppColors.grey.withOpacity(0.8), fontSize: 13),
+            style: TextStyle(
+              color: AppColors.grey.withOpacity(0.8),
+              fontSize: 13,
+            ),
           )
         else
           Column(

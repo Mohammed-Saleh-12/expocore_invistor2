@@ -460,11 +460,11 @@ class DummyData {
   ];
 
   static List<NotificationModel> notifications = [
-    NotificationModel(id: 1, userId: 1, title: 'تم قبول طلب الحجز', message: 'تم قبول طلب حجز الجناح B12 في معرض التقنية 2026', type: 'booking_accepted', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/booths/booking-detail'),
-    NotificationModel(id: 2, userId: 1, title: 'معرض جديد متاح', message: 'معرض التقنية 2026 متاح الآن للتسجيل. سارع بحجز جناحك!', type: 'new_exhibition', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/exhibitions/detail'),
-    NotificationModel(id: 3, userId: 1, title: 'حملتك نشطة الآن', message: 'حملة "عرض الصيف" بدأت الآن وتصل لآلاف الزوار', type: 'campaign_active', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/campaigns'),
-    NotificationModel(id: 4, userId: 1, title: 'رسالة جديدة', message: 'رسالة جديدة من إدارة معرض التقنية 2026', type: 'new_message', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/messages'),
-    NotificationModel(id: 5, userId: 1, title: 'تقريرك الشهري جاهز', message: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/reports'),
+    NotificationModel(id: "1", userId: 1, title: 'تم قبول طلب الحجز', message: 'تم قبول طلب حجز الجناح B12 في معرض التقنية 2026', type: 'booking_accepted', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/booths/booking-detail'),
+    NotificationModel(id: "2", userId: 1, title: 'معرض جديد متاح', message: 'معرض التقنية 2026 متاح الآن للتسجيل. سارع بحجز جناحك!', type: 'new_exhibition', createdAt: DateTime(2026, 7, 31), isRead: false, route: '/exhibitions/detail'),
+    NotificationModel(id: "3", userId: 1, title: 'حملتك نشطة الآن', message: 'حملة "عرض الصيف" بدأت الآن وتصل لآلاف الزوار', type: 'campaign_active', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/campaigns'),
+    NotificationModel(id: "4", userId: 1, title: 'رسالة جديدة', message: 'رسالة جديدة من إدارة معرض التقنية 2026', type: 'new_message', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/messages'),
+    NotificationModel(id: "5", userId: 1, title: 'تقريرك الشهري جاهز', message: 'تقرير يوليو 2026 جاهز للتنزيل. اطلع على أداء جناحك', type: 'report_ready', createdAt: DateTime(2026, 7, 31), isRead: true, route: '/reports'),
   ];
 
   static List<VisitorConversationModel> visitorConversations = [

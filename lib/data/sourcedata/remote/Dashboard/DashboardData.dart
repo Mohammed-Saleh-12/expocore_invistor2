@@ -9,7 +9,18 @@ class DashboardData {
   Future<Map<String, dynamic>> getDashboard(String period) async {
     return await crud.getData(
       AppLink.investorDashboard,
-      params: {'period': period},
+      params: {'period': _apiPeriod(period)},
     );
+  }
+
+  String _apiPeriod(String period) {
+    switch (period) {
+      case 'آخر 3 أشهر':
+        return 'quarter';
+      case 'هذا العام':
+        return 'year';
+      default:
+        return 'month';
+    }
   }
 }

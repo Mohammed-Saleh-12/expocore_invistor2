@@ -1,8 +1,10 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 import '../../../data/model/map/exhibition_map_model.dart';
+import '../../../linkapi.dart';
 
 class Exhibition3DScene extends StatelessWidget {
   final ExhibitionMapModel mapModel;
@@ -25,8 +27,14 @@ class Exhibition3DScene extends StatelessWidget {
     }
 
     final instances = mapModel.sceneInstances;
-    final maxX = _maxAbs(instances.map((e) => e.position.x).toList());
-    final maxZ = _maxAbs(instances.map((e) => e.position.z).toList());
+    final sceneWidth = mapModel.gridWidth.toDouble().clamp(
+      1.0,
+      double.infinity,
+    );
+    final sceneDepth = mapModel.gridDepth.toDouble().clamp(
+      1.0,
+      double.infinity,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -58,13 +66,12 @@ class Exhibition3DScene extends StatelessWidget {
               final instance = entry.value;
               final modelUrl = _resolveAssetUrl(instance);
               final x = _clamp(
-                (instance.position.x / (maxX == 0 ? 1 : maxX)) * width,
+                (instance.position.x / sceneWidth) * width,
                 0,
                 width,
               );
               final y = _clamp(
-                (instance.position.z / (maxZ == 0 ? 1 : maxZ)) * height +
-                    (height * 0.18),
+                (instance.position.z / sceneDepth) * height,
                 0,
                 height,
               );
@@ -94,7 +101,7 @@ class Exhibition3DScene extends StatelessWidget {
                       child: SizedBox(
                         width: size,
                         height: size,
-                        child: modelUrl != null
+                        child: modelUrl != null && _supportsModelViewer
                             ? _ModelViewerCard(
                                 key: ValueKey('scene_model_$index'),
                                 src: modelUrl,
@@ -123,19 +130,31 @@ class Exhibition3DScene extends StatelessWidget {
       final value = raw.trim();
       if (value.toLowerCase().endsWith('.glb') ||
           value.toLowerCase().endsWith('.gltf')) {
-        return value;
+        if (value.startsWith('http://') || value.startsWith('https://')) {
+          return value;
+        }
+        final canonicalFile = _canonicalModelFile(value);
+        if (canonicalFile != null) return AppLink.mapModel(canonicalFile);
+        return _absoluteAssetUrl(value);
       }
+    }
+
+    final canonicalFile = _canonicalModelFile(instance.assetKey);
+    if (canonicalFile != null) {
+      return AppLink.mapModel(canonicalFile);
     }
 
     if (instance.assetKey.toLowerCase().endsWith('.glb') ||
         instance.assetKey.toLowerCase().endsWith('.gltf')) {
-      return instance.assetKey;
+      return _absoluteAssetUrl(instance.assetKey);
     }
 
     return null;
   }
 
   MapBoothModel? _coerceBoothFromInstance(MapSceneInstance instance) {
+    if (!_isModBooth(instance)) return null;
+
     final id = int.tryParse(instance.id.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     if (id == 0) return null;
     return MapBoothModel(
@@ -155,19 +174,57 @@ class Exhibition3DScene extends StatelessWidget {
     );
   }
 
+  bool _isModBooth(MapSceneInstance instance) {
+    final type = instance.type.trim().toLowerCase();
+    if (type != 'booth' && type != 'wing') return false;
+
+    final key = _assetKeyName(instance.assetKey).toLowerCase();
+    return RegExp(r'^(?:booth_)?mod[1-5]$').hasMatch(key);
+  }
+
+  String? _canonicalModelFile(String assetKey) {
+    final key = _assetKeyName(assetKey).toLowerCase();
+    final mod = RegExp(r'^(?:booth_)?mod([1-5])$').firstMatch(key);
+    if (mod != null) return 'mod${mod.group(1)}.glb';
+
+    final meet = RegExp(r'^meet([1-3])$').firstMatch(key);
+    if (meet != null) return 'meet${meet.group(1)}.glb';
+
+    if (key == 'gate') return 'gate.glb';
+    return null;
+  }
+
+  String _assetKeyName(String value) {
+    final withoutQuery = value.split('?').first;
+    final fileName = withoutQuery.split('/').last;
+    return fileName.toLowerCase().endsWith('.glb') ||
+            fileName.toLowerCase().endsWith('.gltf')
+        ? fileName.substring(0, fileName.lastIndexOf('.'))
+        : fileName;
+  }
+
+  String _absoluteAssetUrl(String value) {
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+    return AppLink.mapModel(value.split('/').last);
+  }
+
   double _itemSize(MapSceneInstance instance, double width, double height) {
-    final base = ((instance.width ?? 1.0) + (instance.depth ?? 1.0)) * 32;
+    final base =
+        ((instance.width ?? instance.scale.x) +
+            (instance.depth ?? instance.scale.z)) *
+        math.min(width / mapModel.gridWidth, height / mapModel.gridDepth);
     final safe = base.clamp(80.0, math.min(width, height) * 0.42);
     return safe;
   }
 
-  double _maxAbs(List<double> values) {
-    if (values.isEmpty) return 0;
-    final max = values.reduce((a, b) => a.abs() > b.abs() ? a : b).abs();
-    return max == 0 ? 1 : max;
-  }
-
   double _clamp(double value, double min, double max) => value.clamp(min, max);
+
+  bool get _supportsModelViewer =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
 }
 
 class _ModelViewerCard extends StatelessWidget {

@@ -9,16 +9,27 @@ class NotificationsView extends GetView<NotificationsController> {
 
   IconData _icon(String type) {
     switch (type) {
+      case 'booking':
       case 'booking_accepted':
         return Icons.check_circle_outline;
+      case 'exhibition':
       case 'new_exhibition':
         return Icons.store_outlined;
+      case 'sponsor':
       case 'campaign_active':
         return Icons.campaign_outlined;
+      case 'message':
       case 'new_message':
         return Icons.message_outlined;
+      case 'report':
       case 'report_ready':
         return Icons.bar_chart_outlined;
+      case 'map':
+        return Icons.map_outlined;
+      case 'attendance':
+        return Icons.fact_check_outlined;
+      case 'task':
+        return Icons.task_alt_outlined;
       case 'event_reminder':
         return Icons.notifications_active_outlined;
       case 'favorite_update':
@@ -30,16 +41,23 @@ class NotificationsView extends GetView<NotificationsController> {
 
   Color _iconColor(String type) {
     switch (type) {
+      case 'booking':
       case 'booking_accepted':
         return AppColors.success;
+      case 'exhibition':
       case 'new_exhibition':
         return AppColors.info;
+      case 'sponsor':
       case 'campaign_active':
         return AppColors.orange;
+      case 'message':
       case 'new_message':
         return AppColors.success;
+      case 'report':
       case 'report_ready':
         return AppColors.info;
+      case 'map':
+        return AppColors.darkAccent;
       case 'event_reminder':
         return AppColors.darkAccent;
       case 'favorite_update':
@@ -73,7 +91,9 @@ class NotificationsView extends GetView<NotificationsController> {
             return GestureDetector(
               onTap: () {
                 controller.markRead(n.id);
-                if (n.route != null) Get.toNamed(n.route!);
+                if (n.route != null && n.route!.isNotEmpty) {
+                  Get.toNamed(n.route!);
+                }
               },
               child: Container(
                 color: n.isRead

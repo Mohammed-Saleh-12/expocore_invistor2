@@ -29,22 +29,29 @@ class AppLink {
 
   // ── Auth — Firebase sync / FCM token ────────────────────
   static String get firebaseSync => '$server/auth/firebase-sync';
-  static String get fcmToken => '$server/investor/auth/fcm-token';
+  static String get fcmToken => '$server/notifications/fcm-token';
 
   // ── Notifications ─────────────────────────────────────────
   static String get investorNotifications => '$server/investor/notifications';
   static String get notificationsReadAll =>
       '$server/investor/notifications/read-all';
-  static String notificationDetail(int id) =>
+  static String notificationDetail(String id) =>
       '$server/investor/notifications/$id';
-  static String notificationRead(int id) =>
+  static String notificationRead(String id) =>
       '$server/investor/notifications/$id/read';
 
   // ── Exhibitions ──────────────────────────────────────────
   static String get exhibitions => '$server/investor/exhibitions';
   static String exhibitionDetail(int id) => '$server/investor/exhibitions/$id';
   // الخريطة ثلاثية الأبعاد: GET /exhibitions/{id}/map
-  static String exhibitionMap(int id) => '$server/exhibitions/$id/map';
+  static String exhibitionMap(int id) => '$server/investor/exhibitions/$id/map';
+
+  // ملفات نماذج الخريطة تُخدم من جذر التطبيق، وليس من مسار /api.
+  static String mapModel(String fileName) {
+    final apiUri = Uri.parse(server);
+    final rootUri = apiUri.replace(path: '/models/$fileName');
+    return rootUri.toString();
+  }
 
   // ── Booths ───────────────────────────────────────────────
   static String get booths => '$server/booths';

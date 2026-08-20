@@ -27,10 +27,23 @@ class RegisterData {
       'website': website,
       'password': password,
       'password_confirmation': passwordConfirmation,
-      'activity_type': activityType,
+      'activity_type': _backendActivityType(activityType),
       if ((fcmToken ?? '').isNotEmpty) 'fcm_token': fcmToken,
     };
 
     return await crud.postData(AppLink.register, body);
+  }
+
+  String _backendActivityType(String value) {
+    const activityTypes = {
+      'تقنية': 'technology',
+      'غذاء وضيافة': 'food&hospitality',
+      'موضة': 'fashion',
+      'صحة': 'health',
+      'تعليم': 'education',
+      'أخرى': 'other',
+    };
+
+    return activityTypes[value] ?? value;
   }
 }

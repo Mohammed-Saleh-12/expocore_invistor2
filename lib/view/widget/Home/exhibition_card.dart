@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
 
@@ -34,6 +35,12 @@ class ExhibitionCard extends StatelessWidget {
       default:
         return 'منتهٍ';
     }
+  }
+
+  String _formatDate(String value) {
+    final date = DateTime.tryParse(value);
+    if (date == null) return value;
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 
   @override
@@ -154,11 +161,15 @@ class ExhibitionCard extends StatelessWidget {
                         color: AppColors.grey,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        '${exhibition.location}، ${exhibition.city}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey,
+                      Expanded(
+                        child: Text(
+                          '${exhibition.location}، ${exhibition.city}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey,
+                          ),
                         ),
                       ),
                     ],
@@ -172,11 +183,15 @@ class ExhibitionCard extends StatelessWidget {
                         color: AppColors.grey,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        '${exhibition.startDate} — ${exhibition.endDate}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey,
+                      Expanded(
+                        child: Text(
+                          '${_formatDate(exhibition.startDate)} — ${_formatDate(exhibition.endDate)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey,
+                          ),
                         ),
                       ),
                     ],
