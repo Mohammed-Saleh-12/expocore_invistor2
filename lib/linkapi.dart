@@ -8,28 +8,28 @@ class AppLink {
   static String get server => AppEnv.baseUrl;
 
   // ── Auth ─────────────────────────────────────────────────
-  static String get login => '$server/auth/login';
-  static String get register => '$server/auth/register';
-  static String get logout => '$server/auth/logout';
-  static String get forgotPassword => '$server/auth/forgot-password';
-  static String get resetPassword => '$server/auth/reset-password';
+  static String get login => '$server/investor/auth/login';
+  static String get register => '$server/investor/auth/register';
+  static String get logout => '$server/investor/auth/logout';
+  static String get forgotPassword => '$server/investor/auth/forgot-password';
+  static String get resetPassword => '$server/investor/auth/reset-password';
   static String get refreshToken => '$server/auth/refresh';
-  static String get changePassword => '$server/auth/change-password';
-  static String get deleteAccount => '$server/auth/delete-account';
+  static String get changePassword => '$server/investor/auth/change-password';
+  static String get deleteAccount => '$server/investor/auth/delete-account';
 
   // ── Auth — OTP (تسجيل) ───────────────────────────────────
-  static String get verifyOtp => '$server/auth/verify-otp';
-  static String get resendOtp => '$server/auth/resend-otp';
+  static String get verifyOtp => '$server/investor/auth/verify-otp';
+  static String get resendOtp => '$server/investor/auth/resend-otp';
 
   // ── Auth — Forgot Password OTP ───────────────────────────
   static String get verifyForgotOtp =>
-      '$server/auth/forgot-password/verify-otp';
+      '$server/investor/auth/forgot-password/verify-otp';
   static String get resendForgotOtp =>
-      '$server/auth/forgot-password/resend-otp';
+      '$server/investor/auth/forgot-password/resend-otp';
 
   // ── Auth — Firebase sync / FCM token ────────────────────
   static String get firebaseSync => '$server/auth/firebase-sync';
-  static String get fcmToken => '$server/notifications/fcm-token';
+  static String get fcmToken => '$server/investor/auth/fcm-token';
 
   // ── Notifications ─────────────────────────────────────────
   static String get investorNotifications => '$server/investor/notifications';
@@ -41,8 +41,8 @@ class AppLink {
       '$server/investor/notifications/$id/read';
 
   // ── Exhibitions ──────────────────────────────────────────
-  static String get exhibitions => '$server/exhibitions';
-  static String exhibitionDetail(int id) => '$server/exhibitions/$id';
+  static String get exhibitions => '$server/investor/exhibitions';
+  static String exhibitionDetail(int id) => '$server/investor/exhibitions/$id';
   // الخريطة ثلاثية الأبعاد: GET /exhibitions/{id}/map
   static String exhibitionMap(int id) => '$server/exhibitions/$id/map';
 
@@ -54,11 +54,11 @@ class AppLink {
   // ── Home Billboard (Paginated, 5 per call) ───────────────
   /// GET /exhibitions/featured?page=&per_page=
   static String get featuredExhibitionsBillboard =>
-      '$server/exhibitions/featured';
+      '$server/investor/exhibitions/featured';
 
   // ── Latest Exhibitions (ويب — بدون Pagination) ───────────
   /// GET /exhibitions/latest
-  static String get latestExhibitions => '$server/exhibitions/latest';
+  static String get latestExhibitions => '$server/investor/exhibitions/latest';
 
   /// GET /investor/sponsor-events/featured?page=&per_page=
   static String get featuredSponsorEventsBillboard =>
