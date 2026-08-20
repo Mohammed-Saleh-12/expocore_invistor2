@@ -14,20 +14,21 @@ class HomeBillboardController extends GetxController {
   final HomeBillboardData _data = HomeBillboardData(Crud());
 
   // ── المعارض المميزة ──────────────────────────────────────────────────
-  final featuredExhibitions         = <ExhibitionModel>[].obs;
-  final isLoadingExhibitions        = false.obs;
-  final isLoadingMoreExhibitions    = false.obs;
-  int  _exhibitionsPage             = 1;
-  int  _exhibitionsTotalPages       = 1;
-  bool get hasMoreExhibitions       => _exhibitionsPage < _exhibitionsTotalPages;
+  final featuredExhibitions = <ExhibitionModel>[].obs;
+  final isLoadingExhibitions = false.obs;
+  final isLoadingMoreExhibitions = false.obs;
+  int _exhibitionsPage = 1;
+  int _exhibitionsTotalPages = 1;
+  bool get hasMoreExhibitions => _exhibitionsPage < _exhibitionsTotalPages;
 
   // ── الفعاليات الإعلانية المميزة ──────────────────────────────────────
-  final featuredSponsorEvents       = <ExhibitionSponsorEvent>[].obs;
-  final isLoadingSponsorEvents      = false.obs;
-  final isLoadingMoreSponsorEvents  = false.obs;
-  int  _sponsorEventsPage           = 1;
-  int  _sponsorEventsTotalPages     = 1;
-  bool get hasMoreSponsorEvents     => _sponsorEventsPage < _sponsorEventsTotalPages;
+  final featuredSponsorEvents = <ExhibitionSponsorEvent>[].obs;
+  final isLoadingSponsorEvents = false.obs;
+  final isLoadingMoreSponsorEvents = false.obs;
+  int _sponsorEventsPage = 1;
+  int _sponsorEventsTotalPages = 1;
+  bool get hasMoreSponsorEvents =>
+      _sponsorEventsPage < _sponsorEventsTotalPages;
 
   // ── حجم الصفحة (ثابت) ────────────────────────────────────────────────
   static const int _perPage = 5;
@@ -61,13 +62,13 @@ class HomeBillboardController extends GetxController {
     }
 
     final result = await _data.getFeaturedExhibitions(
-      page:    page,
+      page: page,
       perPage: _perPage,
     );
 
     if (result['status'] == true) {
-      final body   = result['data'];
-      final list   = _asList(body is Map ? (body['data'] ?? body) : body);
+      final body = result['data'];
+      final list = _asList(body is Map ? (body['data'] ?? body) : body);
       final models = list.map((e) => ExhibitionModel.fromJson(e)).toList();
 
       if (isFirst) {
@@ -79,19 +80,18 @@ class HomeBillboardController extends GetxController {
       // تحديث إجمالي الصفحات من meta
       if (body is Map) {
         final meta = body['meta'] ?? body['pagination'] ?? {};
-        _exhibitionsTotalPages =
-            meta['last_page'] ?? meta['total_pages'] ?? 1;
+        _exhibitionsTotalPages = meta['last_page'] ?? meta['total_pages'] ?? 1;
       }
       _exhibitionsPage = page;
     }
 
-    isLoadingExhibitions.value     = false;
+    isLoadingExhibitions.value = false;
     isLoadingMoreExhibitions.value = false;
   }
 
   /// يُحمِّل الصفحة الأولى من المعارض من جديد (سحب للتحديث)
   Future<void> refreshExhibitions() async {
-    _exhibitionsPage       = 1;
+    _exhibitionsPage = 1;
     _exhibitionsTotalPages = 1;
     await _fetchExhibitions(page: 1);
   }
@@ -115,15 +115,16 @@ class HomeBillboardController extends GetxController {
     }
 
     final result = await _data.getFeaturedSponsorEvents(
-      page:    page,
+      page: page,
       perPage: _perPage,
     );
 
     if (result['status'] == true) {
-      final body   = result['data'];
-      final list   = _asList(body is Map ? (body['data'] ?? body) : body);
-      final models =
-          list.map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
+      final body = result['data'];
+      final list = _asList(body is Map ? (body['data'] ?? body) : body);
+      final models = list
+          .map((e) => ExhibitionSponsorEvent.fromJson(e))
+          .toList();
       debugPrint(
         '[FeaturedSponsorEvents] raw=${list.length}, parsed=${models.length}, '
         'options=${models.fold<int>(0, (sum, event) => sum + event.durationOptions.length)}',
@@ -144,13 +145,13 @@ class HomeBillboardController extends GetxController {
       _sponsorEventsPage = page;
     }
 
-    isLoadingSponsorEvents.value     = false;
+    isLoadingSponsorEvents.value = false;
     isLoadingMoreSponsorEvents.value = false;
   }
 
   /// يُحمِّل الصفحة الأولى من الفعاليات من جديد (سحب للتحديث)
   Future<void> refreshSponsorEvents() async {
-    _sponsorEventsPage       = 1;
+    _sponsorEventsPage = 1;
     _sponsorEventsTotalPages = 1;
     await _fetchSponsorEvents(page: 1);
   }

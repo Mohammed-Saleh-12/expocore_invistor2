@@ -21,7 +21,8 @@ class ExhibitionEventsView extends GetView<EventsController> {
         }
         if (controller.exhibitionSponsorEvents.isEmpty) {
           return const EmptyWidget(
-              message: 'لا توجد فعاليات إعلانية متاحة حالياً');
+            message: 'لا توجد فعاليات إعلانية متاحة حالياً',
+          );
         }
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8),

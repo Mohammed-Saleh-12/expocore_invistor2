@@ -7,6 +7,7 @@ import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 class EventBillboard extends StatelessWidget {
   final List<ExhibitionSponsorEvent> events;
   final void Function(ExhibitionSponsorEvent)? onTap;
+
   /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
   final VoidCallback? onNearEnd;
 
@@ -318,7 +319,11 @@ class _BillboardImage extends StatelessWidget {
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => Container(
         color: AppColors.darkSurface,
-        child: const Icon(Icons.broken_image_outlined, size: 84, color: AppColors.grey),
+        child: const Icon(
+          Icons.broken_image_outlined,
+          size: 84,
+          color: AppColors.grey,
+        ),
       ),
     );
   }

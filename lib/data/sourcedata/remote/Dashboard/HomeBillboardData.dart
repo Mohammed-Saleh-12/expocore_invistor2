@@ -10,15 +10,12 @@ class HomeBillboardData {
   // ── المعارض المميزة ───────────────────────────────────────────────────
   /// GET /exhibitions/featured?page=&per_page=
   Future<Map<String, dynamic>> getFeaturedExhibitions({
-    int page    = 1,
+    int page = 1,
     int perPage = 5,
   }) async {
     return await crud.getData(
       AppLink.featuredExhibitionsBillboard,
-      params: {
-        'page':     page,
-        'per_page': perPage,
-      },
+      params: {'page': page, 'per_page': perPage},
     );
   }
 
@@ -26,15 +23,12 @@ class HomeBillboardData {
   /// Use the same normalized sponsor-event contract as the events screen.
   /// This keeps duration_options identical on mobile and web.
   Future<Map<String, dynamic>> getFeaturedSponsorEvents({
-    int page    = 1,
+    int page = 1,
     int perPage = 5,
   }) async {
     return await crud.getData(
       AppLink.exhibitionSponsorEvents,
-      params: {
-        'page':     page,
-        'per_page': perPage,
-      },
+      params: {'page': page, 'per_page': perPage},
     );
   }
 }

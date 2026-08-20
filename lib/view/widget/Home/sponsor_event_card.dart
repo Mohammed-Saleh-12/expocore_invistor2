@@ -140,7 +140,10 @@ class SponsorEventCard extends StatelessWidget {
                       event.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.grey,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -148,26 +151,26 @@ class SponsorEventCard extends StatelessWidget {
                     children: [
                       if (event.durationOptions.isNotEmpty)
                         Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppColors.success.withOpacity(0.4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.success.withOpacity(0.4),
+                            ),
+                          ),
+                          child: Text(
+                            'من ${minPrice.toStringAsFixed(0)} ﷼',
+                            style: const TextStyle(
+                              color: AppColors.success,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          'من ${minPrice.toStringAsFixed(0)} ﷼',
-                          style: const TextStyle(
-                            color: AppColors.success,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
                       const SizedBox(width: 8),
                       Text(
                         '${event.durationOptions.length} خيارات للمشاركة',
@@ -250,13 +253,15 @@ class _EventImagesState extends State<_EventImages> {
     final images = widget.event.images.isNotEmpty
         ? widget.event.images
         : (widget.event.exhibitionImageUrl.isNotEmpty
-            ? [widget.event.exhibitionImageUrl]
-            : const <String>[]);
+              ? [widget.event.exhibitionImageUrl]
+              : const <String>[]);
     if (images.isEmpty) {
       return Container(
         height: 150,
         color: AppColors.darkSurface,
-        child: const Center(child: Icon(Icons.image, size: 48, color: AppColors.grey)),
+        child: const Center(
+          child: Icon(Icons.image, size: 48, color: AppColors.grey),
+        ),
       );
     }
     return SizedBox(
@@ -273,7 +278,11 @@ class _EventImagesState extends State<_EventImages> {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: AppColors.darkSurface,
-                child: const Icon(Icons.broken_image_outlined, size: 48, color: AppColors.grey),
+                child: const Icon(
+                  Icons.broken_image_outlined,
+                  size: 48,
+                  color: AppColors.grey,
+                ),
               ),
             ),
           ),
@@ -284,15 +293,18 @@ class _EventImagesState extends State<_EventImages> {
               right: 0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(images.length, (dot) => Container(
-                  width: dot == _index ? 16 : 6,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    color: dot == _index ? Colors.white : Colors.white54,
-                    borderRadius: BorderRadius.circular(4),
+                children: List.generate(
+                  images.length,
+                  (dot) => Container(
+                    width: dot == _index ? 16 : 6,
+                    height: 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                      color: dot == _index ? Colors.white : Colors.white54,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
-                )),
+                ),
               ),
             ),
         ],

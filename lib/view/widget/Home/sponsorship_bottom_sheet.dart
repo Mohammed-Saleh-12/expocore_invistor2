@@ -127,7 +127,9 @@ class _StepDetails extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          event.description.isEmpty ? 'لا يوجد وصف للفعالية' : event.description,
+          event.description.isEmpty
+              ? 'لا يوجد وصف للفعالية'
+              : event.description,
           style: const TextStyle(
             fontSize: 13,
             color: AppColors.grey,
@@ -147,12 +149,19 @@ class _StepDetails extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.circle, size: 7, color: AppColors.darkPrimary),
+                  const Icon(
+                    Icons.circle,
+                    size: 7,
+                    color: AppColors.darkPrimary,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       '${activity['title'] ?? ''} (${activity['start_time'] ?? ''} - ${activity['end_time'] ?? ''})',
-                      style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey,
+                      ),
                     ),
                   ),
                 ],

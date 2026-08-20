@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class SponsorDurationOption {
   final String label;
-  final int    days;
+  final int days;
   final String? startDate;
   final String? endDate;
   final double price;
@@ -42,17 +42,17 @@ class SponsorDurationOption {
 }
 
 class ExhibitionSponsorEvent {
-  final int    id;
+  final int id;
   final String name;
   final String type;
-  final int    exhibitionId;
+  final int exhibitionId;
   final String exhibitionName;
   final String exhibitionImageUrl;
   final String date;
   final String startTime;
   final String endTime;
   final String place;
-  final int    listingDays;
+  final int listingDays;
   final String description;
   final int capacity;
   final int registeredCount;
@@ -99,7 +99,11 @@ class ExhibitionSponsorEvent {
     final j = {...nested, ...json};
     final images = j['images'] ?? j['event_images'] ?? j['photos'] ?? [];
     final activities = j['activities'] ?? j['programs'] ?? [];
-    dynamic options = j['duration_options'] ?? j['durationOptions'] ?? j['sponsorshipOptions'] ?? [];
+    dynamic options =
+        j['duration_options'] ??
+        j['durationOptions'] ??
+        j['sponsorshipOptions'] ??
+        [];
     if (options is String && options.trim().isNotEmpty) {
       try {
         options = jsonDecode(options);
@@ -129,36 +133,62 @@ class ExhibitionSponsorEvent {
     final start = (j['start_time'] ?? j['startAt'] ?? '').toString();
     final end = (j['end_time'] ?? j['endAt'] ?? '').toString();
     return ExhibitionSponsorEvent(
-        id:                 SponsorDurationOption._toInt(j['id']),
-        name:               (j['name'] ?? j['title'] ?? '').toString(),
-        type:               (j['type'] ?? '').toString(),
-        exhibitionId:       SponsorDurationOption._toInt(j['exhibition_id'] ?? j['exhibitionId']),
-        exhibitionName:     (j['exhibition_name'] ?? j['exhibitionName'] ?? j['exhibition'] ?? '').toString(),
-        exhibitionImageUrl: _validUrl(j['exhibition_image_url'] ?? j['exhibitionImageUrl']),
-        date:               _dateOnly(j['date'] ?? j['start_date'] ?? start),
-        startTime:          _timeOnly(start),
-        endTime:            _timeOnly(end),
-        place:              (j['place'] ?? j['venueName'] ?? '').toString(),
-        listingDays:        SponsorDurationOption._toInt(j['listing_days'] ?? j['duration_days'] ?? j['durationDays'], 1),
-        description:        (j['description'] ?? '').toString(),
-        capacity:           SponsorDurationOption._toInt(j['capacity'] ?? j['max_participants']),
-        registeredCount:    SponsorDurationOption._toInt(j['registered_count'] ?? j['registered']),
-        scannedCount:       SponsorDurationOption._toInt(j['scanned_count'] ?? j['attended']),
-        ticketType:         (j['ticket_type'] ?? j['ticketType'] ?? 'invitation').toString(),
-        ticketPrice:        SponsorDurationOption._toDouble(j['ticket_price'] ?? j['ticketPrice']),
-        status:             (j['status'] ?? 'upcoming').toString(),
-        publishDate:        (j['publish_date'] ?? j['publishedAt'])?.toString(),
-        images:             (images is List ? images : const []).map((image) {
-          if (image is Map) return (image['url'] ?? '').toString();
-          return image.toString();
-        }).where((image) => image.isNotEmpty).toList(),
-        activities:         (activities is List ? activities : const []).whereType<Map>().map(Map<String, dynamic>.from).toList(),
-        durationOptions: (options is List ? options : const [])
+      id: SponsorDurationOption._toInt(j['id']),
+      name: (j['name'] ?? j['title'] ?? '').toString(),
+      type: (j['type'] ?? '').toString(),
+      exhibitionId: SponsorDurationOption._toInt(
+        j['exhibition_id'] ?? j['exhibitionId'],
+      ),
+      exhibitionName:
+          (j['exhibition_name'] ?? j['exhibitionName'] ?? j['exhibition'] ?? '')
+              .toString(),
+      exhibitionImageUrl: _validUrl(
+        j['exhibition_image_url'] ?? j['exhibitionImageUrl'],
+      ),
+      date: _dateOnly(j['date'] ?? j['start_date'] ?? start),
+      startTime: _timeOnly(start),
+      endTime: _timeOnly(end),
+      place: (j['place'] ?? j['venueName'] ?? '').toString(),
+      listingDays: SponsorDurationOption._toInt(
+        j['listing_days'] ?? j['duration_days'] ?? j['durationDays'],
+        1,
+      ),
+      description: (j['description'] ?? '').toString(),
+      capacity: SponsorDurationOption._toInt(
+        j['capacity'] ?? j['max_participants'],
+      ),
+      registeredCount: SponsorDurationOption._toInt(
+        j['registered_count'] ?? j['registered'],
+      ),
+      scannedCount: SponsorDurationOption._toInt(
+        j['scanned_count'] ?? j['attended'],
+      ),
+      ticketType: (j['ticket_type'] ?? j['ticketType'] ?? 'invitation')
+          .toString(),
+      ticketPrice: SponsorDurationOption._toDouble(
+        j['ticket_price'] ?? j['ticketPrice'],
+      ),
+      status: (j['status'] ?? 'upcoming').toString(),
+      publishDate: (j['publish_date'] ?? j['publishedAt'])?.toString(),
+      images: (images is List ? images : const [])
+          .map((image) {
+            if (image is Map) return (image['url'] ?? '').toString();
+            return image.toString();
+          })
+          .where((image) => image.isNotEmpty)
+          .toList(),
+      activities: (activities is List ? activities : const [])
           .whereType<Map>()
-          .map((o) => SponsorDurationOption.fromJson(Map<String, dynamic>.from(o)))
-            .toList(),
-        isFavorite: j['is_favorite'] ?? false,
-      );
+          .map(Map<String, dynamic>.from)
+          .toList(),
+      durationOptions: (options is List ? options : const [])
+          .whereType<Map>()
+          .map(
+            (o) => SponsorDurationOption.fromJson(Map<String, dynamic>.from(o)),
+          )
+          .toList(),
+      isFavorite: j['is_favorite'] ?? false,
+    );
   }
 
   static String _validUrl(dynamic value) {
@@ -172,7 +202,11 @@ class ExhibitionSponsorEvent {
   static String _dateOnly(dynamic value) {
     final raw = value?.toString() ?? '';
     final parsed = DateTime.tryParse(raw);
-    return parsed == null ? raw : raw.length >= 10 ? raw.substring(0, 10) : raw;
+    return parsed == null
+        ? raw
+        : raw.length >= 10
+        ? raw.substring(0, 10)
+        : raw;
   }
 
   static String _timeOnly(String value) {
