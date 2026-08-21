@@ -7,6 +7,7 @@ import '../../../data/model/map/exhibition_map_model.dart';
 import '../../../linkapi.dart';
 
 class Exhibition3DScene extends StatelessWidget {
+  static const double _worldScale = 0.01;
   final ExhibitionMapModel mapModel;
   final MapBoothModel? selectedBooth;
   final ValueChanged<MapBoothModel>? onBoothTapped;
@@ -79,12 +80,12 @@ class Exhibition3DScene extends StatelessWidget {
                   final instance = entry.value;
                   final modelUrl = _resolveAssetUrl(instance);
                   final x = _clamp(
-                    (instance.position.x / sceneWidth) * width,
+                    ((instance.position.x / _worldScale) / sceneWidth) * width,
                     0,
                     width,
                   );
                   final y = _clamp(
-                    (instance.position.z / sceneDepth) * height,
+                    ((instance.position.z / _worldScale) / sceneDepth) * height,
                     0,
                     height,
                   );
@@ -248,9 +249,10 @@ class Exhibition3DScene extends StatelessWidget {
   }
 
   double _itemSize(MapSceneInstance instance, double width, double height) {
+    final instanceWidth = (instance.width ?? instance.scale.x) / _worldScale;
+    final instanceDepth = (instance.depth ?? instance.scale.z) / _worldScale;
     final base =
-        ((instance.width ?? instance.scale.x) +
-            (instance.depth ?? instance.scale.z)) *
+        (instanceWidth + instanceDepth) *
         math.min(width / mapModel.gridWidth, height / mapModel.gridDepth);
     final safe = base.clamp(80.0, math.min(width, height) * 0.42);
     return safe;
