@@ -1,7 +1,9 @@
 import 'dart:math' as math;
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../data/model/map/exhibition_map_model.dart';
 import '../../../linkapi.dart';
@@ -25,6 +27,15 @@ class Exhibition3DScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _ThreeSceneWebView(
+      mapModel: mapModel,
+      selectedBooth: selectedBooth,
+      onBoothTapped: onBoothTapped,
+      isDark: isDark,
+    );
+
+    // Kept below as a native fallback for platforms without WebView support.
+    // ignore: dead_code
     if (!mapModel.isGenericScene && mapModel.halls.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -264,6 +275,173 @@ class Exhibition3DScene extends StatelessWidget {
       kIsWeb ||
       defaultTargetPlatform == TargetPlatform.android ||
       defaultTargetPlatform == TargetPlatform.iOS;
+}
+
+class _ThreeSceneWebView extends StatefulWidget {
+  final ExhibitionMapModel mapModel;
+  final MapBoothModel? selectedBooth;
+  final ValueChanged<MapBoothModel>? onBoothTapped;
+  final bool isDark;
+
+  const _ThreeSceneWebView({
+    required this.mapModel,
+    required this.selectedBooth,
+    required this.onBoothTapped,
+    required this.isDark,
+  });
+
+  @override
+  State<_ThreeSceneWebView> createState() => _ThreeSceneWebViewState();
+}
+
+class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
+  late final WebViewController _webController;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _webController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(
+        widget.isDark ? const Color(0xFF090B18) : Colors.white,
+      )
+      ..addJavaScriptChannel('SceneBridge', onMessageReceived: _onSceneMessage)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) {
+            _ready = true;
+            _sendScene();
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(AppLink.mapViewer));
+  }
+
+  @override
+  void didUpdateWidget(covariant _ThreeSceneWebView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_ready) _sendScene();
+  }
+
+  void _sendScene() {
+    final payload = jsonEncode(_scenePayload());
+    _webController.runJavaScript(
+      'window.setExpoScene(${jsonEncode(payload)});',
+    );
+    final selected = widget.selectedBooth?.id;
+    if (selected != null) {
+      _webController.runJavaScript(
+        'window.setExpoSelected("booth_$selected");',
+      );
+    }
+  }
+
+  Map<String, dynamic> _scenePayload() {
+    final instances = widget.mapModel.sceneInstances.isNotEmpty
+        ? widget.mapModel.sceneInstances
+        : [
+            for (final hall in widget.mapModel.halls)
+              for (final booth in hall.booths)
+                MapSceneInstance(
+                  id: 'booth_${booth.id}',
+                  type: 'booth',
+                  assetKey: 'procedural',
+                  position: MapSceneVector3(
+                    x: booth.col.toDouble() * 0.01,
+                    y: booth.height / 2,
+                    z: booth.row.toDouble() * 0.01,
+                  ),
+                  rotation: const MapSceneVector3(x: 0, y: 0, z: 0),
+                  scale: const MapSceneVector3(x: 1, y: 1, z: 1),
+                  color: hall.colorHex,
+                  width: booth.gridWidth.toDouble() * 0.01,
+                  height: booth.height,
+                  depth: booth.gridDepth.toDouble() * 0.01,
+                  label: booth.number,
+                ),
+          ];
+    return {
+      'scene': {
+        'width': widget.mapModel.gridWidth,
+        'height': widget.mapModel.gridDepth,
+        'background_color': widget.isDark ? '#090B18' : '#F4F6FF',
+      },
+      'assets': {
+        for (final entry in widget.mapModel.assets.entries)
+          entry.key: _assetUrl(entry.value.toString()),
+        for (final item in instances)
+          if (!widget.mapModel.assets.containsKey(item.assetKey) &&
+              item.assetKey.isNotEmpty)
+            item.assetKey: _assetUrl(item.assetKey),
+      },
+      'instances': [
+        for (final item in instances)
+          {
+            'id': item.id,
+            'type': item.type,
+            'label': item.label ?? item.id,
+            'asset_key': item.assetKey,
+            'floor_id': item.floorId,
+            'position': {
+              'x': item.position.x,
+              'y': item.position.y,
+              'z': item.position.z,
+            },
+            'rotation': {
+              'x': item.rotation.x,
+              'y': item.rotation.y,
+              'z': item.rotation.z,
+            },
+            'scale': {'x': item.scale.x, 'y': item.scale.y, 'z': item.scale.z},
+            'width': item.width,
+            'height': item.height,
+            'depth': item.depth,
+            'color': item.color ?? item.fill ?? '#7A1FFF',
+          },
+      ],
+    };
+  }
+
+  String _assetUrl(String value) {
+    final trimmed = value.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    var name = trimmed.split('/').last;
+    final key = name.toLowerCase().replaceAll('.glb', '');
+    final mod = RegExp(r'^(?:booth_)?mod([1-5])$').firstMatch(key);
+    if (mod != null) name = 'mod${mod.group(1)}.glb';
+    if (RegExp(r'^meet[1-3]$').hasMatch(key)) name = '$key.glb';
+    if (key == 'gate') name = 'gate.glb';
+    final normalized = name.toLowerCase().endsWith('.glb')
+        ? name
+        : '${name.isEmpty ? 'mod1' : name}.glb';
+    return AppLink.mapModel(normalized);
+  }
+
+  void _onSceneMessage(JavaScriptMessage message) {
+    try {
+      final data = jsonDecode(message.message);
+      if (data is! Map || data['type'] != 'elementTap') return;
+      final id = data['id']?.toString() ?? '';
+      final numericId = int.tryParse(id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (numericId == null || numericId == 0) return;
+      MapBoothModel? booth;
+      for (final hall in widget.mapModel.halls) {
+        for (final item in hall.booths) {
+          if (item.id == numericId) booth = item;
+        }
+      }
+      if (booth != null) widget.onBoothTapped?.call(booth);
+    } catch (_) {
+      // Ignore malformed bridge messages from the WebView.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      WebViewWidget(controller: _webController);
 }
 
 class _ModelViewerCard extends StatelessWidget {

@@ -57,6 +57,11 @@ class AppLink {
     return rootUri.toString();
   }
 
+  static String get mapViewer {
+    final apiUri = Uri.parse(server);
+    return apiUri.replace(path: '/map-viewer/index.html').toString();
+  }
+
   // ── Booths ───────────────────────────────────────────────
   static String get booths => '$server/booths';
   static String boothDetail(int id) => '$server/booths/$id';
