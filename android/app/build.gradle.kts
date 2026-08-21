@@ -29,7 +29,7 @@ android {
         // TODO: Specify your own unique Application ID (https://android.com).
         applicationId = "com.example.expocore_invistor2"
         
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
