@@ -11,6 +11,7 @@ class Exhibition3DScene extends StatelessWidget {
   final MapBoothModel? selectedBooth;
   final ValueChanged<MapBoothModel>? onBoothTapped;
   final bool isDark;
+  final TransformationController? transformationController;
 
   const Exhibition3DScene({
     super.key,
@@ -18,15 +19,18 @@ class Exhibition3DScene extends StatelessWidget {
     this.selectedBooth,
     this.onBoothTapped,
     this.isDark = false,
+    this.transformationController,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (!mapModel.isGenericScene || mapModel.sceneInstances.isEmpty) {
+    if (!mapModel.isGenericScene && mapModel.halls.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final instances = mapModel.sceneInstances;
+    final instances = mapModel.sceneInstances.isNotEmpty
+        ? mapModel.sceneInstances
+        : _legacyInstances;
     final sceneWidth = mapModel.gridWidth.toDouble().clamp(
       1.0,
       double.infinity,
@@ -41,88 +45,121 @@ class Exhibition3DScene extends StatelessWidget {
         final width = constraints.maxWidth == 0 ? 1.0 : constraints.maxWidth;
         final height = constraints.maxHeight == 0 ? 1.0 : constraints.maxHeight;
 
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      (isDark
-                          ? const Color(0xFF090B18)
-                          : const Color(0xFFF4F6FF)),
-                      (isDark
-                          ? const Color(0xFF1A1730)
-                          : const Color(0xFFE9EEF9)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            ...instances.asMap().entries.map((entry) {
-              final index = entry.key;
-              final instance = entry.value;
-              final modelUrl = _resolveAssetUrl(instance);
-              final x = _clamp(
-                (instance.position.x / sceneWidth) * width,
-                0,
-                width,
-              );
-              final y = _clamp(
-                (instance.position.z / sceneDepth) * height,
-                0,
-                height,
-              );
-              final size = _itemSize(instance, width, height);
-              final isSelected =
-                  selectedBooth != null &&
-                  selectedBooth!.id.toString() == instance.id;
-
-              return Positioned(
-                left: x,
-                top: y,
-                child: Transform.translate(
-                  offset: Offset(-(size / 2), -(size / 2)),
-                  child: GestureDetector(
-                    onTap: () {
-                      final realBooth = _coerceBoothFromInstance(instance);
-                      if (realBooth != null && onBoothTapped != null) {
-                        onBoothTapped!(realBooth);
-                      }
-                    },
-                    child: Transform(
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.001)
-                        ..rotateY(instance.rotation.y * 0.2)
-                        ..rotateX(instance.rotation.x * 0.2),
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: size,
-                        height: size,
-                        child: modelUrl != null && _supportsModelViewer
-                            ? _ModelViewerCard(
-                                key: ValueKey('scene_model_$index'),
-                                src: modelUrl,
-                                isSelected: isSelected,
-                                label: instance.label ?? instance.id,
-                              )
-                            : _ProceduralBox(
-                                instance: instance,
-                                isSelected: isSelected,
-                              ),
+        return InteractiveViewer(
+          transformationController: transformationController,
+          minScale: 0.35,
+          maxScale: 4.0,
+          boundaryMargin: const EdgeInsets.all(240),
+          constrained: false,
+          child: SizedBox(
+            width: math.max(width, sceneWidth),
+            height: math.max(height, sceneDepth),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          (isDark
+                              ? const Color(0xFF090B18)
+                              : const Color(0xFFF4F6FF)),
+                          (isDark
+                              ? const Color(0xFF1A1730)
+                              : const Color(0xFFE9EEF9)),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              );
-            }).toList(),
-          ],
+                ...instances.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final instance = entry.value;
+                  final modelUrl = _resolveAssetUrl(instance);
+                  final x = _clamp(
+                    (instance.position.x / sceneWidth) * width,
+                    0,
+                    width,
+                  );
+                  final y = _clamp(
+                    (instance.position.z / sceneDepth) * height,
+                    0,
+                    height,
+                  );
+                  final size = _itemSize(instance, width, height);
+                  final isSelected =
+                      selectedBooth != null &&
+                      selectedBooth!.id.toString() == instance.id;
+
+                  return Positioned(
+                    left: x,
+                    top: y,
+                    child: Transform.translate(
+                      offset: Offset(-(size / 2), -(size / 2)),
+                      child: GestureDetector(
+                        onTap: () {
+                          final realBooth = _coerceBoothFromInstance(instance);
+                          if (realBooth != null && onBoothTapped != null) {
+                            onBoothTapped!(realBooth);
+                          }
+                        },
+                        child: Transform(
+                          transform: Matrix4.identity()
+                            ..setEntry(3, 2, 0.001)
+                            ..rotateY(instance.rotation.y * 0.2)
+                            ..rotateX(instance.rotation.x * 0.2),
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: size,
+                            height: size,
+                            child: modelUrl != null && _supportsModelViewer
+                                ? _ModelViewerCard(
+                                    key: ValueKey('scene_model_$index'),
+                                    src: modelUrl,
+                                    isSelected: isSelected,
+                                    label: instance.label ?? instance.id,
+                                  )
+                                : _ProceduralBox(
+                                    instance: instance,
+                                    isSelected: isSelected,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
         );
       },
     );
   }
+
+  List<MapSceneInstance> get _legacyInstances => [
+    for (final hall in mapModel.halls)
+      for (final booth in hall.booths)
+        MapSceneInstance(
+          id: 'booth_${booth.id}',
+          type: 'booth',
+          assetKey: '',
+          position: MapSceneVector3(
+            x: booth.col.toDouble(),
+            y: booth.height / 2,
+            z: booth.row.toDouble(),
+          ),
+          rotation: const MapSceneVector3(x: 0, y: 0, z: 0),
+          scale: const MapSceneVector3(x: 1, y: 1, z: 1),
+          color: hall.colorHex,
+          width: booth.gridWidth.toDouble(),
+          height: booth.height,
+          depth: booth.gridDepth.toDouble(),
+          label: booth.number,
+        ),
+  ];
 
   String? _resolveAssetUrl(MapSceneInstance instance) {
     final raw = mapModel.assets[instance.assetKey];

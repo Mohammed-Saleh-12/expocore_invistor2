@@ -57,6 +57,7 @@ class BoothMap3dView extends StatelessWidget {
                         mapModel: mapModel,
                         selectedBooth: ctrl.selectedBooth.value,
                         isDark: isDark,
+                        transformationController: ctrl.transformationController,
                         onBoothTapped: (booth) => ctrl.onBoothTapped(booth),
                       ),
                       Obx(() {

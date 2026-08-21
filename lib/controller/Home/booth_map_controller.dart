@@ -44,9 +44,11 @@ class BoothMapController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     if (args is Map && args['exhibition_id'] != null) {
-      exhibitionId = args['exhibition_id'] as int;
+      exhibitionId = int.tryParse(args['exhibition_id'].toString()) ?? 0;
     } else if (args is int) {
       exhibitionId = args;
+    } else if (args is String) {
+      exhibitionId = int.tryParse(args) ?? 0;
     }
     // إذا لم تصل بيانات من ExhibitionDetailController، جلبها مستقلاً
     if (mapData.value == null) {

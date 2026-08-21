@@ -243,7 +243,10 @@ class ExhibitionDetailView extends StatelessWidget {
                     // ── CTA buttons ────────────────────────────
                     CustomButton(
                       label: 'btn_browse_book_booths'.tr,
-                      onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
+                      onTap: () => Get.toNamed(
+                        AppRoutes.BOOTH_MAP_3D,
+                        arguments: {'exhibition_id': ctrl.exhibition.value?.id},
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Obx(() {
