@@ -14,7 +14,11 @@ import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/remote/Events/EventsData.dart';
 import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
+import '../../data/sourcedata/remote/Profile/ProfileData.dart';
+import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import '../../core/services/services.dart';
+import 'favorites_controller.dart';
 
 class ProductItem {
   final TextEditingController nameCtrl;
@@ -27,6 +31,9 @@ class ProductItem {
 class EventsController extends GetxController {
   final EventsData _eventsData = EventsData(Crud());
   final BoothsData _boothsData = BoothsData(Crud());
+  final ProfileData _profileData = ProfileData(Crud());
+  final ExhibitionsData _exhibitionsData = ExhibitionsData(Crud());
+  final _exhibitionNameRequests = <int, Future<String?>>{};
 
   // ── Investor's own events ────────────────────────────────────────────
   final myEvents = <EventModel>[].obs;
@@ -357,6 +364,25 @@ class EventsController extends GetxController {
           )
           .toList();
 
+  Future<String?> getExhibitionName(int exhibitionId) {
+    if (exhibitionId <= 0) return Future.value(null);
+    return _exhibitionNameRequests.putIfAbsent(exhibitionId, () async {
+      final result = await _exhibitionsData.getExhibitionDetail(exhibitionId);
+      if (result['status'] != true) return null;
+      final body = result['data'];
+      final data = body is Map && body['data'] is Map ? body['data'] : body;
+      if (data is! Map) return null;
+      final exhibition = data['exhibition'];
+      final name =
+          data['name'] ??
+          data['exhibition_name'] ??
+          data['exhibitionName'] ??
+          (exhibition is Map ? exhibition['name'] : null);
+      final value = name?.toString().trim() ?? '';
+      return value.isEmpty ? null : value;
+    });
+  }
+
   @override
   void onInit() {
     _loadAll();
@@ -370,9 +396,9 @@ class EventsController extends GetxController {
       _loadSponsorEvents(),
       _loadSponsorships(),
       _loadBooths(),
+      _loadCompanyInfo(),
     ]);
     isLoading.value = false;
-    _prefillCompanyInfo();
   }
 
   Future<void> _loadMyEvents() async {
@@ -470,6 +496,13 @@ class EventsController extends GetxController {
     }
   }
 
+  SponsorshipBookingModel? sponsorshipForEvent(int eventId) {
+    for (final booking in mySponsorshipBookings) {
+      if (booking.eventId == eventId) return booking;
+    }
+    return null;
+  }
+
   Future<void> _loadBooths() async {
     final result = await _boothsData.getMyBookings();
     if (result['status'] == true) {
@@ -496,12 +529,26 @@ class EventsController extends GetxController {
     }
   }
 
-  void _prefillCompanyInfo() {
-    if (companyNameCtrl.text.isEmpty)
-      companyNameCtrl.text = 'شركة التقنية المتقدمة';
-    if (companyWebCtrl.text.isEmpty)
-      companyWebCtrl.text = 'https://techadvanced.sa';
-    if (companyPhoneCtrl.text.isEmpty) companyPhoneCtrl.text = '+966501234567';
+  Future<void> _loadCompanyInfo() async {
+    final result = await _profileData.getProfile();
+    if (result['status'] == true) {
+      final data = result['data'];
+      final profile = data is Map && data['data'] is Map
+          ? Map<String, dynamic>.from(data['data'])
+          : data is Map
+          ? Map<String, dynamic>.from(data)
+          : <String, dynamic>{};
+      companyNameCtrl.text = (profile['company_name'] ?? profile['name'] ?? '')
+          .toString();
+      companyWebCtrl.text = (profile['website'] ?? profile['web_site'] ?? '')
+          .toString();
+      companyPhoneCtrl.text = (profile['phone'] ?? profile['mobile'] ?? '')
+          .toString();
+      return;
+    }
+
+    final storedCompany = Get.find<Services>().companyName;
+    if (storedCompany.isNotEmpty) companyNameCtrl.text = storedCompany;
   }
 
   // ── Create investor event (الجوال: ينشر ثم يرجع) ──────────────────────
@@ -660,6 +707,17 @@ class EventsController extends GetxController {
       _warn('event_sponsor_duration_required'.tr);
       return false;
     }
+
+    final companyName = companyNameCtrl.text.trim();
+    final companyPhone = companyPhoneCtrl.text.trim();
+    if (companyName.isEmpty) {
+      _warn('يرجى إدخال اسم الشركة');
+      return false;
+    }
+    if (companyPhone.isEmpty) {
+      _warn('يرجى إدخال رقم جوال الشركة');
+      return false;
+    }
     isBooking.value = true;
 
     final dur = selectedSponsorDuration.value!;
@@ -668,9 +726,9 @@ class EventsController extends GetxController {
       selectedDurationLabel: dur.label,
       selectedDays: dur.days,
       price: dur.price,
-      companyName: companyNameCtrl.text.trim(),
+      companyName: companyName,
       companyWebsite: companyWebCtrl.text.trim(),
-      companyPhone: companyPhoneCtrl.text.trim(),
+      companyPhone: companyPhone,
       productNames: productItems
           .map((p) => p.nameCtrl.text.trim())
           .where((n) => n.isNotEmpty)
@@ -688,22 +746,9 @@ class EventsController extends GetxController {
     if (result['status'] == true) {
       await _loadSponsorships();
     } else {
-      final booking = SponsorshipBookingModel(
-        id: mySponsorshipBookings.length + 2000,
-        eventId: event.id,
-        eventName: event.name,
-        eventType: event.type,
-        exhibitionName: event.exhibitionName,
-        date: event.date,
-        place: event.place,
-        time: event.startTime,
-        selectedDurationLabel: dur.label,
-        selectedDays: dur.days,
-        price: dur.price,
-        status: 'pending',
-        bookedAt: '2026-07-01',
-      );
-      mySponsorshipBookings.add(booking);
+      isBooking.value = false;
+      _warn(result['message'] ?? 'تعذر إرسال طلب الرعاية');
+      return false;
     }
 
     isBooking.value = false;
@@ -777,9 +822,20 @@ class EventsController extends GetxController {
     exhibitionSponsorEvents.refresh();
     final _fav = FavoritesData(Crud());
     if (wasFav) {
-      _fav.removeFavorite(e.id, FavoriteType.event);
+      _fav.removeFavorite(e.id, FavoriteType.sponsorEvent);
+      if (Get.isRegistered<FavoritesController>()) {
+        Get.find<FavoritesController>().favoriteEvents.removeWhere(
+          (item) => item.id == e.id,
+        );
+      }
     } else {
-      _fav.addFavorite(e.id, FavoriteType.event);
+      _fav.addFavorite(e.id, FavoriteType.sponsorEvent);
+      if (Get.isRegistered<FavoritesController>()) {
+        final favoritesController = Get.find<FavoritesController>();
+        if (!favoritesController.isEventFavorited(e.id)) {
+          favoritesController.favoriteEvents.add(e);
+        }
+      }
     }
   }
 

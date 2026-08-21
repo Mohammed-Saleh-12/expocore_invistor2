@@ -5,6 +5,7 @@ import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
+import '../../../data/model/event/sponsorship_booking_model.dart';
 
 class WebSponsorEventPage extends StatelessWidget {
   final ExhibitionSponsorEvent event;
@@ -13,7 +14,6 @@ class WebSponsorEventPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.find<EventsController>();
-    c.selectedSponsorDuration.value = null;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(28),
@@ -86,11 +86,7 @@ class WebSponsorEventPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                     ],
-                    _row(
-                      Icons.storefront_rounded,
-                      'المعرض',
-                      event.exhibitionName,
-                    ),
+                    _exhibitionRow(c, event),
                     _row(
                       Icons.calendar_today_outlined,
                       'التاريخ',
@@ -106,6 +102,12 @@ class WebSponsorEventPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+
+              Obx(() {
+                final booking = c.sponsorshipForEvent(event.id);
+                if (booking == null) return const SizedBox.shrink();
+                return _bookingStatus(booking);
+              }),
 
               // ── Duration options ──────────────────────────
               Container(
@@ -128,9 +130,10 @@ class WebSponsorEventPage extends StatelessWidget {
                       Obx(
                         () => Column(
                           children: event.durationOptions.map((opt) {
-                            final sel =
-                                c.selectedSponsorDuration.value?.label ==
-                                opt.label;
+                            final sel = identical(
+                              c.selectedSponsorDuration.value,
+                              opt,
+                            );
                             return GestureDetector(
                               onTap: () =>
                                   c.selectedSponsorDuration.value = opt,
@@ -457,7 +460,11 @@ class WebSponsorEventPage extends StatelessWidget {
                       () => SizedBox(
                         width: double.infinity,
                         child: GestureDetector(
-                          onTap: c.isBooking.value ? null : () => _book(c),
+                          onTap:
+                              c.isBooking.value ||
+                                  c.sponsorshipForEvent(event.id) != null
+                              ? null
+                              : () => _book(c),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             alignment: Alignment.center,
@@ -475,7 +482,9 @@ class WebSponsorEventPage extends StatelessWidget {
                                     ),
                                   )
                                 : Text(
-                                    'تأكيد طلب الرعاية',
+                                    c.sponsorshipForEvent(event.id) != null
+                                        ? 'تم إرسال الطلب'
+                                        : 'تأكيد طلب الرعاية',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -499,8 +508,51 @@ class WebSponsorEventPage extends StatelessWidget {
   }
 
   Future<void> _book(EventsController c) async {
-    final ok = await c.submitSponsorship(event);
-    if (ok) WebNavController.to.select(4);
+    await c.submitSponsorship(event);
+  }
+
+  Widget _bookingStatus(SponsorshipBookingModel booking) => Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 20),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: WebTheme.primary.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: WebTheme.primary.withOpacity(0.35)),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.hourglass_top_rounded, color: WebTheme.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            'طلبك لهذه الفعالية: ${booking.statusLabel}',
+            style: TextStyle(
+              color: WebTheme.text,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget _exhibitionRow(
+    EventsController controller,
+    ExhibitionSponsorEvent event,
+  ) {
+    if (event.exhibitionName.trim().isNotEmpty) {
+      return _row(Icons.storefront_rounded, 'المعرض', event.exhibitionName);
+    }
+    return FutureBuilder<String?>(
+      future: controller.getExhibitionName(event.exhibitionId),
+      builder: (context, snapshot) => _row(
+        Icons.storefront_rounded,
+        'المعرض',
+        snapshot.data ?? 'جاري التحميل...',
+      ),
+    );
   }
 
   Widget _back() => GestureDetector(

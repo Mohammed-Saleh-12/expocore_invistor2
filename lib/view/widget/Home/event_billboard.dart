@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../controller/Home/event_billboard_controller.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
+import 'event_image_provider.dart';
 
 class EventBillboard extends StatelessWidget {
   final List<ExhibitionSponsorEvent> events;
@@ -314,8 +315,8 @@ class _BillboardImage extends StatelessWidget {
         child: const Icon(Icons.image, size: 84, color: AppColors.grey),
       );
     }
-    return Image.network(
-      url,
+    return Image(
+      image: eventImageProvider(url),
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => Container(
         color: AppColors.darkSurface,

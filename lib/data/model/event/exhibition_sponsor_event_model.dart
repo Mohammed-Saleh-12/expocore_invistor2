@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../../core/constant/app_env.dart';
 
 class SponsorDurationOption {
   final String label;
@@ -97,7 +98,9 @@ class ExhibitionSponsorEvent {
         ? Map<String, dynamic>.from(json['event'])
         : <String, dynamic>{};
     final j = {...nested, ...json};
-    final images = j['images'] ?? j['event_images'] ?? j['photos'] ?? [];
+    final images = _imageUrls(
+      j['images'] ?? j['event_images'] ?? j['photos'] ?? j['eventImages'],
+    );
     final activities = j['activities'] ?? j['programs'] ?? [];
     dynamic options =
         j['duration_options'] ??
@@ -132,6 +135,20 @@ class ExhibitionSponsorEvent {
     }
     final start = (j['start_time'] ?? j['startAt'] ?? '').toString();
     final end = (j['end_time'] ?? j['endAt'] ?? '').toString();
+    final exhibition = j['exhibition'];
+    final directExhibitionName =
+        (j['exhibition_name'] ?? j['exhibitionName'] ?? '').toString().trim();
+    final nestedExhibitionName = exhibition is Map
+        ? (exhibition['name'] ??
+                  exhibition['title'] ??
+                  exhibition['exhibition_name'] ??
+                  '')
+              .toString()
+              .trim()
+        : exhibition?.toString().trim() ?? '';
+    final exhibitionName = directExhibitionName.isNotEmpty
+        ? directExhibitionName
+        : nestedExhibitionName;
     return ExhibitionSponsorEvent(
       id: SponsorDurationOption._toInt(j['id']),
       name: (j['name'] ?? j['title'] ?? '').toString(),
@@ -139,9 +156,7 @@ class ExhibitionSponsorEvent {
       exhibitionId: SponsorDurationOption._toInt(
         j['exhibition_id'] ?? j['exhibitionId'],
       ),
-      exhibitionName:
-          (j['exhibition_name'] ?? j['exhibitionName'] ?? j['exhibition'] ?? '')
-              .toString(),
+      exhibitionName: exhibitionName.toString(),
       exhibitionImageUrl: _validUrl(
         j['exhibition_image_url'] ?? j['exhibitionImageUrl'],
       ),
@@ -170,13 +185,7 @@ class ExhibitionSponsorEvent {
       ),
       status: (j['status'] ?? 'upcoming').toString(),
       publishDate: (j['publish_date'] ?? j['publishedAt'])?.toString(),
-      images: (images is List ? images : const [])
-          .map((image) {
-            if (image is Map) return (image['url'] ?? '').toString();
-            return image.toString();
-          })
-          .where((image) => image.isNotEmpty)
-          .toList(),
+      images: images,
       activities: (activities is List ? activities : const [])
           .whereType<Map>()
           .map(Map<String, dynamic>.from)
@@ -193,10 +202,54 @@ class ExhibitionSponsorEvent {
 
   static String _validUrl(dynamic value) {
     final url = value?.toString().trim() ?? '';
+    if (url.startsWith('data:image/')) return url;
     final parsed = Uri.tryParse(url);
-    return parsed != null && parsed.hasScheme && parsed.host.isNotEmpty
-        ? url
-        : '';
+    if (parsed == null || !parsed.hasScheme || parsed.host.isEmpty) return '';
+
+    // Laravel may build local asset URLs from APP_URL=http://localhost.
+    if (parsed.host == 'localhost' ||
+        parsed.host == '127.0.0.1' ||
+        parsed.host == '::1') {
+      final apiUri = Uri.parse(AppEnv.baseUrl);
+      return parsed
+          .replace(
+            scheme: apiUri.scheme,
+            host: apiUri.host,
+            port: apiUri.hasPort ? apiUri.port : null,
+          )
+          .toString();
+    }
+    return url;
+  }
+
+  static List<String> _imageUrls(dynamic value) {
+    dynamic source = value;
+    if (source is String && source.trim().isNotEmpty) {
+      try {
+        source = jsonDecode(source);
+      } catch (_) {
+        source = [source];
+      }
+    }
+    if (source is Map && source['data'] is List) {
+      source = source['data'];
+    }
+    if (source is! List) return const [];
+
+    return source
+        .map((image) {
+          if (image is Map) {
+            return image['url'] ??
+                image['image_url'] ??
+                image['imageUrl'] ??
+                image['image'] ??
+                '';
+          }
+          return image;
+        })
+        .map(_validUrl)
+        .where((image) => image.isNotEmpty)
+        .toList();
   }
 
   static String _dateOnly(dynamic value) {

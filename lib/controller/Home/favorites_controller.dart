@@ -81,7 +81,7 @@ class FavoritesController extends GetxController {
     } else {
       event.isFavorite = true;
       favoriteEvents.add(event);
-      _favoritesData.addFavorite(event.id, FavoriteType.event);
+      _favoritesData.addFavorite(event.id, FavoriteType.sponsorEvent);
     }
   }
 
@@ -127,7 +127,7 @@ class FavoritesController extends GetxController {
   void removeEvent(ExhibitionSponsorEvent e) {
     favoriteEvents.remove(e);
     e.isFavorite = false;
-    _favoritesData.removeFavorite(e.id, FavoriteType.event);
+    _favoritesData.removeFavorite(e.id, FavoriteType.sponsorEvent);
     Get.snackbar(
       'fav_removed_title'.tr,
       'fav_removed_item_msg'.trParams({'name': e.name}),

@@ -15,71 +15,75 @@ class FavoritesView extends GetView<FavoritesController> {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeNavWrapper(child: DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkBg
-              : AppColors.lightBg,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(6),
-            child: Obx(
-              () => TabBar(
-                onTap: (i) => controller.selectedTab.value = i,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.store_outlined, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          'المعارض (${controller.favoriteExhibitions.length})',
-                        ),
-                      ],
+    return SwipeNavWrapper(
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkBg
+                : AppColors.lightBg,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(6),
+              child: Obx(
+                () => TabBar(
+                  onTap: (i) => controller.selectedTab.value = i,
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.store_outlined, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'المعارض (${controller.favoriteExhibitions.length})',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.event_outlined, size: 16),
-                        const SizedBox(width: 4),
-                        Text('الفعاليات (${controller.favoriteEvents.length})'),
-                      ],
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.event_outlined, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'الفعاليات (${controller.favoriteEvents.length})',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.grid_view_outlined, size: 16),
-                        const SizedBox(width: 4),
-                        Text('الأجنحة (${controller.favoriteBooths.length})'),
-                      ],
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.grid_view_outlined, size: 16),
+                          const SizedBox(width: 4),
+                          Text('الأجنحة (${controller.favoriteBooths.length})'),
+                        ],
+                      ),
                     ),
+                  ],
+                  labelColor: AppColors.darkPrimary,
+                  indicatorColor: AppColors.darkPrimary,
+                  unselectedLabelColor: AppColors.grey,
+                  labelStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
-                labelColor: AppColors.darkPrimary,
-                indicatorColor: AppColors.darkPrimary,
-                unselectedLabelColor: AppColors.grey,
-                labelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
-        ),
-        bottomNavigationBar: const BottomNavCustom(),
-        body: TabBarView(
-          children: [_exhibitionsTab(), _eventsTab(), _boothsTab()],
+          bottomNavigationBar: const BottomNavCustom(),
+          body: TabBarView(
+            children: [_exhibitionsTab(), _eventsTab(), _boothsTab()],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _exhibitionsTab() => Obx(() {

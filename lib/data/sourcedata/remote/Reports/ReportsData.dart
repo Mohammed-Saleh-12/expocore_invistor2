@@ -12,13 +12,16 @@ class ReportsData {
   }
 
   /// جلب تفاصيل تقرير واحد — GET /investor/reports/{id}
-  Future<Map<String, dynamic>> getReportDetail(String reportId) async {
-    return await crud.getData(AppLink.reportDetail(reportId));
+  Future<Map<String, dynamic>> getReportDetail(
+    String reportId,
+    String type,
+  ) async {
+    return await crud.getData(AppLink.reportDetail(reportId, type));
   }
 
   /// رابط تنزيل تقرير — GET /investor/reports/{id}/download?format={fmt}
   /// يُعيد Map تحتوي على ['url'] لتمريرها لـ DownloadService
-  String getDownloadUrl(String reportId, String format) {
-    return AppLink.reportDownload(reportId, format);
+  String getDownloadUrl(String reportId, String type, String format) {
+    return AppLink.reportDownload(reportId, type, format);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
+import 'event_image_provider.dart';
 
 class SponsorEventCard extends StatelessWidget {
   final ExhibitionSponsorEvent event;
@@ -272,8 +273,8 @@ class _EventImagesState extends State<_EventImages> {
             controller: _controller,
             itemCount: images.length,
             onPageChanged: (index) => setState(() => _index = index),
-            itemBuilder: (_, index) => Image.network(
-              images[index],
+            itemBuilder: (_, index) => Image(
+              image: eventImageProvider(images[index]),
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(

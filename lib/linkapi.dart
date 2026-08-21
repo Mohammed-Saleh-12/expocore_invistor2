@@ -43,6 +43,10 @@ class AppLink {
   // ── Exhibitions ──────────────────────────────────────────
   static String get exhibitions => '$server/investor/exhibitions';
   static String exhibitionDetail(int id) => '$server/investor/exhibitions/$id';
+  static String exhibitionSponsorshipRequest(int id) =>
+      '$server/investor/exhibitions/$id/sponsorship-request';
+  static String get submitExhibitionSponsorshipRequest =>
+      '$server/investor/exhibitions/sponsorship-request';
   // الخريطة ثلاثية الأبعاد: GET /exhibitions/{id}/map
   static String exhibitionMap(int id) => '$server/investor/exhibitions/$id/map';
 
@@ -118,7 +122,8 @@ class AppLink {
 
   // ── Investor — Reports ───────────────────────────────────
   static String get investorReports => '$server/investor/reports';
-  static String reportDetail(String id) => '$server/investor/reports/$id';
-  static String reportDownload(String id, String fmt) =>
-      '$server/investor/reports/$id/download?format=$fmt';
+  static String reportDetail(String id, String type) =>
+      '$server/investor/reports/$id?type=$type';
+  static String reportDownload(String id, String type, String fmt) =>
+      '$server/investor/reports/$id/download?type=$type&format=$fmt';
 }

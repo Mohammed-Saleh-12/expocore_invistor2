@@ -9,19 +9,26 @@ class DownloadService {
   static Future<void> downloadUrl(String url) async {
     try {
       final token = _token();
-      final fullUrl = token.isNotEmpty
-          ? (url.contains('?') ? '$url&token=$token' : '$url?token=$token')
-          : url;
-
-      final anchor = html.AnchorElement(href: fullUrl)
+      final request = await html.HttpRequest.request(
+        url,
+        method: 'GET',
+        requestHeaders: {
+          'Accept': 'application/octet-stream',
+          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        },
+        responseType: 'blob',
+      );
+      final blob = request.response as html.Blob;
+      final objectUrl = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.AnchorElement(href: objectUrl)
         ..setAttribute('download', '')
         ..style.display = 'none';
       html.document.body?.append(anchor);
       anchor.click();
-      Future.delayed(
-        const Duration(seconds: 5),
-        () => anchor.remove(),
-      );
+      Future.delayed(const Duration(seconds: 5), () {
+        anchor.remove();
+        html.Url.revokeObjectUrl(objectUrl);
+      });
     } catch (_) {
       try {
         html.window.open(url, '_blank');

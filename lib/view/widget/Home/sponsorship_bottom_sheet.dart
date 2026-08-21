@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
+import '../../../data/model/event/sponsorship_booking_model.dart';
 
 class SponsorshipBottomSheet extends StatelessWidget {
   final ExhibitionSponsorEvent event;
@@ -120,6 +121,12 @@ class _StepDetails extends StatelessWidget {
           'مدة الإدراج',
           '${event.listingDays} أيام',
         ),
+        Obx(() {
+          final booking = ctrl.sponsorshipForEvent(event.id);
+          return booking == null
+              ? const SizedBox.shrink()
+              : _BookingStatus(booking: booking);
+        }),
         const SizedBox(height: 16),
         const Text(
           'عن الفعالية',
@@ -184,8 +191,11 @@ class _StepDetails extends StatelessWidget {
           children: event.durationOptions.map((opt) {
             return Obx(() {
               final isSelected = ctrl.selectedSponsorDuration.value == opt;
+              final hasBooking = ctrl.sponsorshipForEvent(event.id) != null;
               return GestureDetector(
-                onTap: () => ctrl.selectedSponsorDuration.value = opt,
+                onTap: hasBooking
+                    ? null
+                    : () => ctrl.selectedSponsorDuration.value = opt,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.only(bottom: 10),
@@ -296,6 +306,37 @@ class _StepDetails extends StatelessWidget {
       ],
     ),
   );
+}
+
+class _BookingStatus extends StatelessWidget {
+  final SponsorshipBookingModel booking;
+  const _BookingStatus({required this.booking});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.darkPrimary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.35)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.hourglass_top_rounded, color: AppColors.darkPrimary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'طلبك لهذه الفعالية: ${booking.statusLabel}',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── Step 2: Booking form ──────────────────────────────────────────────────
@@ -874,28 +915,33 @@ class _BottomBar extends StatelessWidget {
           ],
           Expanded(
             flex: 3,
-            child: Obx(
-              () => ElevatedButton(
-                onPressed: () {
-                  if (ctrl.stepIndex.value == 0) {
-                    if (ctrl.selectedSponsorDuration.value == null) {
-                      Get.snackbar(
-                        'تنبيه',
-                        'يرجى اختيار مدة المشاركة',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: AppColors.darkAccent,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-                    ctrl.stepIndex.value = 1;
-                  } else {
-                    ctrl.bookSponsorship(event);
-                  }
-                },
+            child: Obx(() {
+              final hasBooking = ctrl.sponsorshipForEvent(event.id) != null;
+              return ElevatedButton(
+                onPressed: hasBooking || ctrl.isBooking.value
+                    ? null
+                    : () {
+                        if (ctrl.stepIndex.value == 0) {
+                          if (ctrl.selectedSponsorDuration.value == null) {
+                            Get.snackbar(
+                              'تنبيه',
+                              'يرجى اختيار مدة المشاركة',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: AppColors.darkAccent,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+                          ctrl.stepIndex.value = 1;
+                        } else {
+                          ctrl.bookSponsorship(event);
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: AppColors.darkPrimary,
+                  backgroundColor: hasBooking
+                      ? AppColors.grey
+                      : AppColors.darkPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -910,7 +956,9 @@ class _BottomBar extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        ctrl.stepIndex.value == 0
+                        hasBooking
+                            ? 'تم إرسال الطلب'
+                            : ctrl.stepIndex.value == 0
                             ? 'التالي: بيانات الشركة'
                             : 'إرسال طلب الرعاية',
                         style: const TextStyle(
@@ -918,8 +966,8 @@ class _BottomBar extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-              ),
-            ),
+              );
+            }),
           ),
         ],
       ),

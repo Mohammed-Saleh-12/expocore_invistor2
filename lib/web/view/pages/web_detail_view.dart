@@ -23,6 +23,9 @@ import 'web_scanner_page.dart';
 import 'web_notifications_page.dart';
 import 'web_sponsor_event_page.dart';
 import 'web_map_page.dart';
+import '../../../controller/Home/exhibition_detail_controller.dart';
+import '../../../data/model/exhibition/exhibition_sponsorship_request_model.dart';
+import '../../../view/widget/Home/exhibition_sponsorship_bottom_sheet.dart';
 import 'web_booth_management_page.dart';
 import 'web_booking_request_page.dart';
 import 'web_booking_detail_page.dart';
@@ -322,6 +325,11 @@ class _ExhibitionDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final events = Get.find<EventsController>();
+    final detail = Get.find<ExhibitionDetailController>();
+    if (detail.exhibition.value?.id != e.id &&
+        !detail.isSponsorshipRequestLoading.value) {
+      detail.loadSponsorshipRequest(e.id);
+    }
 
     return _DetailScaffold(
       title: e.name,
@@ -404,6 +412,24 @@ class _ExhibitionDetail extends StatelessWidget {
           ),
       ],
       actions: [
+        if (e.status == 'upcoming')
+          Obx(() {
+            final request = detail.sponsorshipRequest.value;
+            if (request != null) {
+              return _webSponsorshipStatus(request);
+            }
+            return _actionBtn(
+              'طلب رعاية المعرض',
+              filled: true,
+              onTap: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) =>
+                    ExhibitionSponsorshipBottomSheet(controller: detail),
+              ),
+            );
+          }),
         // تواصل
         _actionBtn(
           'تواصل مع الإدارة',
@@ -425,6 +451,22 @@ class _ExhibitionDetail extends StatelessWidget {
     );
   }
 }
+
+Widget _webSponsorshipStatus(ExhibitionSponsorshipRequestModel request) =>
+    Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: WebTheme.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: WebTheme.primary.withOpacity(0.35)),
+      ),
+      child: Text(
+        'حالة طلب رعاية المعرض: ${request.statusLabel}',
+        style: TextStyle(color: WebTheme.text, fontWeight: FontWeight.w700),
+        textAlign: TextAlign.center,
+      ),
+    );
 
 // ── Sub header ──────────────────────────────────────────────
 Widget _subHeader(String t) => Row(

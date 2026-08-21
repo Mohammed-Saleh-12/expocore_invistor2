@@ -5,11 +5,13 @@ import 'package:get/get.dart';
 import '../../../../core/constant/appcolors.dart';
 import '../../../../core/constant/routes.dart';
 import '../../../../controller/Home/exhibition_detail_controller.dart';
+import '../../../../controller/Home/events_controller.dart';
 import '../../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../../widget/Home/favorite_button.dart';
 import '../../../widget/Home/custom_button.dart';
 import '../../../widget/Home/sponsor_event_card.dart';
 import '../../../widget/Home/sponsorship_bottom_sheet.dart';
+import '../../../widget/Home/exhibition_sponsorship_bottom_sheet.dart';
 
 class ExhibitionDetailView extends StatelessWidget {
   const ExhibitionDetailView({super.key});
@@ -244,6 +246,42 @@ class ExhibitionDetailView extends StatelessWidget {
                       onTap: () => Get.toNamed(AppRoutes.BOOTH_MAP_3D),
                     ),
                     const SizedBox(height: 12),
+                    Obx(() {
+                      if (ctrl.exhibition.value?.status != 'upcoming') {
+                        return const SizedBox.shrink();
+                      }
+                      final request = ctrl.sponsorshipRequest.value;
+                      if (request != null) {
+                        return _sponsorshipStatus(request.statusLabel);
+                      }
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: ctrl.isSponsorshipRequestLoading.value
+                              ? null
+                              : () => showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (_) =>
+                                      ExhibitionSponsorshipBottomSheet(
+                                        controller: ctrl,
+                                      ),
+                                ),
+                          icon: const Icon(Icons.workspace_premium_outlined),
+                          label: const Text('طلب رعاية المعرض'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.darkPrimary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -300,6 +338,24 @@ class ExhibitionDetailView extends StatelessWidget {
     ],
   );
 
+  Widget _sponsorshipStatus(String status) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: AppColors.info.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: AppColors.info.withOpacity(0.35)),
+    ),
+    child: Text(
+      'حالة طلب رعاية المعرض: $status',
+      style: const TextStyle(
+        color: AppColors.info,
+        fontWeight: FontWeight.w700,
+      ),
+      textAlign: TextAlign.center,
+    ),
+  );
+
   // ── Services tab — ديناميكي من الـ API ──────────────────────
   Widget _servicesTab(List<String> services) {
     if (services.isEmpty) {
@@ -354,6 +410,7 @@ class ExhibitionDetailView extends StatelessWidget {
     }
     // ignore: deprecated_member_use_from_same_package
     Get.find<ExhibitionDetailController>();
+    final eventsCtrl = Get.find<EventsController>();
     return ListView.builder(
       padding: const EdgeInsets.only(top: 8),
       itemCount: events.length,
@@ -362,6 +419,7 @@ class ExhibitionDetailView extends StatelessWidget {
         return SponsorEventCard(
           event: ev,
           onTap: () {
+            eventsCtrl.selectedSponsorDuration.value = null;
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -369,7 +427,7 @@ class ExhibitionDetailView extends StatelessWidget {
               builder: (_) => SponsorshipBottomSheet(event: ev),
             );
           },
-          onFavorite: () {},
+          onFavorite: () => eventsCtrl.toggleSponsorFavorite(ev),
         );
       },
     );

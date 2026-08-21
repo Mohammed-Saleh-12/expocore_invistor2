@@ -12,20 +12,23 @@ import '../../linkapi.dart';
 
 class ReportsController extends GetxController {
   final ReportsData _reportsData = ReportsData(Crud());
-  final statusRequest    = StatusRequest.none.obs;
-  final reports          = <ReportModel>[].obs;
-  final filtered         = <ReportModel>[].obs;
-  final selectedReport   = Rx<ReportModel?>(null);
-  final selectedType     = 'الكل'.obs;
-  final dateFrom         = Rx<DateTime?>(null);
-  final dateTo           = Rx<DateTime?>(null);
-  final isDownloading    = false.obs;
+  final statusRequest = StatusRequest.none.obs;
+  final reports = <ReportModel>[].obs;
+  final filtered = <ReportModel>[].obs;
+  final selectedReport = Rx<ReportModel?>(null);
+  final selectedType = 'الكل'.obs;
+  final dateFrom = Rx<DateTime?>(null);
+  final dateTo = Rx<DateTime?>(null);
+  final isDownloading = false.obs;
   final downloadProgress = 0.0.obs;
 
   final typeFilters = ['الكل', 'الزوار', 'الأداء', 'الفعاليات', 'الرعايات'];
-  final typeMap     = {
-    'الكل': 'all', 'الزوار': 'visitors', 'الأداء': 'performance',
-    'الفعاليات': 'events', 'الرعايات': 'campaigns',
+  final typeMap = {
+    'الكل': 'all',
+    'الزوار': 'visitors',
+    'الأداء': 'performance',
+    'الفعاليات': 'events',
+    'الرعايات': 'campaigns',
   };
 
   // ── Derived helpers ───────────────────────────────────────
@@ -64,22 +67,22 @@ class ReportsController extends GetxController {
   // ── Filter by date range ──────────────────────────────────
   void filterByDate(DateTime? from, DateTime? to) {
     dateFrom.value = from;
-    dateTo.value   = to;
+    dateTo.value = to;
     applyFilters();
   }
 
   // ── Clear date filter only ────────────────────────────────
   void clearDateFilter() {
     dateFrom.value = null;
-    dateTo.value   = null;
+    dateTo.value = null;
     applyFilters();
   }
 
   // ── Clear all filters ─────────────────────────────────────
   void clearAllFilters() {
     selectedType.value = 'الكل';
-    dateFrom.value     = null;
-    dateTo.value       = null;
+    dateFrom.value = null;
+    dateTo.value = null;
     applyFilters();
   }
 
@@ -109,7 +112,9 @@ class ReportsController extends GetxController {
         dateTo.value!.year,
         dateTo.value!.month,
         dateTo.value!.day,
-        23, 59, 59,
+        23,
+        59,
+        59,
       );
       list = list.where((r) {
         final d = _parseDate(r.createdAt);
@@ -130,9 +135,10 @@ class ReportsController extends GetxController {
   Future<void> downloadReport(
     String reportId, {
     String format = 'pdf',
+    String? type,
   }) async {
     if (isDownloading.value) return;
-    isDownloading.value    = true;
+    isDownloading.value = true;
     downloadProgress.value = 0.0;
 
     try {
@@ -145,11 +151,17 @@ class ReportsController extends GetxController {
         } else {
           // Model not loaded yet — fall back to server download
           await DownloadService.downloadUrl(
-              AppLink.reportDownload(reportId, format));
+            AppLink.reportDownload(reportId, type ?? 'visitors', format),
+          );
         }
       } else {
         // ── Server-side Excel: trigger native browser/OS download
-        final url = AppLink.reportDownload(reportId, format);
+        final model = _findReport(reportId);
+        final url = AppLink.reportDownload(
+          reportId,
+          type ?? model?.type ?? 'visitors',
+          format,
+        );
         await DownloadService.downloadUrl(url);
       }
 
@@ -161,13 +173,15 @@ class ReportsController extends GetxController {
 
       safeSnackbar(
         'snack_done'.tr,
-        format == 'excel' ? 'report_downloading_excel'.tr : 'report_downloading_pdf'.tr,
+        format == 'excel'
+            ? 'report_downloading_excel'.tr
+            : 'report_downloading_pdf'.tr,
         duration: const Duration(seconds: 3),
       );
     } catch (_) {
       safeSnackbar('error'.tr, 'report_download_error'.tr);
     } finally {
-      isDownloading.value    = false;
+      isDownloading.value = false;
       downloadProgress.value = 1.0;
     }
   }
@@ -175,7 +189,7 @@ class ReportsController extends GetxController {
   /// Format a DateTime for display (controller responsibility, not view)
   String formatDate(DateTime? d) {
     if (d == null) return '';
-    final m   = d.month.toString().padLeft(2, '0');
+    final m = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
     return '${d.year}-$m-$day';
   }
@@ -198,6 +212,10 @@ class ReportsController extends GetxController {
   }
 
   DateTime? _parseDate(String raw) {
-    try { return DateTime.parse(raw.trim()); } catch (_) { return null; }
+    try {
+      return DateTime.parse(raw.trim());
+    } catch (_) {
+      return null;
+    }
   }
 }

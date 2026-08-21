@@ -5,8 +5,8 @@ import 'package:expocore_invistor2/linkapi.dart';
 // يُرسَل في queryParam: ?type=exhibition | booth | event
 class FavoriteType {
   static const exhibition = 'exhibition';
-  static const booth      = 'booth';
-  static const event      = 'event';
+  static const booth = 'booth';
+  static const sponsorEvent = 'sponsor_event';
 }
 
 class FavoritesData {

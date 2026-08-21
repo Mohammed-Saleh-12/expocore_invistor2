@@ -11,6 +11,10 @@ class ReportModel {
   final String mainLabel;
   final double trend;
   final List<double> sparklineData;
+  final Map<String, dynamic> graph;
+  final List<Map<String, dynamic>> specificTable;
+  final List<String> recommendations;
+  final Map<String, dynamic> metrics;
 
   ReportModel({
     required this.id,
@@ -25,22 +29,49 @@ class ReportModel {
     required this.mainLabel,
     required this.trend,
     required this.sparklineData,
+    this.graph = const {},
+    this.specificTable = const [],
+    this.recommendations = const [],
+    this.metrics = const {},
   });
 
-  factory ReportModel.fromJson(Map<String, dynamic> j) => ReportModel(
-    id:             j['id']?.toString() ?? '',
-    title:          j['title'] ?? '',
-    type:           j['type'] ?? '',
-    description:    j['description'] ?? '',
-    period:         j['period'] ?? '',
-    boothName:      j['booth_name'] ?? '',
-    exhibitionName: j['exhibition_name'] ?? '',
-    createdAt:      j['created_at'] ?? '',
-    mainValue:      (j['main_value'] ?? 0).toDouble(),
-    mainLabel:      j['main_label'] ?? '',
-    trend:          (j['trend'] ?? 0).toDouble(),
-    sparklineData:  List<double>.from(
-      (j['sparkline_data'] ?? []).map((v) => (v as num).toDouble()),
-    ),
-  );
+  factory ReportModel.fromJson(Map<String, dynamic> j) {
+    final rawGraph = j['graph'] is Map
+        ? Map<String, dynamic>.from(j['graph'])
+        : <String, dynamic>{};
+    final rawTable = j['specific_table'] is List
+        ? (j['specific_table'] as List)
+              .whereType<Map>()
+              .map(Map<String, dynamic>.from)
+              .toList()
+        : <Map<String, dynamic>>[];
+    final rawRecommendations = j['recommendations'] is List
+        ? (j['recommendations'] as List).map((v) => v.toString()).toList()
+        : <String>[];
+    final sparkline = j['sparkline_data'] is List
+        ? (j['sparkline_data'] as List).map(_toDouble).toList()
+        : rawGraph.values.map(_toDouble).toList();
+    return ReportModel(
+      id: j['id']?.toString() ?? '',
+      title: j['title']?.toString() ?? '',
+      type: j['type']?.toString() ?? '',
+      description: j['description']?.toString() ?? '',
+      period: j['period']?.toString() ?? '',
+      boothName: j['booth_name']?.toString() ?? '',
+      exhibitionName: j['exhibition_name']?.toString() ?? '',
+      createdAt: j['created_at']?.toString() ?? '',
+      mainValue: _toDouble(j['main_value']),
+      mainLabel: j['main_label']?.toString() ?? '',
+      trend: _toDouble(j['trend']),
+      sparklineData: sparkline,
+      graph: rawGraph,
+      specificTable: rawTable,
+      recommendations: rawRecommendations,
+      metrics: Map<String, dynamic>.from(j),
+    );
+  }
+
+  static double _toDouble(dynamic value) => value is num
+      ? value.toDouble()
+      : double.tryParse(value?.toString() ?? '') ?? 0;
 }

@@ -96,7 +96,7 @@ class SponsorshipBookingModel {
       place: (j['place'] ?? j['venueName'] ?? '').toString(),
       time: (j['time'] ?? '').toString(),
       selectedDurationLabel: (j['selected_duration_label'] ?? '').toString(),
-      selectedDays: _toInt(j['selected_days'], 1),
+      selectedDays: _toInt(j['selected_days'] ?? j['days'], 1),
       price: _toDouble(j['price']),
       status: (j['status'] ?? 'pending').toString(),
       bookedAt: (j['booked_at'] ?? '').toString(),
