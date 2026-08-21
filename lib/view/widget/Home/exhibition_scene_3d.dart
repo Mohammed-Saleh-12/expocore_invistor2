@@ -423,6 +423,11 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
   void _onSceneMessage(JavaScriptMessage message) {
     try {
       final data = jsonDecode(message.message);
+      if (data is Map && data['type'] == 'sceneReady') {
+        _ready = true;
+        _sendScene();
+        return;
+      }
       if (data is! Map || data['type'] != 'elementTap') return;
       final id = data['id']?.toString() ?? '';
       final numericId = int.tryParse(id.replaceAll(RegExp(r'[^0-9]'), ''));
