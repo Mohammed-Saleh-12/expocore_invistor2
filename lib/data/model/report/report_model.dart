@@ -36,20 +36,25 @@ class ReportModel {
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> j) {
-    final rawGraph = j['graph'] is Map
-        ? Map<String, dynamic>.from(j['graph'])
+    final rawGraphValue = j['graph'] ?? j['data_graph'];
+    final rawGraph = rawGraphValue is Map
+        ? Map<String, dynamic>.from(rawGraphValue)
         : <String, dynamic>{};
-    final rawTable = j['specific_table'] is List
-        ? (j['specific_table'] as List)
+    final rawTableValue = j['specific_table'] ?? j['data_specific_table'];
+    final rawTable = rawTableValue is List
+        ? (rawTableValue)
               .whereType<Map>()
               .map(Map<String, dynamic>.from)
               .toList()
         : <Map<String, dynamic>>[];
-    final rawRecommendations = j['recommendations'] is List
-        ? (j['recommendations'] as List).map((v) => v.toString()).toList()
+    final rawRecommendationsValue =
+        j['recommendations'] ?? j['data_recommendations'];
+    final rawRecommendations = rawRecommendationsValue is List
+        ? rawRecommendationsValue.map((v) => v.toString()).toList()
         : <String>[];
-    final sparkline = j['sparkline_data'] is List
-        ? (j['sparkline_data'] as List).map(_toDouble).toList()
+    final sparklineValue = j['sparkline_data'];
+    final sparkline = sparklineValue is List
+        ? sparklineValue.map(_toDouble).toList()
         : rawGraph.values.map(_toDouble).toList();
     return ReportModel(
       id: j['id']?.toString() ?? '',

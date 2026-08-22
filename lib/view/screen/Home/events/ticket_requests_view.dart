@@ -77,10 +77,20 @@ class TicketRequestsView extends StatelessWidget {
                 return TabBarView(
                   children: [
                     // Accept/Reject controls + status chip only for paid events
-                    _listTab(context, pending, ctrl,
-                        showActions: isPaid, showStatus: isPaid),
-                    _listTab(context, approved, ctrl,
-                        showQr: true, showStatus: isPaid),
+                    _listTab(
+                      context,
+                      pending,
+                      ctrl,
+                      showActions: isPaid,
+                      showStatus: isPaid,
+                    ),
+                    _listTab(
+                      context,
+                      approved,
+                      ctrl,
+                      showQr: true,
+                      showStatus: isPaid,
+                    ),
                     _listTab(context, rejected, ctrl, showStatus: isPaid),
                   ],
                 );
@@ -182,7 +192,7 @@ class _RequestCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      request.requestedAt,
+                      request.formattedRequestedAt,
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.grey,

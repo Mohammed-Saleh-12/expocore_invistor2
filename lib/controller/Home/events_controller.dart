@@ -518,9 +518,14 @@ class EventsController extends GetxController {
   Future<void> _loadTicketRequests(int eventId) async {
     final result = await _eventsData.getTicketRequests(eventId);
     if (result['status'] == true) {
-      ticketRequests[eventId] = _asList(
-        result['data'],
-      ).map((e) => TicketRequestModel.fromJson(e)).toList();
+      ticketRequests[eventId] = _asList(result['data'])
+          .map(
+            (e) => TicketRequestModel.fromJson({
+              ...Map<String, dynamic>.from(e),
+              'event_id': e['event_id'] ?? eventId,
+            }),
+          )
+          .toList();
       ticketRequests.refresh();
     } else {
       ticketRequests[eventId] = List.from(
@@ -784,7 +789,8 @@ class EventsController extends GetxController {
       req.status = d['status'] ?? 'approved';
       req.ticketNumber =
           d['ticket_number'] ?? 'ECT-${req.id.toString().padLeft(3, '0')}';
-      req.qrCodeData = d['qr_code_data'] ?? '${req.ticketNumber}-2026';
+      req.qrCodeData =
+          d['qr_code_data'] ?? d['qr_code'] ?? '${req.ticketNumber}-2026';
     } else {
       req.status = 'approved';
       req.ticketNumber = 'ECT-${req.id.toString().padLeft(3, '0')}';
