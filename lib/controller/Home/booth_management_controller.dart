@@ -12,20 +12,20 @@ class BoothManagementController extends GetxController {
   final BoothProfileData _boothProfileData = BoothProfileData(Crud());
   late BoothModel booth;
 
-  final companyNatureCtrl    = TextEditingController();
+  final companyNatureCtrl = TextEditingController();
   final servicesProductsCtrl = TextEditingController();
-  final headquartersCtrl     = TextEditingController();
-  final newLinkCtrl          = TextEditingController();
+  final headquartersCtrl = TextEditingController();
+  final newLinkCtrl = TextEditingController();
 
-  final socialLinks        = <String>[].obs;
-  final productImages      = <String>[].obs;   // URLs from server
-  final boothImages        = <String>[].obs;   // URLs from server
-  final productImageFiles  = <XFile>[].obs;    // locally picked
-  final boothImageFiles    = <XFile>[].obs;    // locally picked
-  final boothEvents        = <EventModel>[].obs;
-  final isLoading          = false.obs;
-  final isSaving           = false.obs;
-  final status             = StatusRequest.none.obs;
+  final socialLinks = <String>[].obs;
+  final productImages = <String>[].obs; // URLs from server
+  final boothImages = <String>[].obs; // URLs from server
+  final productImageFiles = <XFile>[].obs; // locally picked
+  final boothImageFiles = <XFile>[].obs; // locally picked
+  final boothEvents = <EventModel>[].obs;
+  final isLoading = false.obs;
+  final isSaving = false.obs;
+  final status = StatusRequest.none.obs;
 
   final _picker = ImagePicker();
 
@@ -41,8 +41,11 @@ class BoothManagementController extends GetxController {
       );
       if (x != null) boothCoverFile.value = x;
     } catch (_) {
-      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'خطأ',
+        'تعذّر فتح معرض الصور',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -88,7 +91,7 @@ class BoothManagementController extends GetxController {
   }
 
   void _loadFallbackProfile() {
-    socialLinks.value   = ['https://linkedin.com/company/myco'];
+    socialLinks.value = ['https://linkedin.com/company/myco'];
     productImages.value = [
       'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
       'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400',
@@ -105,9 +108,9 @@ class BoothManagementController extends GetxController {
       boothImageFiles.clear();
       boothCoverFile.value = null;
       await _loadBoothProfile();
-      boothEvents.value = _asList(result['data'])
-          .map((e) => EventModel.fromJson(e))
-          .toList();
+      boothEvents.value = _asList(
+        result['data'],
+      ).map((e) => EventModel.fromJson(e)).toList();
     } else {
       boothEvents.value = DummyData.events
           .where((e) => e.exhibitionName == booth.exhibitionName)
@@ -137,8 +140,11 @@ class BoothManagementController extends GetxController {
       );
       if (picked.isNotEmpty) productImageFiles.addAll(picked);
     } catch (_) {
-      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'خطأ',
+        'تعذّر فتح معرض الصور',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -150,8 +156,11 @@ class BoothManagementController extends GetxController {
       );
       if (picked.isNotEmpty) boothImageFiles.addAll(picked);
     } catch (_) {
-      Get.snackbar('خطأ', 'تعذّر فتح معرض الصور',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'خطأ',
+        'تعذّر فتح معرض الصور',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -181,25 +190,26 @@ class BoothManagementController extends GetxController {
 
   Future<void> saveProfile() async {
     isSaving.value = true;
-    status.value   = StatusRequest.loading;
+    status.value = StatusRequest.loading;
 
     final result = await _boothProfileData.updateBoothProfile(
-      boothId:          booth.id,
-      companyNature:    companyNatureCtrl.text.trim(),
+      boothId: booth.id,
+      companyNature: companyNatureCtrl.text.trim(),
       servicesProducts: servicesProductsCtrl.text.trim(),
-      headquarters:     headquartersCtrl.text.trim(),
-      socialLinks:      socialLinks.toList(),
-      productImages:    productImages.toList(),
-      boothImages:      boothImages.toList(),
+      headquarters: headquartersCtrl.text.trim(),
+      socialLinks: socialLinks.toList(),
+      productImages: productImages.toList(),
+      boothImages: boothImages.toList(),
       productImageFiles: productImageFiles.toList(),
-      boothImageFiles:   boothImageFiles.toList(),
-      coverImage:        boothCoverFile.value,
+      boothImageFiles: boothImageFiles.toList(),
+      coverImage: boothCoverFile.value,
     );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
       Get.snackbar(
-        'booth_saved_title'.tr, 'booth_saved_msg'.tr,
+        'booth_saved_title'.tr,
+        'booth_saved_msg'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF4CAF50).withOpacity(0.9),
         colorText: Colors.white,
@@ -208,8 +218,11 @@ class BoothManagementController extends GetxController {
       );
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('error'.tr, result['message'] ?? 'booth_save_fail_msg'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'error'.tr,
+        result['message'] ?? 'booth_save_fail_msg'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     isSaving.value = false;
   }

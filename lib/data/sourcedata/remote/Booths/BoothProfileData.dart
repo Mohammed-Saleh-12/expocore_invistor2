@@ -23,7 +23,7 @@ class BoothProfileData {
     required List<String> productImages,
     required List<String> boothImages,
     List<XFile> productImageFiles = const [],
-    List<XFile> boothImageFiles   = const [],
+    List<XFile> boothImageFiles = const [],
     XFile? coverImage,
   }) async {
     final hasFiles =
@@ -33,30 +33,31 @@ class BoothProfileData {
 
     if (!hasFiles) {
       return await crud.postData(AppLink.boothProfileUpdate(boothId), {
-        'company_nature':    companyNature,
+        'company_nature': companyNature,
         'services_products': servicesProducts,
-        'headquarters':      headquarters,
-        'social_links':      socialLinks,
-        'product_images':    productImages,
-        'booth_images':      boothImages,
+        'headquarters': headquarters,
+        'social_links': socialLinks,
+        'product_images': productImages,
+        'booth_images': boothImages,
       });
     }
 
     // مع ملفات: multipart مع method spoofing
     final fields = <String, dynamic>{
-      'company_nature':    companyNature,
+      'company_nature': companyNature,
       'services_products': servicesProducts,
-      'headquarters':      headquarters,
+      'headquarters': headquarters,
       // تشفير القوائم كـ JSON string (multipart لا يدعم arrays مباشرةً)
-      'social_links':      jsonEncode(socialLinks),
-      'product_images':    jsonEncode(productImages),
-      'booth_images':      jsonEncode(boothImages),
+      'social_links': jsonEncode(socialLinks),
+      'product_images': jsonEncode(productImages),
+      'booth_images': jsonEncode(boothImages),
     };
 
     final files = <MapEntry<String, XFile>>[];
-    for (final f in productImageFiles) files.add(MapEntry('product_images[]', f));
-    for (final f in boothImageFiles)   files.add(MapEntry('booth_images[]', f));
-    if (coverImage != null)            files.add(MapEntry('cover_image', coverImage));
+    for (final f in productImageFiles)
+      files.add(MapEntry('product_images[]', f));
+    for (final f in boothImageFiles) files.add(MapEntry('booth_images[]', f));
+    if (coverImage != null) files.add(MapEntry('cover_image', coverImage));
 
     return await crud.uploadData(
       AppLink.boothProfileUpdate(boothId),
@@ -67,7 +68,10 @@ class BoothProfileData {
   }
 
   /// رفع صورة غلاف الجناح منفردةً
-  Future<Map<String, dynamic>> uploadBoothCover(int boothId, XFile cover) async {
+  Future<Map<String, dynamic>> uploadBoothCover(
+    int boothId,
+    XFile cover,
+  ) async {
     return await crud.uploadData(
       AppLink.boothCoverImage(boothId),
       {},
