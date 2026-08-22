@@ -150,14 +150,14 @@ class BoothCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      booth.exhibitionName,
+                      'المعرض: ${booth.exhibitionName}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.grey,
                       ),
                     ),
                     Text(
-                      'المساحة: ${booth.area.toInt()}م²',
+                      'المساحة: ${_formatArea(booth.area)}م²',
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.grey,
@@ -188,6 +188,10 @@ class BoothCard extends StatelessWidget {
       ),
     );
   }
+
+  String _formatArea(double area) => area == area.roundToDouble()
+      ? area.toInt().toString()
+      : area.toStringAsFixed(1);
 }
 
 class _ApprovedButtons extends StatelessWidget {

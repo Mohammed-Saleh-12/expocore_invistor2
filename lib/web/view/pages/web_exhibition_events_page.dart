@@ -5,6 +5,7 @@ import '../../../controller/Home/events_controller.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../../view/widget/Home/sponsorship_bottom_sheet.dart';
+import '../../../view/widget/Home/event_image_provider.dart';
 import '../widgets/web_section_header.dart';
 
 class WebExhibitionEventsPage extends StatelessWidget {
@@ -504,9 +505,15 @@ class _WebSponsorEventCard extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(20),
                       ),
-                      child: event.exhibitionImageUrl.isNotEmpty
-                          ? Image.network(
-                              event.exhibitionImageUrl,
+                      child:
+                          event.images.isNotEmpty ||
+                              event.exhibitionImageUrl.isNotEmpty
+                          ? Image(
+                              image: eventImageProvider(
+                                event.images.isNotEmpty
+                                    ? event.images.first
+                                    : event.exhibitionImageUrl,
+                              ),
                               height: 160,
                               width: double.infinity,
                               fit: BoxFit.cover,

@@ -40,6 +40,7 @@ class WebNavController extends GetxController {
   ];
 
   final detail = Rxn<WebDetailRequest>();
+  WebDetailRequest? _bookingReturnDetail;
 
   void select(int index) {
     detail.value = null;
@@ -64,7 +65,8 @@ class WebNavController extends GetxController {
     final c = Get.isRegistered<BookingController>()
         ? Get.find<BookingController>()
         : Get.put(BookingController());
-    c.resetForWeb(b, closeDetail);
+    c.resetForWeb(b);
+    _bookingReturnDetail = detail.value;
     detail.value = WebDetailRequest(WebDetailType.bookingRequest, data: b);
   }
 
@@ -80,7 +82,9 @@ class WebNavController extends GetxController {
   }
 
   void openMessagesForExhibition(String exhibitionName) {
-    Get.find<MessagesController>().prepareConversationForExhibition(exhibitionName);
+    Get.find<MessagesController>().prepareConversationForExhibition(
+      exhibitionName,
+    );
     detail.value = null;
     selected.value = sections.indexWhere((s) => s.label == 'nav_messages');
   }
@@ -103,7 +107,8 @@ class WebNavController extends GetxController {
   void openSponsorEvent(ExhibitionSponsorEvent e) =>
       detail.value = WebDetailRequest(WebDetailType.sponsorEvent, data: e);
 
-  void openMap() => detail.value = const WebDetailRequest(WebDetailType.map);
+  void openMap(int exhibitionId) =>
+      detail.value = WebDetailRequest(WebDetailType.map, data: exhibitionId);
 
   void openExhibitionEvents() =>
       detail.value = const WebDetailRequest(WebDetailType.exhibitionEvents);
@@ -111,7 +116,15 @@ class WebNavController extends GetxController {
   void openAccountDetail() =>
       detail.value = const WebDetailRequest(WebDetailType.accountDetail);
 
-  void closeDetail() => detail.value = null;
+  void closeDetail() {
+    if (detail.value?.type == WebDetailType.bookingRequest &&
+        _bookingReturnDetail != null) {
+      detail.value = _bookingReturnDetail;
+      _bookingReturnDetail = null;
+      return;
+    }
+    detail.value = null;
+  }
 
   WebSection get current => sections[selected.value];
 

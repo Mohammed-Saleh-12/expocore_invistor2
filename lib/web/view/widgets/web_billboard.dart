@@ -5,9 +5,11 @@ import '../../../data/model/exhibition/exhibition_model.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../../controllers/web_billboard_controller.dart';
 import '../../models/web_theme.dart';
+import '../../../view/widget/Home/event_image_provider.dart';
 
 class WebBillboard extends StatelessWidget {
   final List<ExhibitionModel> items;
+
   /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
   final VoidCallback? onNearEnd;
   const WebBillboard({super.key, required this.items, this.onNearEnd});
@@ -151,8 +153,8 @@ class _AdCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    e.imageUrl,
+                  Image(
+                    image: eventImageProvider(e.imageUrl),
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
                         Container(color: WebTheme.surfaceAlt),

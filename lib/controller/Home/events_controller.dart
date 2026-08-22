@@ -18,6 +18,7 @@ import '../../data/sourcedata/remote/Profile/ProfileData.dart';
 import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
 import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../core/services/services.dart';
+import '../../core/utils/safe_snackbar.dart';
 import 'favorites_controller.dart';
 
 class ProductItem {
@@ -648,7 +649,7 @@ class EventsController extends GetxController {
       await _loadMyEvents();
       _resetCreateForm();
       success = true;
-      Get.snackbar(
+      safeSnackbar(
         'event_published_title'.tr,
         'event_published_msg'.tr,
         snackPosition: SnackPosition.BOTTOM,
@@ -686,7 +687,7 @@ class EventsController extends GetxController {
       requiresBooking: false,
     );
     myEvents.insert(0, ev);
-    Get.snackbar(
+    safeSnackbar(
       'event_published_title'.tr,
       'sponsorship_booked_msg'.trParams({'name': name}),
       snackPosition: SnackPosition.BOTTOM,
@@ -754,7 +755,7 @@ class EventsController extends GetxController {
     isBooking.value = false;
     selectedSponsorDuration.value = null;
     _resetSponsorMedia();
-    Get.snackbar(
+    safeSnackbar(
       'sponsorship_booked_title'.tr,
       'sponsorship_booked_msg'.trParams({'name': event.name}),
       snackPosition: SnackPosition.BOTTOM,
@@ -790,7 +791,7 @@ class EventsController extends GetxController {
       req.qrCodeData = '${req.ticketNumber}-2026';
     }
     ticketRequests.refresh();
-    Get.snackbar(
+    safeSnackbar(
       'ticket_approved_title'.tr,
       'ticket_approved_msg'.trParams({'name': req.requesterName}),
       snackPosition: SnackPosition.BOTTOM,
@@ -803,7 +804,7 @@ class EventsController extends GetxController {
     await _eventsData.ticketRequestAction(req.eventId, req.id, 'reject');
     req.status = 'rejected';
     ticketRequests.refresh();
-    Get.snackbar(
+    safeSnackbar(
       'ticket_rejected_title'.tr,
       'ticket_rejected_msg'.trParams({'name': req.requesterName}),
       snackPosition: SnackPosition.BOTTOM,
@@ -864,7 +865,7 @@ class EventsController extends GetxController {
     }
   }
 
-  void _warn(String msg) => Get.snackbar(
+  void _warn(String msg) => safeSnackbar(
     'snack_warning'.tr,
     msg,
     snackPosition: SnackPosition.BOTTOM,

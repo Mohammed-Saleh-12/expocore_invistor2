@@ -207,7 +207,16 @@ class FavoritesView extends GetView<FavoritesController> {
                 ? () => Get.toNamed(AppRoutes.REPORTS)
                 : null,
             onViewMap: b.status != 'active'
-                ? () => Get.toNamed(AppRoutes.BOOTH_MAP_3D)
+                ? () {
+                    if (b.exhibitionId <= 0) {
+                      Get.snackbar('map_3d_title'.tr, 'map_load_error'.tr);
+                      return;
+                    }
+                    Get.toNamed(
+                      AppRoutes.BOOTH_MAP_3D,
+                      arguments: {'exhibition_id': b.exhibitionId},
+                    );
+                  }
                 : null,
           ),
         );

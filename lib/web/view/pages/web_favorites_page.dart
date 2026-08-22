@@ -304,10 +304,7 @@ class _FavBoothCard extends StatelessWidget {
                   filled: true,
                   onTap: () => _approved
                       ? WebNavController.to.openBoothManagement(booth)
-                      : WebNavController.to.openBooth(
-                          booth,
-                          report: boothCtrl.buildBoothReport(booth),
-                        ),
+                      : WebNavController.to.openBooth(booth),
                 ),
               ),
               const SizedBox(width: 8),
@@ -316,14 +313,13 @@ class _FavBoothCard extends StatelessWidget {
                     ? _btn(
                         label: 'التقرير',
                         filled: false,
-                        onTap: () => WebNavController.to.openReport(
-                          boothCtrl.buildBoothReport(booth),
-                        ),
+                        onTap: () => boothCtrl.openBoothReport(booth),
                       )
                     : _btn(
                         label: 'خريطة 3D',
                         filled: false,
-                        onTap: () => WebNavController.to.openMap(),
+                        onTap: () =>
+                            WebNavController.to.openMap(booth.exhibitionId),
                       ),
               ),
             ],

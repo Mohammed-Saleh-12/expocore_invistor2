@@ -1,4 +1,6 @@
 import '../event/exhibition_sponsor_event_model.dart';
+import '../../../core/constant/app_env.dart';
+import 'dart:convert';
 
 class ExhibitionModel {
   final int id;
@@ -51,8 +53,12 @@ class ExhibitionModel {
         return 'جارٍ';
       case 'upcoming':
         return 'قادم';
-      default:
+      case 'ended':
         return 'منتهٍ';
+      case 'hidden':
+        return 'مخفي';
+      default:
+        return status.isEmpty ? 'غير محدد' : status;
     }
   }
 
@@ -61,11 +67,30 @@ class ExhibitionModel {
     String? startDate,
     String? endDate,
   }) {
-    switch (value?.toString().trim().toLowerCase()) {
+    final raw = value?.toString().trim().toLowerCase() ?? '';
+    if (raw == 'hidden') return 'hidden';
+
+    // Dates are authoritative for lifecycle states when available. This also
+    // corrects stale stored values such as "upcoming" after the end date.
+    final start = DateTime.tryParse(startDate ?? '');
+    final end = DateTime.tryParse(endDate ?? '');
+    if (start != null || end != null) {
+      final today = _dateOnly(DateTime.now());
+      if (start != null && today.isBefore(_dateOnly(start))) {
+        return 'upcoming';
+      }
+      if (end != null && today.isAfter(_dateOnly(end))) {
+        return 'ended';
+      }
+      return 'active';
+    }
+
+    switch (raw) {
       case 'active':
       case 'ongoing':
       case 'live':
         return 'active';
+      case 'far':
       case 'upcoming':
       case 'scheduled':
       case 'pending':
@@ -78,16 +103,6 @@ class ExhibitionModel {
       case 'completed':
         return 'ended';
       default:
-        final start = DateTime.tryParse(startDate ?? '');
-        final end = DateTime.tryParse(endDate ?? '');
-        final today = DateTime.now();
-        final date = DateTime(today.year, today.month, today.day);
-        if (start != null && date.isBefore(_dateOnly(start))) {
-          return 'upcoming';
-        }
-        if (end != null && !date.isAfter(_dateOnly(end))) {
-          return 'active';
-        }
         return 'ended';
     }
   }
@@ -99,9 +114,9 @@ class ExhibitionModel {
     // ── Images: يقبل images (list) أو image_url (string قديم) ──
     List<String> imgs;
     if (j['images'] is List) {
-      imgs = List<String>.from(j['images']);
+      imgs = _imageUrls(j['images']);
     } else if ((j['image_url'] ?? '').toString().isNotEmpty) {
-      imgs = [j['image_url'] as String];
+      imgs = _imageUrls([j['image_url']]);
     } else {
       imgs = [];
     }
@@ -117,7 +132,7 @@ class ExhibitionModel {
     }
 
     return ExhibitionModel(
-      id: j['id'] ?? 0,
+      id: int.tryParse((j['id'] ?? 0).toString()) ?? 0,
       name: j['name'] ?? '',
       description: j['description'] ?? '',
       images: imgs,
@@ -139,5 +154,48 @@ class ExhibitionModel {
       sectors: List<String>.from(j['sectors'] ?? []),
       isFavorite: j['is_favorite'] ?? false,
     );
+  }
+
+  static List<String> _imageUrls(dynamic value) {
+    dynamic source = value;
+    if (source is String && source.trim().isNotEmpty) {
+      try {
+        source = jsonDecode(source);
+      } catch (_) {
+        source = [source];
+      }
+    }
+    if (source is! List) return const [];
+
+    return source
+        .map((image) {
+          if (image is Map) {
+            return image['url'] ??
+                image['image_url'] ??
+                image['imageUrl'] ??
+                image['image'] ??
+                '';
+          }
+          return image;
+        })
+        .map((image) => _validUrl(image))
+        .where((image) => image.isNotEmpty)
+        .toList();
+  }
+
+  static String _validUrl(dynamic value) {
+    final url = value?.toString().trim() ?? '';
+    if (url.isEmpty || url.startsWith('data:')) return url;
+    final parsed = Uri.tryParse(url);
+    if (parsed == null) return '';
+    if (parsed.hasScheme && parsed.host.isNotEmpty) return url;
+
+    final apiUri = Uri.parse(AppEnv.baseUrl);
+    final path = url.replaceFirst(RegExp(r'^/+'), '');
+    return apiUri
+        .replace(
+          path: path.startsWith('storage/') ? '/$path' : '/storage/$path',
+        )
+        .toString();
   }
 }

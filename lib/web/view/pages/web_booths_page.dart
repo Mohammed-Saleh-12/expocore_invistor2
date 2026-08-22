@@ -127,6 +127,10 @@ class _BoothCard extends StatelessWidget {
 
   bool get _approved => booth.status == 'active';
 
+  String _formatArea(double area) => area == area.roundToDouble()
+      ? area.toInt().toString()
+      : area.toStringAsFixed(1);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -168,7 +172,7 @@ class _BoothCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      booth.exhibitionName,
+                      'المعرض: ${booth.exhibitionName}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: AppColors.grey, fontSize: 12),
@@ -182,7 +186,7 @@ class _BoothCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _info(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
+              _info(Icons.straighten_rounded, '${_formatArea(booth.area)} م²'),
               const SizedBox(width: 16),
               _info(Icons.payments_outlined, '${booth.price.toInt()} ر.س'),
             ],
@@ -209,10 +213,7 @@ class _BoothCard extends StatelessWidget {
                   filled: true,
                   onTap: () => _approved
                       ? WebNavController.to.openBoothManagement(booth)
-                      : WebNavController.to.openBooth(
-                          booth,
-                          report: c.buildBoothReport(booth),
-                        ),
+                      : WebNavController.to.openBooth(booth),
                 ),
               ),
               const SizedBox(width: 10),
@@ -221,22 +222,19 @@ class _BoothCard extends StatelessWidget {
                     ? _btn(
                         label: 'التقرير',
                         filled: false,
-                        onTap: () => WebNavController.to.openReport(
-                          c.buildBoothReport(booth),
-                        ),
+                        onTap: () => c.openBoothReport(booth),
                       )
                     : booth.status == 'ended'
                     ? _btn(
                         label: 'التقرير',
                         filled: false,
-                        onTap: () => WebNavController.to.openReport(
-                          c.buildBoothReport(booth),
-                        ),
+                        onTap: () => c.openBoothReport(booth),
                       )
                     : _btn(
                         label: 'خريطة 3D',
                         filled: false,
-                        onTap: () => WebNavController.to.openMap(),
+                        onTap: () =>
+                            WebNavController.to.openMap(booth.exhibitionId),
                       ),
               ),
             ],

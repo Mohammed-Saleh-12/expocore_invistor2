@@ -203,26 +203,6 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(height: 16),
 
           Center(
-            child: TextButton.icon(
-              onPressed: c.fillDemo,
-              icon: Icon(
-                Icons.play_circle_outline_rounded,
-                color: WebTheme.primary,
-                size: 18,
-              ),
-              label: Text(
-                'login_demo'.tr,
-                style: TextStyle(
-                  color: WebTheme.pink,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -6,12 +6,13 @@ class WebStatusChip extends StatelessWidget {
   const WebStatusChip({super.key, required this.status});
 
   static const _map = {
-    'active':   ('نشط',          AppColors.success),
-    'upcoming': ('قادم',         AppColors.info),
-    'pending':  ('قيد المراجعة', AppColors.info),
-    'rejected': ('مرفوض',        AppColors.error),
-    'ended':    ('منتهٍ',        AppColors.grey),
-    'paused':   ('متوقف',        AppColors.orange),
+    'active': ('نشط', AppColors.success),
+    'upcoming': ('قادم', AppColors.info),
+    'pending': ('قيد المراجعة', AppColors.info),
+    'rejected': ('مرفوض', AppColors.error),
+    'ended': ('منتهٍ', AppColors.grey),
+    'hidden': ('مخفي', AppColors.orange),
+    'paused': ('متوقف', AppColors.orange),
   };
 
   @override
@@ -24,8 +25,14 @@ class WebStatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withOpacity(0.4)),
       ),
-      child: Text(label,
-          style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }

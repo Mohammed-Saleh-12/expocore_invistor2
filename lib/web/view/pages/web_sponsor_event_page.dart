@@ -6,6 +6,7 @@ import '../../../core/constant/appcolors.dart';
 import '../../../data/model/event/exhibition_sponsor_event_model.dart';
 import '../../controllers/web_nav_controller.dart';
 import '../../../data/model/event/sponsorship_booking_model.dart';
+import '../../../view/widget/Home/event_image_provider.dart';
 
 class WebSponsorEventPage extends StatelessWidget {
   final ExhibitionSponsorEvent event;
@@ -25,6 +26,20 @@ class WebSponsorEventPage extends StatelessWidget {
             children: [
               _back(),
               const SizedBox(height: 20),
+
+              if (event.images.isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image(
+                    image: eventImageProvider(event.images.first),
+                    height: 260,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
 
               // ── Event header card ─────────────────────────
               Container(

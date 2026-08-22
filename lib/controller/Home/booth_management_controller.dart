@@ -75,12 +75,12 @@ class BoothManagementController extends GetxController {
     final result = await _boothProfileData.getBoothProfile(booth.id);
     if (result['status'] == true) {
       final d = _body(result['data']);
-      companyNatureCtrl.text    = d['company_nature'] ?? '';
-      servicesProductsCtrl.text = d['services_products'] ?? '';
-      headquartersCtrl.text     = d['headquarters'] ?? '';
-      socialLinks.value         = List<String>.from(d['social_links'] ?? []);
-      productImages.value       = List<String>.from(d['product_images'] ?? []);
-      boothImages.value         = List<String>.from(d['booth_images'] ?? []);
+      companyNatureCtrl.text = d['company_nature']?.toString() ?? '';
+      servicesProductsCtrl.text = d['services_products']?.toString() ?? '';
+      headquartersCtrl.text = d['headquarters']?.toString() ?? '';
+      socialLinks.value = _parseStrings(d['social_links']);
+      productImages.value = _parseStrings(d['product_images']);
+      boothImages.value = _parseStrings(d['booth_images']);
     } else {
       _loadFallbackProfile();
     }
@@ -101,6 +101,10 @@ class BoothManagementController extends GetxController {
   Future<void> _loadBoothEvents() async {
     final result = await _boothProfileData.getBoothEvents(booth.id);
     if (result['status'] == true) {
+      productImageFiles.clear();
+      boothImageFiles.clear();
+      boothCoverFile.value = null;
+      await _loadBoothProfile();
       boothEvents.value = _asList(result['data'])
           .map((e) => EventModel.fromJson(e))
           .toList();
@@ -216,6 +220,15 @@ class BoothManagementController extends GetxController {
     if (data is List) return data;
     if (data is Map && data['data'] is List) return data['data'];
     return [];
+  }
+
+  List<String> _parseStrings(dynamic value) {
+    if (value is! List) return const [];
+    return value
+        .map((item) => item is Map ? (item['url'] ?? item['link']) : item)
+        .where((item) => item != null && item.toString().isNotEmpty)
+        .map((item) => item.toString())
+        .toList();
   }
 
   dynamic _body(dynamic data) =>

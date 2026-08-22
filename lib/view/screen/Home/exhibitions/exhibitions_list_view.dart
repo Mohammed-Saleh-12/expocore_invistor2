@@ -20,7 +20,7 @@ class ExhibitionsListView extends GetView<ExhibitionsController> {
         bottomNavigationBar: const BottomNavCustom(),
         body: Column(
           children: [
-            SizedBox(height: 24),
+            SizedBox(height: 28),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Column(

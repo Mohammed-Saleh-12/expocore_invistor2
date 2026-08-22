@@ -14,6 +14,7 @@ class WebForgotPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = Get.find<ForgotPasswordController>();
     final wide = MediaQuery.of(context).size.width >= 1000;
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       backgroundColor: WebTheme.bg,
@@ -38,7 +39,7 @@ class WebForgotPasswordPage extends StatelessWidget {
                     delay: const Duration(milliseconds: 200),
                     scale: true,
                     beginOffset: const Offset(0, 0.15),
-                    child: _ForgotForm(c: c),
+                    child: _ForgotForm(c: c, formKey: formKey),
                   ),
                 ),
               ),
@@ -88,12 +89,13 @@ class _ForgotBrand extends StatelessWidget {
 // ── Form panel ───────────────────────────────────────────────
 class _ForgotForm extends StatelessWidget {
   final ForgotPasswordController c;
-  const _ForgotForm({required this.c});
+  final GlobalKey<FormState> formKey;
+  const _ForgotForm({required this.c, required this.formKey});
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: c.formKey,
+      key: formKey,
       child: Column(
         children: [
           Column(
@@ -190,7 +192,11 @@ class _ForgotForm extends StatelessWidget {
                   height: 52,
                   child: _GradientButton(
                     loading: c.status.value == StatusRequest.loading,
-                    onTap: c.sendResetLink,
+                    onTap: () {
+                      if (formKey.currentState?.validate() ?? false) {
+                        c.sendResetLink();
+                      }
+                    },
                     label: 'forgot_btn'.tr,
                   ),
                 ),

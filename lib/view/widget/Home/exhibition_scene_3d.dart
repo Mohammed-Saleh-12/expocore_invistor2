@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_windows/webview_windows.dart' as windows_webview;
 
 import '../../../data/model/map/exhibition_map_model.dart';
 import '../../../linkapi.dart';
@@ -12,7 +13,8 @@ class Exhibition3DScene extends StatelessWidget {
   static const double _worldScale = 0.01;
   final ExhibitionMapModel mapModel;
   final MapBoothModel? selectedBooth;
-  final ValueChanged<MapBoothModel>? onBoothTapped;
+  final void Function(MapBoothModel booth, Offset position)? onBoothTapped;
+  final VoidCallback? onBackgroundTapped;
   final bool isDark;
   final TransformationController? transformationController;
 
@@ -21,21 +23,22 @@ class Exhibition3DScene extends StatelessWidget {
     required this.mapModel,
     this.selectedBooth,
     this.onBoothTapped,
+    this.onBackgroundTapped,
     this.isDark = false,
     this.transformationController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return _ThreeSceneWebView(
-      mapModel: mapModel,
-      selectedBooth: selectedBooth,
-      onBoothTapped: onBoothTapped,
-      isDark: isDark,
-    );
+    if (_supportsWebView) {
+      return _ThreeSceneWebView(
+        mapModel: mapModel,
+        selectedBooth: selectedBooth,
+        onBoothTapped: onBoothTapped,
+        isDark: isDark,
+      );
+    }
 
-    // Kept below as a native fallback for platforms without WebView support.
-    // ignore: dead_code
     if (!mapModel.isGenericScene && mapModel.halls.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -69,19 +72,22 @@ class Exhibition3DScene extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          (isDark
-                              ? const Color(0xFF090B18)
-                              : const Color(0xFFF4F6FF)),
-                          (isDark
-                              ? const Color(0xFF1A1730)
-                              : const Color(0xFFE9EEF9)),
-                        ],
+                  child: GestureDetector(
+                    onTap: onBackgroundTapped,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            (isDark
+                                ? const Color(0xFF090B18)
+                                : const Color(0xFFF4F6FF)),
+                            (isDark
+                                ? const Color(0xFF1A1730)
+                                : const Color(0xFFE9EEF9)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -114,7 +120,7 @@ class Exhibition3DScene extends StatelessWidget {
                         onTap: () {
                           final realBooth = _coerceBoothFromInstance(instance);
                           if (realBooth != null && onBoothTapped != null) {
-                            onBoothTapped!(realBooth);
+                            onBoothTapped!(realBooth, Offset(x, y));
                           }
                         },
                         child: Transform(
@@ -275,12 +281,18 @@ class Exhibition3DScene extends StatelessWidget {
       kIsWeb ||
       defaultTargetPlatform == TargetPlatform.android ||
       defaultTargetPlatform == TargetPlatform.iOS;
+
+  bool get _supportsWebView =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.windows;
 }
 
 class _ThreeSceneWebView extends StatefulWidget {
   final ExhibitionMapModel mapModel;
   final MapBoothModel? selectedBooth;
-  final ValueChanged<MapBoothModel>? onBoothTapped;
+  final void Function(MapBoothModel booth, Offset position)? onBoothTapped;
   final bool isDark;
 
   const _ThreeSceneWebView({
@@ -295,12 +307,21 @@ class _ThreeSceneWebView extends StatefulWidget {
 }
 
 class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
-  late final WebViewController _webController;
+  WebViewController? _webController;
+  windows_webview.WebviewController? _windowsController;
   bool _ready = false;
 
   @override
   void initState() {
     super.initState();
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      _initializeWindowsWebView();
+    } else {
+      _initializeFlutterWebView();
+    }
+  }
+
+  void _initializeFlutterWebView() {
     _webController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(
@@ -318,6 +339,69 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
       ..loadRequest(Uri.parse(AppLink.mapViewer));
   }
 
+  Future<void> _initializeWindowsWebView() async {
+    final controller = windows_webview.WebviewController();
+    try {
+      await controller.initialize();
+      await controller.addScriptToExecuteOnDocumentCreated('''
+        window.addEventListener('error', function(event) {
+          if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.postMessage(JSON.stringify({
+              type: 'viewerError',
+              message: event.message || 'JavaScript error',
+              source: event.filename || ''
+            }));
+          }
+        });
+        window.addEventListener('unhandledrejection', function(event) {
+          if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.postMessage(JSON.stringify({
+              type: 'viewerError',
+              message: String(event.reason || 'Unhandled promise rejection')
+            }));
+          }
+        });
+      ''');
+      controller.webMessage.listen(_onWindowsSceneMessage);
+      await controller.loadUrl(AppLink.mapViewer);
+      _windowsController = controller;
+      if (mounted) {
+        setState(() {});
+      }
+      var viewerReady = false;
+      for (var attempt = 0; attempt < 40 && !viewerReady; attempt++) {
+        final result = await controller.executeScript(
+          "typeof window.setExpoScene",
+        );
+        viewerReady = result == 'function';
+        if (!viewerReady) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+        }
+      }
+      if (!viewerReady) {
+        final diagnostics = await controller.executeScript('''
+          JSON.stringify({
+            readyState: document.readyState,
+            url: location.href,
+            userAgent: navigator.userAgent,
+            webgl: !!document.createElement('canvas').getContext('webgl'),
+            viewerReady: typeof window.setExpoScene,
+            scriptCount: document.scripts.length
+          })
+        ''');
+        debugPrint('[ExpoCore] 3D viewer diagnostics: $diagnostics');
+        return;
+      }
+      _ready = true;
+      if (mounted) {
+        setState(() {});
+      }
+      _sendScene();
+    } catch (error) {
+      debugPrint('[ExpoCore] Windows WebView initialization failed: $error');
+    }
+  }
+
   @override
   void didUpdateWidget(covariant _ThreeSceneWebView oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -326,14 +410,31 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
 
   void _sendScene() {
     final payload = jsonEncode(_scenePayload());
-    _webController.runJavaScript(
-      'window.setExpoScene(${jsonEncode(payload)});',
-    );
+    final sceneScript = 'window.setExpoScene(${jsonEncode(payload)});';
+    if (_webController != null) {
+      _webController!.runJavaScript(sceneScript);
+    } else if (_windowsController != null) {
+      _windowsController!.executeScript(sceneScript);
+    } else {
+      return;
+    }
     final selected = widget.selectedBooth?.id;
     if (selected != null) {
-      _webController.runJavaScript(
-        'window.setExpoSelected("booth_$selected");',
-      );
+      final selectedScript = 'window.setExpoSelected("booth_$selected");';
+      if (_webController != null) {
+        _webController!.runJavaScript(selectedScript);
+      } else {
+        _windowsController!.executeScript(selectedScript);
+      }
+    }
+  }
+
+  void _onWindowsSceneMessage(dynamic message) {
+    debugPrint('[ExpoCore] Windows WebView message: $message');
+    if (message is Map) {
+      _onSceneMessage(JavaScriptMessage(message: jsonEncode(message)));
+    } else {
+      _onSceneMessage(JavaScriptMessage(message: message.toString()));
     }
   }
 
@@ -394,6 +495,11 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
               'z': item.rotation.z,
             },
             'scale': {'x': item.scale.x, 'y': item.scale.y, 'z': item.scale.z},
+            'dimensions': {
+              'x': item.width ?? item.scale.x,
+              'y': item.depth ?? item.scale.y,
+              'z': item.height ?? item.scale.z,
+            },
             'width': item.width,
             'height': item.height,
             'depth': item.depth,
@@ -409,12 +515,13 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
       return trimmed;
     }
     var name = trimmed.split('/').last;
-    final key = name.toLowerCase().replaceAll('.glb', '');
-    final mod = RegExp(r'^(?:booth_)?mod([1-5])$').firstMatch(key);
+    final key = name.toLowerCase().split('?').first;
+    final stem = key.replaceFirst(RegExp(r'\.(glb|gltf|obj|fbx|stl)$'), '');
+    final mod = RegExp(r'^(?:booth_)?mod([1-5])$').firstMatch(stem);
     if (mod != null) name = 'mod${mod.group(1)}.glb';
-    if (RegExp(r'^meet[1-3]$').hasMatch(key)) name = '$key.glb';
-    if (key == 'gate') name = 'gate.glb';
-    final normalized = name.toLowerCase().endsWith('.glb')
+    if (RegExp(r'^meet[1-3]$').hasMatch(stem)) name = '$stem.glb';
+    if (stem == 'gate') name = 'gate.glb';
+    final normalized = name.toLowerCase().contains('.')
         ? name
         : '${name.isEmpty ? 'mod1' : name}.glb';
     return AppLink.mapModel(normalized);
@@ -431,22 +538,82 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
       if (data is! Map || data['type'] != 'elementTap') return;
       final id = data['id']?.toString() ?? '';
       final numericId = int.tryParse(id.replaceAll(RegExp(r'[^0-9]'), ''));
-      if (numericId == null || numericId == 0) return;
       MapBoothModel? booth;
-      for (final hall in widget.mapModel.halls) {
-        for (final item in hall.booths) {
-          if (item.id == numericId) booth = item;
+      if (numericId != null && numericId != 0) {
+        for (final hall in widget.mapModel.halls) {
+          for (final item in hall.booths) {
+            if (item.id == numericId) booth = item;
+          }
         }
       }
-      if (booth != null) widget.onBoothTapped?.call(booth);
+      booth ??= _coerceBoothFromInstanceId(id);
+      if (booth != null) {
+        final x = (data['x'] as num?)?.toDouble() ?? 0;
+        final y = (data['y'] as num?)?.toDouble() ?? 0;
+        widget.onBoothTapped?.call(booth, Offset(x, y));
+      }
     } catch (_) {
       // Ignore malformed bridge messages from the WebView.
     }
   }
 
+  MapBoothModel? _coerceBoothFromInstanceId(String id) {
+    for (final instance in widget.mapModel.sceneInstances) {
+      if (instance.id == id) {
+        final type = instance.type.trim().toLowerCase();
+        final key = instance.assetKey
+            .split('/')
+            .last
+            .toLowerCase()
+            .split('.')
+            .first;
+        if ((type == 'booth' || type == 'wing') &&
+            RegExp(r'^(?:booth_)?mod[1-5]$').hasMatch(key)) {
+          return MapBoothModel(
+            id:
+                int.tryParse(
+                  instance.label?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
+                ) ??
+                0,
+            number: instance.label ?? id,
+            col: 0,
+            row: 0,
+            gridWidth: 1,
+            gridDepth: 1,
+            height: instance.height ?? 1,
+            status: 'available',
+            price: 0,
+            area: 0,
+            hallId: instance.floorId ?? 'floor',
+            hallName: instance.label ?? 'Scene Item',
+            amenities: const [],
+          );
+        }
+      }
+    }
+    return null;
+  }
+
   @override
-  Widget build(BuildContext context) =>
-      WebViewWidget(controller: _webController);
+  Widget build(BuildContext context) {
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      final controller = _windowsController;
+      if (controller == null || !controller.value.isInitialized) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return windows_webview.Webview(controller);
+    }
+    final controller = _webController;
+    if (controller == null) return const SizedBox.shrink();
+    return WebViewWidget(controller: controller);
+  }
+
+  @override
+  void dispose() {
+    _webController = null;
+    _windowsController?.dispose();
+    super.dispose();
+  }
 }
 
 class _ModelViewerCard extends StatelessWidget {

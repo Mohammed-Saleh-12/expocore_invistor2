@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -6,6 +7,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool showBack;
   final Color? backgroundColor;
+  final VoidCallback? onBack;
 
   const CustomAppBar({
     super.key,
@@ -13,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBack = true,
     this.backgroundColor,
+    this.onBack,
   });
 
   @override
@@ -22,15 +25,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
-      backgroundColor: backgroundColor ?? (isDark ? AppColors.darkBg : AppColors.lightBg),
+      backgroundColor:
+          backgroundColor ?? (isDark ? AppColors.darkBg : AppColors.lightBg),
       elevation: 0,
       centerTitle: true,
       automaticallyImplyLeading: showBack,
-      leading:  IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-        
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+        onPressed: onBack ?? Get.back,
+      ),
+
       title: Text(
         title,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),

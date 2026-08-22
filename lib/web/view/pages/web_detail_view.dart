@@ -33,6 +33,7 @@ import 'web_exhibition_events_page.dart';
 import '../../../controller/Home/profile_company_controller.dart';
 import '../../../view/widget/Home/profile_avatar.dart';
 import '../../../view/widget/Home/exhibition_image_gallery.dart';
+import '../../../view/widget/Home/event_image_provider.dart';
 
 // ════════════════════════════════════════════════════════════
 //  WebDetailView  —  موجّه الصفحات الداخلية (يعرض الصفحة المناسبة)
@@ -72,7 +73,7 @@ class WebDetailView extends StatelessWidget {
           event: request.data as ExhibitionSponsorEvent,
         );
       case WebDetailType.map:
-        return const WebMapPage();
+        return WebMapPage(exhibitionId: request.data as int?);
       case WebDetailType.boothManagement:
         return const WebBoothManagementPage();
       case WebDetailType.bookingRequest:
@@ -160,8 +161,8 @@ class _DetailScaffold extends StatelessWidget {
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(22),
                         ),
-                        child: Image.network(
-                          imageUrl!,
+                        child: Image(
+                          image: eventImageProvider(imageUrl!),
                           height: 260,
                           width: double.infinity,
                           fit: BoxFit.cover,
@@ -445,7 +446,7 @@ class _ExhibitionDetail extends StatelessWidget {
         _actionBtn(
           'خريطة المعرض 3D',
           filled: true,
-          onTap: () => WebNavController.to.openMap(),
+          onTap: () => WebNavController.to.openMap(e.id),
         ),
       ],
     );
@@ -602,11 +603,16 @@ class _BoothDetail extends StatelessWidget {
       children: [
         _infoRow(Icons.storefront_rounded, 'المعرض', b.exhibitionName),
         _infoRow(Icons.location_on_outlined, 'الموقع', b.location),
-        _infoRow(Icons.straighten_rounded, 'المساحة', '${b.area.toInt()} م²'),
+        _infoRow(
+          Icons.straighten_rounded,
+          'المساحة',
+          '${b.area == b.area.roundToDouble() ? b.area.toInt() : b.area.toStringAsFixed(1)} م²',
+        ),
         _infoRow(Icons.payments_outlined, 'السعر', '${b.price.toInt()} ر.س'),
         _infoRow(Icons.event_outlined, 'ينتهي في', b.endDate),
         const SizedBox(height: 16),
-        _chips('الخدمات', b.amenities),
+        _chips('الخدمات', b.services.keys.toList()),
+        if (b.amenities.isNotEmpty) _chips('المزايا', b.amenities),
       ],
     );
   }

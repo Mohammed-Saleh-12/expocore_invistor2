@@ -11,11 +11,14 @@ import '../../models/web_theme.dart';
 import '../../../view/widget/Home/exhibition_scene_3d.dart';
 
 class WebMapPage extends StatelessWidget {
-  const WebMapPage({super.key});
+  final int? exhibitionId;
+
+  const WebMapPage({super.key, required this.exhibitionId});
 
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<BoothMapController>();
+    ctrl.ensureExhibition(exhibitionId ?? 0);
 
     return Obx(() {
       if (ctrl.isLoading.value) {
@@ -46,7 +49,7 @@ class WebMapPage extends StatelessWidget {
 
       return Column(
         children: [
-          _WebMapHeader(mapModel: mapModel, ctrl: ctrl),
+          _WebMapHeader(mapModel: mapModel),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -60,7 +63,9 @@ class WebMapPage extends StatelessWidget {
                       mapModel: mapModel,
                       selectedBooth: ctrl.selectedBooth.value,
                       isDark: true,
-                      onBoothTapped: (booth) => ctrl.onBoothTapped(booth),
+                      onBoothTapped: (booth, position) =>
+                          ctrl.onBoothTapped(booth, screenPosition: position),
+                      onBackgroundTapped: ctrl.clearSelection,
                     ),
                     Obx(() {
                       final booth = ctrl.selectedBooth.value;
@@ -94,8 +99,7 @@ class WebMapPage extends StatelessWidget {
 
 class _WebMapHeader extends StatelessWidget {
   final ExhibitionMapModel mapModel;
-  final BoothMapController ctrl;
-  const _WebMapHeader({required this.mapModel, required this.ctrl});
+  const _WebMapHeader({required this.mapModel});
 
   @override
   Widget build(BuildContext context) {
@@ -135,87 +139,15 @@ class _WebMapHeader extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    Text(
-                      'map_interaction_hint'.tr,
-                      style: TextStyle(color: AppColors.grey, fontSize: 12),
-                    ),
                   ],
-                ),
-              ),
-              Tooltip(
-                message: 'map_reset_view'.tr,
-                child: InkWell(
-                  onTap: ctrl.resetView,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: WebTheme.primary.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: WebTheme.primary.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.center_focus_strong_rounded,
-                      color: WebTheme.primary,
-                      size: 18,
-                    ),
-                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          _WebLegendRow(),
         ],
       ),
     );
   }
-}
-
-class _WebLegendRow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _item(AppColors.info, 'متاح'),
-        const SizedBox(width: 20),
-        _item(const Color(0xFF3A3650), 'محجوز'),
-        const SizedBox(width: 20),
-        _item(WebTheme.primary, 'مختار'),
-        const SizedBox(width: 20),
-        _item(const Color(0xFF4CAF50), 'مدخل'),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: WebTheme.border,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            'map_controls_hint'.tr,
-            style: const TextStyle(color: AppColors.grey, fontSize: 11),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _item(Color c, String label) => Row(
-    children: [
-      Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          color: c,
-          borderRadius: BorderRadius.circular(3),
-        ),
-      ),
-      const SizedBox(width: 5),
-      Text(label, style: const TextStyle(color: AppColors.grey, fontSize: 12)),
-    ],
-  );
 }
 
 // ─────────────────────────────────── Canvas ──────────────────────────────────
@@ -551,182 +483,226 @@ class _WebBoothInfoPanel extends StatelessWidget {
     final booth = ctrl.selectedBooth.value!;
     final hall = ctrl.hallForBooth(booth);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      decoration: BoxDecoration(
-        color: WebTheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border(top: BorderSide(color: WebTheme.border)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: (hall?.color ?? WebTheme.primary).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onVerticalDragEnd: (details) {
+        if ((details.primaryVelocity ?? 0) > 300) ctrl.clearSelection();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          color: WebTheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          border: Border(top: BorderSide(color: WebTheme.border)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
             ),
-            child: Icon(
-              Icons.store_mall_directory_rounded,
-              color: hall?.color ?? WebTheme.primary,
-              size: 24,
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: (hall?.color ?? WebTheme.primary).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.store_mall_directory_rounded,
+                color: hall?.color ?? WebTheme.primary,
+                size: 24,
+              ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'الجناح ${booth.number}',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: WebTheme.text,
+                    ),
+                  ),
+                  Text(
+                    booth.hallName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: hall?.color ?? AppColors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      _chip(
+                        Icons.straighten_rounded,
+                        '${booth.area.toInt()} م²',
+                      ),
+                      const SizedBox(width: 10),
+                      _chip(Icons.height_rounded, 'ارتفاع ${booth.height}م'),
+                      const SizedBox(width: 10),
+                      _chip(
+                        Icons.power_outlined,
+                        booth.amenities.contains('كهرباء')
+                            ? 'كهرباء ✓'
+                            : 'بدون كهرباء',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 20),
+            Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'الجناح ${booth.number}',
-                  style: TextStyle(
-                    fontSize: 17,
+                  '${booth.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ريال',
+                  style: const TextStyle(
+                    color: AppColors.orange,
                     fontWeight: FontWeight.w800,
-                    color: WebTheme.text,
+                    fontSize: 16,
                   ),
                 ),
                 Text(
-                  booth.hallName,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: hall?.color ?? AppColors.grey,
-                  ),
+                  'full_exhibition_duration'.tr,
+                  style: const TextStyle(color: AppColors.grey, fontSize: 10),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 10),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    _chip(Icons.straighten_rounded, '${booth.area.toInt()} م²'),
-                    const SizedBox(width: 10),
-                    _chip(Icons.height_rounded, 'ارتفاع ${booth.height}م'),
-                    const SizedBox(width: 10),
-                    _chip(
-                      Icons.power_outlined,
-                      booth.amenities.contains('كهرباء')
-                          ? 'كهرباء ✓'
-                          : 'بدون كهرباء',
+                    // ── Favourite heart button ──
+                    Obx(() {
+                      final fav = Get.find<FavoritesController>();
+                      final isFav = fav.isBoothFavorited(booth.id);
+                      return GestureDetector(
+                        onTap: () => fav.toggleFavoriteBooth(
+                          BoothModel(
+                            id: booth.id,
+                            number: booth.number,
+                            exhibitionName: booth.hallName,
+                            imageUrl: '',
+                            area: booth.area,
+                            status: 'pending',
+                            price: booth.price,
+                            endDate: '',
+                            location: '${booth.hallName} - صف ${booth.row + 1}',
+                            amenities: booth.amenities,
+                            isFavorite: isFav,
+                          ),
+                        ),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: isFav
+                                ? AppColors.error.withOpacity(0.12)
+                                : WebTheme.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isFav ? AppColors.error : WebTheme.border,
+                            ),
+                          ),
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: isFav ? AppColors.error : AppColors.grey,
+                            size: 20,
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: ctrl.clearSelection,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: WebTheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.grey),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.close_rounded,
+                              color: AppColors.grey,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'btn_cancel'.tr,
+                              style: const TextStyle(
+                                color: AppColors.grey,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        final boothModel =
+                            ctrl.linkedBooth(booth) ??
+                            BoothModel(
+                              id: booth.id,
+                              number: booth.number,
+                              exhibitionName: booth.hallName,
+                              imageUrl: '',
+                              area: booth.area,
+                              status: booth.status,
+                              price: booth.price,
+                              endDate: '',
+                              location:
+                                  '${booth.hallName} - صف ${booth.row + 1}',
+                              amenities: booth.amenities,
+                              isFavorite: false,
+                            );
+                        WebNavController.to.openBookingRequest(boothModel);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: AppColors.favoriteGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          'booth_book_btn'.tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 20),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${booth.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')} ريال',
-                style: const TextStyle(
-                  color: AppColors.orange,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                ),
-              ),
-              Text(
-                'full_exhibition_duration'.tr,
-                style: const TextStyle(color: AppColors.grey, fontSize: 10),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // ── Favourite heart button ──
-                  Obx(() {
-                    final fav = Get.find<FavoritesController>();
-                    final isFav = fav.isBoothFavorited(booth.id);
-                    return GestureDetector(
-                      onTap: () => fav.toggleFavoriteBooth(
-                        BoothModel(
-                          id: booth.id,
-                          number: booth.number,
-                          exhibitionName: booth.hallName,
-                          imageUrl: '',
-                          area: booth.area,
-                          status: 'pending',
-                          price: booth.price,
-                          endDate: '',
-                          location: '${booth.hallName} - صف ${booth.row + 1}',
-                          amenities: booth.amenities,
-                          isFavorite: isFav,
-                        ),
-                      ),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: isFav
-                              ? AppColors.error.withOpacity(0.12)
-                              : WebTheme.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isFav ? AppColors.error : WebTheme.border,
-                          ),
-                        ),
-                        child: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav ? AppColors.error : AppColors.grey,
-                          size: 20,
-                        ),
-                      ),
-                    );
-                  }),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () {
-                      final boothModel = BoothModel(
-                        id: booth.id,
-                        number: booth.number,
-                        exhibitionName: booth.hallName,
-                        imageUrl:
-                            'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
-                        area: booth.area,
-                        status: 'pending',
-                        price: booth.price,
-                        endDate: '2026-07-20',
-                        location: '${booth.hallName} - صف ${booth.row + 1}',
-                        amenities: booth.amenities,
-                        isFavorite: false,
-                      );
-                      WebNavController.to.openBookingRequest(boothModel);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.favoriteGradient,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'booth_book_btn'.tr,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

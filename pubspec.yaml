@@ -34,6 +34,9 @@ dependencies:
   flutter_local_notifications: ^17.0.0
   model_viewer_plus: ^1.8.0
   webview_flutter: ^4.9.0
+  webview_flutter_web: ^0.2.3+4
+  webview_flutter_platform_interface: ^2.15.1
+  webview_windows: ^0.4.0
 
 dev_dependencies:
   flutter_test:

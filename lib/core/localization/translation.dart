@@ -259,7 +259,8 @@ class MyTranslation extends Translations {
       'otp_hint': 'أدخل رمز التحقق المُرسَل إلى',
       'otp_back_register': 'العودة إلى التسجيل',
       'otp_brand_title': 'خطوة واحدة\nللانطلاق',
-      'otp_brand_desc': 'تأكيد بريدك الإلكتروني يضمن أمان حسابك\nويمنحك وصولاً كاملاً للمنصة.',
+      'otp_brand_desc':
+          'تأكيد بريدك الإلكتروني يضمن أمان حسابك\nويمنحك وصولاً كاملاً للمنصة.',
       // ── OTP نسيان كلمة المرور ────────────────────────────
       'fotp_title': 'التحقق من بريدك الإلكتروني',
       'fotp_hint': 'أدخل رمز التحقق المكون من 6 أرقام المُرسَل إلى',
@@ -269,7 +270,8 @@ class MyTranslation extends Translations {
       'fotp_seconds': 'ثانية',
       'fotp_back': 'تغيير البريد الإلكتروني',
       'fotp_brand_title': 'التحقق\nمن الهوية',
-      'fotp_brand_desc': 'أرسلنا رمز التحقق إلى بريدك الإلكتروني. الرمز صالح لمدة 10 دقائق.',
+      'fotp_brand_desc':
+          'أرسلنا رمز التحقق إلى بريدك الإلكتروني. الرمز صالح لمدة 10 دقائق.',
       'fotp_req_length': '8 أحرف على الأقل',
       'fotp_req_upper': 'حرف كبير واحد على الأقل',
       'fotp_req_number': 'رقم واحد على الأقل',
@@ -354,6 +356,9 @@ class MyTranslation extends Translations {
       // ── Reports extended ──────────────────────────────────────────────
       'reports_analytics_title': 'التقارير والتحليلات',
       'reports_no_reports': 'لا توجد تقارير',
+      'reports_load_error': 'تعذر تحميل التقارير',
+      'reports_no_booth_report': 'لا يوجد تقرير أداء لهذا الجناح حتى الآن',
+      'reports_no_report_selected': 'لم يتم اختيار تقرير',
       'reports_date_filter': 'فلتر التاريخ',
       'reports_clear_date_tooltip': 'مسح فلتر التاريخ',
       'reports_clear': 'مسح',
@@ -968,7 +973,8 @@ class MyTranslation extends Translations {
       'otp_hint': 'Enter the verification code sent to',
       'otp_back_register': 'Back to Sign Up',
       'otp_brand_title': 'One Step\nto Go',
-      'otp_brand_desc': 'Verifying your email keeps your account secure\nand unlocks full access to the platform.',
+      'otp_brand_desc':
+          'Verifying your email keeps your account secure\nand unlocks full access to the platform.',
       // ── Forgot-password OTP ───────────────────────────────
       'fotp_title': 'Check Your Email',
       'fotp_hint': 'Enter the 6-digit verification code sent to',
@@ -978,7 +984,8 @@ class MyTranslation extends Translations {
       'fotp_seconds': 'seconds',
       'fotp_back': 'Change Email',
       'fotp_brand_title': 'Identity\nVerification',
-      'fotp_brand_desc': 'We sent a verification code to your email. The code is valid for 10 minutes.',
+      'fotp_brand_desc':
+          'We sent a verification code to your email. The code is valid for 10 minutes.',
       'fotp_req_length': 'At least 8 characters',
       'fotp_req_upper': 'At least one uppercase letter',
       'fotp_req_number': 'At least one number',
@@ -1065,6 +1072,10 @@ class MyTranslation extends Translations {
       // ── Reports extended ──────────────────────────────────────────────
       'reports_analytics_title': 'Reports & Analytics',
       'reports_no_reports': 'No reports found',
+      'reports_load_error': 'Unable to load reports',
+      'reports_no_booth_report':
+          'No performance report is available for this booth yet',
+      'reports_no_report_selected': 'No report selected',
       'reports_date_filter': 'Date Filter',
       'reports_clear_date_tooltip': 'Clear date filter',
       'reports_clear': 'Clear',

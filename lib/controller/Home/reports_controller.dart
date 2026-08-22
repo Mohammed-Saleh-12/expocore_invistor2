@@ -6,8 +6,8 @@ import '../../core/services/download_service.dart';
 import '../../core/utils/report_type_helper.dart';
 import '../../core/utils/safe_snackbar.dart';
 import '../../data/model/report/report_model.dart';
+import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/remote/Reports/ReportsData.dart';
-import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import '../../linkapi.dart';
 
 class ReportsController extends GetxController {
@@ -52,7 +52,7 @@ class ReportsController extends GetxController {
       reports.value = list.map((e) => ReportModel.fromJson(e)).toList();
       statusRequest.value = StatusRequest.success;
     } else {
-      reports.value = DummyData.reports;
+      reports.clear();
       statusRequest.value = StatusRequest.failure;
     }
     applyFilters();
@@ -195,6 +195,23 @@ class ReportsController extends GetxController {
   }
 
   Future<void> refresh() => _loadReports();
+
+  Future<ReportModel?> findBoothReport(BoothModel booth) async {
+    if (statusRequest.value != StatusRequest.success) {
+      await _loadReports();
+    }
+    final matching = reports
+        .where((report) => report.type == 'performance')
+        .where(
+          (report) =>
+              report.boothName == booth.number ||
+              report.boothName.contains(booth.number),
+        )
+        .toList();
+    if (matching.isEmpty) return null;
+    matching.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return matching.first;
+  }
 
   // ── Helpers ───────────────────────────────────────────────
   ReportModel? _findReport(String id) {

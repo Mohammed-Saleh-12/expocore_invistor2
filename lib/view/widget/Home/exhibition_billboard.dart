@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../controller/Home/exhibition_billboard_controller.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
+import 'event_image_provider.dart';
 
 class ExhibitionBillboard extends StatelessWidget {
   final List<ExhibitionModel> exhibitions;
   final void Function(ExhibitionModel)? onTap;
+
   /// يُستدعى عند الوصول للشريحة الأخيرة — يُشغِّل تحميل الصفحة التالية
   final VoidCallback? onNearEnd;
 
@@ -23,6 +25,8 @@ class ExhibitionBillboard extends StatelessWidget {
         return 'جارٍ الآن';
       case 'upcoming':
         return 'قادم';
+      case 'hidden':
+        return 'مخفي';
       default:
         return 'منتهٍ';
     }
@@ -34,6 +38,8 @@ class ExhibitionBillboard extends StatelessWidget {
         return AppColors.success;
       case 'upcoming':
         return AppColors.info;
+      case 'hidden':
+        return AppColors.orange;
       default:
         return AppColors.grey;
     }
@@ -126,8 +132,8 @@ class _BillboardSlide extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              exhibition.imageUrl,
+            Image(
+              image: eventImageProvider(exhibition.imageUrl),
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: AppColors.darkSurface,

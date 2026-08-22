@@ -16,6 +16,15 @@ class BoothMap3dView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<BoothMapController>();
+    final args = Get.arguments;
+    final requestedId = args is Map
+        ? int.tryParse(
+                (args['exhibition_id'] ?? args['exhibitionId'])?.toString() ??
+                    '',
+              ) ??
+              0
+        : int.tryParse(args?.toString() ?? '') ?? 0;
+    ctrl.ensureExhibition(requestedId);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -43,7 +52,7 @@ class BoothMap3dView extends StatelessWidget {
 
         return Column(
           children: [
-            _MapHeader(mapModel: mapModel, ctrl: ctrl, isDark: isDark),
+            _MapHeader(mapModel: mapModel, isDark: isDark),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -58,7 +67,8 @@ class BoothMap3dView extends StatelessWidget {
                         selectedBooth: ctrl.selectedBooth.value,
                         isDark: isDark,
                         transformationController: ctrl.transformationController,
-                        onBoothTapped: (booth) => ctrl.onBoothTapped(booth),
+                        onBoothTapped: (booth, position) =>
+                            ctrl.onBoothTapped(booth, screenPosition: position),
                       ),
                       Obx(() {
                         final booth = ctrl.selectedBooth.value;
@@ -95,11 +105,9 @@ class BoothMap3dView extends StatelessWidget {
 
 class _MapHeader extends StatelessWidget {
   final dynamic mapModel;
-  final BoothMapController ctrl;
   final bool isDark;
   const _MapHeader({
     required this.mapModel,
-    required this.ctrl,
     required this.isDark,
   });
 
@@ -132,62 +140,12 @@ class _MapHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: ctrl.resetView,
-                icon: const Icon(
-                  Icons.center_focus_strong_rounded,
-                  color: AppColors.darkPrimary,
-                  size: 22,
-                ),
-                tooltip: 'map_reset_view'.tr,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
             ],
           ),
-          const SizedBox(height: 8),
-          _LegendRow(isDark: isDark),
         ],
       ),
     );
   }
-}
-
-class _LegendRow extends StatelessWidget {
-  final bool isDark;
-  const _LegendRow({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: [
-      _item(AppColors.info, 'map_legend_available'.tr, isDark),
-      _item(const Color(0xFF3A3650), 'map_legend_booked'.tr, isDark),
-      _item(AppColors.darkPrimary, 'map_legend_selected'.tr, isDark),
-      _item(const Color(0xFF4CAF50), 'map_legend_entrance'.tr, isDark),
-    ],
-  );
-
-  Widget _item(Color c, String label, bool isDark) => Row(
-    children: [
-      Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          color: c,
-          borderRadius: BorderRadius.circular(3),
-        ),
-      ),
-      const SizedBox(width: 5),
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 10,
-          color: isDark ? Colors.white70 : AppColors.grey,
-        ),
-      ),
-    ],
-  );
 }
 
 // ─────────────────────────────────────── Canvas ──────────────────────────────

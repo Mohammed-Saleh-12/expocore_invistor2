@@ -31,8 +31,6 @@ class LoginView extends GetView<LoginController> {
                 const SizedBox(height: 50),
                 _buildFormCard(context),
                 const SizedBox(height: 20),
-                _buildDemoChip(),
-                const SizedBox(height: 20),
                 _buildRegisterRow(),
                 const SizedBox(height: 32),
               ],
@@ -142,43 +140,6 @@ class LoginView extends GetView<LoginController> {
           ),
         ),
       ],
-    ),
-  );
-
-  // ── Demo chip ─────────────────────────────────────────────
-  Widget _buildDemoChip() => GestureDetector(
-    onTap: controller.fillDemo,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.darkPrimary.withOpacity(0.2),
-            AppColors.darkSecondary.withOpacity(0.15),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.darkPrimary.withOpacity(0.4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.play_circle_outline_rounded,
-            color: AppColors.darkPrimary,
-            size: 18,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'login_demo'.tr,
-            style: const TextStyle(
-              color: AppColors.darkPink,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
     ),
   );
 

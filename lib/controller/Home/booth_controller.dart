@@ -1,20 +1,20 @@
 import 'package:get/get.dart';
 import '../../core/class/crud.dart';
 import '../../core/constant/routes.dart';
+import '../../core/utils/safe_snackbar.dart';
 import '../../data/model/booth/booth_model.dart';
-import '../../data/model/report/report_model.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
-import '../../data/sourcedata/static/exhibitions_dummy.dart';
+import '../../web/controllers/web_nav_controller.dart';
 import 'reports_controller.dart';
 
 class BoothController extends GetxController {
   final BoothsData _boothsData = BoothsData(Crud());
-  final booths       = <BoothModel>[].obs;
-  final filtered     = <BoothModel>[].obs;
+  final booths = <BoothModel>[].obs;
+  final filtered = <BoothModel>[].obs;
   final statusFilter = 'الكل'.obs;
-  final isLoading    = false.obs;
-  final filters      = ['الكل', 'نشطة', 'قيد المراجعة', 'مرفوضة', 'منتهية'];
+  final isLoading = false.obs;
+  final filters = ['الكل', 'نشطة', 'قيد المراجعة', 'مرفوضة', 'منتهية'];
 
   static const _statusMap = {
     'نشطة': 'active',
@@ -36,7 +36,7 @@ class BoothController extends GetxController {
       final list = _asList(result['data']);
       booths.value = list.map((e) => BoothModel.fromJson(e)).toList();
     } else {
-      booths.value = DummyData.myBooths;
+      booths.clear();
     }
     filtered.value = booths;
     isLoading.value = false;
@@ -66,36 +66,21 @@ class BoothController extends GetxController {
     }
   }
 
-  // ── بناء تقرير خاص بجناح (مشترك بين الجوال والويب) ─────────
-  ReportModel buildBoothReport(BoothModel b) {
-    final existing = DummyData.reports.firstWhereOrNull(
-      (r) => r.type == 'performance' &&
-             (r.boothName.contains(b.number) ||
-              (r.exhibitionName == b.exhibitionName && r.boothName.isNotEmpty)),
-    );
-    return existing ??
-        ReportModel(
-          id:             'RPT-${b.id}',
-          title:          'تقرير الجناح ${b.number}',
-          type:           'performance',
-          description:    'تقرير أداء الجناح ${b.number} في ${b.exhibitionName}',
-          period:         'هذا الشهر',
-          boothName:      'جناح ${b.number}',
-          exhibitionName: b.exhibitionName,
-          createdAt:      '2026-06-07',
-          mainValue:      1840,
-          mainLabel:      'إجمالي الزوار',
-          trend:          12.5,
-          sparklineData:  const [120, 180, 150, 220, 280, 240, 310, 350],
-        );
-  }
-
-  // ── فتح تقرير الجناح (الجوال) ──────────────────────────────
-  void openBoothReport(BoothModel b) {
+  // ── فتح تقرير الجناح الحقيقي ───────────────────────────────
+  Future<void> openBoothReport(BoothModel b) async {
     if (!Get.isRegistered<ReportsController>()) {
       Get.put(ReportsController());
     }
-    Get.toNamed(AppRoutes.REPORT_DETAIL, arguments: buildBoothReport(b));
+    final report = await Get.find<ReportsController>().findBoothReport(b);
+    if (report == null) {
+      safeSnackbar('snack_warning'.tr, 'reports_no_booth_report'.tr);
+      return;
+    }
+    if (GetPlatform.isWeb) {
+      WebNavController.to.openReport(report);
+    } else {
+      Get.toNamed(AppRoutes.REPORT_DETAIL, arguments: report);
+    }
   }
 
   Future<void> refresh() => _loadBooths();

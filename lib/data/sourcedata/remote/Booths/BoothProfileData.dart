@@ -13,8 +13,7 @@ class BoothProfileData {
   }
 
   /// تحديث بروفايل الجناح.
-  /// إذا لم تكن هناك ملفات جديدة → PUT JSON عادي.
-  /// إذا وُجدت صور جديدة → POST multipart مع _method=PUT.
+  /// يحفظ معلومات الشركة والصور في ملف الجناح المعتمد.
   Future<Map<String, dynamic>> updateBoothProfile({
     required int boothId,
     required String companyNature,
@@ -33,8 +32,7 @@ class BoothProfileData {
         coverImage != null;
 
     if (!hasFiles) {
-      // بدون ملفات: PUT JSON عادي (أسرع)
-      return await crud.putData(AppLink.boothProfile(boothId), {
+      return await crud.postData(AppLink.boothProfileUpdate(boothId), {
         'company_nature':    companyNature,
         'services_products': servicesProducts,
         'headquarters':      headquarters,
@@ -56,15 +54,15 @@ class BoothProfileData {
     };
 
     final files = <MapEntry<String, XFile>>[];
-    for (final f in productImageFiles) files.add(MapEntry('product_image_files[]', f));
-    for (final f in boothImageFiles)   files.add(MapEntry('booth_image_files[]', f));
+    for (final f in productImageFiles) files.add(MapEntry('product_images[]', f));
+    for (final f in boothImageFiles)   files.add(MapEntry('booth_images[]', f));
     if (coverImage != null)            files.add(MapEntry('cover_image', coverImage));
 
     return await crud.uploadData(
-      AppLink.boothProfile(boothId),
+      AppLink.boothProfileUpdate(boothId),
       fields,
       files: files,
-      method: 'PUT',
+      method: 'POST',
     );
   }
 

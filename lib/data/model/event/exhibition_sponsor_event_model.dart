@@ -204,7 +204,16 @@ class ExhibitionSponsorEvent {
     final url = value?.toString().trim() ?? '';
     if (url.startsWith('data:image/')) return url;
     final parsed = Uri.tryParse(url);
-    if (parsed == null || !parsed.hasScheme || parsed.host.isEmpty) return '';
+    if (parsed == null) return '';
+
+    if (!parsed.hasScheme || parsed.host.isEmpty) {
+      final apiUri = Uri.parse(AppEnv.baseUrl);
+      final path = url.replaceFirst(RegExp(r'^/+'), '');
+      final publicPath = path.startsWith('storage/')
+          ? '/$path'
+          : '/storage/$path';
+      return apiUri.replace(path: publicPath).toString();
+    }
 
     // Laravel may build local asset URLs from APP_URL=http://localhost.
     if (parsed.host == 'localhost' ||

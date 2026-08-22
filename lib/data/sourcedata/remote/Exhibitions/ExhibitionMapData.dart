@@ -8,6 +8,8 @@ class ExhibitionMapData {
   /// جلب بيانات الخريطة ثلاثية الأبعاد لمعرض معين
   /// GET /exhibitions/{id}/map
   Future<Map<String, dynamic>> getExhibitionMap(int exhibitionId) async {
-    return await crud.getData(AppLink.exhibitionMap(exhibitionId));
+    final url = AppLink.exhibitionMap(exhibitionId);
+    print('[Map API] GET $url');
+    return await crud.getData(url);
   }
 }

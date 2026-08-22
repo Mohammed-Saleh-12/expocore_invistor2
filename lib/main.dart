@@ -15,11 +15,13 @@ import 'core/services/services.dart';
 import 'core/responsive/web_shell.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'platform/webview_platform.dart';
 
 void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      configureWebViewPlatform();
       await GetStorage.init();
       try {
         final firebaseInit = Firebase.initializeApp(
@@ -38,9 +40,6 @@ void main() {
           firebaseMessagingBackgroundHandler,
         );
       }
-      // Firebase Messaging on web requires a configured VAPID key and
-      // browser notification permission. Keep web startup independent from
-      // that optional mobile notification setup.
       if (!kIsWeb) {
         try {
           await initFCM();

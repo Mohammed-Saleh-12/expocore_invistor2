@@ -57,14 +57,45 @@ class AppLink {
     return rootUri.toString();
   }
 
+  static String mediaUrl(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('data:')) return trimmed;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      final imageUri = Uri.tryParse(trimmed);
+      final apiUri = Uri.parse(server);
+      if (imageUri != null &&
+          (imageUri.host == 'localhost' ||
+              imageUri.host == '127.0.0.1' ||
+              imageUri.host == '::1')) {
+        return imageUri
+            .replace(
+              scheme: apiUri.scheme,
+              host: apiUri.host,
+              port: apiUri.port,
+            )
+            .toString();
+      }
+      return trimmed;
+    }
+    final apiUri = Uri.parse(server);
+    final path = trimmed.startsWith('/') ? trimmed : '/storage/$trimmed';
+    return apiUri.replace(path: path).toString();
+  }
+
   static String get mapViewer {
     final apiUri = Uri.parse(server);
-    return apiUri.replace(path: '/map-viewer/index.html').toString();
+    return apiUri
+        .replace(
+          path: '/map-viewer/index.html',
+          queryParameters: {'v': '20260821-6'},
+        )
+        .toString();
   }
 
   // ── Booths ───────────────────────────────────────────────
-  static String get booths => '$server/booths';
-  static String boothDetail(int id) => '$server/booths/$id';
+  static String get booths => '$server/investor/booths';
+  static String get exhibitionBooths => '$server/investor/exhibition/booths';
+  static String boothDetail(int id) => '$server/investor/booths/$id';
   static String get bookBooth => '$server/booths/book';
 
   // ── Home Billboard (Paginated, 5 per call) ───────────────
@@ -95,6 +126,8 @@ class AppLink {
   // ── Investor — Booth Profile ─────────────────────────────
   static String boothProfile(int boothId) =>
       '$server/investor/booths/$boothId/profile';
+  static String boothProfileUpdate(int boothId) =>
+      '$server/investor/booths/$boothId/profile/update';
   static String boothCoverImage(int boothId) =>
       '$server/investor/booths/$boothId/cover';
 

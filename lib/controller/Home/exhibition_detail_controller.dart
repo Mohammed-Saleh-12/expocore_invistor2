@@ -11,7 +11,6 @@ import '../../data/sourcedata/remote/Exhibitions/ExhibitionsData.dart';
 import '../../data/sourcedata/remote/Profile/ProfileData.dart';
 import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 import '../../data/sourcedata/remote/Favorites/FavoritesData.dart';
-import '../../data/sourcedata/static/exhibitions_dummy.dart';
 import 'booth_map_controller.dart';
 import 'favorites_controller.dart';
 
@@ -53,6 +52,7 @@ class ExhibitionDetailController extends GetxController
   final startDateCtrl = TextEditingController();
   final endDateCtrl = TextEditingController();
   final proposedTier = ''.obs;
+  int _detailRequestVersion = 0;
 
   // ── Convenience getters ──────────────────────────────────────
   List<ExhibitionSponsorEvent> get sponsorEvents =>
@@ -68,24 +68,59 @@ class ExhibitionDetailController extends GetxController
     tabCtrl = TabController(length: 2, vsync: this);
 
     // عرض البيانات الأساسية فوراً من الـ arguments
-    final arg = Get.arguments;
-    ExhibitionModel? initial;
-    if (arg is ExhibitionModel) {
-      initial = arg;
-    } else if (arg is Map && arg['exhibition'] is ExhibitionModel) {
-      initial = arg['exhibition'] as ExhibitionModel;
-    }
-
+    final initial = _modelFromArguments(Get.arguments);
     if (initial != null) {
       exhibition.value = initial;
       isFavorite.value = initial.isFavorite;
+      _loadFullDetail(initial.id);
+      loadSponsorshipRequest(initial.id);
     } else {
-      exhibition.value = DummyData.exhibitions.first;
-      isFavorite.value = exhibition.value!.isFavorite;
+      exhibition.value = null;
+      debugPrint(
+        '[ExhibitionDetail] Missing valid exhibition argument; '
+        'refusing to load fallback exhibition 1',
+      );
     }
+  }
 
-    _loadFullDetail(exhibition.value!.id);
-    loadSponsorshipRequest(exhibition.value!.id);
+  ExhibitionModel? _modelFromArguments(dynamic arguments) {
+    if (arguments is ExhibitionModel) return arguments;
+    if (arguments is Map && arguments['exhibition'] is ExhibitionModel) {
+      return arguments['exhibition'] as ExhibitionModel;
+    }
+    if (arguments is Map && arguments['exhibition'] is Map) {
+      return _modelFromArguments(arguments['exhibition']);
+    }
+    if (arguments is! Map) return null;
+    final rawId =
+        arguments['id'] ??
+        arguments['exhibition_id'] ??
+        arguments['exhibitionId'];
+    final id = int.tryParse(rawId?.toString() ?? '');
+    if (id == null || id <= 0) return null;
+    return ExhibitionModel(
+      id: id,
+      name: arguments['name']?.toString() ?? '',
+      description: arguments['description']?.toString() ?? '',
+      startDate: arguments['start_date']?.toString() ?? '',
+      endDate: arguments['end_date']?.toString() ?? '',
+      location: arguments['location']?.toString() ?? '',
+      city: arguments['city']?.toString() ?? '',
+      status: ExhibitionModel.normalizeStatus(arguments['status']),
+      availableBooths:
+          int.tryParse(arguments['available_booths']?.toString() ?? '') ?? 0,
+      sectors: const [],
+    );
+  }
+
+  Future<void> ensureRequestedExhibition(dynamic arguments) async {
+    final requested = _modelFromArguments(arguments);
+    if (requested == null || requested.id == exhibition.value?.id) return;
+    _detailRequestVersion++;
+    exhibition.value = requested;
+    isFavorite.value = requested.isFavorite;
+    await _loadFullDetail(requested.id);
+    await loadSponsorshipRequest(requested.id);
   }
 
   Future<void> loadSponsorshipRequest(int exhibitionId) async {
@@ -166,6 +201,7 @@ class ExhibitionDetailController extends GetxController
   }
 
   Future<void> _loadFullDetail(int id) async {
+    final requestVersion = ++_detailRequestVersion;
     isLoading.value = true;
     try {
       // ── طلبان متوازيان ────────────────────────────────────
@@ -173,6 +209,10 @@ class ExhibitionDetailController extends GetxController
         _exhibitionsData.getExhibitionDetail(id),
         _boothsData.getExhibitionBooths(id),
       ]);
+      if (requestVersion != _detailRequestVersion ||
+          exhibition.value?.id != id) {
+        return;
+      }
 
       // ── 1. تفاصيل المعرض (صور + خدمات + خريطة + فعاليات) ─
       final detailResult = results[0];
@@ -198,18 +238,23 @@ class ExhibitionDetailController extends GetxController
       }
 
       // ── 3. تمرير البيانات إلى BoothMapController ──────────
-      _syncMapController();
+      await _syncMapController();
     } catch (e) {
       debugPrint('[ExhibitionDetail] Error loading detail: $e');
     }
     isLoading.value = false;
   }
 
-  void _syncMapController() {
+  Future<void> _syncMapController() async {
     if (!Get.isRegistered<BoothMapController>()) return;
     final mapCtrl = Get.find<BoothMapController>();
-    mapCtrl.loadFromDetailData(exhibition.value?.mapJson, exhibitionBooths);
     mapCtrl.exhibitionId = exhibition.value?.id ?? 0;
+    if (mapCtrl.exhibitionId > 0) {
+      await mapCtrl.loadMapData();
+      mapCtrl.setExhibitionBooths(exhibitionBooths);
+      return;
+    }
+    mapCtrl.loadFromDetailData(exhibition.value?.mapJson, exhibitionBooths);
   }
 
   // ── Favorite ─────────────────────────────────────────────────

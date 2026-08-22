@@ -27,13 +27,13 @@ class WebAuthController extends GetxController {
       ? Get.find<WebAuthController>()
       : Get.put(WebAuthController(), permanent: true);
 
-  final loggedIn                = false.obs;
-  final showRegister            = false.obs;
-  final showRegisterOtp         = false.obs; // OTP بعد التسجيل
-  final showForgotPassword      = false.obs;
-  final showForgotPasswordOtp   = false.obs;
+  final loggedIn = false.obs;
+  final showRegister = false.obs;
+  final showRegisterOtp = false.obs; // OTP بعد التسجيل
+  final showForgotPassword = false.obs;
+  final showForgotPasswordOtp = false.obs;
   final showForgotPasswordReset = false.obs;
-  final showResetPassword       = false.obs; // deep-link token flow
+  final showResetPassword = false.obs; // deep-link token flow
 
   @override
   void onInit() {
@@ -49,15 +49,20 @@ class WebAuthController extends GetxController {
     // ── مراقبة تدفق التسجيل + OTP ──────────────────────────
     // webStep=1 → اعرض OTP التسجيل  |  webStep=2 → تسجيل دخول ناجح
     ever(Get.find<AuthController>().webStep, (int step) {
-      if (step == 1) _goToRegisterOtp();
-      else if (step == 2) markLoggedIn();
+      if (step == 1)
+        _goToRegisterOtp();
+      else if (step == 2)
+        markLoggedIn();
     });
 
     // ── مراقبة خطوات تدفق نسيان كلمة المرور ────────────────
     ever(Get.find<ForgotPasswordController>().webStep, (int step) {
-      if (step == 1) _goToForgotPasswordOtp();
-      else if (step == 2) _goToForgotPasswordReset();
-      else if (step == 3) goToLogin();
+      if (step == 1)
+        _goToForgotPasswordOtp();
+      else if (step == 2)
+        _goToForgotPasswordReset();
+      else if (step == 3)
+        markLoggedIn();
     });
   }
 
@@ -97,16 +102,20 @@ class WebAuthController extends GetxController {
   void goToResetPassword(String token) {
     _clearAuthScreens();
     _resetResetState();
-    try { Get.find<ResetPasswordController>().initToken(token); } catch (_) {}
+    try {
+      Get.find<ResetPasswordController>().initToken(token);
+    } catch (_) {}
     showResetPassword.value = true;
   }
 
   // ── Session ───────────────────────────────────────────────
   void syncFromSession() => loggedIn.value = _sessionValid();
-  void markLoggedIn()    => loggedIn.value = true;
+  void markLoggedIn() => loggedIn.value = true;
 
   void logout() {
-    try { Get.find<Services>().clearSession(); } catch (_) {}
+    try {
+      Get.find<Services>().clearSession();
+    } catch (_) {}
     loggedIn.value = false;
   }
 
@@ -126,23 +135,31 @@ class WebAuthController extends GetxController {
 
   // ── Helpers ───────────────────────────────────────────────
   void _clearAuthScreens() {
-    showRegister.value            = false;
-    showRegisterOtp.value         = false;
-    showForgotPassword.value      = false;
-    showForgotPasswordOtp.value   = false;
+    showRegister.value = false;
+    showRegisterOtp.value = false;
+    showForgotPassword.value = false;
+    showForgotPasswordOtp.value = false;
     showForgotPasswordReset.value = false;
-    showResetPassword.value       = false;
+    showResetPassword.value = false;
   }
 
   bool _sessionValid() {
-    try { return Get.find<Services>().isLoggedIn; } catch (_) { return false; }
+    try {
+      return Get.find<Services>().isLoggedIn;
+    } catch (_) {
+      return false;
+    }
   }
 
   void _resetForgotState() {
-    try { Get.find<ForgotPasswordController>().reset(); } catch (_) {}
+    try {
+      Get.find<ForgotPasswordController>().reset();
+    } catch (_) {}
   }
 
   void _resetResetState() {
-    try { Get.find<ResetPasswordController>().clear(); } catch (_) {}
+    try {
+      Get.find<ResetPasswordController>().clear();
+    } catch (_) {}
   }
 }

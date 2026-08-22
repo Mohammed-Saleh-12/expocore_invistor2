@@ -13,12 +13,10 @@ class ChangePasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctrl = Get.find<ChangePasswordController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-   final currentCtrl = TextEditingController();
     final currentPassCtrl = TextEditingController();
     final newPassCtrl = TextEditingController();
     final confirmPassCtrl = TextEditingController();
     final formKey = GlobalKey<FormState>();
-
 
     return Scaffold(
       appBar: AppBar(
@@ -84,17 +82,10 @@ class ChangePasswordScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 32),
-
-                const _SectionLabel(
-                  label: 'كلمة المرور الحالية',
-                ),
-
-                const SizedBox(height: 8),
-
                 // ── Current Password ───────────────────────────
                 AppTextField(
                   label: 'كلمة المرور الحالية',
-                  controller: currentCtrl,
+                  controller: currentPassCtrl,
                   isPassword: true,
                   prefixIcon: const Icon(Icons.lock_outline, size: 20),
                   validator: (val) {
@@ -197,29 +188,6 @@ class ChangePasswordScreen extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Section label ──────────────────────────────────────────
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  const _SectionLabel({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Cairo',
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: isDark ? AppColors.white : AppColors.lightPrimary,
         ),
       ),
     );

@@ -30,7 +30,10 @@ void safeSnackbar(
 
   if (Get.overlayContext != null) {
     show();
-  } else {
-    WidgetsBinding.instance.addPostFrameCallback((_) => show());
+    return;
   }
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (Get.overlayContext != null) show();
+  });
 }

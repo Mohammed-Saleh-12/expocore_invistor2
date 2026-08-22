@@ -35,15 +35,17 @@ class FavoritesController extends GetxController {
     final result = await _favoritesData.getFavorites();
     if (result['status'] == true) {
       final d = _body(result['data']);
-      favoriteExhibitions.value = _asList(
-        d['exhibitions'],
-      ).map((e) => ExhibitionModel.fromJson(e)).toList();
+      favoriteExhibitions.value = _asList(d['exhibitions'])
+          .whereType<Map<String, dynamic>>()
+          .map(ExhibitionModel.fromJson)
+          .toList();
       favoriteBooths.value = _asList(
         d['booths'],
-      ).map((e) => BoothModel.fromJson(e)).toList();
-      favoriteEvents.value = _asList(
-        d['events'],
-      ).map((e) => ExhibitionSponsorEvent.fromJson(e)).toList();
+      ).whereType<Map<String, dynamic>>().map(BoothModel.fromJson).toList();
+      favoriteEvents.value = _asList(d['events'])
+          .whereType<Map<String, dynamic>>()
+          .map(ExhibitionSponsorEvent.fromJson)
+          .toList();
     } else {
       favoriteExhibitions.value = DummyData.exhibitions
           .where((e) => e.isFavorite)

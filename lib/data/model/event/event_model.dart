@@ -1,33 +1,35 @@
 class EventModel {
-  final int    id;
+  final int id;
   final String name;
   final String type;
   final String boothNumber;
   final String exhibitionName;
   final String date;
   final String time;
-  final int    maxParticipants;
-  final int    registeredCount;
+  final int maxParticipants;
+  final int registeredCount;
   final String status;
   final String description;
-  final bool   requiresBooking;
+  final bool requiresBooking;
   bool isFavorite;
 
   // Extended fields for investor's own events
   final String place;
-  final int    durationDays;
-  final bool   hasBookableSeats;
-  final int    totalSeats;
-  final int    bookedSeats;
-  final int    soldTickets;
+  final int durationDays;
+  final bool hasBookableSeats;
+  final int totalSeats;
+  final int bookedSeats;
+  final int soldTickets;
   final double ticketPrice;
-  final bool   isGeneralInvitation;
+  final bool isGeneralInvitation;
+  final String ticketType;
+  final int freeTicketLimit;
   final String videoPromoUrl;
   final List<String> companyImages;
-  final int    currentDay;
-  final int    totalEventDays;
+  final int currentDay;
+  final int totalEventDays;
   final List<int> dailyAttendees;
-  final int    scannedCount;
+  final int scannedCount;
 
   EventModel({
     required this.id,
@@ -51,6 +53,8 @@ class EventModel {
     this.soldTickets = 0,
     this.ticketPrice = 0,
     this.isGeneralInvitation = true,
+    this.ticketType = '',
+    this.freeTicketLimit = 0,
     this.videoPromoUrl = '',
     this.companyImages = const [],
     this.currentDay = 1,
@@ -60,38 +64,46 @@ class EventModel {
   });
 
   String get ticketCategory {
+    if (ticketType.isNotEmpty && ticketType != 'general') return ticketType;
     if (ticketPrice > 0) return 'paid';
     if (hasBookableSeats || requiresBooking) return 'free';
     return 'none';
   }
 
   factory EventModel.fromJson(Map<String, dynamic> j) => EventModel(
-    id:               j['id'],
-    name:             j['name'] ?? '',
-    type:             j['type'] ?? '',
-    boothNumber:      j['booth_number'] ?? '',
-    exhibitionName:   j['exhibition_name'] ?? '',
-    date:             j['date'] ?? '',
-    time:             j['time'] ?? '',
-    maxParticipants:  j['max_participants'] ?? 0,
-    registeredCount:  j['registered_count'] ?? 0,
-    status:           j['status'] ?? 'upcoming',
-    description:      j['description'] ?? '',
-    requiresBooking:  j['requires_booking'] ?? false,
-    isFavorite:       j['is_favorite'] ?? false,
-    place:            j['place'] ?? '',
-    durationDays:     j['duration_days'] ?? 1,
-    hasBookableSeats: j['has_bookable_seats'] ?? false,
-    totalSeats:       j['total_seats'] ?? 0,
-    bookedSeats:      j['booked_seats'] ?? 0,
-    soldTickets:      j['sold_tickets'] ?? 0,
-    ticketPrice:      (j['ticket_price'] ?? 0).toDouble(),
-    isGeneralInvitation: j['is_general_invitation'] ?? true,
-    videoPromoUrl:    j['video_promo_url'] ?? '',
-    companyImages:    List<String>.from(j['company_images'] ?? []),
-    currentDay:       j['current_day'] ?? 1,
-    totalEventDays:   j['total_event_days'] ?? 1,
-    dailyAttendees:   List<int>.from(j['daily_attendees'] ?? []),
-    scannedCount:     j['scanned_count'] ?? 0,
+    id: j['id'],
+    name: j['name'] ?? '',
+    type: j['type'] ?? '',
+    boothNumber: j['booth_number'] ?? '',
+    exhibitionName: j['exhibition_name'] ?? '',
+    date: j['date'] ?? j['start_date'] ?? '',
+    time: j['time'] ?? '',
+    maxParticipants: j['max_participants'] ?? 0,
+    registeredCount: j['registered_count'] ?? 0,
+    status: j['status'] ?? 'upcoming',
+    description: j['description'] ?? '',
+    requiresBooking:
+        j['requires_booking'] == true || j['requires_booking'] == 1,
+    isFavorite: j['is_favorite'] == true || j['is_favorite'] == 1,
+    place: j['place'] ?? '',
+    durationDays: j['duration_days'] ?? 1,
+    hasBookableSeats:
+        j['has_bookable_seats'] == true || j['has_bookable_seats'] == 1,
+    totalSeats: j['total_seats'] ?? 0,
+    bookedSeats: j['booked_seats'] ?? 0,
+    soldTickets: j['sold_tickets'] ?? 0,
+    ticketPrice: (j['ticket_price'] ?? 0).toDouble(),
+    isGeneralInvitation: j['is_general_invitation'] == null
+        ? true
+        : (j['is_general_invitation'] == true ||
+              j['is_general_invitation'] == 1),
+    ticketType: (j['ticket_type'] ?? '').toString(),
+    freeTicketLimit: int.tryParse('${j['free_ticket_limit'] ?? 0}') ?? 0,
+    videoPromoUrl: j['video_promo_url'] ?? '',
+    companyImages: List<String>.from(j['company_images'] ?? []),
+    currentDay: j['current_day'] ?? 1,
+    totalEventDays: j['total_event_days'] ?? 1,
+    dailyAttendees: List<int>.from(j['daily_attendees'] ?? []),
+    scannedCount: j['scanned_count'] ?? 0,
   );
 }

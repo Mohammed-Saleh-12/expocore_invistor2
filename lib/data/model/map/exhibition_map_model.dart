@@ -169,7 +169,8 @@ class ExhibitionMapModel {
       return ExhibitionMapModel(
         exhibitionId:
             int.tryParse(
-              (payload['map_id'] ?? payload['exhibition_id'] ?? 0).toString(),
+              (payload['exhibition_id'] ?? payload['exhibitionId'] ?? 0)
+                  .toString(),
             ) ??
             0,
         exhibitionName:
@@ -265,7 +266,12 @@ class MapBoothModel {
   });
 
   bool get isAvailable => status == 'available';
-  bool get isBooked => status == 'booked';
+  bool get isBooked {
+    final normalized = status.trim().toLowerCase();
+    return normalized == 'booked' ||
+        normalized == 'reserved' ||
+        normalized == 'occupied';
+  }
 
   factory MapBoothModel.fromJson(
     Map<String, dynamic> json, {

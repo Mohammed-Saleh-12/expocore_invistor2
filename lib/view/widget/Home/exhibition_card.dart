@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
+import 'event_image_provider.dart';
 
 class ExhibitionCard extends StatelessWidget {
   final ExhibitionModel exhibition;
@@ -21,6 +22,8 @@ class ExhibitionCard extends StatelessWidget {
         return AppColors.success;
       case 'upcoming':
         return AppColors.info;
+      case 'hidden':
+        return AppColors.orange;
       default:
         return AppColors.grey;
     }
@@ -32,6 +35,8 @@ class ExhibitionCard extends StatelessWidget {
         return 'جارٍ';
       case 'upcoming':
         return 'قادم';
+      case 'hidden':
+        return 'مخفي';
       default:
         return 'منتهٍ';
     }
@@ -71,8 +76,8 @@ class ExhibitionCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: Image.network(
-                    exhibition.imageUrl,
+                  child: Image(
+                    image: eventImageProvider(exhibition.imageUrl),
                     width: double.infinity,
                     height: 160,
                     fit: BoxFit.cover,

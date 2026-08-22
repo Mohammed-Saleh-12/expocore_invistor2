@@ -19,6 +19,7 @@ class ExhibitionDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<ExhibitionDetailController>();
+    ctrl.ensureRequestedExhibition(Get.arguments);
 
     return Scaffold(
       body: Obx(() {
@@ -243,10 +244,17 @@ class ExhibitionDetailView extends StatelessWidget {
                     // ── CTA buttons ────────────────────────────
                     CustomButton(
                       label: 'btn_browse_book_booths'.tr,
-                      onTap: () => Get.toNamed(
-                        AppRoutes.BOOTH_MAP_3D,
-                        arguments: {'exhibition_id': ctrl.exhibition.value?.id},
-                      ),
+                      onTap: () {
+                        final exhibitionId = ctrl.exhibition.value?.id;
+                        if (exhibitionId == null || exhibitionId <= 0) {
+                          Get.snackbar('map_3d_title'.tr, 'map_load_error'.tr);
+                          return;
+                        }
+                        Get.toNamed(
+                          AppRoutes.BOOTH_MAP_3D,
+                          arguments: {'exhibition_id': exhibitionId},
+                        );
+                      },
                     ),
                     const SizedBox(height: 12),
                     Obx(() {

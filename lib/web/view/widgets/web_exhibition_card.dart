@@ -5,6 +5,8 @@ import '../../../core/constant/appcolors.dart';
 import '../../../controller/Home/favorites_controller.dart';
 import '../../../data/model/exhibition/exhibition_model.dart';
 import '../../controllers/web_nav_controller.dart';
+import '../../../view/widget/Home/event_image_provider.dart';
+import 'web_status_chip.dart';
 
 class WebExhibitionCard extends StatelessWidget {
   final ExhibitionModel exhibition;
@@ -17,15 +19,12 @@ class WebExhibitionCard extends StatelessWidget {
     this.onFavorite,
   });
 
-  Color get _statusColor {
-    switch (exhibition.status) {
-      case 'active':
-        return AppColors.success;
-      case 'upcoming':
-        return AppColors.info;
-      default:
-        return AppColors.grey;
-    }
+  String _formatDate(String value) {
+    final date = DateTime.tryParse(value);
+    if (date == null) return value;
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day-$month-${date.year}';
   }
 
   @override
@@ -77,8 +76,8 @@ class WebExhibitionCard extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(20),
                       ),
-                      child: Image.network(
-                        e.imageUrl,
+                      child: Image(
+                        image: eventImageProvider(e.imageUrl),
                         height: 170,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -88,24 +87,7 @@ class WebExhibitionCard extends StatelessWidget {
                     Positioned(
                       top: 12,
                       right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _statusColor.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          e.statusLabel,
-                          style: TextStyle(
-                            color: WebTheme.text,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                      child: WebStatusChip(status: e.status),
                     ),
                     Positioned(
                       top: 10,
@@ -158,7 +140,7 @@ class WebExhibitionCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       _row(
                         Icons.calendar_today_outlined,
-                        '${e.startDate} — ${e.endDate}',
+                        '${_formatDate(e.startDate)} — ${_formatDate(e.endDate)}',
                       ),
                       const SizedBox(height: 12),
                       Wrap(

@@ -4,26 +4,28 @@ import '../../core/class/StatusRequest.dart';
 import '../../core/class/crud.dart';
 import '../../data/model/booth/booth_model.dart';
 import '../../data/sourcedata/remote/Booking/BookingData.dart';
+import '../../data/sourcedata/remote/Booths/BoothsData.dart';
 
 class BookingController extends GetxController {
   final BookingData _bookingData = BookingData(Crud());
+  final BoothsData _boothsData = BoothsData(Crud());
 
-  final booth        = Rx<BoothModel?>(null);
-  final notesCtrl    = TextEditingController();
-  final status       = StatusRequest.none.obs;
+  final booth = Rx<BoothModel?>(null);
+  final notesCtrl = TextEditingController();
+  final status = StatusRequest.none.obs;
   final isSubmitting = false.obs;
+  final requestStatus = ''.obs;
+  final isCheckingRequest = false.obs;
 
   /// وضع الحجز: 'full' = الفترة كاملة | 'custom' = أيام محددة
   final bookingMode = 'full'.obs;
 
   /// نطاق الأيام المحدد في الوضع المخصص
   final customRangeStart = Rxn<DateTime>();
-  final customRangeEnd   = Rxn<DateTime>();
+  final customRangeEnd = Rxn<DateTime>();
 
   /// الخدمات الديناميكية — مُنشأة من booth.services عند setBooth
   final serviceSelections = <String, bool>{}.obs;
-
-  VoidCallback? _onWebSuccess;
 
   // ── Available days (كل الأيام بين start_date و end_date للجناح) ──
   List<DateTime> get availableDays {
@@ -99,7 +101,7 @@ class BookingController extends GetxController {
     if (s == null || (customRangeEnd.value != null)) {
       // بداية تحديد جديد
       customRangeStart.value = day;
-      customRangeEnd.value   = null;
+      customRangeEnd.value = null;
     } else {
       // البداية محددة، نحتاج نهاية
       if (_sameDay(day, s) || day.isAfter(s)) {
@@ -107,7 +109,7 @@ class BookingController extends GetxController {
       } else {
         // اليوم قبل البداية — نعيد التحديد من هذا اليوم
         customRangeStart.value = day;
-        customRangeEnd.value   = null;
+        customRangeEnd.value = null;
       }
     }
     // تحديث الـ UI
@@ -120,16 +122,19 @@ class BookingController extends GetxController {
 
   // ── إعداد وضع الحجز ──────────────────────────────────────────
   void setBookingMode(String mode) {
-    bookingMode.value        = mode;
-    customRangeStart.value   = null;
-    customRangeEnd.value     = null;
+    bookingMode.value = mode;
+    customRangeStart.value = null;
+    customRangeEnd.value = null;
   }
 
   // ── Total price (ديناميكي) ────────────────────────────────────
   double get total {
-    final base     = (booth.value?.price ?? 0) * effectiveDuration;
+    final currentBooth = booth.value;
+    final base = currentBooth?.pricingType == 'daily'
+        ? (currentBooth?.price ?? 0) * effectiveDuration
+        : (currentBooth?.price ?? 0);
     final services = booth.value?.services ?? {};
-    double extras  = 0;
+    double extras = 0;
     for (final entry in serviceSelections.entries) {
       if (entry.value && services.containsKey(entry.key)) {
         extras += services[entry.key]!;
@@ -141,24 +146,67 @@ class BookingController extends GetxController {
   // ── Set booth + init service selections ──────────────────────
   void setBooth(BoothModel b) {
     booth.value = b;
+    requestStatus.value = b.status == 'pending' || b.status == 'rejected'
+        ? b.status
+        : '';
     _initServices(b);
+    _loadExistingRequest(b.id);
   }
 
   /// تهيئة كاملة (تُستخدم من الويب أو عند إعادة الفتح)
-  void resetForBooth(BoothModel b, {VoidCallback? onSuccess}) {
-    booth.value            = b;
-    bookingMode.value      = 'full';
+  void resetForBooth(BoothModel b) {
+    booth.value = b;
+    bookingMode.value = 'full';
     customRangeStart.value = null;
-    customRangeEnd.value   = null;
-    status.value           = StatusRequest.none;
+    customRangeEnd.value = null;
+    status.value = StatusRequest.none;
+    requestStatus.value = '';
+    isCheckingRequest.value = true;
     notesCtrl.clear();
-    _onWebSuccess = onSuccess;
     _initServices(b);
+    _loadExistingRequest(b.id);
   }
 
+  Future<void> _loadExistingRequest(int boothId) async {
+    try {
+      final result = await _boothsData.getMyBookings();
+      if (booth.value?.id != boothId || result['status'] != true) return;
+      final raw = result['data'];
+      final bookings = raw is List
+          ? raw
+          : raw is Map && raw['data'] is List
+              ? raw['data'] as List
+              : raw is Map && raw['bookings'] is List
+                  ? raw['bookings'] as List
+                  : const [];
+      final matching = bookings
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .where((item) {
+            final rawId = item['booth_id'] ?? item['boothId'];
+            final normalizedId = rawId?.toString().replaceFirst(
+              RegExp(r'^[bB]'),
+              '',
+            );
+            return int.tryParse(normalizedId ?? '') == boothId;
+          })
+          .toList();
+      if (matching.isEmpty) return;
+      final latest = matching.last;
+      final value = latest['status']?.toString().toLowerCase() ?? '';
+      if (value == 'pending' || value == 'rejected') {
+        requestStatus.value = value;
+      }
+    } finally {
+      if (booth.value?.id == boothId) isCheckingRequest.value = false;
+    }
+  }
+
+  bool get hasPendingRequest => requestStatus.value == 'pending';
+  bool get hasRejectedRequest => requestStatus.value == 'rejected';
+
   /// لتوافق الكود القديم من الويب
-  void resetForWeb(BoothModel b, VoidCallback onSuccess) =>
-      resetForBooth(b, onSuccess: onSuccess);
+  void resetForWeb(BoothModel b) => resetForBooth(b);
 
   void _initServices(BoothModel b) {
     serviceSelections.clear();
@@ -176,12 +224,16 @@ class BookingController extends GetxController {
   Future<void> submitBooking() async {
     final b = booth.value;
     if (b == null) return;
+    if (hasPendingRequest) return;
 
     // التحقق من تحديد التواريخ في الوضع المخصص
     if (bookingMode.value == 'custom') {
       if (customRangeStart.value == null) {
-        Get.snackbar('تنبيه', 'يرجى تحديد يوم البداية',
-            snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'تنبيه',
+          'يرجى تحديد يوم البداية',
+          snackPosition: SnackPosition.BOTTOM,
+        );
         return;
       }
       // إذا لم تُحدد نهاية نعتبرها نفس البداية (يوم واحد)
@@ -191,36 +243,41 @@ class BookingController extends GetxController {
     final sDate = effectiveStartDate;
     final eDate = effectiveEndDate;
     if (sDate.isEmpty || eDate.isEmpty) {
-      Get.snackbar('تنبيه', 'يرجى تحديد تواريخ الحجز',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'تنبيه',
+        'يرجى تحديد تواريخ الحجز',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
-    status.value       = StatusRequest.loading;
+    status.value = StatusRequest.loading;
     isSubmitting.value = true;
 
     final result = await _bookingData.bookBooth(
-      boothId:    b.id,
-      startDate:  sDate,
-      endDate:    eDate,
-      notes:      notesCtrl.text.trim(),
-      services:   Map<String, bool>.from(serviceSelections),
+      boothId: b.id,
+      startDate: sDate,
+      endDate: eDate,
+      notes: notesCtrl.text.trim(),
+      services: Map<String, bool>.from(serviceSelections),
       totalPrice: total,
     );
 
     if (result['status'] == true) {
       status.value = StatusRequest.success;
-      if (Get.key.currentState?.canPop() ?? false) Get.back();
-      Future.delayed(const Duration(milliseconds: 400), () {
-        _onWebSuccess?.call();
-        _onWebSuccess = null;
-      });
-      Get.snackbar('booking_submitted_title'.tr, 'booking_submitted_msg'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      requestStatus.value = 'pending';
+      Get.snackbar(
+        'booking_submitted_title'.tr,
+        'booking_submitted_msg'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } else {
       status.value = StatusRequest.failure;
-      Get.snackbar('error'.tr, result['message'] ?? 'booking_failed_msg'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'error'.tr,
+        result['message'] ?? 'booking_failed_msg'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     isSubmitting.value = false;
   }
@@ -228,11 +285,17 @@ class BookingController extends GetxController {
   Future<void> cancelBooking(int bookingId) async {
     final result = await _bookingData.cancelBooking(bookingId);
     if (result['status'] == true) {
-      Get.snackbar('booking_cancelled_title'.tr, 'booking_cancelled_msg'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'booking_cancelled_title'.tr,
+        'booking_cancelled_msg'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } else {
-      Get.snackbar('error'.tr, result['message'] ?? 'booking_cancel_fail_msg'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'error'.tr,
+        result['message'] ?? 'booking_cancel_fail_msg'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

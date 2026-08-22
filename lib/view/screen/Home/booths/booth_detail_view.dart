@@ -118,44 +118,45 @@ class BoothDetailView extends StatelessWidget {
                   const SizedBox(height: 4),
                   _infoGrid(ctrl.booth, context, isDark),
                   const SizedBox(height: 16),
-                  Text(
-                    'booth_amenities'.tr,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                  if (ctrl.booth.services.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'الخدمات',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: ctrl.booth.amenities
-                        .map(
-                          (a) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkSecondary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: AppColors.darkSecondary,
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: ctrl.booth.services.keys
+                          .map(
+                            (name) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.info.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.info.withOpacity(0.4),
+                                ),
+                              ),
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.info,
+                                ),
                               ),
                             ),
-                            child: Text(
-                              a,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.darkSecondary,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  _proximityTags(),
+                          )
+                          .toList(),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
@@ -235,7 +236,7 @@ class BoothDetailView extends StatelessWidget {
       _infoTile(
         Icons.straighten,
         'booth_area'.tr,
-        '${booth.area.toInt()}م²',
+        '${_formatArea(booth.area)}م²',
         isDark,
       ),
       _infoTile(
@@ -288,36 +289,8 @@ class BoothDetailView extends StatelessWidget {
         ),
       );
 
-  Widget _proximityTags() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'booth_proximity'.tr,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-      ),
-      const SizedBox(height: 10),
-      Row(
-        children: ['المدخل الرئيسي', 'المسرح', 'منطقة الطعام']
-            .map(
-              (t) => Container(
-                margin: const EdgeInsets.only(left: 8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.info.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.info.withOpacity(0.4)),
-                ),
-                child: Text(
-                  t,
-                  style: const TextStyle(fontSize: 11, color: AppColors.info),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    ],
-  );
+  String _formatArea(double area) {
+    if (area == area.roundToDouble()) return area.toInt().toString();
+    return area.toStringAsFixed(2).replaceFirst(RegExp(r'0+$'), '');
+  }
 }

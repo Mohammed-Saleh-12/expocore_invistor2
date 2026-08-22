@@ -15,34 +15,31 @@ class BoothsData {
     return await crud.getData(AppLink.bookingDetail(bookingId));
   }
 
-  /// جلب الأجنحة الخاصة بمعرض معين — GET /booths?exhibition_id={id}
+  /// جلب الأجنحة الخاصة بمعرض معين — GET /investor/exhibition/booths
   /// يُستدعى عند الدخول إلى صفحة تفاصيل المعرض
   Future<Map<String, dynamic>> getExhibitionBooths(int exhibitionId) async {
-    return await crud.getData(AppLink.booths, params: {
-      'exhibition_id': exhibitionId,
-      'per_page':      100,
-    });
+    return await crud.getData(
+      AppLink.exhibitionBooths,
+      params: {'exhibition_id': exhibitionId, 'per_page': 100},
+    );
   }
 
-  /// جلب الأجنحة المتاحة للحجز — GET /booths
+  /// جلب الأجنحة المتاحة للحجز — GET /investor/booths
   /// [exhibitionId] : فلتر اختياري للمعرض
   /// [status]       : فلتر الحالة (available, booked, ...)
   Future<Map<String, dynamic>> getAvailableBooths({
-    int?    exhibitionId,
+    int? exhibitionId,
     String? status,
-    int     page    = 1,
-    int     perPage = 20,
+    int page = 1,
+    int perPage = 20,
   }) async {
-    final params = <String, dynamic>{
-      'page':     page,
-      'per_page': perPage,
-    };
+    final params = <String, dynamic>{'page': page, 'per_page': perPage};
     if (exhibitionId != null) params['exhibition_id'] = exhibitionId;
     if (status != null && status.isNotEmpty) params['status'] = status;
     return await crud.getData(AppLink.booths, params: params);
   }
 
-  /// جلب تفاصيل جناح واحد — GET /booths/{id}
+  /// جلب تفاصيل جناح واحد — GET /investor/booths/{id}
   Future<Map<String, dynamic>> getBoothDetail(int id) async {
     return await crud.getData(AppLink.boothDetail(id));
   }
