@@ -169,7 +169,10 @@ class ExhibitionMapModel {
       return ExhibitionMapModel(
         exhibitionId:
             int.tryParse(
-              (payload['exhibition_id'] ?? payload['exhibitionId'] ?? 0)
+              (payload['exhibition_id'] ??
+                      payload['exhibitionId'] ??
+                      payload['map_id'] ??
+                      0)
                   .toString(),
             ) ??
             0,
@@ -185,14 +188,24 @@ class ExhibitionMapModel {
     }
 
     return ExhibitionMapModel(
-      exhibitionId: payload['exhibition_id'] ?? 0,
+      exhibitionId: _asInt(
+        payload['exhibition_id'] ??
+            payload['exhibitionId'] ??
+            payload['map_id'],
+      ),
       exhibitionName: payload['exhibition_name'] ?? '',
-      gridWidth: payload['grid_width'] ?? 12,
-      gridDepth: payload['grid_depth'] ?? 10,
+      gridWidth: _asInt(payload['grid_width'], fallback: 12),
+      gridDepth: _asInt(payload['grid_depth'], fallback: 10),
       halls: (payload['halls'] as List<dynamic>? ?? [])
-          .map((h) => MapHallModel.fromJson(h as Map<String, dynamic>))
+          .whereType<Map>()
+          .map((h) => MapHallModel.fromJson(Map<String, dynamic>.from(h)))
           .toList(),
     );
+  }
+
+  static int _asInt(dynamic value, {int fallback = 0}) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? fallback;
   }
 }
 
@@ -222,9 +235,10 @@ class MapHallModel {
       name: name,
       colorHex: json['color']?.toString() ?? '7A1FFF',
       booths: (json['booths'] as List<dynamic>? ?? [])
+          .whereType<Map>()
           .map(
             (b) => MapBoothModel.fromJson(
-              b as Map<String, dynamic>,
+              Map<String, dynamic>.from(b),
               hallId: id,
               hallName: name,
             ),
@@ -279,19 +293,26 @@ class MapBoothModel {
     String hallName = '',
   }) {
     return MapBoothModel(
-      id: (json['id'] is num) ? (json['id'] as num).toInt() : 0,
+      id: _asInt(json['id']),
       number: json['number']?.toString() ?? '',
-      col: json['col'] as int? ?? 0,
-      row: json['row'] as int? ?? 0,
-      gridWidth: json['width'] as int? ?? 1,
-      gridDepth: json['depth'] as int? ?? 1,
+      col: _asInt(json['col']),
+      row: _asInt(json['row']),
+      gridWidth: _asInt(json['width'], fallback: 1),
+      gridDepth: _asInt(json['depth'], fallback: 1),
       height: (json['height'] as num?)?.toDouble() ?? 1.0,
       status: json['status']?.toString() ?? 'available',
       price: (json['price'] as num?)?.toDouble() ?? 0,
       area: (json['area'] as num?)?.toDouble() ?? 0,
       hallId: hallId,
       hallName: hallName,
-      amenities: List<String>.from(json['amenities'] as List? ?? []),
+      amenities: (json['amenities'] is List)
+          ? (json['amenities'] as List).map((item) => item.toString()).toList()
+          : const [],
     );
+  }
+
+  static int _asInt(dynamic value, {int fallback = 0}) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? fallback;
   }
 }

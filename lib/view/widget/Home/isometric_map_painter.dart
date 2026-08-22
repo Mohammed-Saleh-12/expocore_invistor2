@@ -49,10 +49,14 @@ class IsometricMapPainter extends CustomPainter {
     )..sort((a, b) => (a.row + a.col).compareTo(b.row + b.col));
 
     for (final booth in sorted) {
-      final hall = mapModel.halls.firstWhere(
-        (h) => h.id == booth.hallId,
-        orElse: () => mapModel.halls.first,
-      );
+      MapHallModel? hall;
+      for (final candidate in mapModel.halls) {
+        if (candidate.id == booth.hallId) {
+          hall = candidate;
+          break;
+        }
+      }
+      if (hall == null) continue;
       _drawBooth(canvas, booth, hall.color, origin);
     }
 

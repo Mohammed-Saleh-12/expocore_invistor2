@@ -43,6 +43,8 @@ class BoothMapController extends GetxController {
   final _boothById = <int, BoothModel>{};
   final _sceneInstanceById = <String, MapSceneInstance>{};
 
+  Map<int, BoothModel> get boothLookup => Map.unmodifiable(_boothById);
+
   @override
   void onInit() {
     super.onInit();
@@ -209,9 +211,14 @@ class BoothMapController extends GetxController {
         return;
       }
       if (result['status'] == true) {
-        final body = result['data'] is Map
-            ? (result['data'] as Map<String, dynamic>)
-            : <String, dynamic>{};
+        final body = _mapBody(result['data']);
+        if (body.isEmpty) {
+          isLoading.value = false;
+          debugPrint(
+            '[Map] Empty map payload for exhibition $requestedExhibitionId',
+          );
+          return;
+        }
         final responseExhibitionId = int.tryParse(
           (body['exhibition_id'] ?? body['exhibitionId'] ?? '').toString(),
         );
@@ -287,6 +294,19 @@ class BoothMapController extends GetxController {
     allBooths.clear();
     isLoading.value = false;
     debugPrint('[Map] Cannot load map without a valid exhibition id');
+  }
+
+  Map<String, dynamic> _mapBody(dynamic raw) {
+    if (raw is! Map) return <String, dynamic>{};
+    final map = Map<String, dynamic>.from(raw);
+    final nested = map['data'];
+    if (nested is Map &&
+        (map['scene'] == null &&
+            map['instances'] == null &&
+            map['halls'] == null)) {
+      return Map<String, dynamic>.from(nested);
+    }
+    return map;
   }
 
   // ── الجناح الحقيقي المرتبط بـ MapBoothModel ──────────────────

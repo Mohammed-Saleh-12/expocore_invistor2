@@ -7,6 +7,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_windows/webview_windows.dart' as windows_webview;
 
 import '../../../data/model/map/exhibition_map_model.dart';
+import '../../../data/model/booth/booth_model.dart';
 import '../../../linkapi.dart';
 
 class Exhibition3DScene extends StatelessWidget {
@@ -17,6 +18,7 @@ class Exhibition3DScene extends StatelessWidget {
   final VoidCallback? onBackgroundTapped;
   final bool isDark;
   final TransformationController? transformationController;
+  final Map<int, BoothModel> boothLookup;
 
   const Exhibition3DScene({
     super.key,
@@ -26,6 +28,7 @@ class Exhibition3DScene extends StatelessWidget {
     this.onBackgroundTapped,
     this.isDark = false,
     this.transformationController,
+    this.boothLookup = const {},
   });
 
   @override
@@ -36,6 +39,7 @@ class Exhibition3DScene extends StatelessWidget {
         selectedBooth: selectedBooth,
         onBoothTapped: onBoothTapped,
         isDark: isDark,
+        boothLookup: boothLookup,
       );
     }
 
@@ -212,6 +216,7 @@ class Exhibition3DScene extends StatelessWidget {
 
     final id = int.tryParse(instance.id.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     if (id == 0) return null;
+    final real = boothLookup[id];
     return MapBoothModel(
       id: id,
       number: instance.label ?? instance.id,
@@ -220,9 +225,9 @@ class Exhibition3DScene extends StatelessWidget {
       gridWidth: 1,
       gridDepth: 1,
       height: instance.height ?? 1,
-      status: 'available',
-      price: 0,
-      area: 0,
+      status: real?.status ?? 'available',
+      price: real?.price ?? 0,
+      area: real?.area ?? 0,
       hallId: instance.floorId ?? 'floor',
       hallName: instance.label ?? 'Scene Item',
       amenities: const [],
@@ -294,12 +299,14 @@ class _ThreeSceneWebView extends StatefulWidget {
   final MapBoothModel? selectedBooth;
   final void Function(MapBoothModel booth, Offset position)? onBoothTapped;
   final bool isDark;
+  final Map<int, BoothModel> boothLookup;
 
   const _ThreeSceneWebView({
     required this.mapModel,
     required this.selectedBooth,
     required this.onBoothTapped,
     required this.isDark,
+    required this.boothLookup,
   });
 
   @override
@@ -569,21 +576,25 @@ class _ThreeSceneWebViewState extends State<_ThreeSceneWebView> {
             .first;
         if ((type == 'booth' || type == 'wing') &&
             RegExp(r'^(?:booth_)?mod[1-5]$').hasMatch(key)) {
+          final boothId = int.tryParse(
+                instance.id.replaceAll(RegExp(r'[^0-9]'), ''),
+              ) ??
+              int.tryParse(
+                instance.label?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
+              ) ??
+              0;
+          final real = widget.boothLookup[boothId];
           return MapBoothModel(
-            id:
-                int.tryParse(
-                  instance.label?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
-                ) ??
-                0,
+            id: boothId,
             number: instance.label ?? id,
             col: 0,
             row: 0,
             gridWidth: 1,
             gridDepth: 1,
             height: instance.height ?? 1,
-            status: 'available',
-            price: 0,
-            area: 0,
+            status: real?.status ?? 'available',
+            price: real?.price ?? 0,
+            area: real?.area ?? 0,
             hallId: instance.floorId ?? 'floor',
             hallName: instance.label ?? 'Scene Item',
             amenities: const [],

@@ -67,6 +67,7 @@ class BoothMap3dView extends StatelessWidget {
                         selectedBooth: ctrl.selectedBooth.value,
                         isDark: isDark,
                         transformationController: ctrl.transformationController,
+                        boothLookup: ctrl.boothLookup,
                         onBoothTapped: (booth, position) =>
                             ctrl.onBoothTapped(booth, screenPosition: position),
                       ),
@@ -106,10 +107,7 @@ class BoothMap3dView extends StatelessWidget {
 class _MapHeader extends StatelessWidget {
   final dynamic mapModel;
   final bool isDark;
-  const _MapHeader({
-    required this.mapModel,
-    required this.isDark,
-  });
+  const _MapHeader({required this.mapModel, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
